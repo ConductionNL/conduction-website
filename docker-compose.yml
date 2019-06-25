@@ -1,0 +1,54 @@
+version: '3.4'
+
+services:  
+  ## In production, you may want to use a managed database service
+  db-website:
+    image: mysql:5.7 #Do not use a version 8, until propper pdo support comes out
+    environment:
+      - MYSQL_ROOT_PASSWORD=95d893bb3fa2ea379ea759d5949eeef7
+      - MYSQL_DATABASE=website
+      - MYSQL_USER=conduction
+      # You should definitely change the password in production
+      - MYSQL_PASSWORD=0b9ef65e37477405799176eb42927676
+    volumes:
+      - conduction-website-db-website:/var/lib/mysql:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      #- ./docker/db/data:/var/lib/mysql:rw
+    ports:
+      - "3306:3306"
+      
+  ## The new Syfony Based MVC website
+  conduction-website-component:
+    image: ${CONTAINER_REGISTRY_BASE}/${CONTAINER_PROJECT_NAME}-component:latest
+    build:
+      context: ./
+      target: api_platform_php
+      cache_from:
+        - ${CONTAINER_REGISTRY_BASE}/${CONTAINER_PROJECT_NAME}-component
+        - ${CONTAINER_REGISTRY_BASE}/${CONTAINER_PROJECT_NAME}-nginx 
+    depends_on:
+      - db-website
+    volumes:
+      - ./:/srv/api:rw,cached
+
+  conduction-website-nginx:
+    image: ${CONTAINER_REGISTRY_BASE}/${CONTAINER_PROJECT_NAME}-nginx:latest
+    build:
+      context: ./
+      target: api_platform_nginx
+      cache_from:
+        - ${CONTAINER_REGISTRY_BASE}/${CONTAINER_PROJECT_NAME}-component
+        - ${CONTAINER_REGISTRY_BASE}/${CONTAINER_PROJECT_NAME}-nginx
+    depends_on:
+      - conduction-website-component
+    volumes:
+      - ./public:/srv/api/public:ro
+    ports:
+      - "80:80" 
+       
+## We use volumes to achieve db (semi) persistancy for developtment purposes, but do not use this in production! volumes are by nature not persistent     
+volumes:
+  conduction-website-db-website: {}  
+      
+            
+
