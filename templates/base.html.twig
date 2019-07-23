@@ -6,6 +6,15 @@
 <!--[if (gte IE 10)|!(IE)]><!--><html lang="en"><!--<![endif]-->
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-143369164-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-143369164-1');
+    </script>
+        
     
     <!-- Your Basic Site Informations -->
 	<title>{% block title %}Conduction{% endblock %}</title>
@@ -24,16 +33,16 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
     
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/slick.css">
-    <link rel="stylesheet" href="css/slick-theme.css">
-    <link rel="stylesheet" href="css/jquery.fancybox.css">
-    <link rel="stylesheet" href="css/animate.min.css">
-    <link rel="stylesheet" href="css/conduction.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.9.0/css/all.css" integrity="sha384-vlOMx0hKjUCl4WzuhIhSNZSm2yQCaf0mOU1hEDK/iztH3gU4v5NMmJln9273A6Jz" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/slick.css">
+    <link rel="stylesheet" href="/css/slick-theme.css">
+    <link rel="stylesheet" href="/css/jquery.fancybox.css">
+    <link rel="stylesheet" href="/css/animate.min.css">
+    <link rel="stylesheet" href="/css/conduction.css">
     
     <!-- Custom Colors -->
-    <link rel="stylesheet" href="css/colors/conduction.css">
+    <link rel="stylesheet" href="/css/colors/conduction.css">
     <!--<link rel="stylesheet" href="css/colors/green.css">-->
     <!--<link rel="stylesheet" href="css/colors/orange.css">-->
     <!--<link rel="stylesheet" href="css/colors/pink.css">-->
@@ -53,11 +62,34 @@
     <noscript><link rel="stylesheet" href="css/no-js.css"></noscript>
     
     <!-- Favicons -->
-	<link rel="shortcut icon" href="images/favicon.ico">
-	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-	<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
-	<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+	<link rel="shortcut icon" href="/images/favicon.ico">
+	<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="/images/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="/images/apple-touch-icon-114x114.png">
+	
+	<style>
+	/* Round bootstrap buttons*/
+	.btn-circle.btn-xl {
+    width: 70px;
+    height: 70px;
+    padding: 10px 16px;
+    border-radius: 35px;
+    font-size: 24px;
+    line-height: 1.33;
+    }
     
+    .btn-circle {
+        width: 30px;
+        height: 30px;
+        padding: 6px 0px;
+        border-radius: 15px;
+        text-align: center;
+        font-size: 12px;
+        line-height: 1.42857;
+    }
+	</style>
+    
+  	<base href="/">
 </head>
 
 <body>
@@ -67,10 +99,7 @@
         
 	{{ include('contact.html.twig') }}	
 	{{ include('footer.html.twig') }}	
-    
-    
-    
-    
+        
     <!--[if lt IE 8]>
     	<div class="browser-notice">
             <div class="container">
@@ -88,7 +117,6 @@
     <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/jquery.easing.min.js"></script>
-    <script type="text/javascript" src="js/smoothscroll.js"></script>
     <script type="text/javascript" src="js/response.min.js"></script>
 	<script type="text/javascript" src="js/jquery.placeholder.min.js"></script>
     <script type="text/javascript" src="js/jquery.fitvids.js"></script>
@@ -101,6 +129,25 @@
 	<script type="text/javascript" src="js/jquery.counterup.min.js"></script>
     <script type="text/javascript" src="js/isotope.pkgd.min.js"></script>
 	<script type="text/javascript" src="js/script.js"></script>
+	
+	<script>
+    /**
+    * Functie die een klik op een uitgaande link vastlegt in Google Analytics.
+    * Deze functie vereist een geldige URL-tekenreeks als argument en gebruikt deze
+    * als gebeurtenislabel. Wanneer de methode 'transport' wordt ingesteld op 'beacon', wordt de hit verzonden
+    * bij gebruik van 'navigator.sendBeacon' in een browser die dat ondersteunt.
+    */
+    var captureOutboundLink = function(url, action) {
+       ga('send', 'event', 'outbound', action , url, {
+         'transport': 'beacon',
+         'hitCallback': function(){document.location = url;}
+       });
+    } 
+    </script>
+    
+    <!-- Start of HubSpot Embed Code -->
+      <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/6108438.js"></script>
+    <!-- End of HubSpot Embed Code -->
     
 </body>
 </html>
