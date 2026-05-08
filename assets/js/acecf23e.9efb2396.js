@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkconduction_website=globalThis.webpackChunkconduction_website||[]).push([[1903],{1912(a){a.exports=JSON.parse('{"blogBasePath":"/academy","blogTitle":"Conduction Academy","authorsListPath":"/academy/authors"}')}}]);
