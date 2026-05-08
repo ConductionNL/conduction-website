@@ -1,0 +1,36 @@
+---
+slug: mcp-server
+title: Set up the Conduction MCP server
+contentType: guide
+authors: [conduction]
+date: 2026-04-29
+summary: Point Claude or any MCP-aware client at OpenRegister, then write your first MCP-driven query.
+tags: [AI & LLMs, MCP, OpenRegister]
+apps: [openregister]
+durationMinutes: 8
+---
+
+A short walk-through of the Model Context Protocol server we ship for OpenRegister. Placeholder while we draft the full version.
+
+{/* truncate */}
+
+## Before you start
+
+You need:
+
+- A running OpenRegister with at least one register and schema
+- Claude Code, Claude Desktop, or any other MCP-aware client
+- The MCP server running on `http://localhost:8080/index.php/apps/openregister/mcp`
+
+## Wiring the client
+
+Add the OpenRegister MCP endpoint to your client's config. The server exposes:
+
+- `register.list`, `register.get`
+- `schema.list`, `schema.get`
+- `object.search`, `object.get`, `object.create`
+- `audit.read` for read-only access to the audit trail
+
+## What you can ask
+
+Once wired, the assistant can answer questions like "show me all WOO documents from 2024 with category-2 redactions" without you writing the query by hand.

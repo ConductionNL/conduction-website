@@ -1,0 +1,30 @@
+---
+title: Partners, Conduction
+description: Implementatie-, hosting- en integratiepartners voor het Conduction app-ecosysteem. Filter op tier en op de apps die je wilt uitrollen.
+hide_table_of_contents: true
+---
+
+import {Section, SectionHead, PartnerDirectory} from '@conduction/docusaurus-preset/components';
+import {PARTNERS, BECOME_PARTNER} from '@site/src/data/partners-catalog';
+
+export const BECOME_PARTNER_NL = {
+  ...BECOME_PARTNER,
+  eyebrow: 'Word partner',
+  title: 'Lever Conduction aan jouw klanten.',
+  body: 'Sluit je aan als Partner, Gecertificeerd of Strategisch. Conduction traint je team, jij doet de uitrol. De apps blijven open source, de relatie blijft direct.',
+  ctaLabel: 'Aanvragen via Support',
+};
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Partners"
+    title="Implementatie, hosting, integratie."
+    lede={<>De apps zijn open source en gratis. De meeste teams installeren en draaien ze zelf. Wil je hulp bij hosting, maatwerk-integraties of een uitrol in een gereguleerde sector? Onze gecertificeerde partners pakken het op. Ze draaien dezelfde <span className="next-blue">Nextcloud</span> als jij en bouwen op dezelfde apps.</>}
+  />
+
+  <PartnerDirectory
+    partners={PARTNERS}
+    becomePartner={BECOME_PARTNER_NL}
+    gridColumns={3}
+  />
+</Section>

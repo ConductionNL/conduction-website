@@ -1,0 +1,242 @@
+---
+title: DeciDesk, Conduction
+description: Decision-support and board management on Nextcloud. Agenda, dossiers, motions, voting, audit.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+
+<DetailHero
+  appId="decidesk"
+  crumb={[{label: 'Apps', href: '/apps'}, 'DeciDesk']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.5"
+  locales="NL · EN"
+  title="DeciDesk"
+  tagline={<>Board and council decision-making on your <span className="next-blue">Nextcloud</span>. Agendas, council dossiers, motions, votes, an audit trail that understands the Wet open overheid. For municipal councils, executive boards, supervisory and management boards.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/decidesk'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/decidesk'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
+  illustration={<AppMock app="decidesk" />}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="Van agenda tot besluit, in één install."
+        align="stack"
+        lede="DeciDesk dekt de hele besluitvormings-keten: agendapunten verzamelen, dossiers opbouwen, moties indienen, stemmen registreren, besluiten publiceren. Allemaal op typed registers met een audit trail die het Woo-werk later veel eenvoudiger maakt."
+      />
+      <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>}
+      title="Agenda's met dossiervorming."
+    >
+      Per vergaderpunt een dossier: ambtelijk advies, raadsstuk, presentaties, beantwoorde vragen. Allemaal versioneed, allemaal in OpenRegister.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
+      title="Moties en amendementen."
+    >
+      Indienen, koppelen aan een agendapunt, stemmen registreren. Per-fractie of per-individu, configureerbaar per bestuur.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg>}
+      title="Stemmingen, getrackt in het audit trail."
+    >
+      Hoofdelijk of bij handopsteken; uitkomst, individuele stemmen, abstaining members. Allemaal in een tamper-evident log.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      title="Besluiten als gepubliceerde documenten."
+    >
+      DocuDesk genereert het formele besluit uit de stemresultaten en raadsbespreking. OpenCatalogi publiceert het op jouwgemeente.nl/besluiten met citation-stable URL.
+    </FeatureItem>
+  </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['decidesk']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<RotatingCards
+  eyebrow="Three ways DeciDesk earns its place"
+  title="Minutes, decisions, action items, all linked."
+  lede="Scroll the cards. Each pins as you reach it; the next slides up to cover."
+  cards={[
+    {
+      tone: 'mint',
+      eyebrow: 'Run the meeting',
+      title: 'Agenda, minutes, motions, votes, in one app.',
+      summary: 'DeciDesk owns the full board-meeting cycle. Agenda packs go out, minutes get drafted live, motions and votes are recorded. The audit trail satisfies the Wet open overheid out of the box.',
+      cta: {label: 'See DeciDesk', href: '/apps/decidesk'},
+      panel: <AppMock app="decidesk" />,
+    },
+    {
+      tone: 'forest',
+      eyebrow: 'Linked to its source',
+      title: 'Every decision points back to its register row.',
+      summary: 'A motion to award a permit links to the permit-application register. A budget vote links to the budget-line register. Decisions stop being free-floating documents.',
+      cta: {label: 'See OpenRegister', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'In every queue',
+      title: 'Action items land in the assignee\'s MyDash.',
+      summary: 'Every action item from a meeting becomes a row in someone\'s werkvoorraad. No separate task tracker, no email handoff. The next meeting reads its predecessor\'s status from the same registers.',
+      cta: {label: 'See MyDash', href: '/apps/mydash'},
+      panel: <AppMock app="mydash-widgets" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="On every Nextcloud dashboard."
+  lede="Install DeciDesk and the home screen tells every board member what's open, what's decided, and what's next."
+  widgets={[
+    {
+      title: 'Action items for me',
+      desc: 'Action items assigned to the logged-in user, sorted by due date. One click marks done and updates the meeting record.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {check: false, l1: '70%'},
+            {check: false, l1: '60%'},
+            {check: true,  l1: '55%'},
+            {check: false, l1: '65%'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 14, height: 14, borderRadius: 3, border: '2px solid var(--c-cobalt-300)', background: row.check ? 'var(--c-mint-500)' : 'transparent', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box'}}>
+                {row.check && <span style={{width: 6, height: 3, borderLeft: '2px solid white', borderBottom: '2px solid white', transform: 'rotate(-45deg) translateY(-1px)'}}></span>}
+              </span>
+              <div style={{flex: 1, height: 4, width: row.l1, background: row.check ? 'var(--c-cobalt-300)' : 'var(--c-cobalt-700)', borderRadius: 1, textDecoration: row.check ? 'line-through' : 'none'}}></div>
+              <div style={{height: 3, width: 22, background: 'var(--c-cobalt-100)', borderRadius: 1}}></div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Recent decisions',
+      desc: 'Last decisions taken by the council or board. Outcome status (passed / rejected / withdrawn) and link to the source motion.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-mint-500)',       label: 'PASSED'},
+            {tone: 'var(--c-mint-500)',       label: 'PASSED'},
+            {tone: 'var(--c-red-vermillion)', label: 'REJECTED'},
+            {tone: 'var(--c-cobalt-300)',     label: 'WITHDRAWN'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, fontWeight: 700, color: row.tone}}>
+                <span style={{width: 8, height: 9, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+                {row.label}
+              </span>
+              <div style={{flex: 1, height: 4, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Upcoming meetings',
+      desc: 'Next meetings on your calendar with agenda packs. One click opens the dossier; another joins the call.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2}}>
+            {[0,0,0,1,0,0,0, 0,0,1,2,0,0,0, 0,1,0,0,0,1,0].map((kind, i) => (
+              <div key={i} style={{height: 12, background: kind === 1 ? 'var(--c-cobalt-300)' : kind === 2 ? 'var(--c-orange-knvb)' : 'var(--c-cobalt-50)', borderRadius: 1}}></div>
+            ))}
+          </div>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 5}}>
+            {[
+              {accent: true,  date: '14 Mei'},
+              {accent: false, date: '18 Mei'},
+              {accent: false, date: '25 Mei'},
+            ].map((row, i) => (
+              <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+                <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 600, color: row.accent ? 'var(--c-orange-knvb)' : 'var(--c-cobalt-400)', minWidth: 36}}>{row.date}</div>
+                <div style={{flex: 1, height: 4, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="How DeciDesk plugs into the workspace"
+  title="The meeting cycle, end to end, in Nextcloud."
+  lede="Three integration paths that put the meeting, the motions, and the published minutes inside the apps your council and board members already use."
+  layout="side"
+  defaultOpen="calendar-contacts-notes"
+  items={[
+    {
+      id: 'calendar-contacts-notes',
+      title: 'Calendar, Contacts, Notes',
+      summary: 'Schedule the meeting in Calendar, attendees pulled from Contacts. The dossier opens straight from the calendar event; minutes sync back into a Note that everyone with access can read.',
+      cta: {label: 'See the integration guide', href: 'https://docs.conduction.nl/decidesk/calendar-contacts-notes'},
+      panel: <AppMock app="decidesk" />,
+    },
+    {
+      id: 'deck',
+      title: 'Deck',
+      summary: 'Motions live as Deck cards while they\'re still being shaped. When the motion goes to a vote, the card upgrades to a DeciDesk decision record; the audit trail starts there and follows the motion through publication.',
+      cta: {label: 'See the Deck integration', href: 'https://docs.conduction.nl/decidesk/deck'},
+      panel: <AppMock app="decidesk" />,
+    },
+    {
+      id: 'mail-files',
+      title: 'Mail and Files',
+      summary: 'Agenda packs go out as Mail; signed minutes archive into Files under the year/meeting folder. Both flows are templated and signed with the instance certificate, so the version everyone has is the version of record.',
+      cta: {label: 'See the document flow', href: 'https://docs.conduction.nl/decidesk/mail-files'},
+      panel: <AppMock app="docudesk" />,
+    },
+  ]}
+/>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="Three apps that complete the decision chain."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="Agendapunten, dossiers, moties, stemmen als typed registers."
+    />
+    <PairCard
+      href="/apps/docudesk"
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      name="DocuDesk"
+      why="Besluiten, raadstukken, beantwoorde vragen uit dossier-velden."
+    />
+    <PairCard
+      href="/apps/opencatalogi"
+      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
+      name="OpenCatalogi"
+      why="Publiceert besluiten en raadstukken aan jouwgemeente.nl/besluiten met federation."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="Board and council decision-making, audit-ready."
+  lede={<>DeciDesk covers agenda, dossier creation, voting, and publication. The audit trail that follows makes the Woo work later much simpler.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+/>

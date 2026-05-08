@@ -1,0 +1,172 @@
+---
+title: ConNext, open-source apps voor Nextcloud
+description: Twaalf open-source apps die in Nextcloud draaien. Catalogi, registers, integraties, documentafhandeling. Pak wat je nodig hebt uit de app store en je werkt vandaag al.
+hide_table_of_contents: true
+---
+
+import {Hero, StatsStrip, PlatformOverview, PlatformDiagram, HexRain, AppsPreview, CtaBanner, Section, SectionHead, PairRow, PairCard} from '@conduction/docusaurus-preset/components';
+import {totalDownloads, formatDownloads} from '@conduction/docusaurus-preset/data';
+import {totalPartners} from '@site/src/data/partners-catalog';
+
+{/* All runtime assets are now wrapped in real React components:
+    HexRain (hero mini-game), PlatformDiagram (platform overview),
+    ConductionBg (CTA panel). Each component lazy-loads its own
+    CSS/JS via Head. No top-level Head boilerplate needed here. */}
+
+<Hero
+  eyebrow={<>Twaalf open-source apps · één <span className="next-blue">Nextcloud</span></>}
+  title={<>Installeer je stack.<br/>In twee minuten.</>}
+  lede={<>Twaalf open-source apps die in <span className="next-blue">Nextcloud</span> draaien. Catalogi, registers, integraties, documentafhandeling. Pak wat je nodig hebt uit de app store en je werkt vandaag al. Geen methodiekworkshop. Geen lock-in.</>}
+  primaryCta={{label: <>Installeer uit de <span className="next-blue">Nextcloud</span> app store</>, href: '/apps'}}
+  secondaryCta={{label: 'Start een lokale demo', href: '/demo'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL'}}
+>
+  <HexRain />
+</Hero>
+
+<StatsStrip stats={[
+  { value: '12', label: <>apps in het ecosysteem,<br/>allemaal open-source</> },
+  { value: '2 min', label: <>van app store install<br/>naar werkende solution</> },
+  { value: '€0', label: <>voor de apps,<br/>support is optioneel</> },
+  { value: totalPartners, label: <>certified en partner-<br/>implementeerders</> },
+  { value: formatDownloads(totalDownloads), label: <>downloads,<br/>en dat loopt door</> },
+]} />
+
+<PlatformOverview
+  eyebrow="Het platform"
+  title={<>Vijf componenten.<br/>Vierentwintig apps. Eén <span className="next-blue">Nextcloud</span> workspace.</>}
+  lede={<>Elke ConNext-app valt in een van vijf categorieën rond de <span className="next-blue">Nextcloud</span> workspace: bestanden, mail, agenda, talk, office. Allemaal draaien ze op het platform dat je team al kent. Hover over een app om te zien wat hij doet.</>}
+>
+  <PlatformDiagram
+    workspace={{logo: '/img/nextcloud-logo.svg', alt: 'Nextcloud', role: 'Workspace'}}
+    lists={[
+      {position: 'top', family: 'nextcloud', items: [
+        {name: 'Files', meta: 'Files', desc: 'Synchroniseer, deel en versioneer elk bestand. De basis van elke Nextcloud-workspace.', icon: <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>},
+        {name: 'Mail', meta: 'Mail', desc: 'IMAP- en SMTP-mailbox direct in Nextcloud.', icon: <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>},
+        {name: 'Calendar', meta: 'Cal', desc: 'CalDAV-agenda met free-busy over teams heen.', icon: <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>},
+        {name: 'Talk', meta: 'Comms', desc: 'End-to-end versleutelde chat, voice en video, volledig op je eigen servers.', icon: <svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>},
+        {name: 'Office', meta: 'Docs', desc: 'Collabora-docs, sheets en slides. Realtime samen bewerken.', icon: <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>},
+        {name: 'Contacts', meta: 'People', desc: 'CardDAV-adresboek, gedeeld, group-aware, sync naar telefoon en desktop.', icon: <svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 18a5 5 0 0 1 10 0"/></svg>},
+        {name: 'Notes', meta: 'Notes', desc: 'Markdown-notities, gesynchroniseerd en doorzoekbaar op elk device.', icon: <svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/></svg>},
+        {name: 'Tasks', meta: 'Todos', desc: 'CalDAV-takenlijsten. Toewijzen, plannen en afvinken.', icon: <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 12l3 3 7-7"/></svg>},
+        {name: 'Deck', meta: 'Boards', desc: 'Kanban-borden voor projecten, sprints en persoonlijke takenstromen.', icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>},
+      ]},
+      {position: 'top-left', family: 'core', label: 'Technical\nCore', items: [
+        {name: 'OpenRegister', meta: 'Data', desc: 'Schema-gedreven object store met audittrail. De databasis onder elke workspace-app.', icon: <svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>},
+        {name: 'OpenCatalogi', meta: 'Catalog', desc: 'Federatieve datacatalogus. Datasets, APIs, software-inventaris.', icon: <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>},
+        {name: 'OpenConnector', meta: 'Integrate', desc: 'API-gateway: REST, SOAP, GraphQL, webhooks.', icon: <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>},
+        {name: 'DocuDesk', meta: 'Docs', desc: 'Genereer, anonimiseer, onderteken en sjabloneer documenten.', icon: <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>},
+        {name: 'NLDesign Theme', meta: 'Theme', desc: 'NL Design System tokens, toegepast in elke Conduction-app.', icon: <svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M14 14l-3-3-7 7v3h3l7-7"/></svg>},
+        {name: 'MyDash', meta: 'Dashboard', desc: 'Dashboardbouwer met rolgebaseerde toegang.', icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>},
+      ]},
+      {position: 'top-right', family: 'solutions', label: 'Solutions', items: [
+        {name: 'OpenWoo', meta: 'WOO', desc: 'WOO-publicatieflow. Actieve openbaarmaking, doorzoekbaar archief.', icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>},
+        {name: 'ZaakAfhandelApp', meta: 'Zaken', desc: 'Zaakstatus-portaal voor inwoners.', icon: <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>},
+        {name: 'Anonimiseren', meta: 'Privacy', desc: 'Privacy-by-design pijplijn. Auto-redigeer PII voor publicatie.', icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/><path d="M9 8h6"/></svg>},
+      ]},
+      {position: 'bottom-left', family: 'workspace', label: 'Workspace\nApps', items: [
+        {name: 'PipelinQ', meta: 'CRM', desc: 'CRM met offertes, contacten en deal-flow.', icon: <svg viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>},
+        {name: 'Procest', meta: 'Cases', desc: 'Zaakafhandeling voor VTH en burgerprocessen.', icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>},
+        {name: 'DeciDesk', meta: 'Boards', desc: 'Besluitvorming en bestuursondersteuning.', icon: <svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>},
+        {name: 'ShillinQ', meta: 'ERP', desc: 'Boekhouding, facturatie en uitgavenbeheer.', icon: <svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>},
+        {name: 'LarpingApp', meta: 'Larp', desc: 'Worldbuilding en campagnebeheer.', icon: <svg viewBox="0 0 24 24"><path d="M14 4l-4 6 4 6"/><path d="M10 4l4 6-4 6"/><circle cx="12" cy="20" r="2"/></svg>},
+        {name: 'SoftwareCatalog', meta: 'Assets', desc: 'IT-assetbeheer, software-inventaris, licenties, contracten.', icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>},
+      ]},
+      {position: 'bottom-right', family: 'integrate', label: 'Integrated\nApps', columns: 2, items: [
+        {name: 'OpenTalk', meta: 'Video', brandColor: '#00485C', desc: 'Open-source videoconferencing.', icon: <svg viewBox="0 0 24 24"><circle cx="11" cy="12.5" r="7" fill="none" stroke="currentColor" strokeWidth="2.5"/><circle cx="18.5" cy="6.5" r="2.5" style={{fill: '#D2E245'}}/></svg>},
+        {name: 'Matrix', meta: 'Chat', brandColor: '#000000', desc: 'Federatief chatprotocol. End-to-end versleuteld.', icon: <svg viewBox="0 0 24 24"><path d="M.632.55v22.9H2.28V24H0V0h2.28v.55zm7.043 7.26v1.157h.033c.309-.443.683-.784 1.117-1.024.433-.245.936-.365 1.5-.365.54 0 1.033.107 1.481.314.448.208.785.582 1.02 1.108.254-.374.6-.706 1.034-.992.434-.287.95-.43 1.546-.43.453 0 .872.056 1.26.167.388.11.716.286.993.53.276.245.489.559.646.951.152.392.23.863.23 1.417v5.728h-2.349V11.52c0-.286-.01-.559-.032-.812a1.755 1.755 0 0 0-.18-.66 1.106 1.106 0 0 0-.438-.448c-.194-.11-.457-.166-.785-.166-.332 0-.6.064-.803.189a1.38 1.38 0 0 0-.48.499 1.946 1.946 0 0 0-.231.696 5.56 5.56 0 0 0-.06.785v4.768h-2.35v-4.8c0-.254-.004-.503-.018-.752a2.074 2.074 0 0 0-.143-.688 1.052 1.052 0 0 0-.415-.503c-.194-.125-.476-.19-.854-.19-.111 0-.259.024-.439.074-.18.051-.36.143-.53.282-.171.138-.319.337-.439.595-.12.259-.18.6-.18 1.02v4.966H5.46V7.81zm15.693 15.64V.55H21.72V0H24v24h-2.28v-.55z"/></svg>},
+        {name: 'n8n', meta: 'Flows', brandColor: '#EA4B71', desc: 'Workflowautomatisering, no-code flows.', icon: <svg viewBox="0 0 24 24"><path d="M21.4737 5.6842c-1.1772 0-2.1663.8051-2.4468 1.8947h-2.8955c-1.235 0-2.289.893-2.492 2.111l-.1038.623a1.263 1.263 0 0 1-1.246 1.0555H11.289c-.2805-1.0896-1.2696-1.8947-2.4468-1.8947s-2.1663.8051-2.4467 1.8947H4.973c-.2805-1.0896-1.2696-1.8947-2.4468-1.8947C1.1311 9.4737 0 10.6047 0 12s1.131 2.5263 2.5263 2.5263c1.1772 0 2.1663-.8051 2.4468-1.8947h1.4223c.2804 1.0896 1.2696 1.8947 2.4467 1.8947 1.1772 0 2.1663-.8051 2.4468-1.8947h1.0008a1.263 1.263 0 0 1 1.2459 1.0555l.1038.623c.203 1.218 1.257 2.111 2.492 2.111h.3692c.2804 1.0895 1.2696 1.8947 2.4468 1.8947 1.3952 0 2.5263-1.131 2.5263-2.5263s-1.131-2.5263-2.5263-2.5263c-1.1772 0-2.1664.805-2.4468 1.8947h-.3692a1.263 1.263 0 0 1-1.246-1.0555l-.1037-.623A2.52 2.52 0 0 0 13.9607 12a2.52 2.52 0 0 0 .821-1.4794l.1038-.623a1.263 1.263 0 0 1 1.2459-1.0555h2.8955c.2805 1.0896 1.2696 1.8947 2.4468 1.8947 1.3952 0 2.5263-1.131 2.5263-2.5263s-1.131-2.5263-2.5263-2.5263m0 1.2632a1.263 1.263 0 0 1 1.2631 1.2631 1.263 1.263 0 0 1-1.2631 1.2632 1.263 1.263 0 0 1-1.2632-1.2632 1.263 1.263 0 0 1 1.2632-1.2631M2.5263 10.7368A1.263 1.263 0 0 1 3.7895 12a1.263 1.263 0 0 1-1.2632 1.2632A1.263 1.263 0 0 1 1.2632 12a1.263 1.263 0 0 1 1.2631-1.2632m6.3158 0A1.263 1.263 0 0 1 10.1053 12a1.263 1.263 0 0 1-1.2632 1.2632A1.263 1.263 0 0 1 7.579 12a1.263 1.263 0 0 1 1.2632-1.2632m10.1053 3.7895a1.263 1.263 0 0 1 1.2631 1.2632 1.263 1.263 0 0 1-1.2631 1.2631 1.263 1.263 0 0 1-1.2632-1.2631 1.263 1.263 0 0 1 1.2632-1.2632"/></svg>},
+        {name: 'Windmill', meta: 'Flow', brandColor: '#DC2A1F', desc: 'Workflow-engine voor developers. Python, TypeScript, Go, Bash.', icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M12 12L17 5L19 8L14 12zM12 12L19 17L16 19L12 14zM12 12L7 19L5 16L10 12zM12 12L5 7L8 5L12 10z"/><path d="M11 14h2v8h-2z"/></svg>},
+        {name: 'OpenProject', meta: 'PM', brandColor: '#0770B8', desc: 'Projectmanagement, Gantt, agile borden.', icon: <svg viewBox="0 0 24 24"><path d="M19.35.37h-1.86a4.628 4.628 0 0 0-4.652 4.624v5.609H4.652A4.628 4.628 0 0 0 0 15.23v3.721c0 2.569 2.083 4.679 4.652 4.679h1.86c2.57 0 4.652-2.11 4.652-4.679v-3.72c0-.063 0-.158-.005-.158H8.373v3.88c0 1.026-.835 1.886-1.861 1.886h-1.86c-1.027 0-1.861-.864-1.861-1.886V15.23a1.839 1.839 0 0 1 1.86-1.833h14.697c2.57 0 4.652-2.11 4.652-4.679V4.997A4.628 4.628 0 0 0 19.35.37Zm1.861 8.345c0 1.026-.835 1.886-1.861 1.886h-3.721V4.997a1.839 1.839 0 0 1 1.86-1.833h1.86a1.839 1.839 0 0 1 1.862 1.833zm-8.373 9.706a.236.236 0 0 0 0 .03c0 .746.629 1.344 1.396 1.344.767 0 1.395-.594 1.395-1.34a.188.188 0 0 0 0-.034v-3.35h-2.791z"/></svg>},
+        {name: 'XWiki', meta: 'Wiki', brandColor: '#1E4FB6', desc: 'Gestructureerde wiki en kennisbank. Pagina\'s, macro\'s, query language.', icon: <svg viewBox="0 0 24 24"><path d="M3 3h4l3 5 3-5h4l-5 8 5 8h-4l-3-5-3 5H3l5-8z"/></svg>},
+        {name: 'GitLab', meta: 'Code', brandColor: '#FC6D26', desc: 'Git-hosting, CI/CD, issuetracking.', icon: <svg viewBox="0 0 24 24"><path d="m23.6004 9.5927-.0337-.0862L20.3.9814a.851.851 0 0 0-.3362-.405.8748.8748 0 0 0-.9997.0539.8748.8748 0 0 0-.29.4399l-2.2055 6.748H7.5375l-2.2057-6.748a.8573.8573 0 0 0-.29-.4412.8748.8748 0 0 0-.9997-.0537.8585.8585 0 0 0-.3362.4049L.4332 9.5015l-.0325.0862a6.0657 6.0657 0 0 0 2.0119 7.0105l.0113.0087.03.0213 4.976 3.7264 2.462 1.8633 1.4995 1.1321a1.0085 1.0085 0 0 0 1.2197 0l1.4995-1.1321 2.4619-1.8633 5.006-3.7489.0125-.01a6.0682 6.0682 0 0 0 2.0094-7.003z"/></svg>},
+        {name: 'Mattermost', meta: 'Teams', brandColor: '#0058CC', desc: 'Self-hosted Slack-alternatief.', icon: <svg viewBox="0 0 24 24"><path d="M12.081 0C7.048-.034 2.339 3.125.637 8.153c-2.125 6.276 1.24 13.086 7.516 15.21 6.276 2.125 13.086-1.24 15.21-7.516 1.727-5.1-.172-10.552-4.311-13.557l.126 2.547c2.065 2.282 2.88 5.512 1.852 8.549-1.534 4.532-6.594 6.915-11.3 5.321-4.708-1.593-7.28-6.559-5.745-11.092 1.031-3.046 3.655-5.121 6.694-5.67l1.642-1.94A4.87 4.87 0 0 0 12.08 0zm3.528 1.094a.284.284 0 0 0-.123.024l-.004.001a.33.33 0 0 0-.109.071c-.145.142-.657.828-.657.828L13.6 3.4l-1.3 1.585-2.232 2.776s-1.024 1.278-.798 2.851c.226 1.574 1.396 2.34 2.304 2.648.907.307 2.302.408 3.438-.704 1.135-1.112 1.098-2.75 1.098-2.75l-.087-3.56-.07-2.05-.047-1.775s.01-.856-.02-1.057a.33.33 0 0 0-.035-.107l-.006-.012-.007-.011a.277.277 0 0 0-.229-.14z"/></svg>},
+        {name: 'Claude', meta: 'LLM', brandColor: '#D97757', desc: 'Frontier-LLM van Anthropic. Lange context, sterke agents.', icon: <svg viewBox="0 0 24 24"><path d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z"/></svg>},
+        {name: 'Mistral', meta: 'LLM', brandColor: '#FA500F', desc: 'Open-weight LLM uit Frankrijk. Sterk in redeneren, EU-gehost, AVG-ready.', icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="3" height="3"/><rect x="9" y="3" width="3" height="3"/><rect x="15" y="3" width="3" height="3"/><rect x="3" y="9" width="3" height="3"/><rect x="9" y="9" width="3" height="3"/><rect x="15" y="9" width="3" height="3"/><rect x="3" y="15" width="3" height="3"/><rect x="9" y="15" width="3" height="3"/><rect x="15" y="15" width="3" height="3"/></svg>},
+        {name: 'Ollama', meta: 'Local LLM', brandColor: '#000000', desc: 'Self-hosted LLM-runtime. Draai Mistral, Llama en meer op je eigen GPU.', icon: <svg viewBox="0 0 24 24"><path d="M8 3c-2 0-3 1.5-3 3.5 0 1 .3 1.8.7 2.5C4.7 9.5 4 10.7 4 12c0 1.3.7 2.5 1.7 3-.4.7-.7 1.5-.7 2.5 0 2 1 3.5 3 3.5 1 0 2-.5 2.5-1.2.5.7 1.5 1.2 2.5 1.2 2 0 3-1.5 3-3.5 0-1-.3-1.8-.7-2.5 1-.5 1.7-1.7 1.7-3 0-1.3-.7-2.5-1.7-3 .4-.7.7-1.5.7-2.5 0-2-1-3.5-3-3.5-1 0-2 .5-2.5 1.2C10 3.5 9 3 8 3z"/><circle cx="9.5" cy="11" r="1"/><circle cx="14.5" cy="11" r="1"/></svg>},
+        {name: 'Presidio', meta: 'PII', brandColor: '#0078D4', desc: 'PII-detectie van Microsoft. Anonimiseer tekst voor publicatie, AVG-ready.', icon: <svg viewBox="0 0 24 24"><path d="M12 2L4 5v7c0 5 3.5 9 8 10 4.5-1 8-5 8-10V5z"/><circle cx="12" cy="11" r="2.2" fill="#fff"/><path d="M9 16h6" stroke="#fff" strokeWidth="1.6"/></svg>},
+        {name: 'Keycloak', meta: 'SSO', brandColor: '#DB3327', desc: 'Open-source identity- en accessmanagement. SSO, OIDC, SAML, social login.', icon: <svg viewBox="0 0 24 24"><circle cx="9" cy="12" r="4"/><circle cx="9" cy="12" r="1.4" fill="#fff"/><path d="M13 12h8M17 12v3M21 12v3"/></svg>},
+      ]},
+      {position: 'bottom-center', family: 'builder', label: 'App\nBuilder', badge: 'COMING SOON', items: [
+        {name: 'Bouw je eigen apps', desc: 'Stel Nextcloud-apps samen uit de Technical Core.', icon: <svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 1 0-5.4 5.4l-7 7v3h3l7-7a4 4 0 0 0 5.4-5.4z"/><path d="M5 19l3-3"/></svg>},
+        {name: 'Pas ConNext-apps aan', desc: 'Aanpassingen op elke ConNext-app, zonder fork.', icon: <svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M14 14l-3-3-7 7v3h3l7-7"/></svg>},
+        {name: 'Geen code, alleen configuratie', desc: 'Configuratie-aanpassingen overleven upgrades.', icon: <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>},
+      ]},
+    ]}
+    flows={[
+      {from: 'top-left:bottom', to: 'bottom-left:top', shape: 'straight'},
+      {from: 'bottom-center:left', to: 'bottom-left:bottom', shape: 'l-h'},
+      {from: 'bottom-right:bottom', to: 'bottom-left:bottom', shape: 'c-bracket-bottom', clearance: 280},
+      {from: 'top-left:top', to: 'top-right:top', shape: 'c-bracket-top', clearance: 240},
+    ]}
+  />
+</PlatformOverview>
+
+<AppsPreview
+  eyebrow="Meest geïnstalleerd"
+  title="Drie apps die op dag één resultaat opleveren."
+  lede={<>Begin met de apps die direct een concreet probleem oplossen. Allemaal stabiel, open source, AVG-conform, gratis te installeren uit de <span className="next-blue">Nextcloud</span> app store.</>}
+  apps={[
+    {
+      name: 'OpenCatalogi',
+      tagline: 'Publieke softwarecatalogus. Elke app, dataset en API in je organisatie, doorzoekbaar op één plek.',
+      status: 'STABLE',
+      version: 'v2.4 · NL · EN',
+      href: '/apps/opencatalogi',
+      icon: <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/></svg>,
+    },
+    {
+      name: 'OpenRegister',
+      tagline: 'Schemas, registers, gestructureerde data-objecten, de typed-data ruggengraat onder elke andere app.',
+      status: 'STABLE',
+      version: 'v3.1 · NL · EN',
+      href: '/apps/openregister',
+      icon: <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg>,
+    },
+    {
+      name: 'OpenConnector',
+      tagline: <>Verbind <span className="next-blue">Nextcloud</span> met alles: REST, SOAP, GraphQL, file drops, message queues. Geen middleware.</>,
+      status: 'BETA',
+      version: 'v1.2 · NL · EN',
+      href: '/apps/openconnector',
+      icon: <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>,
+    },
+  ]}
+  seeAll={{label: 'Bekijk alle apps', href: '/apps'}}
+/>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Wat we doen"
+    title="Drie manieren om te starten."
+    align="stack"
+    lede="Kies een app en installeer hem uit de Nextcloud app store. Kies een solution en wij configureren de apps die hem oplossen. Kies een service en wij hosten of rollen hem voor je uit. De apps blijven hoe dan ook open source."
+  />
+  <PairRow columns={3}>
+    <PairCard
+      href="/apps"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>}
+      name="Apps"
+      why="Open-source apps. Installeer ze zelf uit de Nextcloud app store, EUPL-1.2, geen consultancytraject nodig."
+    />
+    <PairCard
+      href="/solutions"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5 1 6-5.5-3-5.5 3 1-6L3 9l6-1z"/></svg>}
+      name="Solutions"
+      why="Concrete uitkomsten gebouwd op de apps. WOO-publicatie, zaakstatus voor inwoners, softwarecatalogus, BI op registers. Voorgeconfigureerde recepten."
+    />
+    <PairCard
+      href="/support"
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h0"/></svg>}
+      name="Services"
+      why="Hosting, implementatie en uitrol via gecertificeerde partners. Managed tenants vanaf €250 per app per maand."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="Kies een app. Installeer hem. Klaar."
+  lede={<>Zet OpenCatalogi of OpenRegister in twee minuten in je <span className="next-blue">Nextcloud</span>. Open-source, geen consultancytraject, geen lock-in.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/apps'}}
+  secondaryCta={{label: 'Start een lokale demo', href: '/demo'}}
+/>

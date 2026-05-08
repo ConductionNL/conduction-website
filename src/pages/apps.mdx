@@ -1,0 +1,81 @@
+---
+title: Apps, Conduction
+description: Open-source apps that plug into Nextcloud. Catalogs, registers, integrations, document handling, dashboards.
+hide_table_of_contents: true
+---
+
+import React, {useState, useMemo} from 'react';
+import {Section, SectionHead, FacetedFilters, AppCard} from '@conduction/docusaurus-preset/components';
+import {getApps, APP_CATEGORIES, getCatalogTotals} from '@site/src/data/apps-catalog';
+
+export const apps = getApps();
+export const totals = getCatalogTotals();
+
+export const STATUS_LABELS = {STABLE: 'Stable', BETA: 'Beta', 'COMING SOON': 'Coming soon'};
+
+export function FilterableApps() {
+  const [selected, setSelected] = useState({});
+
+  const facets = useMemo(() => {
+    const cats = APP_CATEGORIES.filter(c => c !== 'All');
+    return [
+      {key: 'category', label: 'Category', items: cats.map(c => ({
+        value: c, label: c,
+        count: apps.filter(a => Array.isArray(a.categories) && a.categories.includes(c)).length,
+      })).filter(item => item.count > 0)},
+      {key: 'status', label: 'Status', items: ['STABLE', 'BETA', 'COMING SOON'].map(s => ({
+        value: s, label: STATUS_LABELS[s],
+        count: apps.filter(a => a.status === s).length,
+      })).filter(item => item.count > 0)},
+    ];
+  }, []);
+
+  const filtered = useMemo(() => {
+    return apps.filter(a => {
+      for (const [key, values] of Object.entries(selected)) {
+        if (!values || values.length === 0) continue;
+        if (key === 'category') {
+          const cats = a.categories || [];
+          if (!values.some(v => cats.includes(v))) return false;
+        } else if (key === 'status') {
+          if (!values.includes(a.status)) return false;
+        }
+      }
+      return true;
+    });
+  }, [selected]);
+
+  const totalSelected = Object.values(selected).reduce(
+    (n, v) => n + (Array.isArray(v) ? v.length : 0), 0
+  );
+
+  return (
+    <div style={{display: 'grid', gridTemplateColumns: '240px 1fr', gap: 56, alignItems: 'start'}}>
+      <FacetedFilters facets={facets} selected={selected} onChange={setSelected} />
+      <div>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--c-cobalt-100)', fontSize: 14, color: 'var(--c-cobalt-700)'}}>
+          <div>
+            <strong style={{color: 'var(--c-cobalt-900)'}}>{filtered.length}</strong> of {apps.length} apps
+            {totalSelected > 0 && <span style={{color: 'var(--c-cobalt-400)'}}> · {apps.length - filtered.length} hidden by filters</span>}
+          </div>
+        </div>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24}}>
+          {filtered.map((app, i) => <AppCard key={i} app={app} />)}
+        </div>
+        {filtered.length === 0 && (
+          <p style={{textAlign: 'center', color: 'var(--c-cobalt-500)', padding: 'var(--space-8) 0'}}>No apps match this filter.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Apps"
+    title={<>Pick an app.<br/>Install it. Done.</>}
+    lede={<>Open-source apps that plug into <span className="next-blue">Nextcloud</span>. Each one solves a concrete problem, no methodology, no roadmap workshop. Install from the <span className="next-blue">Nextcloud</span> app store and you're working in two minutes. <strong>{totals.apps} apps</strong> in the store, <strong>{totals.installs.toLocaleString('en-US')}</strong> installs and counting.</>}
+  />
+
+  <FilterableApps />
+</Section>

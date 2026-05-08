@@ -1,0 +1,92 @@
+---
+title: PipelinQ, Conduction
+description: CRM met offertes, contacten en deal-flow. Gebouwd op registers, geen aparte sales-database, geen extra login.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner} from '@conduction/docusaurus-preset/components';
+
+<DetailHero
+  appId="pipelinq"
+  crumb={[{label: 'Apps', href: '/apps'}, 'PipelinQ']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.7"
+  locales="NL · EN"
+  title="PipelinQ"
+  tagline={<>CRM op je <span className="next-blue">Nextcloud</span>. Klanten, prospects, deals, offertes. Allemaal als getypeerd register, geen aparte sales-database, geen tweede login. Je sales-team werkt waar je delivery-team al zit.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Lees de docs', href: 'https://docs.conduction.nl/pipelinq'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/pipelinq'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>}
+/>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Wat het doet"
+    title="Vier registers, één pipeline-overzicht."
+    align="stack"
+    lede="PipelinQ komt met vier voorgedefinieerde registers (klanten, prospects, deals, offertes) plus een kanban-board view voor de deal-flow. MyDash erbovenop voor de cijfers, DocuDesk voor offerte-templates."
+  />
+  <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
+      title="Kanban-board voor de deal-flow."
+    >
+      Sleep deals door je sales-fases (lead, qualified, proposal, won, lost). Per fase aanpasbaar, per team gefilterd via Nextcloud-groepen.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 18a5 5 0 0 1 10 0"/></svg>}
+      title="Klanten en contactpersonen als getypeerd register."
+    >
+      OpenRegister-schema voor klanten en contacten. Citation-stable IDs betekent dat URL's naar individuele klanten blijven werken na CRM-migraties of reorganisaties.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      title="Offertes via DocuDesk-templates."
+    >
+      Klik op een deal, kies "genereer offerte". DocuDesk vult de template met klant- en deal-velden, exporteert als PDF, ondertekent met je instance-certificaat.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+      title="Connector naar je boekhouding."
+    >
+      Gewonnen deals stromen automatisch door naar Exact, Twinfield of AFAS via OpenConnector. Geen dubbele invoer, geen losse import-job.
+    </FeatureItem>
+  </FeatureList>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Werkt goed met"
+    title="Drie apps die het CRM-werkproces compleet maken."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/mydash"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/></svg>}
+      name="MyDash"
+      why="Sales-dashboards uit de PipelinQ-registers. Pipeline-waarde per fase, win-rate, quota-tracking."
+    />
+    <PairCard
+      href="/apps/docudesk"
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      name="DocuDesk"
+      why="Offerte- en contracttemplates. Velden uit het deal-record automatisch ingevuld."
+    />
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="De data-fundering. Klanten, deals en offertes als getypeerde registers met audit log."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="CRM op je eigen Nextcloud."
+  lede={<>Geen aparte SaaS, geen tweede login. PipelinQ draait op dezelfde <span className="next-blue">Nextcloud</span> waar je delivery-team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+/>

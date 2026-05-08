@@ -1,0 +1,115 @@
+---
+title: Bouw een Nextcloud-app
+description: Bouw je eigen app op de Conduction-stack. OpenRegister als backend, NLDesign Theme voor de look, EUPL-1.2 release-pipeline. Directe links, geen methodologie.
+hide_table_of_contents: true
+---
+
+import {Section, SectionHead, FeatureList, FeatureItem, HowSteps, HowStep, PairRow, PairCard, CtaBanner, Button} from '@conduction/docusaurus-preset/components';
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Bouwen"
+    title={<>Bouw je eigen<br/>Nextcloud-app.</>}
+    lede={<>Zet een typed register, een integratie en een UI bovenop <span className="next-blue">Nextcloud</span>. Gebruik OpenRegister voor opslag, NLDesign Theme voor de look, de EUPL-1.2 release-pipeline voor distributie. De hele stack is open source. Hieronder staan de instappunten. Het echte werk leeft in de docs.</>}
+  />
+
+  <div style={{display: 'flex', gap: 14, marginTop: -16, flexWrap: 'wrap'}}>
+    <Button variant="primary" size="lg" href="https://docs.conduction.nl/build">Lees de build-docs</Button>
+    <Button variant="secondary" size="lg" href="https://github.com/ConductionNL">Bekijk op GitHub</Button>
+  </div>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="De stack"
+    title="Waaruit je componeert."
+    align="stack"
+    lede="Zes bouwblokken. Elk blok is een installeerbare Conduction-app of een gepubliceerde library. Pak wat je nodig hebt, negeer de rest."
+  />
+  <FeatureList>
+    <FeatureItem
+      title="OpenRegister als typed backend"
+      desc={<>Schema-gedreven object-store met audit trail, versiebeheer en stabiele IDs. Skip het schrijven van een Doctrine-laag, definieer een JSON-Schema. <a href="/apps/openregister">App-pagina</a>.</>}
+    />
+    <FeatureItem
+      title="OpenConnector voor integraties"
+      desc={<>API-gateway met REST-, SOAP-, GraphQL-, file-drop- en message-queue-adapters. Koppel je Nextcloud-app aan bron-systemen zonder zelf de lijm te schrijven. <a href="/apps/openconnector">App-pagina</a>.</>}
+    />
+    <FeatureItem
+      title="NLDesign Theme voor de UI"
+      desc="NL Design System tokens, componenten en toegankelijkheid-baseline toegepast op de Nextcloud-frontend. WCAG AA out of the box."
+    />
+    <FeatureItem
+      title="@conduction/diagrams web components"
+      desc={<>Framework-onafhankelijke web components (cn-hex, cn-platform, cn-domain-tree, cn-pipeline) en React-wrappers om architectuurdiagrammen in je app of docs te plaatsen.</>}
+    />
+    <FeatureItem
+      title="EUPL-1.2 release-pipeline"
+      desc="GitHub Actions-workflow die lint, test, packaged, ondertekent en indient bij de Nextcloud app-store. Adopteer as-is, fork de YAML, pas aan per repo."
+    />
+    <FeatureItem
+      title="Docker dev-omgeving"
+      desc={<>Eén <code>docker compose up</code> vanaf de design-system root start een Nextcloud-instance met je app gemount, hot-reload inbegrepen.</>}
+    />
+  </FeatureList>
+</Section>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Drie stappen"
+    title="Repo, register, release."
+    align="stack"
+  />
+  <HowSteps>
+    <HowStep
+      number="1"
+      title="Fork de app-template"
+      desc="ConductionNL/nextcloud-app-template komt met de directory-layout, info.xml, EUPL-1.2 LICENSE, GitHub Actions-workflow, en een werkende OpenRegister-consumer."
+    />
+    <HowStep
+      number="2"
+      title="Definieer je registers"
+      desc={<>Zet JSON-Schema-bestanden in <code>schemas/</code>. OpenRegister pakt ze op, regelt CRUD, audit trail, search en het OAS-endpoint bij de eerste install.</>}
+    />
+    <HowStep
+      number="3"
+      title="Tag een release"
+      desc="De pipeline lint, test, packaged, ondertekent en pusht naar de Nextcloud app-store. Je gebruikers krijgen een in-place upgrade bij de volgende Nextcloud-cron-tick."
+    />
+  </HowSteps>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Directe links"
+    title="Waar het echte werk leeft."
+    align="stack"
+  />
+  <PairRow columns={3}>
+    <PairCard
+      href="https://github.com/ConductionNL"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.04 1.53 1.04.9 1.53 2.36 1.09 2.93.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.93.36.31.68.92.68 1.86v2.76c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg>}
+      name="GitHub-org"
+      why="Elke app, elke library, elke diagrammenset. EUPL-1.2 tenzij de README iets anders zegt."
+    />
+    <PairCard
+      href="https://docs.conduction.nl"
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      name="docs.conduction.nl"
+      why="API-specs, schema-referentie, deploymentgidsen, het volledige changelog per app."
+    />
+    <PairCard
+      href="https://apps.nextcloud.com/categories/integration"
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>}
+      name="Nextcloud app-store"
+      why="Waar eindgebruikers je app installeren. Een release taggen pusht hier automatisch naartoe."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="Fork de template, ship in een week."
+  lede={<>Bouw je iets op de stack en wil je een Conduction-code-review of een partner-doorverwijzing? Schrijf naar <a href="mailto:info@conduction.nl" style={{color: 'var(--c-nextcloud-cyan)'}}>info@conduction.nl</a>. We werken voor de OSS, niet ertegen.</>}
+  primaryCta={{label: 'Open de template-repo', href: 'https://github.com/ConductionNL/nextcloud-app-template'}}
+  secondaryCta={{label: 'Lees de build-docs', href: 'https://docs.conduction.nl/build'}}
+/>

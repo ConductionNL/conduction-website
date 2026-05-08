@@ -1,0 +1,127 @@
+---
+title: Acato, Strategic partner, Conduction
+description: Nederlandse open-source specialist uit Almere. Bouwt en host Nextcloud-omgevingen voor gemeenten en zorginstellingen.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, ReferenceGrid, ReferenceCard, PartnerCard, PartnerSidecard, CtaBanner, Pill} from '@conduction/docusaurus-preset/components';
+import {PARTNERS} from '@site/src/data/partners-catalog';
+import {solutionsBySlugs} from '@site/src/data/solutions-catalog';
+
+export const ACATO = PARTNERS.find(p => p.name === 'Acato');
+export const ACATO_SOLUTIONS = solutionsBySlugs(ACATO.solutions);
+
+<DetailHero
+  crumb={[{label: 'Partners', href: '/partners'}, 'Acato']}
+  status={{label: 'Strategic partner', color: 'var(--c-blue-cobalt)'}}
+  version="Founded 2008"
+  locales="Almere, NL · 24 employees"
+  title="Acato."
+  tagline={<>Nederlandse open-source specialist uit Almere. Bouwt en host <span className="next-blue">Nextcloud</span>-omgevingen voor gemeenten en zorginstellingen, al meer dan tien jaar, met focus op AVG-compliance, NLDS-conformiteit, en lange-termijn beheer.</>}
+  primaryCta={{label: 'Talk to Acato', href: 'mailto:hello@acato.nl'}}
+  secondaryCta={{label: 'Visit acato.nl', href: 'https://acato.nl'}}
+  tertiaryCta={{label: 'All partners', href: '/partners'}}
+  iconColor="white"
+  icon={<img src="/img/partners/acato.png" alt="Acato logo" style={{width: 180, height: 'auto', objectFit: 'contain'}}/>}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Specialties"
+        title="Where Acato shines."
+        align="stack"
+        lede="Three apps Acato has shipped to production at multiple gemeenten and three sectors where they hold the most context."
+      />
+    <FeatureList>
+      <FeatureItem
+        icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>}
+        title="OpenRegister at scale."
+      >
+        Schema design and migration patterns for registers with millions of records. Acato has shipped OpenRegister to gemeenten with the largest live registers in the network.
+      </FeatureItem>
+      <FeatureItem
+        icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
+        title="OpenCatalogi for Wet open overheid."
+      >
+        WOO publication flows including the eleven categories, federation to data.overheid.nl, and the audit-evidence pack that surrounds each disclosure.
+      </FeatureItem>
+      <FeatureItem
+        icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+        title="DocuDesk for inbound zaakcorrespondentie."
+      >
+        Auto-classification, anonymisation, and routing for the high-volume inbound mail at uitvoeringsorganisaties. Templates for jaarverslagen, beschikkingen, en bezwaar.
+      </FeatureItem>
+    </FeatureList>
+    </div>
+    <PartnerSidecard
+      partner={ACATO}
+      solutions={ACATO_SOLUTIONS}
+      cta={{label: 'Talk to Acato', href: 'mailto:hello@acato.nl'}}
+    />
+  </div>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="References"
+    title="Live deployments."
+    align="stack"
+    lede="Three of Acato's productie-deployments. Sectors and apps used. Talk to Acato for a full list."
+  />
+  <ReferenceGrid columns={3}>
+    <ReferenceCard
+      sector="Gemeente"
+      name="Gemeente Rotterdam"
+      what="WOO portal in production sinds Q2 2025. Eleven categories live, 18.000 documents publicly searchable, audit log integrated with DMS."
+      stack={['OpenCatalogi', 'OpenRegister', 'OpenConnector']}
+    />
+    <ReferenceCard
+      sector="Provincie"
+      name="Provincie Zuid-Holland"
+      what="Subsidie-register naar OpenRegister gemigreerd. ZGW-koppeling via OpenConnector, MyDash voor wekelijkse rapportages aan gedeputeerde."
+      stack={['OpenRegister', 'OpenConnector', 'MyDash']}
+    />
+    <ReferenceCard
+      sector="Uitvoeringsorganisatie"
+      name="UWV-pilot"
+      what="Documentstroom-pilot: DocuDesk classificeert en routeert inkomende post, OpenConnector koppelt aan zaaksysteem. Vier weken van pilot tot productie."
+      stack={['DocuDesk', 'OpenConnector']}
+    />
+  </ReferenceGrid>
+</Section>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Other partners"
+    title="Adjacent specialists."
+    align="stack"
+    lede="If Acato isn't the right fit for your sector or stack, these partners cover the gaps."
+  />
+  <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16}}>
+    <PartnerCard
+      variant="other"
+      href="/partners/yard"
+      tier="partner"
+      name="YARD"
+      logo="/img/partners/yard.png"
+      why="Digital design + development bureau in Utrecht. Strong on MyDash and OpenCatalogi for citizen-facing surfaces."
+    />
+    <PartnerCard
+      variant="other"
+      href="/partners/procolix"
+      tier="certified"
+      name="Procolix"
+      logo="/img/partners/procolix.png"
+      why="Officieel Nextcloud-distributeur, certified op DocuDesk en OpenConnector. Procesintegraties bij gemeenten."
+    />
+  </div>
+</Section>
+
+<CtaBanner
+  title="Need help shipping Conduction?"
+  lede={<>Acato runs the rollout, the hosting, en de lange-termijn beheer. Voor elke <span className="next-blue">Nextcloud</span>-omgeving die zichzelf serieus neemt.</>}
+  primaryCta={{label: 'Talk to Acato', href: 'mailto:hello@acato.nl'}}
+  secondaryCta={{label: 'Browse all partners', href: '/partners'}}
+/>

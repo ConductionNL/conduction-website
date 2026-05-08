@@ -1,0 +1,146 @@
+/**
+ * Site-specific overrides for connext.conduction.nl.
+ * Brand tokens + Infima mapping come from the preset; only override
+ * here when this site needs something the brand baseline does not.
+ */
+
+/* Hero treatment, tied to the cobalt-900 inverse panel */
+.cn-hero {
+  background: var(--c-cobalt-900);
+  color: white;
+  padding: 96px 64px 80px;
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  margin-bottom: var(--space-10);
+}
+.cn-hero h1 {
+  color: white;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  max-width: 18ch;
+}
+.cn-hero p {
+  color: var(--c-cobalt-100);
+  font-size: 18px;
+  margin-top: var(--space-5);
+  max-width: 60ch;
+  line-height: 1.5;
+}
+
+/* Clients section override: render on cobalt-50 instead of white. Logo
+   hex tiles inside stay white (per the brand rule), so contrast holds. */
+.cn-clients-tinted { background: var(--c-cobalt-50) !important; }
+
+/* Diagram playground for the homepage demo */
+.cn-stage {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-8);
+}
+.cn-stage h2 {
+  margin-top: var(--space-12);
+  margin-bottom: var(--space-5);
+}
+
+/* Common Ground 5-lagen model diagram (used on /commonground only). */
+.cg-layer-model {
+  border: 1px solid var(--c-cobalt-100);
+  border-radius: var(--radius-lg);
+  background: white;
+  overflow: hidden;
+  margin-top: var(--space-6);
+}
+.cg-layer-row {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-8);
+  border-bottom: 1px solid var(--c-cobalt-50);
+  align-items: center;
+}
+.cg-layer-row:last-child { border-bottom: none; }
+
+.cg-layer-meta {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+.cg-layer-num {
+  font-family: var(--conduction-typography-font-family-code);
+  font-size: 32px;
+  color: var(--c-blue-cobalt);
+  font-weight: 600;
+  line-height: 1;
+  width: 32px;
+  flex-shrink: 0;
+}
+.cg-layer-meta h3 {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--c-blue-cobalt);
+  margin: 0;
+}
+.cg-layer-en {
+  display: block;
+  font-family: var(--conduction-typography-font-family-code);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--c-cobalt-500);
+  margin-top: 2px;
+}
+.cg-layer-meta p {
+  font-size: var(--fs-sm);
+  color: var(--c-cobalt-700);
+  margin: var(--space-2) 0 0;
+  line-height: 1.5;
+}
+
+.cg-layer-hexes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.cg-layer-caption {
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--c-cobalt-700);
+  margin-top: var(--space-5);
+  font-style: italic;
+}
+
+@media (max-width: 720px) {
+  .cg-layer-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+}
+
+/* Pull-quote treatment for editorial sections (used on /commonground). */
+.cg-pullquote {
+  border-left: 4px solid var(--c-orange-knvb);
+  background: var(--c-cobalt-50);
+  padding: var(--space-5) var(--space-6);
+  margin: var(--space-7) 0 0;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: var(--fs-lg);
+  font-weight: 500;
+  color: var(--c-blue-cobalt);
+  line-height: 1.4;
+  font-style: italic;
+}
+.cg-pullquote cite {
+  display: block;
+  margin-top: var(--space-3);
+  font-family: var(--conduction-typography-font-family-code);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--c-cobalt-700);
+}
+

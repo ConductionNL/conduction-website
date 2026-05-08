@@ -1,0 +1,131 @@
+---
+title: Woo-compliance, Conduction
+description: Een live Woo-portaal op je gehoste Nextcloud. Elf categorieën, audit-log, citation-stable URLs, geen migratie.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, Pipeline, PairRow, PairCard, CtaBanner} from '@conduction/docusaurus-preset/components';
+
+<DetailHero
+  crumb={[{label: 'Solutions', href: '/solutions'}, 'Woo-compliance']}
+  status={{label: 'Productie-ready', color: 'var(--c-mint-500)'}}
+  version="Sector: Publieke sector"
+  title="Woo-compliance, vóór vrijdag."
+  tagline={<>Een live Woo-portaal op je gehoste <span className="next-blue">Nextcloud</span>. De elf Wet open overheid-categorieën worden typed registers. Elk register publiceert via OpenCatalogi. Elke connector haalt op uit je DMS. Geen migratieproject, geen aparte front-end om te onderhouden.</>}
+  primaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  secondaryCta={{label: 'Lees de recipe', href: 'https://docs.conduction.nl/woo'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><path d="M12 3l9 4v5c0 5-4 8-9 9-5-1-9-4-9-9V7l9-4z"/><path d="M9 12l2 2 4-4"/></svg>}
+/>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Het resultaat"
+    title="Wat je hebt op dag één."
+    align="stack"
+    lede="Drie apps, één configuratie. Burgers landen op jouwgemeente.nl/woo en doorzoeken elke gepubliceerde categorie. Je team beheert de elf registers vanuit Nextcloud, met dezelfde login die ze al hebben."
+  />
+
+  <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>}
+      title="Actieve openbaarmaking, per categorie."
+    >
+      Elk van de elf Woo-categorieën wordt een typed register. Records worden gepubliceerd zodra ze worden aangemaakt. De burgercatalogus licht automatisch op.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
+      title="Gefedereerd, vindbaar voor burgers."
+    >
+      OpenCatalogi indexeert elk register en toont het publieke Woo-portaal op <strong>jouwgemeente.nl/woo</strong>. Federeert direct naar data.overheid.nl.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>}
+      title="Connector haalt op uit je DMS."
+    >
+      OpenConnector leest Woo-records uit je bestaande zaaksysteem of DMS via REST, SOAP of bestandsoverdracht. Geen glue-code, geen nachtelijke batch.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
+      title="Audit-log, ondertekend en getimestampt."
+    >
+      Elke publicatie, edit, intrekking en toegang laat een tamper-evident trail. Het Woo-bewijs dat je nodig hebt bij een audit zit in de install. Geen project voor jaar twee.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5 1 6-5.5-3-5.5 3 1-6L3 9l6-1z"/></svg>}
+      title="Citation-stable URLs."
+    >
+      Elk gepubliceerd record krijgt een permanente identifier zodra het voor het eerst openbaar wordt. Nieuwsmedia, Tweede Kamer-vragen en juridische dossiers blijven werken, ook na herorganisaties of platform-migraties.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
+      title="Twee minuten om te installeren."
+    >
+      Drop de drie apps in je Nextcloud, richt de connector op je zaaksysteem en configureer de elf registers vanuit het meegeleverde profiel. Live vóór de lunch.
+    </FeatureItem>
+  </FeatureList>
+</Section>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="De pipeline"
+    title="Van je DMS naar het burgerportaal."
+    align="stack"
+    lede="Drie apps verplaatsen documenten van je bronsystemen naar een publiek Woo-portaal. OpenConnector leest uit XLNS, Joomla, OpenZaak, RX, of wat je verder draait. OpenRegister bewaart de records. OpenCatalogi maakt ze zoekbaar. De Open Tilburg-UI toont ze, open.overheid.nl federeert ze."
+  />
+  <Pipeline
+    start={{label: 'Bronnen', items: [
+      {label: 'XLNS',     icon: 'doc'},
+      {label: 'Joomla',   icon: 'doc'},
+      {label: 'OpenZaak', icon: 'db'},
+      {label: 'RX',       icon: 'legacy'},
+    ]}}
+    steps={[
+      {number: '01', kicker: 'Ophalen',  name: 'OpenConnector', caption: 'Haalt Woo-records uit je DMS via REST, SOAP of bestandsoverdracht.'},
+      {number: '02', kicker: 'Opslaan',   name: 'OpenRegister',  caption: 'Eén typed register per Woo-categorie. Versioned, audit-logged.'},
+      {number: 'PLATFORM',              name: 'Nextcloud',     family: 'workspace', pill: 'bestanden · gebruikers · auth', caption: 'De workspace waarin je team al inlogt.'},
+      {number: '03', kicker: 'Tonen', name: 'OpenCatalogi',  caption: 'Indexeert elk register. Zoeken, federatie, citation-stable URLs.'},
+    ]}
+    end={{label: 'Afnemers', items: [
+      {label: 'Open Tilburg-portaal', icon: 'globe'},
+      {label: 'Burgers en journalisten', icon: 'person'},
+      {label: 'open.overheid.nl', icon: 'download'},
+    ]}}
+  />
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Gebouwd op"
+    title="Drie apps, één configuratie."
+    align="stack"
+    lede="Geen maatwerkcode. Elk onderdeel van deze solution is een Conduction-app die je los kunt installeren en voor andere doelen kunt inzetten."
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/opencatalogi"
+      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
+      name="OpenCatalogi"
+      why="Toont elk Woo-register als publieke, doorzoekbare catalogus-entry op jouwgemeente.nl/woo."
+    />
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>}
+      name="OpenRegister"
+      why="De elf Woo-categorieën worden elk een typed register. Schema, audit-log, citation-stable IDs, allemaal inbegrepen."
+    />
+    <PairCard
+      href="/apps/openconnector"
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+      name="OpenConnector"
+      why="Haalt Woo-records uit je bestaande zaaksysteem of DMS via REST, SOAP of bestandsoverdracht."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="Woo-compliance, vóór vrijdag."
+  lede={<>Drie apps, één configuratie. Praat met een partner als je de uitrol liever uit handen geeft, of installeer zelf vanuit de <span className="next-blue">Nextcloud</span>-app-store en volg de recipe.</>}
+  primaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  secondaryCta={{label: 'Lees de recipe', href: 'https://docs.conduction.nl/woo'}}
+/>

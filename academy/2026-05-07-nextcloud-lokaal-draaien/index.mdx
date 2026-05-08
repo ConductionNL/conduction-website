@@ -1,0 +1,187 @@
+---
+slug: nextcloud-lokaal-draaien
+title: Nextcloud lokaal draaien met Docker
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-07
+summary: Drie commando's, vier stappen, een kwartier werk. Daarna draait er een schone Nextcloud op je laptop, klaar om Conduction-apps op te installeren.
+tags: [Nextcloud, Docker, Setup, Demo, Lokaal]
+durationMinutes: 15
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, ContactCta} from '@conduction/docusaurus-preset/components';
+
+Voor elke andere tutorial in deze academy heb je een werkende Nextcloud nodig. Dit is de snelste route: drie commando's en je draait de officiële Nextcloud-image lokaal, identiek aan productie. Geen sales-call, geen demo-omgeving die offline kan, geen custom Dockerfile. Daarna installeer je de Conduction-apps via de Nextcloud app store, hetzelfde pad als productie.
+
+{/* truncate */}
+
+<Outcomes title="Wat je leert">
+  <Outcome>Een werkende Nextcloud op <code>http://localhost:8080</code> opzetten met Docker.</Outcome>
+  <Outcome>Postgres voor data, Redis voor cache en Nextcloud voor het werk in één compose-bestand combineren.</Outcome>
+  <Outcome>Een admin-account aanmaken waar je naar believen Conduction-apps op installeert.</Outcome>
+  <Outcome>Met één commando de hele stack weer opruimen.</Outcome>
+</Outcomes>
+
+Daarna kun je verder met [Een Woo-register opzetten](/academy/woo-register-opzetten), [Bestanden uploaden bij een Woo-publicatie](/academy/woo-bestanden-uploaden), of een eigen experiment.
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Een laptop met minimaal 4 GB vrij geheugen.</PrerequisiteItem>
+  <PrerequisiteItem>Docker, lokaal draaiend.</PrerequisiteItem>
+  <PrerequisiteItem>Een terminal en een teksteditor.</PrerequisiteItem>
+</Prerequisites>
+
+Op een schone laptop is stap 0 (Docker installeren) ongeveer tien minuten. Daarna is stap 1 t/m 3 samen een kwartier.
+
+## Stap 0: Zorg dat Docker draait
+
+Eenmalig.
+
+- **Mac of Linux:** installeer [Docker Desktop](https://docs.docker.com/get-docker/).
+- **Windows:** zet eerst [WSL 2](https://learn.microsoft.com/nl-nl/windows/wsl/install) aan en installeer daarna Docker Desktop.
+
+Test of het werkt:
+
+```bash
+docker --version
+docker compose version
+```
+
+Allebei moeten een versie teruggeven, geen foutmelding.
+
+## Stap 1: Maak een werkmap en het compose-bestand
+
+```bash
+mkdir conduction-demo
+cd conduction-demo
+```
+
+Sla het volgende op als `docker-compose.yml` in die map:
+
+```yaml title="docker-compose.yml"
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: nextcloud
+      POSTGRES_USER: nextcloud
+      POSTGRES_PASSWORD: nextcloud
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  nextcloud:
+    image: nextcloud:latest
+    restart: unless-stopped
+    depends_on: [db, redis]
+    ports:
+      - "8080:80"
+    volumes:
+      - nextcloud:/var/www/html
+      - ./apps:/var/www/html/custom_apps
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: nextcloud
+      POSTGRES_USER: nextcloud
+      POSTGRES_PASSWORD: nextcloud
+      REDIS_HOST: redis
+      NEXTCLOUD_TRUSTED_DOMAINS: "localhost"
+
+volumes:
+  db:
+  nextcloud:
+```
+
+Drie services, allemaal officiële images, geen custom build. De `./apps`-bind-mount is optioneel: handig als je een Conduction-app als zip naast de installatie wilt zetten in plaats van via de app store.
+
+## Stap 2: Start de stack
+
+```bash
+docker compose up -d
+```
+
+De eerste keer trekt Docker ongeveer 750 MB aan images binnen. Daarna start de stack in seconden.
+
+Volg de logs terwijl Nextcloud zichzelf bootstrapt:
+
+```bash
+docker compose logs -f nextcloud
+```
+
+Wacht tot je `apache2 -D FOREGROUND` of vergelijkbaar ziet, en `Ctrl+C` om de log-volger af te sluiten. De containers blijven draaien.
+
+## Stap 3: Voltooi de Nextcloud setup-wizard
+
+Open `http://localhost:8080` in je browser. Nextcloud toont een setup-wizard:
+
+1. Vul een **admin-naam** en **wachtwoord** in. `admin` en `admin` is prima voor lokaal werk; in productie natuurlijk niet.
+2. Onder **Storage & database** kies je niets, want de Postgres-config zit al in `docker-compose.yml`.
+3. Klik op **Install**.
+
+Na een halve minuut land je op het dashboard, ingelogd als admin.
+
+## Stap 4: Installeer de Conduction-apps
+
+Klik je avatar rechtsboven en kies **Apps**. De Conduction-apps staan onder **Integration** en **Office & text**. Onze suggestie voor een eerste demo:
+
+- **OpenRegister.** De typed-data foundation. Installeer deze als eerste, alle andere apps lezen ervan af.
+- **OpenCatalogi.** Maakt elk register doorzoekbaar als publieke entry. Federation naar `data.overheid.nl`.
+- **OpenConnector.** Trekt voorbeelddata binnen via REST, SOAP en file-drops.
+
+Na elke install draait de schema-bootstrap automatisch. Voorbeelddata is binnen seconden zichtbaar.
+
+## Wat je krijgt
+
+| Eigenschap | Waarde |
+| --- | --- |
+| Eerste boot | Ongeveer drie minuten (eerste keer 750 MB download) |
+| Volgende boots | Seconden |
+| Image | Officiële `nextcloud:latest`, identiek aan productie |
+| Geheugen | Rond 1 GB onder lichte load |
+| Reset | `docker compose down -v` (verwijdert volumes) |
+
+Geen vooraf opgenomen screencast, geen demo-omgeving die offline kan. Wat je hier ziet, is precies wat een echte klant ziet.
+
+## Reset of stoppen
+
+```bash
+# tijdelijk stoppen, data behouden
+docker compose stop
+
+# weer starten
+docker compose start
+
+# helemaal opruimen, ook volumes
+docker compose down -v
+```
+
+Na `down -v` is je laptop weer schoon. Twee minuten later kun je opnieuw beginnen.
+
+## Probleemoplossing
+
+**Apache port 8080 in gebruik:** wijzig `"8080:80"` naar bijvoorbeeld `"8081:80"` in `docker-compose.yml`. Vergeet niet de URL aan te passen naar `http://localhost:8081`.
+
+**Setup-wizard wil opnieuw beginnen:** waarschijnlijk is de Postgres-database leeg geraakt. Voer `docker compose down -v` uit en start opnieuw met `docker compose up -d`.
+
+**Nextcloud toont "Trusted domain"-foutmelding:** voeg de host toe aan `NEXTCLOUD_TRUSTED_DOMAINS` (komma-gescheiden) en herstart met `docker compose up -d`.
+
+**App-store install werkt niet:** controleer of Nextcloud naar buiten kan. In een corporate netwerk soms blokkade op `apps.nextcloud.com`. Een proxy via `HTTP_PROXY`-env-variabelen lost dit op.
+
+## Volgende stap
+
+Een werkende Nextcloud is de aanleiding voor de andere tutorials in deze serie:
+
+- [Een Woo-register opzetten](/academy/woo-register-opzetten) — importeer het canonieke Woo-register in OpenRegister
+- [Bestanden uploaden bij een Woo-publicatie](/academy/woo-bestanden-uploaden) — vier upload-modes voor documenten
+- [Build je eerste Conduction-app](/academy/build-an-app) — eindigt met een geïnstalleerde app op deze stack
+
+Stuur het `docker-compose.yml` naar een collega als je dit samen wilt zien werken.
+
+<ContactCta
+  title="Wil je meer weten?"
+  body="Mail ons. We helpen je in een halve dag op weg met je eigen Conduction-stack op Nextcloud, van eerste demo tot productie."
+  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=Nextcloud%20setup" }}
+/>
