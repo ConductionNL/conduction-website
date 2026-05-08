@@ -110,7 +110,6 @@ module.exports = createConfig({
         title: 'Solutions',
         items: [
           {label: 'WOO compliance',  to: '/solutions/woo'},
-          {label: 'NEN-7510',        to: '/solutions/nen-7510'},
           {label: 'Software catalog',to: '/solutions/software-catalog'},
         ],
       },
