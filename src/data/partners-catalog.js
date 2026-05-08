@@ -43,7 +43,7 @@ export const PARTNERS = [
     href: '/partners/acato',
     tier: 'certified',
     name: 'Acato',
-    logo: '/img/partners/acato.png',
+    logo: '/img/partners/acato.svg',
     summary: <>Digital agency uit Almere. Bouwt toegankelijke websites en webapplicaties voor gemeenten en overheidsorganisaties, met focus op WCAG 2.2 AA en NLDS. Levert de Conduction Woo-solution op OpenCatalogi, OpenRegister en OpenConnector.</>,
     apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
     solutions: ['woo'],
