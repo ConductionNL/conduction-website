@@ -1,0 +1,19 @@
+name: Documentation
+
+on:
+  push:
+    branches: [development, documentation]
+  pull_request:
+    branches: [development, documentation]
+
+jobs:
+  deploy:
+    uses: ConductionNL/.github/.github/workflows/documentation.yml@main
+    with:
+      cname: www.conduction.nl
+      # The Docusaurus build for this site lives at the repo root
+      # (not under docs/ like the product-page repos), since this IS
+      # the docs build itself rather than docs alongside an app.
+      # Override the centralized workflow's `source-folder` default
+      # ("docs") to point at the repo root.
+      source-folder: .

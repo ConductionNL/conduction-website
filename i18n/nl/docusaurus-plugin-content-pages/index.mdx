@@ -1,0 +1,134 @@
+---
+title: Conduction, Public Tech voor Nextcloud
+description: Conduction bouwt open-source apps voor de Nextcloud-workspace. Tech in dienst van mensen. Apps die je zelf installeert, beheer als je het uit handen wilt geven, advies als je een partner zoekt.
+hide_table_of_contents: true
+---
+
+import {Hero, StatsStrip, AppsPreview, CtaBanner, PairRow, PairCard, Section, SectionHead, Clients, DEFAULT_CLIENTS, PartnerDirectory, CommonGroundPlus, HexRain} from '@conduction/docusaurus-preset/components';
+import {totalDownloads, formatDownloads} from '@conduction/docusaurus-preset/data';
+import {PARTNERS, totalPartners} from '@site/src/data/partners-catalog';
+
+{/* Conduction main landing. Public Tech framing: tech to serve people.
+    Three doors out: install an app yourself, get it as managed SaaS, or
+    bring in a partner. Two-door pivot below leads to ConNext (MKB) and
+    Common Ground (government) for audience-flavoured framings of the
+    same apps. The shared content (apps, solutions, partners) lives
+    behind the navbar. */}
+
+<Hero
+  eyebrow={<>Public Tech · open-source apps voor <span className="next-blue">Nextcloud</span></>}
+  title={<>Tech in dienst van mensen.<br/>Eén workspace.<br/>Twaalf apps.</>}
+  lede={<>Wij zijn Conduction. We bouwen open-source apps die in <span className="next-blue">Nextcloud</span> draaien. Catalogi, registers, documentafhandeling, integraties. Installeer ze zelf, laat ons ze als SaaS draaien, of haal een partner erbij. Dezelfde code, dezelfde licentie, geen aanbestedingstraject nodig.</>}
+  primaryCta={{label: <>Installeer uit de <span className="next-blue">Nextcloud</span> app store</>, href: '/apps'}}
+  secondaryCta={{label: 'Start een lokale demo', href: '/demo'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL'}}
+>
+  <HexRain />
+</Hero>
+
+<StatsStrip stats={[
+  { value: '12', label: <>apps in het ecosysteem,<br/>allemaal open-source</> },
+  { value: '2 min', label: <>van app store install<br/>naar werkende solution</> },
+  { value: '€0', label: <>voor de apps,<br/>support is optioneel</> },
+  { value: totalPartners, label: <>certified en partner-<br/>implementeerders</> },
+  { value: formatDownloads(totalDownloads), label: <>downloads,<br/>en dat loopt door</> },
+]} />
+
+<AppsPreview
+  eyebrow="Meest geïnstalleerd"
+  title="Drie apps die op dag één resultaat opleveren."
+  lede={<>Begin met de apps die direct een concreet probleem oplossen. Ze zijn stabiel, open source, AVG-conform, gratis te installeren uit de <span className="next-blue">Nextcloud</span> app store.</>}
+  apps={[
+    {
+      name: 'OpenCatalogi',
+      tagline: 'Publieke softwarecatalogus. Elke app, dataset en API in je organisatie, doorzoekbaar op één plek.',
+      status: 'STABLE',
+      version: 'v2.4 · NL · EN',
+      href: '/apps/opencatalogi',
+      icon: <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/></svg>,
+    },
+    {
+      name: 'OpenRegister',
+      tagline: 'Schemas, registers, gestructureerde data-objecten. De typed-data ruggengraat onder elke andere app.',
+      status: 'STABLE',
+      version: 'v3.1 · NL · EN',
+      href: '/apps/openregister',
+      icon: <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg>,
+    },
+    {
+      name: 'OpenConnector',
+      tagline: <>Verbind <span className="next-blue">Nextcloud</span> met alles. REST, SOAP, GraphQL, file drops, message queues. Geen middleware.</>,
+      status: 'BETA',
+      version: 'v1.2 · NL · EN',
+      href: '/apps/openconnector',
+      icon: <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>,
+    },
+  ]}
+  seeAll={{label: 'Bekijk alle apps', href: '/apps'}}
+/>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Kies je insteek"
+    title="Dezelfde apps, twee deuren."
+    align="stack"
+    lede={<><span className="next-blue">ConNext</span> is de propositie voor MKB en IT-leads. <CommonGroundPlus /> is de overheidsinsteek met WOO en BIO direct in beeld. De apps en solutions eronder zijn dezelfde.</>}
+  />
+  <PairRow columns={2}>
+    <PairCard
+      href="/connext"
+      icon={<svg viewBox="10 30 130 60" aria-label="Nextcloud"><path fill="currentColor" d="M75.091,35.685c-12.438,0-22.981,8.433-26.248,19.857-2.84-6.06-8.994-10.305-16.082-10.305-9.748,0-17.761,8.013-17.761,17.761s8.013,17.765,17.761,17.765c7.088,0,13.242-4.248,16.082-10.309,3.268,11.426,13.81,19.861,26.248,19.861,12.346,0,22.835-8.308,26.186-19.605,2.892,5.924,8.97,10.053,15.958,10.053,9.748,0,17.765-8.017,17.765-17.765s-8.017-17.761-17.765-17.761c-6.988,0-13.065,4.127-15.958,10.05-3.352-11.296-13.84-19.601-26.186-19.601h0ZM75.091,46.11c9.39,0,16.89,7.497,16.89,16.887s-7.501,16.89-16.89,16.89-16.887-7.501-16.887-16.89,7.497-16.887,16.887-16.887ZM32.762,55.663c4.114,0,7.338,3.221,7.338,7.335s-3.225,7.338-7.338,7.338-7.335-3.225-7.335-7.338,3.221-7.335,7.335-7.335ZM117.234,55.663c4.114,0,7.338,3.221,7.338,7.335s-3.225,7.338-7.338,7.338-7.335-3.225-7.335-7.338,3.221-7.335,7.335-7.335Z"/></svg>}
+      iconBg="var(--c-nextcloud-blue)"
+      iconColor="white"
+      name={<>Con<span className="next-blue">Next</span></>}
+      why="Open-source apps als één workspace-stack. Voor MKB-teams die binnen dagen een resultaat willen, geen methodiektraject."
+    />
+    <PairCard
+      href="/commonground"
+      icon={<svg viewBox="0 0 118 223" aria-label="Common Ground"><g transform="translate(0,223) scale(0.1,-0.1)" fill="currentColor"><path d="M517 2133 c-159 -192 -303 -410 -383 -578 -184 -387 -173 -748 28 -941 80 -77 195 -132 326 -155 l72 -12 0 -214 c0 -181 2 -215 15 -219 8 -4 22 -1 30 6 12 10 15 49 15 220 l0 208 48 7 c199 30 377 144 446 288 135 277 56 658 -224 1081 -94 141 -283 386 -299 386 -5 0 -38 -35 -74 -77z"/></g></svg>}
+      iconBg="var(--c-commonground-yellow)"
+      iconColor="var(--c-cobalt-900)"
+      name={<CommonGroundPlus />}
+      why="Dezelfde apps, ingekaderd voor de overheid. WOO-publicatie, BIO-ready, op een Common Ground basis."
+    />
+  </PairRow>
+</Section>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Partners & ecosysteem"
+    title="Gebouwd op, met en rondom."
+    align="stack"
+    lede="Implementatie-, hosting- en integratiepartners die Conduction-apps bij klanten uitrollen. Vraag aan via /support om opgenomen te worden."
+  />
+  <PartnerDirectory
+    partners={PARTNERS}
+    becomePartner={{
+      href: '/support#become-a-partner',
+      eyebrow: 'Word partner',
+      title: 'Lever Conduction aan jouw klanten.',
+      body: 'Word Partner, Certified of Strategic. Conduction traint je team, jij doet de uitrol. De apps blijven open source, de relatie blijft direct.',
+      ctaLabel: 'Aanmelden via /support',
+    }}
+  />
+</Section>
+
+<Clients
+  eyebrow="Klanten"
+  title="Gebouwd voor de overheid, vertrouwd door iedereen."
+  lede="Gemeenten leveren de strengste compliance-eisen die we ooit doorlopen. Dezelfde apps draaien daarna in het MKB, de zorg, en elk team dat publieke-grade open-source op Nextcloud wil."
+  clients={DEFAULT_CLIENTS}
+  variant="marquee"
+  className="cn-clients-tinted"
+/>
+
+{/* Two-door pivot to the audience-flavoured landings now sits directly
+    under the StatsStrip near the top of the page. AppsPreview "Drie
+    apps die op dag één resultaat opleveren" lives there too. */}
+
+<CtaBanner
+  title="Kies een app. Installeer hem. Klaar."
+  lede={<>Zet OpenCatalogi of OpenRegister in twee minuten in je <span className="next-blue">Nextcloud</span>. Open-source, geen consultancytraject, geen lock-in.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/apps'}}
+  secondaryCta={{label: 'Start een lokale demo', href: '/demo'}}
+/>

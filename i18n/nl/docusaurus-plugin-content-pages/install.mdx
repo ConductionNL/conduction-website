@@ -1,0 +1,83 @@
+---
+title: Installeren
+description: Twee minuten van de Nextcloud app-store naar een werkende Conduction-app. Kies een app, klik installeren, je werkt.
+hide_table_of_contents: true
+---
+
+import {Section, SectionHead, HowSteps, HowStep, AppsPreview, CtaBanner, Button} from '@conduction/docusaurus-preset/components';
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Installeren"
+    title={<>Twee minuten van app-store<br/>tot werkende install.</>}
+    lede={<>De Conduction-apps zijn open source en staan in de officiële <span className="next-blue">Nextcloud</span> app-store. Je installeert ze zoals elke andere Nextcloud-app: als beheerder, vanuit de apps-pagina, met één klik. De schema-bootstrap draait bij de eerste laad. Je team schrijft dezelfde ochtend data weg.</>}
+  />
+
+  <div style={{display: 'flex', gap: 14, marginTop: -16, flexWrap: 'wrap'}}>
+    <Button variant="primary" size="lg" href="https://apps.nextcloud.com/categories/integration">Open de Nextcloud app-store</Button>
+    <Button variant="secondary" size="lg" href="https://docs.conduction.nl/install">Lees de install-docs</Button>
+  </div>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Hoe installeren werkt"
+    title="Drie stappen, op volgorde."
+    align="stack"
+    lede="Hetzelfde recept of je nu met OpenRegister of OpenCatalogi begint. De meeste teams hebben alle drie de stappen klaar voor de lunch."
+  />
+  <HowSteps>
+    <HowStep title="Open de Nextcloud app-store.">
+      Log in als beheerder, open de apps-pagina, zoek de Conduction-app die je wilt. De officiële packages staan in de categorie <strong>Integration</strong> en worden ondertekend uitgeleverd, met semver-tags.
+    </HowStep>
+    <HowStep title="Klik op installeren.">
+      Nextcloud doet de rest: download, signature-check, schema-bootstrap, default-config seeding. Het eerste verzoek bereikt de net geïnstalleerde app binnen seconden. De schema-bootstrap draait één keer en is idempotent.
+    </HowStep>
+    <HowStep title="Configureer één keer, schrijf dan weg.">
+      De meegeleverde profielen dekken de meeste situaties direct af. Woo, ZGW, NLDS, BIO. Kies het profiel dat bij jouw sector past, sla op, en je team schrijft dezelfde ochtend typed data weg.
+    </HowStep>
+  </HowSteps>
+</Section>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Kies een app"
+    title="Drie apps die de meeste resultaten leveren."
+    align="stack"
+    lede="Begin met de apps die op dag één een concreet probleem oplossen. Allemaal stabiel, AVG-conform, en gratis te installeren."
+  />
+
+  <AppsPreview
+    apps={[
+      {
+        name: 'OpenRegister',
+        tagline: 'Schemas, registers en gestructureerde data-objecten. De typed-data backbone voor elke app.',
+        status: 'STABLE', version: 'v3.1',
+        href: '/apps/openregister',
+        icon: <svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>,
+      },
+      {
+        name: 'OpenCatalogi',
+        tagline: 'Publieke softwarecatalogus. Elke app, dataset en API in je organisatie, doorzoekbaar op één plek.',
+        status: 'STABLE', version: 'v2.4',
+        href: '/apps/opencatalogi',
+        icon: <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/></svg>,
+      },
+      {
+        name: 'OpenConnector',
+        tagline: <>Verbind <span className="next-blue">Nextcloud</span> met alles: REST, SOAP, GraphQL, file drops, message queues.</>,
+        status: 'BETA', version: 'v1.2',
+        href: '/apps/openconnector',
+        icon: <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>,
+      },
+    ]}
+    seeAll={{label: 'Bekijk alle apps', href: '/apps'}}
+  />
+</Section>
+
+<CtaBanner
+  title="Hulp nodig om te beginnen?"
+  lede={<>De meeste teams installeren zelf. Wil je liever dat wij de uitrol doen (zeker bij compliance-zware sectoren), dan brengen onze partners het van "ik wil dit" naar "het draait in productie".</>}
+  primaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  secondaryCta={{label: 'Lees de docs', href: 'https://docs.conduction.nl/install'}}
+/>

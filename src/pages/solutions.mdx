@@ -1,0 +1,100 @@
+---
+title: Solutions, Conduction
+description: Outcomes you can reach by installing one or two Conduction apps and configuring them.
+hide_table_of_contents: true
+---
+
+import React, {useState, useMemo} from 'react';
+import {Section, SectionHead, SolutionCard, SolutionGrid, FacetedFilters, FilterChip} from '@conduction/docusaurus-preset/components';
+import {SOLUTIONS} from '@site/src/data/solutions-catalog';
+
+export function FilterableSolutions() {
+  const [selected, setSelected] = useState({});
+
+  const filtered = useMemo(() => {
+    return SOLUTIONS.filter(s => {
+      for (const [key, values] of Object.entries(selected)) {
+        if (!values || values.length === 0) continue;
+        if (!values.includes(s[key])) return false;
+      }
+      return true;
+    });
+  }, [selected]);
+
+  const facets = useMemo(() => ([
+    {key: 'sector', label: 'Sector', items: [
+      {value: 'public', label: 'Publieke sector', count: SOLUTIONS.filter(s => s.sector === 'public').length},
+      {value: 'mkb',    label: 'MKB',             count: SOLUTIONS.filter(s => s.sector === 'mkb').length},
+      {value: 'health', label: 'Zorg',            count: SOLUTIONS.filter(s => s.sector === 'health').length},
+    ]},
+    {key: 'goals', label: 'Doel', items: [
+      {value: 'compliance',  label: 'Compliance',  count: SOLUTIONS.filter(s => (s.goals||[]).includes('compliance')).length},
+      {value: 'integration', label: 'Integratie',  count: SOLUTIONS.filter(s => (s.goals||[]).includes('integration')).length},
+      {value: 'reporting',   label: 'Rapportage',  count: SOLUTIONS.filter(s => (s.goals||[]).includes('reporting')).length},
+      {value: 'workflow',    label: 'Workflow',    count: SOLUTIONS.filter(s => (s.goals||[]).includes('workflow')).length},
+    ]},
+    {key: 'status', label: 'Status', items: [
+      {value: 'production', label: 'Productie-ready', count: SOLUTIONS.filter(s => s.status === 'production').length},
+      {value: 'pilot',      label: 'Pilot',           count: SOLUTIONS.filter(s => s.status === 'pilot').length},
+    ]},
+  ]), []);
+
+  /* Goals is a multi-value field (each solution can have several goals);
+     filter accordingly, overriding the simple equality check above. */
+  const filteredFinal = useMemo(() => {
+    return SOLUTIONS.filter(s => {
+      for (const [key, values] of Object.entries(selected)) {
+        if (!values || values.length === 0) continue;
+        const sv = s[key];
+        if (Array.isArray(sv)) {
+          if (!values.some(v => sv.includes(v))) return false;
+        } else {
+          if (!values.includes(sv)) return false;
+        }
+      }
+      return true;
+    });
+  }, [selected]);
+
+  const totalSelected = Object.values(selected).reduce(
+    (n, v) => n + (Array.isArray(v) ? v.length : 0), 0
+  );
+
+  return (
+    <div style={{display: 'grid', gridTemplateColumns: '240px 1fr', gap: 56, alignItems: 'start'}}>
+      <FacetedFilters facets={facets} selected={selected} onChange={setSelected} />
+      <div>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--c-cobalt-100)', fontSize: 14, color: 'var(--c-cobalt-700)'}}>
+          <div>
+            <strong style={{color: 'var(--c-cobalt-900)'}}>{filteredFinal.length}</strong> of {SOLUTIONS.length} solutions
+            {totalSelected > 0 && <span style={{color: 'var(--c-cobalt-400)'}}> · {SOLUTIONS.length - filteredFinal.length} hidden by filters</span>}
+          </div>
+        </div>
+        <SolutionGrid columns={2}>
+          {filteredFinal.map((s, i) => (
+            <SolutionCard
+              key={i}
+              href={s.href}
+              sector={s.sector}
+              sectorLabel={s.sectorLabel}
+              icon={s.icon}
+              title={s.title}
+              outcome={s.outcome}
+              builtOn={s.builtOn}
+            />
+          ))}
+        </SolutionGrid>
+      </div>
+    </div>
+  );
+}
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Solutions"
+    title="What you achieve, not what we sell."
+    lede={<>An <strong>app</strong> is software we ship. A <strong>solution</strong> is the outcome you reach by installing one or two of those apps and configuring them. Every solution links back to the apps it's built on, so you know exactly what gets installed.</>}
+  />
+
+  <FilterableSolutions />
+</Section>
