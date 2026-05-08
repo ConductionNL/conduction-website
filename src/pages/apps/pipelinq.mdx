@@ -1,0 +1,244 @@
+---
+title: PipelinQ, Conduction
+description: CRM with quotes, contacts, and deal-flow. Built on registers, no separate sales database, no extra login.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+
+<DetailHero
+  appId="pipelinq"
+  crumb={[{label: 'Apps', href: '/apps'}, 'PipelinQ']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.7"
+  locales="NL · EN"
+  title="PipelinQ"
+  tagline={<>CRM on your <span className="next-blue">Nextcloud</span>. Customers, prospects, deals, quotes. Everything as a typed register, no separate sales database, no second login. Your sales team works where your delivery team already is.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/pipelinq'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/pipelinq'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>}
+  illustration={<AppMock app="pipelinq" />}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="Four registers, one pipeline overview."
+        align="stack"
+        lede="PipelinQ ships with four pre-defined registers (customers, prospects, deals, quotes) plus a kanban board view for the deal-flow. MyDash on top for the numbers, DocuDesk for quote templates."
+      />
+      <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
+      title="Kanban board for the deal-flow."
+    >
+      Drag deals through your sales stages (lead, qualified, proposal, won, lost). Stages are configurable, per-team filters route through Nextcloud groups.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 18a5 5 0 0 1 10 0"/></svg>}
+      title="Customers and contacts as a typed register."
+    >
+      OpenRegister schemas for customers and contacts. Citation-stable IDs mean URLs to individual customers keep working after CRM migrations or reorganisations.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      title="Quotes via DocuDesk templates."
+    >
+      Click a deal, "generate quote", DocuDesk fills the template with customer and deal fields, exports as PDF, signs with your instance certificate.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+      title="Connector to your accounting system."
+    >
+      Won deals flow automatically to Exact, Twinfield, or AFAS via OpenConnector. No duplicate entry, no separate import job.
+    </FeatureItem>
+  </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['pipelinq']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<RotatingCards
+  eyebrow="Three ways PipelinQ earns its place"
+  title="Kanban, register-linked, dashboards on top."
+  lede="Scroll the cards. Each pins as you reach it; the next slides up to cover."
+  cards={[
+    {
+      tone: 'lavender',
+      eyebrow: 'Kanban deal-flow',
+      title: 'Drag deals through your stages.',
+      summary: 'Five default stages (lead, qualified, proposal, won, lost), per-team filters via Nextcloud groups, KPI cards on top. The whole pipeline at a glance, no separate reporting tool.',
+      cta: {label: 'See PipelinQ', href: '/apps/pipelinq'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      tone: 'forest',
+      eyebrow: 'Register-linked',
+      title: 'Customers and deals as typed registers.',
+      summary: 'Citation-stable IDs mean URLs to individual customers keep working after CRM migrations or reorganisations. Audit trail per record, per change. The CRM stops being a silo.',
+      cta: {label: 'See OpenRegister', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Sales dashboards',
+      title: 'Pipeline value, win rate, quota tracking.',
+      summary: 'MyDash reads the PipelinQ registers directly. Pipeline value per stage, win rate per quarter, quota tracking per rep. Live, no nightly batch.',
+      cta: {label: 'See MyDash', href: '/apps/mydash'},
+      panel: <AppMock app="mydash-bi" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="Sales on the dashboard the team already opens."
+  lede="Install PipelinQ and these widgets show up on every sales rep's home screen. Pipeline value first, this week's quotes next, hot leads below."
+  widgets={[
+    {
+      title: 'Pipeline value',
+      desc: 'Total deal value per stage. KPI on top, mini bars per stage. Live, not nightly batch.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 24, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>€ 487k</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.05em', color: 'var(--c-mint-500)'}}>+12%</div>
+          </div>
+          {[
+            {label: 'lead', val: '40%', tone: 'var(--c-cobalt-300)'},
+            {label: 'qualified', val: '60%', tone: 'var(--c-lavender-300)'},
+            {label: 'proposal', val: '75%', tone: 'var(--c-mint-500)'},
+            {label: 'won', val: '50%', tone: 'var(--c-forest-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 50}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'This week\'s quotes',
+      desc: 'Quotes generated, sent, and signed. DocuDesk fills the template, signs with your instance certificate.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-mint-500)', stage: 'signed'},
+            {tone: 'var(--c-lavender-300)', stage: 'sent'},
+            {tone: 'var(--c-mint-500)', stage: 'signed'},
+            {tone: 'var(--c-orange-knvb)', stage: 'draft'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Hot leads',
+      desc: 'Top deals by value or recent activity. Click through to the customer record.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {val: '€ 84k', tone: 'var(--c-orange-knvb)'},
+            {val: '€ 62k', tone: 'var(--c-mint-500)'},
+            {val: '€ 48k', tone: 'var(--c-lavender-300)'},
+            {val: '€ 31k', tone: 'var(--c-cobalt-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 12, height: 14, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '65%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '45%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>{row.val}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="How PipelinQ plugs into the workspace"
+  title="Sales runs on the workspace your delivery team already uses."
+  lede="Three integration paths that keep PipelinQ inside Nextcloud, with quotes, contacts, and accounting data flowing in both directions."
+  layout="side"
+  defaultOpen="mail-calendar"
+  items={[
+    {
+      id: 'mail-calendar',
+      title: 'Mail, Calendar, Contacts',
+      summary: 'Customer email lands on the deal automatically; meetings book themselves to the right contact in Calendar; the contact register is the same one Mail reads. No CSV import, no copy-paste between tools.',
+      cta: {label: 'See the integration guide', href: 'https://docs.conduction.nl/pipelinq/mail-calendar'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'accounting',
+      title: 'Exact, Twinfield, AFAS',
+      summary: 'A won deal flows through OpenConnector to your accounting system the same evening. Customer record stays in PipelinQ, invoice gets booked in Exact, lookup IDs survive on both sides.',
+      cta: {label: 'See the connector guide', href: 'https://docs.conduction.nl/pipelinq/accounting'},
+      panel: <AppMock app="openconnector" />,
+    },
+    {
+      id: 'docudesk-quotes',
+      title: 'DocuDesk quotes',
+      summary: 'Click "generate quote" on a deal. DocuDesk fills your template with customer and deal fields, exports as PDF, signs with your instance certificate. The signed copy lands back on the deal.',
+      cta: {label: 'See the template guide', href: 'https://docs.conduction.nl/pipelinq/quotes'},
+      panel: <AppMock app="docudesk" />,
+    },
+  ]}
+/>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="Three apps that complete the CRM workflow."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/mydash"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/></svg>}
+      name="MyDash"
+      why="Sales dashboards from the PipelinQ registers. Pipeline value per stage, win rate, quota tracking."
+    />
+    <PairCard
+      href="/apps/docudesk"
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      name="DocuDesk"
+      why="Quote and contract templates. Fields from the deal record auto-filled."
+    />
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="The data foundation. Customers, deals, quotes as typed registers with an audit log."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="CRM on your own Nextcloud."
+  lede={<>No separate SaaS, no second login. PipelinQ runs on the same <span className="next-blue">Nextcloud</span> where your delivery team already works.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+/>

@@ -1,0 +1,288 @@
+---
+title: OpenRegister, Conduction
+description: Schema-driven object store with audit trail. The data foundation underneath every workspace app.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+
+<DetailHero
+  appId="openregister"
+  crumb={[{label: 'Apps', href: '/apps'}, 'OpenRegister']}
+  status={{label: 'Stable', color: 'var(--c-mint-500)'}}
+  version="v3.1"
+  locales="NL · EN"
+  title="OpenRegister"
+  tagline={<>Schemas, registers, structured data objects. The typed-data backbone underneath every other Conduction app, and the install you reach for first.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/openregister'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/openregister'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>}
+  illustration={<AppMock app="openregister" />}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="The typed-data foundation."
+        align="stack"
+        lede="Define a schema once. The app gives you an API, a UI, validation, an audit log, and a citation-stable identifier per record. Every other Conduction app reads and writes through that one source of truth."
+      />
+
+      <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M5 4h14v6H5zM5 14h14v6H5zM9 4v16"/></svg>}
+      title="Schemas you write once."
+    >
+      Define a register's shape in JSON Schema. The app generates the API, validates every write, and exposes the data to other apps that speak REST.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+      title="One backbone, every app."
+    >
+      Every typed object lives in one register. Other apps consume it through the same API. No syncs to maintain, no duplicate sources of truth.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 12h18M12 3v18"/><circle cx="12" cy="12" r="9"/></svg>}
+      title="REST and GraphQL, auto-generated."
+    >
+      Both APIs roll out of the schema. No controllers to write, no spec to update when the schema changes, no glue code between OpenRegister and the apps that consume it.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
+      title="Audit log, signed and timestamped."
+    >
+      Every read, write, and schema change leaves a tamper-evident trail. WOO and BIO compliance evidence ships with the install, no spreadsheet exports at audit time.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5 1 6-5.5-3-5.5 3 1-6L3 9l6-1z"/></svg>}
+      title="Citation-stable identifiers."
+    >
+      Every record gets a permanent identifier the moment you create it. Department reorganisations, system migrations, and renames don't break links to your data.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
+      title="Open, forever."
+    >
+      Issues land in public, releases are tagged, and every register you create is exportable to plain JSON. The day you uninstall is as easy as the day you installed.
+    </FeatureItem>
+  </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['openregister']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<RotatingCards
+  eyebrow="Three ways OpenRegister earns its place"
+  title="Schema-first, ingest-anywhere, visualised by default."
+  lede="Scroll the cards. Each pins as you reach it; the next slides up to cover."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Schema-first',
+      title: 'Typed registers from a JSON Schema.',
+      summary: 'Define a schema, get a register. REST and GraphQL endpoints generate themselves, audit logging is on by default, citation-stable IDs land on every row.',
+      cta: {label: 'See OpenRegister', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Ingest anywhere',
+      title: 'OpenConnector fills the registers for you.',
+      summary: 'Existing system speaks REST, SOAP, GraphQL, files? OpenConnector pulls it in, validates against the schema, and writes typed rows. No glue code, no nightly batch.',
+      cta: {label: 'See OpenConnector', href: '/apps/openconnector'},
+      panel: <AppMock app="openconnector" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Visualised by default',
+      title: 'Every register is a MyDash data source.',
+      summary: 'MyDash reads the schemas directly. Drop a chart on a board, point it at a register, and the columns are typed. No BI database, no separate login.',
+      cta: {label: 'See MyDash', href: '/apps/mydash'},
+      panel: <AppMock app="mydash-bi" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="On every Nextcloud dashboard."
+  lede="Install OpenRegister and the home screen surfaces what changed in your data, what people search for, and what slipped through validation."
+  widgets={[
+    {
+      title: 'Recent records',
+      desc: 'Latest objects across every register the user has access to. Schema avatar, snippet, audit-stamp.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {['var(--c-forest-300)', 'var(--c-lavender-300)', 'var(--c-mint-300)', 'var(--c-terracotta-300)', 'var(--c-forest-300)'].map((tone, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 18, height: 18, borderRadius: 2, background: tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 3}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{height: 3, width: 22, background: 'var(--c-cobalt-100)', borderRadius: 1}}></div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Schema activity',
+      desc: 'Sparkline of objects-created per schema this week. Click through to a register-by-register breakdown.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 26, fontWeight: 700, color: 'var(--c-cobalt-900)'}}>847</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, fontWeight: 600, color: 'var(--c-mint-500)'}}>+12%</div>
+          </div>
+          <svg viewBox="0 0 200 60" preserveAspectRatio="none" style={{width: '100%', height: 50}}>
+            <path d="M 0 48 L 28 36 L 56 42 L 84 24 L 112 30 L 140 16 L 168 22 L 200 8" stroke="var(--c-blue-cobalt)" strokeWidth="2" fill="none"/>
+            <path d="M 0 48 L 28 36 L 56 42 L 84 24 L 112 30 L 140 16 L 168 22 L 200 8 L 200 60 L 0 60 Z" fill="var(--c-cobalt-100)"/>
+            <circle cx="200" cy="8" r="3" fill="var(--c-orange-knvb)"/>
+          </svg>
+        </div>
+      ),
+    },
+    {
+      title: 'Top searches',
+      desc: 'What your team is looking for. Common queries with hit counts; surfaces gaps in the catalogue.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[{w: '90%', n: '142'}, {w: '70%', n: '88'}, {w: '60%', n: '54'}, {w: '50%', n: '37'}, {w: '40%', n: '21'}].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <div style={{flex: 1, position: 'relative', height: 14, background: 'var(--c-cobalt-50)', borderRadius: 2, overflow: 'hidden'}}>
+                <div style={{position: 'absolute', top: 0, left: 0, height: '100%', width: row.w, background: i === 0 ? 'var(--c-orange-knvb)' : 'var(--c-cobalt-300)', borderRadius: 2}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, fontWeight: 600, color: 'var(--c-cobalt-700)', minWidth: 28, textAlign: 'right'}}>{row.n}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="How OpenRegister plugs into the workspace"
+  title="Typed data, surfaced everywhere."
+  lede="Three integration paths that turn registers into the system of record across Mail, Files, workflow tools, and AI assistants."
+  layout="side"
+  defaultOpen="mail-files"
+  items={[
+    {
+      id: 'mail-files',
+      title: 'Mail and Files',
+      summary: 'Open an email or a file and the sidebar shows every register row that references it. One click jumps to the row, another links the email or file back to a different row. The register stays the system of record; the workspace stays where the work happens.',
+      cta: {label: 'See the integration guide', href: 'https://docs.conduction.nl/openregister/mail-files'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      id: 'windmill-n8n',
+      title: 'Windmill and n8n',
+      summary: 'Trigger workflows on register events. New row, schema change, validation failure, archive transition — each one fires a webhook your Windmill or n8n flow can consume. Outcomes write back to the row.',
+      cta: {label: 'See the workflow examples', href: 'https://docs.conduction.nl/openregister/windmill-n8n'},
+      panel: <AppMock app="openconnector" />,
+    },
+    {
+      id: 'llms',
+      title: 'LLMs (Claude, Mistral, Ollama)',
+      summary: 'Plain-language search across every register. The LLM rewrites your question into a structured query, OpenRegister returns typed rows with citation-stable IDs. Every call audits.',
+      cta: {label: 'See the semantic-search adapter', href: 'https://docs.conduction.nl/openregister/llm-search'},
+      panel: <AgentTrace
+        lines={[
+          {kind: 'tool',  text: 'openregister - search (MCP)(query: "open Woo cases',
+                          },
+          {kind: 'continuation', text: 'past their deadline in maart 2026")'},
+          {kind: 'note',  bullet: 'info', text: 'Rewriting natural language to a typed query', muted: '(claude-sonnet-4-6)'},
+          {kind: 'note',  bullet: 'done', text: 'Returned 14 register rows with citation IDs'},
+          {kind: 'status', text: 'Synthesising answer'},
+        ]}
+        cursor
+        mode="audit log on (every query recorded)"
+      />,
+    },
+  ]}
+/>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="Three apps that compound the install."
+    align="stack"
+    lede="OpenRegister is the data foundation. These apps consume it, surface it, and keep it filled."
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/opencatalogi"
+      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
+      name="OpenCatalogi"
+      why="Surfaces every register as a public, searchable catalogue entry. Two installs, one citation strategy."
+    />
+    <PairCard
+      href="/apps/openconnector"
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+      name="OpenConnector"
+      why="Fills your registers from existing systems, REST, SOAP, file drops, message queues, without writing glue code."
+    />
+    <PairCard
+      href="/apps/mydash"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+      name="MyDash"
+      why="Builds dashboards directly off your registers. No separate BI tool, no extra login, no ETL."
+    />
+  </PairRow>
+</Section>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Every feature in the box"
+    title="The full spec, hover for detail."
+    align="stack"
+    lede="Hover (or tab to) any feature to see the full description. Status hex shows where each one is on the maturity curve."
+  />
+  <FeatureGrid
+    legend
+    items={[
+      {group: 'Core capabilities'},
+      {label: 'JSON Schema validation', tip: 'Define a register shape in JSON Schema. Every write is validated against it.', status: 'stable'},
+      {label: 'REST API, auto-generated', tip: 'REST API rolls out of the schema. No controllers to write.', status: 'stable'},
+      {label: 'GraphQL endpoint', tip: 'GraphQL endpoint also generated from the schema. Same source of truth as REST.', status: 'stable'},
+      {label: 'Schema versioning', tip: 'Migrations are version-stable; old clients keep working when fields are added.', status: 'stable'},
+      {label: 'Citation-stable IDs', tip: 'Every record gets a permanent identifier the moment you create it.', status: 'stable'},
+      {label: 'Signed audit log', tip: 'Audit log is signed and timestamped. WOO and BIO compliance evidence ships with the install.', status: 'stable'},
+      {label: 'Retention policies', tip: 'Per-record retention rules with automatic archival and deletion.', status: 'stable'},
+      {label: 'JSON export / import', tip: 'Every register exportable to plain JSON. Import elsewhere with the same schema.', status: 'stable'},
+
+      {group: 'Integrations'},
+      {label: 'OpenCatalogi indexing', tip: 'OpenCatalogi indexes every register as a searchable public catalogue entry.', status: 'stable'},
+      {label: 'OpenConnector ingest', tip: 'OpenConnector ingests data into registers from REST, SOAP, file drops, message queues.', status: 'stable'},
+      {label: 'MyDash dashboards', tip: 'MyDash builds dashboards directly off your registers. No ETL, no separate BI tool.', status: 'stable'},
+      {label: 'DocuDesk template fields', tip: 'DocuDesk reads register fields straight into document templates and signs the result.', status: 'stable'},
+      {label: 'NLDS profile pack', tip: 'Twelve NLDS profile packs ship in the install: BAG, BRO, BRP, KvK, RGBZ, ZTC, etc.', status: 'beta'},
+      {label: 'Federated registers', tip: 'Cross-instance register federation over signed manifests.', status: 'soon'},
+
+      {group: 'Compliance &amp; admin'},
+      {label: 'WOO evidence pack', tip: 'WOO compliance evidence (audit log + retention + citation IDs) shipped as a single export.', status: 'stable'},
+      {label: 'BIO controls', tip: 'BIO control mapping covers the audit log, retention policies, role-based access.', status: 'stable'},
+      {label: 'GDPR export, per data subject', tip: 'Per-subject GDPR export collects every record across registers in one ZIP.', status: 'stable'},
+      {label: 'Right-to-be-forgotten', tip: 'Tombstone-style erasure with retention-policy-aware grace period.', status: 'beta'},
+      {label: 'CLI migration tools', tip: 'Schema migration CLI: dry-run, diff, apply. Idempotent on every run.', status: 'stable'},
+      {label: 'Scheduled imports', tip: 'Cron-style scheduled imports from external sources via OpenConnector.', status: 'soon'},
+    ]}
+  />
+</Section>
+
+<CtaBanner
+  title="Two minutes to typed data."
+  lede={<>Install OpenRegister from the <span className="next-blue">Nextcloud</span> app store, define one schema, and your team is writing structured data the same morning.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/openregister'}}
+/>

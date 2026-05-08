@@ -1,0 +1,108 @@
+---
+title: MKB-workspace, Conduction
+description: Bestanden, agenda, talk, dashboards. Je open-source workspace op Nextcloud, MyDash erbovenop, in twee minuten klaar.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, HowSteps, HowStep, PairRow, PairCard, CtaBanner} from '@conduction/docusaurus-preset/components';
+
+<DetailHero
+  crumb={[{label: 'Solutions', href: '/solutions'}, 'MKB-workspace']}
+  status={{label: 'Productie-ready', color: 'var(--c-mint-500)'}}
+  version="Sector: MKB"
+  title="MKB-workspace in twee minuten."
+  tagline={<>Bestanden, agenda, talk, dashboards. Je volledige open-source workspace op <span className="next-blue">Nextcloud</span>, met MyDash erbovenop. Vanaf dag één ziet het team wat ertoe doet. Vervangt vier SaaS-abonnementen voor de prijs van één.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Lees de recipe', href: 'https://docs.conduction.nl/mkb-workspace'}}
+  iconColor="var(--c-cobalt-700)"
+  icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+/>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Het resultaat"
+    title="Eén werkplek voor het hele team."
+    align="stack"
+    lede="Vervang Slack, Google Workspace, een BI-tool en een CRM door één Nextcloud-install plus twee Conduction-apps. Je data blijft op je eigen server. Het team werkt in dezelfde UI die ze al kennen."
+  />
+  <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      title="Bestanden, agenda, talk, office in één login."
+    >
+      Nextcloud levert het basisteam-platform. Bestanden, agenda's, video-calls, gedeelde documenten. Werkt direct uit de doos.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+      title="MyDash voor wat ertoe doet."
+    >
+      Bouw dashboards uit je registers, je facturatie en je urenregistratie. Geen aparte BI-tool, geen extra inlog. KPIs zichtbaar voor wie ze nodig heeft.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+      title="Connector haalt je legacy data binnen."
+    >
+      Bestaande boekhouding (Exact, Twinfield), CRM (HubSpot, Salesforce) of urenregistratie (Toggl)? OpenConnector trekt het binnen, MyDash rapporteert erover.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
+      title="AVG, by default."
+    >
+      Je data blijft op je eigen Nextcloud. Geen Amerikaanse cloud-providers, geen vendor-lock-in, geen jaarlijkse prijsverhogingen.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      title="Twee minuten van install tot werkend."
+    >
+      Drop OpenRegister, MyDash en OpenConnector in je Nextcloud. Configureer één schema, start de connector. Het team begint dezelfde middag te werken.
+    </FeatureItem>
+  </FeatureList>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Hoe de install werkt"
+    title="Drie stappen, op volgorde."
+    align="stack"
+  />
+  <HowSteps>
+    <HowStep title="Installeer Nextcloud (of gebruik je bestaande)." >
+      Je kunt zelf hosten, een Conduction-partner laten hosten, of je bestaande Nextcloud-omgeving gebruiken. Twee admins is genoeg om te starten.
+    </HowStep>
+    <HowStep title="Drop OpenRegister en MyDash erin.">
+      Beide apps zitten in de Nextcloud-app-store. Klik install, beide configureren zichzelf bij eerste request. De schema-bootstrap is idempotent.
+    </HowStep>
+    <HowStep title="Trek je legacy data binnen via OpenConnector.">
+      Optioneel: koppel je bestaande boekhouding, CRM of urenregistratie via OpenConnector. MyDash bouwt direct dashboards op de binnenkomende data.
+    </HowStep>
+  </HowSteps>
+</Section>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Gebouwd op"
+    title="Twee apps, geen middleware."
+    align="stack"
+  />
+  <PairRow columns={2}>
+    <PairCard
+      href="/apps/mydash"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+      name="MyDash"
+      why="Persoonlijke en team-dashboards uit je registers. Rolgebaseerde toegang, KPIs op het startscherm."
+    />
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="De typed-data-backbone. Klanten, projecten, facturen, uren, alles als typed register."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="Eén werkplek, geen losse SaaS."
+  lede={<>Drop drie apps in je <span className="next-blue">Nextcloud</span>. Je team werkt vanaf dezelfde middag in dezelfde UI die ze al kennen. Geen vendor-lock-in, geen jaarlijkse prijsverhogingen.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+/>

@@ -1,0 +1,178 @@
+---
+title: OpenRegister, Conduction
+description: Schema-gedreven object store met audit trail. De data-fundering onder elke workspace-app.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, CtaBanner, AppMock, RotatingCards} from '@conduction/docusaurus-preset/components';
+
+<DetailHero
+  appId="openregister"
+  crumb={[{label: 'Apps', href: '/apps'}, 'OpenRegister']}
+  status={{label: 'Stable', color: 'var(--c-mint-500)'}}
+  version="v3.1"
+  locales="NL · EN"
+  title="OpenRegister"
+  tagline={<>Schema's, registers en getypeerde data-objecten. De typed-data backbone onder elke andere Conduction-app, en de install waar je als eerste naar grijpt.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Lees de docs', href: 'https://docs.conduction.nl/openregister'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/openregister'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>}
+  illustration={<AppMock app="openregister" />}
+/>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Wat het doet"
+    title="De typed-data fundering."
+    align="stack"
+    lede="Definieer een schema één keer. De app geeft je een API, een UI, validatie, een audit log en een citation-stable identifier per record. Elke andere Conduction-app leest en schrijft via die ene bron van waarheid."
+  />
+
+  <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M5 4h14v6H5zM5 14h14v6H5zM9 4v16"/></svg>}
+      title="Schema's die je één keer schrijft."
+    >
+      Definieer de vorm van een register in JSON Schema. De app genereert de API, valideert elke schrijfactie, en stelt de data beschikbaar aan andere apps die REST spreken.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+      title="Eén backbone, elke app."
+    >
+      Elk getypeerd object leeft in één register. Andere apps consumeren het via dezelfde API. Geen syncs te onderhouden, geen dubbele bronnen van waarheid.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 12h18M12 3v18"/><circle cx="12" cy="12" r="9"/></svg>}
+      title="REST en GraphQL, automatisch gegenereerd."
+    >
+      Beide API's rollen uit het schema. Geen controllers schrijven, geen spec bijwerken als het schema wijzigt, geen lijmcode tussen OpenRegister en de apps die ervan consumeren.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
+      title="Audit log, signed en getimestampt."
+    >
+      Elke leesactie, schrijfactie en schemawijziging laat een tamper-evident spoor achter. Woo- en BIO-bewijslast komt mee met de install, geen spreadsheet-exports op het moment van auditen.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5 1 6-5.5-3-5.5 3 1-6L3 9l6-1z"/></svg>}
+      title="Citation-stable identifiers."
+    >
+      Elk record krijgt een permanente identifier op het moment dat je het aanmaakt. Reorganisaties, systeem-migraties en hernoemingen breken je links niet.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
+      title="Open, voor altijd."
+    >
+      Issues staan in het openbaar, releases zijn getagged, en elk register dat je aanmaakt is exporteerbaar naar plain JSON. De dag dat je deïnstalleert is even makkelijk als de dag van installeren.
+    </FeatureItem>
+  </FeatureList>
+</Section>
+
+<RotatingCards
+  eyebrow="Drie redenen waarom OpenRegister zijn plek verdient"
+  title="Schema-first, overal te vullen, standaard zichtbaar."
+  lede="Scroll door de kaarten. Elke kaart pint als je hem bereikt; de volgende schuift omhoog om hem te bedekken."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Schema-first',
+      title: 'Getypeerde registers uit een JSON-schema.',
+      summary: 'Definieer een schema, krijg een register. REST- en GraphQL-endpoints genereren zichzelf, audit logging staat standaard aan, citation-stable IDs landen op elke regel.',
+      cta: {label: 'Bekijk OpenRegister', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Overal te vullen',
+      title: 'OpenConnector vult de registers voor je.',
+      summary: 'Bestaand systeem spreekt REST, SOAP, GraphQL of file drops? OpenConnector haalt het op, valideert tegen het schema en schrijft getypeerde regels. Geen lijmcode, geen nightly batch.',
+      cta: {label: 'Bekijk OpenConnector', href: '/apps/openconnector'},
+      panel: <AppMock app="openconnector" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Standaard zichtbaar',
+      title: 'Elk register is een MyDash-databron.',
+      summary: 'MyDash leest de schema\'s direct. Sleep een grafiek op een board, wijs een register aan en de kolommen zijn getypeerd. Geen BI-database, geen aparte login.',
+      cta: {label: 'Bekijk MyDash', href: '/apps/mydash'},
+      panel: <AppMock app="mydash-bi" />,
+    },
+  ]}
+/>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Werkt goed met"
+    title="Drie apps die de install versterken."
+    align="stack"
+    lede="OpenRegister is de data-fundering. Deze apps consumeren hem, ontsluiten hem en houden hem gevuld."
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/opencatalogi"
+      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
+      name="OpenCatalogi"
+      why="Ontsluit elk register als publieke, doorzoekbare catalogus-entry. Twee installs, één citatie-strategie."
+    />
+    <PairCard
+      href="/apps/openconnector"
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+      name="OpenConnector"
+      why="Vult je registers vanuit bestaande systemen, REST, SOAP, file drops, message queues, zonder lijmcode te schrijven."
+    />
+    <PairCard
+      href="/apps/mydash"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+      name="MyDash"
+      why="Bouwt dashboards rechtstreeks op je registers. Geen aparte BI-tool, geen extra login, geen ETL."
+    />
+  </PairRow>
+</Section>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Elke feature in de doos"
+    title="De volledige spec, hover voor detail."
+    align="stack"
+    lede="Hover (of tab naar) elke feature voor de volledige beschrijving. De status-hex toont waar elke feature zit op de volwassenheidscurve."
+  />
+  <FeatureGrid
+    legend
+    items={[
+      {group: 'Kerncapaciteiten'},
+      {label: 'JSON Schema-validatie', tip: 'Definieer een register-vorm in JSON Schema. Elke schrijfactie wordt eraan gevalideerd.', status: 'stable'},
+      {label: 'REST API, automatisch gegenereerd', tip: 'REST API rolt uit het schema. Geen controllers te schrijven.', status: 'stable'},
+      {label: 'GraphQL-endpoint', tip: 'GraphQL-endpoint ook uit het schema gegenereerd. Dezelfde bron van waarheid als REST.', status: 'stable'},
+      {label: 'Schemaversies', tip: 'Migraties zijn versie-stabiel. Oude clients blijven werken als velden worden toegevoegd.', status: 'stable'},
+      {label: 'Citation-stable IDs', tip: 'Elk record krijgt een permanente identifier op het moment dat je hem aanmaakt.', status: 'stable'},
+      {label: 'Signed audit log', tip: 'Audit log is signed en getimestampt. Woo- en BIO-bewijslast komt mee met de install.', status: 'stable'},
+      {label: 'Bewaartermijnen', tip: 'Per record bewaarregels met automatische archivering en verwijdering.', status: 'stable'},
+      {label: 'JSON-export en -import', tip: 'Elk register exporteerbaar naar plain JSON. Elders importeren met hetzelfde schema.', status: 'stable'},
+
+      {group: 'Integraties'},
+      {label: 'OpenCatalogi-indexing', tip: 'OpenCatalogi indexeert elk register als doorzoekbare publieke catalogus-entry.', status: 'stable'},
+      {label: 'OpenConnector-inlees', tip: 'OpenConnector laadt data in registers vanuit REST, SOAP, file drops, message queues.', status: 'stable'},
+      {label: 'MyDash-dashboards', tip: 'MyDash bouwt dashboards rechtstreeks op je registers. Geen ETL, geen aparte BI-tool.', status: 'stable'},
+      {label: 'DocuDesk-templatevelden', tip: 'DocuDesk leest registervelden direct in document-templates en signt het resultaat.', status: 'stable'},
+      {label: 'NLDS-profile-pack', tip: 'Twaalf NLDS-profile-packs zitten in de install: BAG, BRO, BRP, KvK, RGBZ, ZTC, etc.', status: 'beta'},
+      {label: 'Federatieve registers', tip: 'Cross-instance register-federatie via signed manifests.', status: 'soon'},
+
+      {group: 'Compliance &amp; admin'},
+      {label: 'Woo-bewijspakket', tip: 'Woo-bewijslast (audit log + bewaartermijnen + citatie-IDs) als één export.', status: 'stable'},
+      {label: 'BIO-controls', tip: 'BIO-control mapping dekt het audit log, bewaartermijnen en role-based access.', status: 'stable'},
+      {label: 'AVG-export, per betrokkene', tip: 'Per-betrokkene AVG-export verzamelt elk record over registers heen in één ZIP.', status: 'stable'},
+      {label: 'Recht op vergetelheid', tip: 'Tombstone-erasure met retentie-aware respijttermijn.', status: 'beta'},
+      {label: 'CLI-migratietools', tip: 'Schema-migratie-CLI: dry-run, diff, apply. Idempotent op elke run.', status: 'stable'},
+      {label: 'Geplande imports', tip: 'Cron-stijl geplande imports vanuit externe bronnen via OpenConnector.', status: 'soon'},
+    ]}
+  />
+</Section>
+
+<CtaBanner
+  title="Twee minuten tot getypeerde data."
+  lede={<>Installeer OpenRegister uit de <span className="next-blue">Nextcloud</span>-app-store, definieer één schema, en je team schrijft dezelfde ochtend gestructureerde data.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Lees de docs', href: 'https://docs.conduction.nl/openregister'}}
+/>

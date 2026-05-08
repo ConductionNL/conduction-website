@@ -1,0 +1,356 @@
+---
+title: Common Ground, de stand van Nederland in 2026
+description: Wat Common Ground echt is, waar het na acht jaar staat, en hoe een Nextcloud-installatie het gat tot twee minuten dichttrekt.
+hide_table_of_contents: true
+---
+
+import {Hero, StatsStrip, Section, SectionHead, AppsPreview, PairRow, PairCard, CtaBanner, Pill, Showcase, AppMock, CommonGroundPlus, ManagedCommonGround} from '@conduction/docusaurus-preset/components';
+import {totalDownloads, formatDownloads} from '@conduction/docusaurus-preset/data';
+import {totalPartners} from '@site/src/data/partners-catalog';
+
+<Hero
+  eyebrow={<><CommonGroundPlus /> · de stand van Nederland in 2026</>}
+  title={<>Een visie van acht jaar oud.<br/>Een installatie van twee minuten.</>}
+  lede={<>Common Ground is de architectuur waar de Nederlandse gemeentebeweging sinds 2017 achter aan loopt. Het model klopt. Het resultaat op het scherm van de inwoner komt nog steeds langzaam binnen. Op deze pagina lees je wat Common Ground echt is, waar het in 2026 staat, en hoe een Nextcloud-installatie het gat tot twee minuten dichttrekt.</>}
+  primaryCta={{label: 'Naar onze oplossing', href: '#common-ground-plus'}}
+  secondaryCta={{label: 'Plan een demo', href: '/demo'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL'}}
+/>
+
+<StatsStrip stats={[
+  { value: '12', label: <>apps in het ecosysteem,<br/>allemaal open-source</> },
+  { value: '2 min', label: <>van app store install<br/>naar werkende solution</> },
+  { value: '€0', label: <>voor de apps,<br/>support is optioneel</> },
+  { value: totalPartners, label: <>certified en partner-<br/>implementeerders</> },
+  { value: formatDownloads(totalDownloads), label: <>downloads,<br/>en dat loopt door</> },
+]} />
+
+<AppsPreview
+  eyebrow="Voor de overheid"
+  title="Drie apps die op dag één impact leveren."
+  lede={<>Begin met wat je WOO-coördinator, GGU-contact of inkoopcommissie nu vraagt. Allemaal open-source, AVG-conform, gratis te installeren uit de <span className="next-blue">Nextcloud</span> app store.</>}
+  apps={[
+    {
+      name: 'OpenWoo',
+      tagline: 'WOO-publicatieflow. Actieve openbaarmaking, doorzoekbaar archief, automatisch redigeren van persoonsgegevens.',
+      status: 'STABLE',
+      version: 'v1.4 · NL',
+      href: '/apps/openwoo',
+      icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>,
+    },
+    {
+      name: 'OpenCatalogi',
+      tagline: 'Federatieve datacatalogus. Datasets, APIs, software-inventaris, door en voor publieke organisaties.',
+      status: 'STABLE',
+      version: 'v2.4 · NL · EN',
+      href: '/apps/opencatalogi',
+      icon: <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/></svg>,
+    },
+    {
+      name: 'ZaakAfhandelApp',
+      tagline: 'Zaakstatus-portaal voor inwoners. Sluit aan op je zaaksysteem of OpenRegister.',
+      status: 'STABLE',
+      version: 'v1.6 · NL',
+      href: '/apps/zaakafhandelapp',
+      icon: <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>,
+    },
+  ]}
+  seeAll={{label: 'Bekijk alle apps', href: '/apps'}}
+/>
+
+<Section spacing="default">
+
+<Showcase
+  eyebrow="De basis"
+  title="Wat Common Ground echt is."
+  lede="Begonnen in 2017 binnen de Vereniging van Nederlandse Gemeenten (VNG) als onderdeel van de bredere Samen Organiseren-beweging. De aanleiding was concreet: 342 gemeenten draaiden gefragmenteerde IT, allemaal met dubbele kopieën van dezelfde inwonerdata, allemaal betalend aan twee dominante leveranciers voor monolithische pakketten. De Avg en de Wet open overheid gaven regeldruk waar de oude stack niet aan kon voldoen. Het antwoord was een gedeelde visie, vastgelegd in zes principes."
+  defaultOpen="bron"
+  layout="side"
+  items={[
+    {
+      id: 'bron',
+      title: 'Data aan de bron.',
+      summary: 'Eén keer opslaan, opvragen via een API, geen kopieën. Het bronsysteem is eigenaar van de waarheid, elk ander systeem vraagt het op.',
+      cta: {label: 'Bekijk OpenRegister', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      id: 'scheiding',
+      title: 'Scheiding van data en applicaties.',
+      summary: 'Apps gebruiken data, ze bezitten het niet. Wissel een app zonder de onderliggende records kwijt te raken.',
+      cta: {label: 'Bekijk OpenCatalogi', href: '/apps/opencatalogi'},
+      panel: <AppMock app="opencatalogi" />,
+    },
+    {
+      id: 'auth',
+      title: 'Gefedereerde autorisatie.',
+      summary: 'Identiteit vertaald via een gateway, niet per systeem gedupliceerd. Eén identity provider, elke service authenticeert daar tegenaan.',
+      cta: {label: 'Bekijk OpenConnector', href: '/apps/openconnector'},
+      panel: <AppMock app="openconnector" />,
+    },
+    {
+      id: 'verantwoording',
+      title: 'Verantwoording per bevraging.',
+      summary: 'Elke API-call legt een doelbinding vast. Een inwoner kan inzien wie zijn data heeft bekeken, wanneer en waarom.',
+      cta: {label: 'Bekijk OpenRegister', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      id: 'modellen',
+      title: 'Gestandaardiseerde informatiemodellen.',
+      summary: 'Leveranciersneutrale datamodellen. Hetzelfde Zaak-schema bij elke gemeente, hetzelfde Document-schema bij elk DMS.',
+      cta: {label: 'Bekijk OpenCatalogi', href: '/apps/opencatalogi'},
+      panel: <AppMock app="opencatalogi" />,
+    },
+    {
+      id: 'doelgericht',
+      title: 'Doelgerichte services.',
+      summary: 'Elke API geeft alleen de data terug die de vraag nodig heeft. Geen "geef me alles", geen oversharing, geen fishing.',
+      cta: {label: 'Bekijk OpenConnector', href: '/apps/openconnector'},
+      panel: <AppMock app="openconnector" />,
+    },
+  ]}
+/>
+
+De principes komen uit het oorspronkelijke [cg-vision-document op GitHub](https://github.com/VNG-Realisatie/common-ground/blob/master/cg-vision.md). Een hardnekkig misverstand: dat Common Ground *vijf* principes heeft. Die vijf gaan over het lagen-model hieronder.
+
+Bestuur ligt bij [VNG Realisatie](https://vng.nl/artikelen/common-ground), de uitvoeringstak van de VNG, gefinancierd via de [Gezamenlijke Gemeentelijke Uitvoering (GGU)](https://vng.nl/artikelen/gezamenlijke-gemeentelijke-uitvoering-ggu). De Common Ground Board, voorgezeten door een gemeentesecretaris, stuurt op richting. Een Strategische Leverancierstafel adviseert vanuit de markt. Common Ground is een thematische architectuur binnen [GEMMA](https://vng.nl/projecten/gemeentelijke-model-architectuur-gemma), de bredere referentiearchitectuur die elke Nederlandse gemeente geacht wordt te volgen.
+
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="De architectuur"
+    title="Het 5-lagen model."
+    align="stack"
+    lede="Het model splitst elk overheidssysteem in vijf horizontale lagen. Elke laag is los aan te spreken. In theorie wissel je een proceslaag-leverancier zonder je datalaag te raken. In de praktijk gebeurt die wissel zelden."
+  />
+
+<div className="cg-layer-model">
+
+  <div className="cg-layer-row">
+    <div className="cg-layer-meta">
+      <span className="cg-layer-num">1</span>
+      <div>
+        <h3>Interactielaag</h3>
+        <span className="cg-layer-en">Interaction</span>
+        <p>Wat de inwoner of medewerker ziet. Portalen, formulieren, mobiele apps.</p>
+      </div>
+    </div>
+    <div className="cg-layer-hexes">
+      <Pill bullet bulletColor="var(--c-nextcloud-blue)">Open Inwoner Platform</Pill>
+      <Pill bullet bulletColor="var(--c-nextcloud-blue)">Open Formulieren</Pill>
+      <Pill bullet bulletColor="var(--c-nextcloud-blue)">MijnOmgeving</Pill>
+    </div>
+  </div>
+
+  <div className="cg-layer-row">
+    <div className="cg-layer-meta">
+      <span className="cg-layer-num">2</span>
+      <div>
+        <h3>Proceslaag</h3>
+        <span className="cg-layer-en">Process</span>
+        <p>Workflow en bedrijfslogica. Zaakgericht werken zit hier.</p>
+      </div>
+    </div>
+    <div className="cg-layer-hexes">
+      <Pill bullet bulletColor="var(--c-lavender-500)">Open Zaak</Pill>
+      <Pill bullet bulletColor="var(--c-lavender-500)">ZAC</Pill>
+      <Pill bullet bulletColor="var(--c-lavender-500)">PodiumD Zaak</Pill>
+    </div>
+  </div>
+
+  <div className="cg-layer-row">
+    <div className="cg-layer-meta">
+      <span className="cg-layer-num">3</span>
+      <div>
+        <h3>Integratielaag</h3>
+        <span className="cg-layer-en">Integration</span>
+        <p>Federatieve, beveiligde uitwisseling tussen organisaties.</p>
+      </div>
+    </div>
+    <div className="cg-layer-hexes">
+      <Pill bullet bulletColor="var(--c-mint-500)">FSC (sinds 2025)</Pill>
+      <Pill bullet bulletColor="var(--c-mint-500)">Open Notificaties</Pill>
+      <Pill bullet bulletColor="var(--c-cobalt-500)">NLX (uitgefaseerd)</Pill>
+    </div>
+  </div>
+
+  <div className="cg-layer-row">
+    <div className="cg-layer-meta">
+      <span className="cg-layer-num">4</span>
+      <div>
+        <h3>Servicelaag</h3>
+        <span className="cg-layer-en">Services</span>
+        <p>REST-APIs die data ontsluiten, per vraag afgebakend.</p>
+      </div>
+    </div>
+    <div className="cg-layer-hexes">
+      <Pill bullet bulletColor="var(--c-terracotta-500)">Zaken API</Pill>
+      <Pill bullet bulletColor="var(--c-terracotta-500)">Documenten API</Pill>
+      <Pill bullet bulletColor="var(--c-terracotta-500)">Besluiten API</Pill>
+      <Pill bullet bulletColor="var(--c-terracotta-500)">Catalogi API</Pill>
+    </div>
+  </div>
+
+  <div className="cg-layer-row">
+    <div className="cg-layer-meta">
+      <span className="cg-layer-num">5</span>
+      <div>
+        <h3>Datalaag</h3>
+        <span className="cg-layer-en">Data</span>
+        <p>De bron van waarheid. Landelijke basisregistraties en gemeentelijke registers.</p>
+      </div>
+    </div>
+    <div className="cg-layer-hexes">
+      <Pill bullet bulletColor="var(--c-blue-cobalt)">BRP</Pill>
+      <Pill bullet bulletColor="var(--c-blue-cobalt)">BAG</Pill>
+      <Pill bullet bulletColor="var(--c-blue-cobalt)">BGT</Pill>
+      <Pill bullet bulletColor="var(--c-blue-cobalt)">KvK Handelsregister</Pill>
+      <Pill bullet bulletColor="var(--c-blue-cobalt)">Gemeentelijke registers</Pill>
+    </div>
+  </div>
+
+</div>
+
+<p className="cg-layer-caption">NLX was het oorspronkelijke product voor de integratielaag. De Programmeringsraad GDI verklaarde <a href="https://fsc-standaard.nl/">FSC (Federatieve Service Connectiviteit)</a> in december 2024 tot standaard, ingaand 2025. Het standaardenwerk overleeft, het product is gewisseld.</p>
+
+</Section>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="De realiteit"
+    title="Waar het in 2026 staat."
+    align="stack"
+    lede="De visie is uit 2017. Het Programmaplan Common Ground 2025 zegt zelf dat volledige gemeentelijke dekking nog jaren op zich laat wachten. Programmabudget 2025: €6,4 miljoen. Geprojecteerde besparing bij volledige realisatie: €200–300 miljoen op ICT en €1–2 miljard per jaar op primaire processen. Die getallen zijn kwalitatief, niet boekbaar."
+  />
+
+Het marktplaatje (de meest recente publieke uitsplitsing dateert uit 2018, dus lees het percentage als richtinggevend):
+
+- **Centric en PinkRoccade leveren samen nog altijd kernapplicaties aan circa 90% van de gemeenten.** [Bron: consultancy.nl, marktanalyse Burgerzaken-ICT](https://www.consultancy.nl/nieuws/11322/centric-en-pinkroccade-domineren-burgerzaken-ict).
+- **[Dimpact](https://www.dimpact.nl/), de coöperatie achter de Open-suite, telt 73 gemeentelijke leden.** PodiumD Zaak, hun gezamenlijke MijnOmgeving + zaakafhandeling, wordt uitgerold bij 40+. Kampen mikt op 1 januari 2027 om eSuite volledig te vervangen. Achttien tot dertig maanden voor een middelgrote gemeente is gangbaar, geen uitzondering.
+- **Roxit's Rx.Mission rapporteert 160+ organisaties op een Common-Ground-aligned platform.** Bron: [Roxit, Binnenlands Bestuur, maart 2025](https://www.binnenlandsbestuur.nl/digitaal/roxit/tussenstand-common-ground-hoe-staat-uw-gemeente-ervoor).
+
+[PBLQ noemde de visie in 2022 *mystiek*](https://www.binnenlandsbestuur.nl/digitaal/kritiek-wordt-niet-goed-ontvangen) en adviseerde *een stevige interventie*. Het eigen Programmaplan 2025 van de VNG zet "Onduidelijke leveranciersstrategie" in het risicoregister op middelhoge kans, hoge impact. Hetzelfde document noemt het Deense KOMBIT (gestart in 2009) als inspiratiemodel. Dat is een stilzwijgende erkenning dat de Nederlandse consensus-aanpak onder presteert.
+
+<blockquote className="cg-pullquote">
+  "Vendor lock-in blijft bestaan."
+  <cite>VNG, Programmaplan Common Ground 2025, risicoregister #9</cite>
+</blockquote>
+
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Het gat"
+    title="Waarom het niet bij de inwoner uitkomt."
+    align="stack"
+    lede="Drie redenen versterken elkaar. Geen ervan gaat over de architectuur zelf. Alle drie gaan over het pad van architectuur naar werkende installatie."
+  />
+
+- **StUF gaat niet vrijwillig dood.** De oude SOAP-berichtenstandaard wordt officieel uitgefaseerd door de ZGW-APIs, maar er is geen einddatum vastgesteld. Gemeenten besteden in 2026 nog steeds StUF-koppelingen aan. [WeAreFrank bouwde Open Zaakbrug](https://blog.wearefrank.nl/hoe-migreer-je-als-gemeente-van-stuf-naar-common-ground) precies omdat de uitfasering open einde is.
+- **Acht jaar, drie productuitfaseringen.** ZDS is verlaten. NLX is vervangen door FSC. StUF zit op een trage uitfasering zonder deadline. De visie is bestendig. De producten worden steeds vervangen. Gemeentelijke CIO's zijn met reden voorzichtig.
+- **Vijf lagen nodig, end-to-end.** De meeste gemeenten hebben één of twee lagen vernieuwd. Om een inwoner zijn zaakstatus in real time te tonen, moeten alle vijf lagen met elkaar praten. Weinig doen dat. MijnOverheid laat sommige zaken zien, maar dekking en versheid hangen af van of het zaaksysteem van de gemeente notificaties stuurt.
+
+</Section>
+
+<Section spacing="default" id="common-ground-plus">
+  <SectionHead
+    eyebrow="Onze oplossing"
+    title={<>Common Ground+ in twee minuten.</>}
+    align="stack"
+    lede={<>We hebben het 5-lagen model genomen en elke laag als Nextcloud-app gebouwd. Installeer vanuit de <span className="next-blue">Nextcloud</span> app store. Twee minuten van klik tot draaiend. Het configureren van je databronnen is werk dat je overal moet doen. Het verschil: alles staat op één platform waar je team al inlogt.</>}
+  />
+
+| Laag | Common Ground component | Conduction-app | Wat het doet |
+|------|--------------------------|----------------|---------------|
+| 1 · Interactie | OIP, MijnOmgeving | Nextcloud + ZaakAfhandelApp | Inwoner- en medewerkeroppervlak in de werkomgeving die ze al gebruiken |
+| 2 · Proces | Open Zaak, ZAC | ZaakAfhandelApp + DocuDesk | Zaakworkflow, documentafhandeling, audittrail |
+| 3 · Integratie | FSC, Open Notificaties | OpenConnector | REST, SOAP, GraphQL, file drops, queues, federatie inbegrepen |
+| 4 · Service | ZGW APIs (Zaken, Documenten, Besluiten, Catalogi) | OpenConnector | Standaard ZGW-endpoints automatisch ontsloten |
+| 5 · Data | Registers | OpenRegister | Getypeerde registers, schema, audittrail, citation-stable IDs |
+
+De "+" is de werkomgevings-laag die het officiële model leeg laat. Mail, agenda, contacten, bestanden, video, allemaal al in je Nextcloud. Inwoners bereiken je op hetzelfde platform waar je zaakbehandelaars werken. Geen tweede inlog, geen derde aanbesteding, geen aparte leverancier voor het oppervlak.
+
+**Wat twee minuten dekt.** Die twee minuten dekken de installatie: app store, aanzetten, eerste register live. Aansluiten op BRP of BAG, FSC inrichten en migreren vanaf je bestaande ZGW-stack is echt werk. Je slaat de migratie niet over. Je begint hem op een werkomgeving waar de integratietools standaard meeleveren.
+
+<PairRow>
+  <PairCard
+    href="/apps/openregister"
+    icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>}
+    name="OpenRegister"
+    why="Getypeerde registers voor de datalaag. Eén register per use case. Schema, audittrail, citation-stable IDs uit de doos."
+  />
+  <PairCard
+    href="/apps/openconnector"
+    icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+    name="OpenConnector"
+    why="Trekt en duwt data via REST, SOAP, GraphQL, file drops of queues. ZGW-endpoints automatisch ontsloten."
+  />
+  <PairCard
+    href="/apps/zaakafhandelapp"
+    icon={<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>}
+    name="ZaakAfhandelApp"
+    why="Zaakworkflow op de werkomgeving die je team al gebruikt. Inwonersportaal voor zaakstatus inbegrepen."
+  />
+</PairRow>
+
+</Section>
+
+<ManagedCommonGround
+  background="tinted"
+  eyebrow="Managed Common Ground+"
+  title={<>Een Nextcloud-framework alleen voor de overheid.<br/>€250 per app per maand.</>}
+  lede={<>Liever niet zelf draaien? We hosten dezelfde stack op een managed <span className="next-blue">Nextcloud</span>-tenant voor publieke organisaties. Geen Files, geen Talk, geen Mail, geen Calendar, alleen de Common Ground+ componenten waar je zaakbehandelaars echt mee werken. Wij richten in, installeren, monitoren, patchen en maken back-ups.</>}
+  primaryCta={{label: 'Praat met ons', href: 'mailto:info@conduction.nl?subject=Managed%20Common%20Ground%20enquiry'}}
+  secondaryCta={{label: 'Compliance signals', href: '/iso'}}
+  components={[
+    {href: '/apps/openregister', name: 'OpenRegister', why: 'Typed register-store. €250 per maand, één registerset per component.', icon: <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg>},
+    {href: '/apps/opencatalogi', name: 'OpenCatalogi', why: 'Gefedereerde data-catalogus. €250 per maand, één catalogus per component.', icon: <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>},
+    {href: '/apps/openconnector', name: 'OpenConnector', why: 'API-gateway en integratie-runtime. €250 per maand, integraties inbegrepen.', icon: <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>},
+    {href: '/apps/docudesk', name: 'DocuDesk', why: 'Documentgeneratie, anonimisering, ondertekenen. €250 per maand.', icon: <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>},
+    {href: '/apps/mydash', name: 'MyDash', why: 'Dashboard-builder. €250 per maand, rolgebaseerde toegang inbegrepen.', icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>},
+    {href: '/apps/openai-bridge', name: 'OpenAI Bridge', why: 'LLM-gateway met PII-redactie. €250 per maand, modelgebruik apart afgerekend.', icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>},
+  ]}
+  footnote="Alleen beschikbaar voor publieke organisaties. We controleren de doelgroep (KvK-registratie, status als publiek lichaam) bij contact. Gehost bij Cyso onder ISAE 3402 Type II en ISO 27001:2022, Nederlandse jurisdictie, EU-data, geen Amerikaanse sub-processor."
+/>
+
+<AppsPreview
+  eyebrow="Installeer uit de app store"
+  title="Drie apps die de lagen op dag één invullen."
+  lede={<>Begin met de drie apps die de data-, service- en proceslagen dekken. Allemaal open-source, AVG-conform, gratis te installeren uit de <span className="next-blue">Nextcloud</span> app store.</>}
+  apps={[
+    {
+      name: 'OpenRegister',
+      tagline: 'Getypeerde registers voor de datalaag. Schema, audittrail, citation-stable IDs uit de doos.',
+      status: 'STABLE',
+      version: 'v2.x · NL · EN',
+      href: '/apps/openregister',
+      icon: <svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>,
+    },
+    {
+      name: 'OpenConnector',
+      tagline: 'Verbind Nextcloud met alles. REST, SOAP, GraphQL, file drops, message queues, ZGW-endpoints.',
+      status: 'STABLE',
+      version: 'v1.x · NL · EN',
+      href: '/apps/openconnector',
+      icon: <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>,
+    },
+    {
+      name: 'ZaakAfhandelApp',
+      tagline: 'Zaakworkflow voor inwoners. Sluit aan op je zaaksysteem of OpenRegister.',
+      status: 'STABLE',
+      version: 'v1.6 · NL',
+      href: '/apps/zaakafhandelapp',
+      icon: <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>,
+    },
+  ]}
+  seeAll={{label: 'Bekijk alle apps', href: '/apps'}}
+/>
+
+<CtaBanner
+  title="Probeer Common Ground+ vandaag."
+  lede="Twee minuten van app store tot draaiend. Praat met een partner als je liever de uitrol uit handen geeft, of installeer zelf en volg het recept."
+  primaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  secondaryCta={{label: 'Bekijk de apps', href: '/apps'}}
+/>

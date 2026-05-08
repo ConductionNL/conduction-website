@@ -1,0 +1,151 @@
+---
+title: Solutions, Conduction
+description: Resultaten die je bereikt door één of twee Conduction-apps te installeren en te configureren.
+hide_table_of_contents: true
+---
+
+import React, {useState, useMemo} from 'react';
+import {Section, SectionHead, SolutionCard, SolutionGrid, FacetedFilters, FilterChip} from '@conduction/docusaurus-preset/components';
+
+export const SOLUTIONS = [
+  {
+    href: '/solutions/woo', sector: 'public', sectorLabel: 'Publieke sector',
+    title: 'Woo-compliance, vóór vrijdag.',
+    outcome: <>Live Woo-portaal op je gehoste <span className="next-blue">Nextcloud</span>. Elke wetscategorie wordt een register, elk register publiceert via OpenCatalogi, elke connector haalt op uit je DMS.</>,
+    builtOn: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'], goals: ['compliance'], status: 'production',
+    icon: <svg viewBox="0 0 24 24"><path d="M12 3l9 4v5c0 5-4 8-9 9-5-1-9-4-9-9V7l9-4z"/><path d="M9 12l2 2 4-4"/></svg>,
+  },
+  {
+    href: '/solutions/zaakafhandeling', sector: 'public', sectorLabel: 'Publieke sector',
+    title: <>ZaakAfhandelApp op <span className="next-blue">Nextcloud</span>.</>,
+    outcome: <>Vier apps, één zaakafhandeling. Burger-CRM, zaakworkflow en automatisering op de <span className="next-blue">Nextcloud</span> waar je team al inlogt.</>,
+    builtOn: ['OpenRegister', 'PipelinQ', 'Procest', 'Windmill'], goals: ['workflow'], status: 'production',
+    icon: <svg viewBox="0 0 24 24"><path d="M9 11V7a3 3 0 0 1 6 0v4"/><rect x="5" y="11" width="14" height="10" rx="2"/></svg>,
+  },
+  {
+    href: '/solutions/archief', sector: 'public', sectorLabel: 'Publieke sector',
+    title: 'Archief naar e-Depot, automatisch.',
+    outcome: 'OpenRegister bewaart je actuele data, OpenConnector zet records bewaartermijn-driven over naar je e-Depot. NEN-2082 gemapt, eIDAS-AdES verzegeld.',
+    builtOn: ['OpenRegister', 'OpenConnector'], goals: ['compliance'], status: 'production',
+    icon: <svg viewBox="0 0 24 24"><path d="M3 4h18v4H3z"/><path d="M5 8v12h14V8"/><path d="M9 12h6"/></svg>,
+  },
+  {
+    href: '/solutions/software-catalog', sector: 'public', sectorLabel: 'Publieke sector',
+    title: 'Software-catalogus voor de gemeente.',
+    outcome: 'Een publieke software-catalogus. Apps, datasets en APIs van je organisatie, zoekbaar op één plek, gefedereerd naar data.overheid.nl.',
+    builtOn: ['OpenCatalogi', 'OpenRegister'], goals: ['integration'], status: 'production',
+    icon: <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/></svg>,
+  },
+  {
+    href: '/solutions/mkb-workspace', sector: 'mkb', sectorLabel: 'MKB',
+    title: 'MKB-workspace in twee minuten.',
+    outcome: <>Bestanden, agenda, talk, dashboards. Je volledige open-source workspace op <span className="next-blue">Nextcloud</span>, met MyDash erbovenop.</>,
+    builtOn: ['MyDash', 'OpenRegister'], goals: ['reporting'], status: 'production',
+    icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>,
+  },
+  {
+    href: '/solutions/legacy-erp', sector: 'mkb', sectorLabel: 'MKB',
+    title: 'Eén legacy-ERP, alle moderne tools.',
+    outcome: 'OpenConnector trekt data uit je ERP, vult typed registers, en biedt een API aan elke tool die je team vandaag gebruikt.',
+    builtOn: ['OpenConnector', 'OpenRegister'], goals: ['integration'], status: 'pilot',
+    icon: <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>,
+  },
+  {
+    href: '/solutions/nen-7510', sector: 'health', sectorLabel: 'Zorg',
+    title: 'NEN-7510 plus zorgmail in één stack.',
+    outcome: <>Een zorginstelling-ready <span className="next-blue">Nextcloud</span>. NEN-7510-audit, zorgmail-integratie, DocuDesk anonimiseert inkomende zorgcorrespondentie.</>,
+    builtOn: ['DocuDesk', 'OpenRegister'], goals: ['compliance'], status: 'production',
+    icon: <svg viewBox="0 0 24 24"><path d="M12 2L2 7v6c0 5 3 9 10 11 7-2 10-6 10-11V7L12 2z"/><path d="M9 12h6M12 9v6"/></svg>,
+  },
+];
+
+export function FilterableSolutions() {
+  const [selected, setSelected] = useState({});
+
+  const filtered = useMemo(() => {
+    return SOLUTIONS.filter(s => {
+      for (const [key, values] of Object.entries(selected)) {
+        if (!values || values.length === 0) continue;
+        if (!values.includes(s[key])) return false;
+      }
+      return true;
+    });
+  }, [selected]);
+
+  const facets = useMemo(() => ([
+    {key: 'sector', label: 'Sector', items: [
+      {value: 'public', label: 'Publieke sector', count: SOLUTIONS.filter(s => s.sector === 'public').length},
+      {value: 'mkb',    label: 'MKB',             count: SOLUTIONS.filter(s => s.sector === 'mkb').length},
+      {value: 'health', label: 'Zorg',            count: SOLUTIONS.filter(s => s.sector === 'health').length},
+    ]},
+    {key: 'goals', label: 'Doel', items: [
+      {value: 'compliance',  label: 'Compliance',  count: SOLUTIONS.filter(s => (s.goals||[]).includes('compliance')).length},
+      {value: 'integration', label: 'Integratie',  count: SOLUTIONS.filter(s => (s.goals||[]).includes('integration')).length},
+      {value: 'reporting',   label: 'Rapportage',  count: SOLUTIONS.filter(s => (s.goals||[]).includes('reporting')).length},
+      {value: 'workflow',    label: 'Workflow',    count: SOLUTIONS.filter(s => (s.goals||[]).includes('workflow')).length},
+    ]},
+    {key: 'status', label: 'Status', items: [
+      {value: 'production', label: 'Productie-ready', count: SOLUTIONS.filter(s => s.status === 'production').length},
+      {value: 'pilot',      label: 'Pilot',           count: SOLUTIONS.filter(s => s.status === 'pilot').length},
+    ]},
+  ]), []);
+
+  /* Goals is a multi-value field (each solution can have several goals);
+     filter accordingly, overriding the simple equality check above. */
+  const filteredFinal = useMemo(() => {
+    return SOLUTIONS.filter(s => {
+      for (const [key, values] of Object.entries(selected)) {
+        if (!values || values.length === 0) continue;
+        const sv = s[key];
+        if (Array.isArray(sv)) {
+          if (!values.some(v => sv.includes(v))) return false;
+        } else {
+          if (!values.includes(sv)) return false;
+        }
+      }
+      return true;
+    });
+  }, [selected]);
+
+  const totalSelected = Object.values(selected).reduce(
+    (n, v) => n + (Array.isArray(v) ? v.length : 0), 0
+  );
+
+  return (
+    <div style={{display: 'grid', gridTemplateColumns: '240px 1fr', gap: 56, alignItems: 'start'}}>
+      <FacetedFilters facets={facets} selected={selected} onChange={setSelected} />
+      <div>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--c-cobalt-100)', fontSize: 14, color: 'var(--c-cobalt-700)'}}>
+          <div>
+            <strong style={{color: 'var(--c-cobalt-900)'}}>{filteredFinal.length}</strong> van {SOLUTIONS.length} solutions
+            {totalSelected > 0 && <span style={{color: 'var(--c-cobalt-400)'}}> · {SOLUTIONS.length - filteredFinal.length} verborgen door filters</span>}
+          </div>
+        </div>
+        <SolutionGrid columns={2}>
+          {filteredFinal.map((s, i) => (
+            <SolutionCard
+              key={i}
+              href={s.href}
+              sector={s.sector}
+              sectorLabel={s.sectorLabel}
+              icon={s.icon}
+              title={s.title}
+              outcome={s.outcome}
+              builtOn={s.builtOn}
+            />
+          ))}
+        </SolutionGrid>
+      </div>
+    </div>
+  );
+}
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Solutions"
+    title="Wat je bereikt, niet wat we verkopen."
+    lede={<>Een <strong>app</strong> is software die we leveren. Een <strong>solution</strong> is het resultaat dat je bereikt door één of twee van die apps te installeren en te configureren. Elke solution linkt terug naar de apps waarop hij draait, zodat je precies weet wat er wordt geïnstalleerd.</>}
+  />
+
+  <FilterableSolutions />
+</Section>

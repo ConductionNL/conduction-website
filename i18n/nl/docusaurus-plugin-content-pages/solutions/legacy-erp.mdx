@@ -1,0 +1,107 @@
+---
+title: Eén legacy-ERP, alle moderne tools, Conduction
+description: OpenConnector trekt data uit je ERP, vult typed registers, en biedt een API aan elke tool die je team vandaag gebruikt. Geen middleware, geen migratie.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, Pipeline, PairRow, PairCard, CtaBanner} from '@conduction/docusaurus-preset/components';
+
+<DetailHero
+  crumb={[{label: 'Solutions', href: '/solutions'}, 'Legacy-ERP']}
+  status={{label: 'Pilot', color: 'var(--c-orange-knvb)'}}
+  version="Sector: MKB"
+  title="Eén legacy-ERP, alle moderne tools."
+  tagline={<>Je hebt Exact, Twinfield, Visma of een ander ERP dat de laatste tien jaar braaf zijn werk doet. Vervang het niet. OpenConnector trekt de data eruit, OpenRegister maakt het typed, MyDash rapporteert erover. Geen migratie, geen middleware.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  iconColor="var(--c-cobalt-700)"
+  icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+/>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Het resultaat"
+    title="Een moderne API-laag op je bestaande boekhouding."
+    align="stack"
+    lede="OpenConnector haalt klanten, facturen en urenregistratie uit je ERP. OpenRegister maakt het typed. Je nieuwe tools (MyDash, Notion, Slack, n8n) consumeren een schone REST/GraphQL-API. Het ERP blijft draaien. Niemand merkt iets."
+  />
+  <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+      title="Connector voor de Nederlandse ERP-stack."
+    >
+      Voorgebouwde adapters voor Exact Online, Twinfield, Visma.net, Yuki en AFAS. Standaard-velden gemapt naar standaard-registers.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      title="Realtime of geplande sync."
+    >
+      Webhook-based sync waar het ERP dat ondersteunt; cron-style schedule waar niet. Eerste sync vult het register, daarna alleen deltas.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/></svg>}
+      title="MyDash voor de cijfers die ertoe doen."
+    >
+      Bouw dashboards uit je registers: omzet per klant, urenproductiviteit, openstaande facturen. Geen aparte BI-tool, geen ETL.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
+      title="Open API voor andere tools."
+    >
+      OpenRegister biedt een schone REST-API plus GraphQL-endpoint. Notion, Slack, n8n, Zapier, je eigen scripts, alles consumeert direct.
+    </FeatureItem>
+  </FeatureList>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Hoe het werkt"
+    title="Vier stappen, geen migratie."
+    align="stack"
+  />
+  <Pipeline
+    start={{label: 'Bronnen', items: ['Exact Online', 'Twinfield', 'Visma.net', 'AFAS']}}
+    steps={[
+      {number: '01', kicker: 'Ophalen', name: 'OpenConnector', caption: 'Haalt data uit je bestaande ERP via REST of webhook.'},
+      {number: '02', kicker: 'Typeren', name: 'OpenRegister', caption: 'Schema-gevalideerde, typed registers. Audit-trail.'},
+      {number: '03', kicker: 'Aanbieden', name: 'REST + GraphQL', caption: 'Schone API voor je nieuwe tools en integraties.'},
+      {number: '04', kicker: 'Tonen', name: 'MyDash', caption: 'Dashboards, KPIs, omzet-per-klant uit dezelfde registers.'},
+    ]}
+    end={{label: 'Afnemers', items: ['MyDash', 'Notion', 'Slack / Teams', 'n8n']}}
+  />
+</Section>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Gebouwd op"
+    title="Drie apps, geen middleware."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/openconnector"
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+      name="OpenConnector"
+      why="De integratielaag. Trekt data uit je ERP zonder glue-code."
+    />
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="Typed-data-foundation. REST en GraphQL-API rolt uit het schema."
+    />
+    <PairCard
+      href="/apps/mydash"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/></svg>}
+      name="MyDash"
+      why="Dashboards en KPIs uit dezelfde registers. Geen ETL-team nodig."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="Geen ERP-migratie. Wel moderne tools."
+  lede="Drie apps, één configuratie. Het bestaande ERP blijft de system of record. Je nieuwe tools praten met de schone register-API. Productie binnen twee weken."
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+/>
