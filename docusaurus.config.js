@@ -133,7 +133,7 @@ module.exports = createConfig({
           {label: 'About',          to: '/about'},
           {label: 'Open source',    to: '/about#opensource'},
           {label: 'Team',           to: '/about#team'},
-          {label: 'Case studies',   to: '/academy?type=case-study'},
+          {label: 'Way of Work',    href: 'https://docs.conduction.nl/WayOfWork/way-of-work/'},
           {label: 'ISO',            to: '/iso'},
           {label: 'Identity',       href: 'https://identity.conduction.nl/'},
         ],
