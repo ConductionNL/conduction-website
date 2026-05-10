@@ -1,0 +1,277 @@
+---
+slug: deskdesk-tutorial-4-knowledge-and-ship
+title: "Build a Nextcloud app on the Conduction stack — Part 4: Knowledge + ship"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-17
+summary: Author zone-specific knowledge articles in xWiki, surface them per-desk via OpenConnector, package the app, publish to the Conduction app store.
+tags: [App development, OpenConnector, xWiki, Knowledge management, Release]
+apps: [openconnector, openregister]
+durationMinutes: 30
+series: deskdesk-tutorial
+partNumber: 4
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+} from '@conduction/docusaurus-preset/components';
+
+The final part of the four-part DeskDesk tutorial. Part 3 made bookings appear in NC Calendar with one schema annotation. Part 4 brings external knowledge — zone-specific etiquette, equipment notes, troubleshooting — from xWiki into the desk detail sidebar via OpenConnector. Then we package the app and ship it.
+
+External knowledge integration is the canonical case for OpenConnector: pull data from a system you don't own (xWiki here, but the same applies to Confluence, Notion, SharePoint, Decos, Mendix), surface it inside Nextcloud-native UI without making the user context-switch.
+
+{/* truncate */}
+
+<Outcomes title="What you'll have at the end of Part 4">
+  <Outcome>Three xWiki articles you author yourself, tagged by floor zone (<code>zone:east</code>, <code>zone:central</code>, <code>zone:west</code>) so they can be filtered.</Outcome>
+  <Outcome>A working OpenConnector source pointing at xWiki's REST API, queryable by tag.</Outcome>
+  <Outcome>A "Knowledge" tab on every desk's detail page that lists the articles whose <code>zone</code> tag matches the desk's zone — without leaving DeskDesk.</Outcome>
+  <Outcome>A versioned, packaged DeskDesk release on the Conduction app store, installable from any Nextcloud's app browser.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Where you should be">
+  <PrerequisiteItem>Parts 1–3 done: DeskDesk shell, schemas + manifest, calendar integration all working.</PrerequisiteItem>
+  <PrerequisiteItem><strong>OpenConnector</strong> installed and enabled (Apps → search "OpenConnector" → Download).</PrerequisiteItem>
+  <PrerequisiteItem><strong>An xWiki instance</strong> you can reach over HTTP. Either a public xwiki.org wiki you authored on, or a self-hosted one. The tutorial uses <code>https://your-xwiki.example.com/xwiki/rest</code> as the placeholder.</PrerequisiteItem>
+</Prerequisites>
+
+## Step 1: Author the knowledge articles in xWiki
+
+xWiki ships with a default "Sandbox" space. For tutorial purposes, create a fresh space called **DeskDesk Knowledge** and author three articles inside it.
+
+```
+Space:    DeskDesk Knowledge
+Article:  East zone etiquette
+Tags:     zone:east, deskdesk
+Body:     The east windows get direct sun 14:00–17:00 in summer. Bring
+          a curtain clip from the supplies cabinet on floor 3. Phone
+          calls are fine in this zone — phonebooths are a 30-second
+          walk away.
+```
+
+```
+Article:  Central zone meeting desks
+Tags:     zone:central, deskdesk, meetings
+Body:     Central desks 11–14 seat four. The cabling channel under each
+          desk has two HDMI ports + USB-C 100W power. Camera + mic in
+          the ceiling are wired into the in-room Jitsi instance — see
+          the QR code on the desk.
+```
+
+```
+Article:  West zone quiet rules
+Tags:     zone:west, deskdesk, focus
+Body:     The west zone is the designated quiet zone. No calls, no
+          meetings. Keep notifications muted. The kitchen is on the
+          opposite side of the floor for a reason.
+```
+
+Three short articles. Realistic enough that you'd actually write them in production. The key piece is the **`zone:` tag**: that's what we'll filter by from DeskDesk.
+
+Why the tutorial walks you through authoring instead of seeding programmatically: in real teams, the wiki articles are *organic* — written by whoever notices the etiquette gap, edited by the next person, archived when the floorplan changes. The integration we build makes them findable from where the user already is, not the other way around.
+
+## Step 2: Create an OpenConnector source for xWiki
+
+Go to `/apps/openconnector/sources` and create a new source.
+
+```
+Name:       xWiki Knowledge
+Type:       API
+Location:   https://your-xwiki.example.com/xwiki/rest
+Auth:       Basic — username = your wiki user, password = your wiki API token
+Test:       GET /wikis/xwiki/spaces/DeskDesk%20Knowledge/pages
+```
+
+The "Test" call should return the three pages you just authored. xWiki's REST API uses XML by default; pass `Accept: application/json` to get JSON back. OpenConnector's source config has a Headers section — add `Accept: application/json` there.
+
+Save. The source's id (numeric, in the URL) is what we'll reference from DeskDesk.
+
+## Step 3: Define the synchronisation
+
+Sources surface raw API responses; **synchronisations** map them into OpenRegister objects. Create a synchronisation:
+
+```
+Name:                xWiki articles → OpenRegister
+Source:              xWiki Knowledge (the one you just made)
+Source endpoint:     /wikis/xwiki/spaces/DeskDesk Knowledge/pages
+Target register:     deskdesk
+Target schema:       knowledge_article  (you'll add this in step 4)
+Mapping:             title → name
+                     content → body
+                     tags → tags
+                     id → externalId
+Schedule:            every 30 minutes (or on demand)
+```
+
+Save and run once. You'll see three new `knowledge_article` objects appear in OpenRegister.
+
+## Step 4: Add the knowledge_article schema
+
+Add a fourth schema to `lib/Settings/deskdesk_register.json`:
+
+```json title="lib/Settings/deskdesk_register.json (excerpt)"
+"knowledge_article": {
+  "slug": "knowledge-article",
+  "title": "KnowledgeArticle",
+  "description": "An xWiki article surfaced in DeskDesk via OpenConnector. Read-only — the source of truth lives in xWiki.",
+  "type": "object",
+  "required": ["name"],
+  "properties": {
+    "name":       { "type": "string", "description": "Article title" },
+    "body":       { "type": "string", "description": "Article markdown body" },
+    "tags":       { "type": "array", "items": { "type": "string" } },
+    "externalId": { "type": "string", "description": "xWiki page id" },
+    "url":        { "type": "string", "format": "uri", "description": "Permalink to the article in xWiki" }
+  }
+}
+```
+
+Add it to the register's `schemas` array (`floor`, `desk`, `booking`, `knowledge_article`). Bump versions, re-import. The four schemas are now in place.
+
+## Step 5: Surface articles in CnObjectSidebar
+
+The desk-detail page already mounts CnObjectSidebar via the manifest. We want a **"Knowledge" tab** on that sidebar, populated by knowledge articles whose `zone:` tag matches the desk's zone.
+
+Two options:
+
+1. **Add a custom sidebar component** registered in the customComponents registry, which renders the article list when the desk's zone resolves to a tag query.
+2. **Use the schema's `relatedSources` annotation** (if it exists in your OpenRegister version) to declare the relation declaratively.
+
+For the tutorial we'll use option 1, which is the most portable. Register the sidebar component in `src/main.js`:
+
+```js title="src/main.js (excerpt)"
+import KnowledgeTab from './sidebar/KnowledgeTab.vue'
+
+const customComponents = {
+  'knowledge-tab': KnowledgeTab,
+}
+
+new Vue({
+  /* ... */
+  provide: { cnCustomComponents: customComponents },
+})
+```
+
+And the component itself:
+
+```vue title="src/sidebar/KnowledgeTab.vue"
+<template>
+  <NcAppSidebarTab id="knowledge" :name="t('deskdesk', 'Knowledge')" :icon-svg="bookSvg">
+    <CnObjectCard v-for="article in articles" :key="article.id" :title="article.name">
+      <p v-html="article.body"></p>
+      <a :href="article.url" target="_blank">{{ t('deskdesk', 'Open in xWiki') }}</a>
+    </CnObjectCard>
+    <NcEmptyContent v-if="!articles.length" :name="t('deskdesk', 'No articles for this zone yet')" />
+  </NcAppSidebarTab>
+</template>
+
+<script>
+import { NcAppSidebarTab, NcEmptyContent } from '@conduction/nextcloud-vue'
+import { CnObjectCard, useObjectStore } from '@conduction/nextcloud-vue'
+export default {
+  components: { NcAppSidebarTab, NcEmptyContent, CnObjectCard },
+  props: { object: Object }, // injected by CnObjectSidebar — the current desk
+  data: () => ({ articles: [] }),
+  watch: {
+    'object.zone': {
+      immediate: true,
+      async handler(zone) {
+        if (!zone) return
+        const store = useObjectStore()
+        const result = await store.search('knowledge_article', { tag: `zone:${zone}` })
+        this.articles = result.results
+      }
+    }
+  }
+}
+</script>
+```
+
+Wire it into the manifest's desks-detail page:
+
+```json title="src/manifest.json (excerpt)"
+{
+  "id": "desks-detail",
+  "route": "/desks/:id",
+  "type": "detail",
+  "config": {
+    "register": "deskdesk",
+    "schema": "desk",
+    "sidebar": {
+      "tabs": [
+        { "id": "knowledge", "component": "knowledge-tab" }
+      ]
+    }
+  }
+}
+```
+
+Build, reload, navigate to `/desks/desk-3-east-12`. The right sidebar shows a "Knowledge" tab. Click it. The "East zone etiquette" article you wrote in xWiki appears, with the body rendered and a link back to the wiki for editing.
+
+## Step 6: Package the app
+
+The release process is mechanical:
+
+1. **Bump the version** in `appinfo/info.xml` (`<version>0.1.0</version>` → `<version>0.4.0</version>`).
+2. **Run the production build**:
+   ```bash
+   composer install --no-dev --optimize-autoloader
+   npm install --legacy-peer-deps
+   npm run build
+   ```
+3. **Strip unwanted files** — vendor dev dependencies, node_modules, tests, openspec changes, .git, .github (your CI is already at the source level). The template ships a `Makefile` target for this; if not, the production tarball pattern is:
+   ```bash
+   tar --exclude=node_modules --exclude=vendor/bin \
+       --exclude=tests --exclude=openspec/changes \
+       --exclude=.git --exclude=.github \
+       -czf deskdesk-0.4.0.tar.gz deskdesk/
+   ```
+4. **Sign the tarball** with the EC key Nextcloud's app store expects (see [the Nextcloud docs](https://nextcloudappstore.readthedocs.io/en/latest/developer.html#publishing-your-app)).
+5. **Push to GitHub** with a tag matching the version (`git tag v0.4.0 && git push origin v0.4.0`). The template ships a `.github/workflows/release.yml` that picks up the tag, builds the tarball, signs it, and publishes the release.
+
+For the **Conduction app store** (`apps.conduction.nl`), the same release pipeline pushes to that endpoint when the secret is configured. See [the .github/workflows/release.yml](https://github.com/ConductionNL/nextcloud-app-template/blob/main/.github/workflows/release.yml) reference.
+
+## Step 7: Submit to apps.nextcloud.com (optional)
+
+If you want DeskDesk in the public Nextcloud app store, register at [apps.nextcloud.com](https://apps.nextcloud.com), upload your signed tarball, fill out the form (description, screenshots, license — EUPL-1.2 is fine — categories `organization`), and wait for review. The cycle is usually 1–3 days for first-time apps.
+
+## What you've built
+
+You started Part 1 with an empty template. Forty-eight steps later, you have:
+
+- A real Nextcloud app with the canonical chassis
+- Three OpenRegister schemas with relations and seed data
+- A manifest-driven shell with zero hand-rolled views
+- Bookings that appear in NC Calendar via a schema annotation
+- Knowledge articles from xWiki that appear in the desk-detail sidebar
+- A versioned, packaged, publishable release
+
+Total Vue you wrote: **one custom sidebar component** (~30 lines). Total PHP: the rename ritual + a path-resolution fix in SettingsService. Everything else is JSON.
+
+That ratio — JSON describing what you want, framework rendering it — is the entire point of the Conduction stack. Schemas drive both backend and frontend. Manifests drive the shell. Schema annotations drive cross-app integrations. You declare; the framework renders.
+
+## Where to next
+
+<NextSteps>
+  <NextStep
+    title="The component reference"
+    href="https://nextcloud-vue.conduction.nl/docs/components/"
+    description="Browse every Cn* component the library ships. Live playgrounds, prop tables, slot reference. The 43 components you didn't have to write."
+  />
+  <NextStep
+    title="Conduction app catalogue"
+    href="https://www.conduction.nl/apps"
+    description="See how Procest, OpenCatalogi, MyDash, and the rest compose the same patterns. DeskDesk now joins them."
+  />
+  <NextStep
+    title="Build something else"
+    href="/academy/build-an-app"
+    description="The 30-minute end-to-end overview tutorial. Or fork DeskDesk into your own use case — the template is a snapshot, your app is the journey."
+  />
+</NextSteps>
