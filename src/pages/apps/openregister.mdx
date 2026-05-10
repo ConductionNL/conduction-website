@@ -4,7 +4,7 @@ description: Schema-driven object store with audit trail. The data foundation un
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, CtaBanner, AppMock, WidgetMock, SidebarMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
 
 <DetailHero
   appId="openregister"
@@ -182,14 +182,32 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
       title: 'Mail and Files',
       summary: 'Open an email or a file and the sidebar shows every register row that references it. One click jumps to the row, another links the email or file back to a different row. The register stays the system of record; the workspace stays where the work happens.',
       cta: {label: 'See the integration guide', href: 'https://docs.conduction.nl/openregister/mail-files'},
-      panel: <AppMock app="openregister" />,
+      panel: <MockScene
+        width={680}
+        height={420}
+        items={[
+          {type: 'sidebar', kind: 'openregister-metadata',  x: 200, y: 10,  size: 'md', z: 1},
+          {type: 'widget',  kind: 'nextcloud-mail',         x: 0,   y: 0,   size: 'sm', z: 2},
+          {type: 'widget',  kind: 'nextcloud-files',        x: 0,   y: 230, size: 'sm', z: 2},
+          {type: 'widget',  kind: 'openregister-activity',  x: 460, y: 60,  size: 'sm', z: 0},
+        ]}
+      />,
     },
     {
       id: 'windmill-n8n',
       title: 'Windmill and n8n',
-      summary: 'Trigger workflows on register events. New row, schema change, validation failure, archive transition — each one fires a webhook your Windmill or n8n flow can consume. Outcomes write back to the row.',
+      summary: 'Trigger workflows on register events. New row, schema change, validation failure, archive transition: each one fires a webhook your Windmill or n8n flow can consume. Outcomes write back to the row.',
       cta: {label: 'See the workflow examples', href: 'https://docs.conduction.nl/openregister/windmill-n8n'},
-      panel: <AppMock app="openconnector" />,
+      panel: <MockScene
+        width={680}
+        height={420}
+        items={[
+          {type: 'sidebar', kind: 'openconnector-run-detail', x: 220, y: 10,  size: 'md', z: 1},
+          {type: 'widget',  kind: 'openregister-activity',    x: 0,   y: 0,   size: 'sm', z: 2},
+          {type: 'widget',  kind: 'openconnector-runs',       x: 0,   y: 230, size: 'sm', z: 2},
+          {type: 'widget',  kind: 'procest-werkvoorraad',     x: 480, y: 80,  size: 'sm', z: 0},
+        ]}
+      />,
     },
     {
       id: 'llms',
