@@ -11,7 +11,7 @@ durationMinutes: 20
 
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, ContactCta} from '@conduction/docusaurus-preset/components';
 
-Een Nextcloud opzetten kan op drie manieren, en de "beste" hangt af van wie je bent en wat je al draait. Een homelab op een NUC vraagt iets anders dan een gemeente met tien bestuurslagen en een ISO-audit. Deze tutorial zet de drie hoofdopties naast elkaar, met voor- en nadelen en een beslismatrix om snel te kiezen. Niets vervangt de officiële [Nextcloud admin docs](https://docs.nextcloud.com/server/latest/admin_manual/), maar dit is de korte route naar de juiste hoofdstukken.
+Een Nextcloud opzetten kan op drie manieren, en de "beste" hangt af van wie je bent en wat je al draait. Een homelab op een mini-pc vraagt iets anders dan een gemeente met tien bestuurslagen en een ISO-audit. Deze tutorial zet de drie hoofdopties naast elkaar, met voor- en nadelen en een beslismatrix om snel te kiezen. Niets vervangt de officiële [Nextcloud admin docs](https://docs.nextcloud.com/server/latest/admin_manual/), maar dit is de korte route naar de juiste hoofdstukken.
 
 {/* truncate */}
 
@@ -23,7 +23,7 @@ Een Nextcloud opzetten kan op drie manieren, en de "beste" hangt af van wie je b
 </Outcomes>
 
 <Prerequisites title="Wat je nodig hebt">
-  <PrerequisiteItem>Een idee van je doelgroep: alleen jezelf, een klein team, of een productiedienst voor meerdere klanten.</PrerequisiteItem>
+  <PrerequisiteItem>Een idee van je doelgroep: alleen jezelf, een klein team, of een productiedienst voor meerdere gebruikers.</PrerequisiteItem>
   <PrerequisiteItem>Basiskennis Linux-server-admin (SSH, een package manager, systemd) helpt, maar is geen harde eis voor optie 2.</PrerequisiteItem>
   <PrerequisiteItem>Voor optie 3: een werkend Kubernetes-cluster (eigen of beheerd). Geen cluster? Optie 3 is niet voor jou — kies optie 2.</PrerequisiteItem>
 </Prerequisites>
@@ -57,7 +57,7 @@ De klassieke route: LAMP-stack op een Linux-server, Nextcloud uitpakken in `/var
 
 **Complexiteit:** Hoog initieel (LAMP-stack opzetten, TLS-certificaten, php-fpm tunen). Daarna middelmatig (Nextcloud-major-upgrades vereisen handwerk via `occ upgrade`).
 
-**Schaalbaarheid:** Een enkel VM met 8 vCPU en 16 GB RAM trekt een paar honderd actieve users. Voor meer wil je een [scale-out-setup](https://docs.nextcloud.com/server/latest/admin_manual/installation/deployment_recommendations.html): meerdere Nextcloud-frontends achter een load balancer, met gedeelde Redis, gedeelde S3-compatibele object storage en een aparte database-host. Dat kán op bare metal, maar dan ben je effectief Kubernetes aan het uitvinden zonder Kubernetes te draaien.
+**Schaalbaarheid:** Verticaal door je VM groter te maken. Voor horizontaal schaal-uit gebruik je Nextcloud's [scale-out-aanwijzingen](https://docs.nextcloud.com/server/latest/admin_manual/installation/deployment_recommendations.html): meerdere Nextcloud-frontends achter een load balancer, gedeelde Redis, gedeelde S3-compatibele object storage, en een aparte database-host. Concrete sizing hangt af van je werklast — raadpleeg de officiële documentatie voor richtgetallen.
 
 **Documentatie:** [Manual installation on Linux](https://docs.nextcloud.com/server/latest/admin_manual/installation/source_installation.html), en de [example installation on Ubuntu 24.04](https://docs.nextcloud.com/server/latest/admin_manual/installation/example_ubuntu.html).
 
@@ -67,7 +67,7 @@ Het brede midden. Twee smaken:
 
 ### 2a. Docker Compose
 
-Eigen `docker-compose.yml`, de officiële [`nextcloud`-image](https://hub.docker.com/_/nextcloud), Postgres en Redis ernaast. Dit is hoe wij Conduction-apps draaien voor de meeste klanten en hoe je [lokaal Nextcloud draait](/academy/nextcloud-lokaal-draaien). Volledige config-controle, je eigen reverse proxy ervoor (Traefik, Caddy, Nginx Proxy Manager), je eigen TLS-routine.
+Eigen `docker-compose.yml`, de officiële [`nextcloud`-image](https://hub.docker.com/_/nextcloud), Postgres en Redis ernaast. Dit is hoe wij Conduction-apps draaien voor de meeste gebruikers en hoe je [lokaal Nextcloud draait](/academy/nextcloud-lokaal-draaien). Volledige config-controle, je eigen reverse proxy ervoor (Traefik, Caddy, Nginx Proxy Manager), je eigen TLS-routine.
 
 ### 2b. Nextcloud AIO (All-in-One)
 
@@ -99,7 +99,7 @@ Voor die scenario's: Docker Compose, met je eigen wiring.
 
 **Complexiteit:** Laag voor AIO (één commando, browser-wizard). Middelmatig voor eigen compose (compose-bestand schrijven, TLS regelen, backups bedenken).
 
-**Schaalbaarheid:** Beide opties zijn single-host. Voor échte horizontale schaal moet je richting Kubernetes of bare-metal scale-out. Voor 99% van de teams is single-host op een fatsoenlijke VM ruim voldoende — een dual-core 8 GB host trekt makkelijk dertig à vijftig actieve users.
+**Schaalbaarheid:** Beide opties zijn primair single-host. Voor horizontale schaal-uit ga je richting Kubernetes of bare-metal scale-out. Voor de meeste teams blijft single-host op een goed gesized VM ruim voldoende; concrete sizing hangt af van werklast en is een kwestie van meten.
 
 **Documentatie:** [Docker image](https://hub.docker.com/_/nextcloud) en [Nextcloud AIO repo](https://github.com/nextcloud/all-in-one).
 
@@ -129,7 +129,7 @@ Drie commando's, maar de echte werk zit in de `values.yaml`: ingress, certmanage
 
 **Complexiteit:** Hoog. Begin niet aan deze chart als je niet zelfstandig een `kubectl describe pod` kunt interpreteren en weet wat een StorageClass doet.
 
-**Schaalbaarheid:** Hoog. Meerdere Nextcloud-pods achter een service, gedeelde primary storage op S3, gedeelde Redis, externe gemanagede database. Dit is de enige optie die multi-region, multi-tenant tot in de honderden actieve users per minuut realistisch dekt.
+**Schaalbaarheid:** Hoog. Meerdere Nextcloud-pods achter een service, gedeelde primary storage op S3, gedeelde Redis, externe gemanagede database. Dit is de route die multi-region en multi-tenant realistisch ondersteunt, met horizontale schaal-uit als eerste-klas concept in plaats van als nabouw.
 
 **Documentatie:** [`nextcloud/helm` README](https://github.com/nextcloud/helm) en de [scaling deployment recommendations](https://docs.nextcloud.com/server/latest/admin_manual/installation/deployment_recommendations.html).
 
@@ -147,7 +147,7 @@ Lees van links naar rechts. Eerste match wint.
 | Multi-tenant productie | 100+ per tenant | Horizontaal | Hoog, K8s-kennis aanwezig | **Optie 3 (Kubernetes)** |
 | Multi-tenant productie | 100+ per tenant | Horizontaal | K8s niet in huis | **Optie 1 scale-out** of een gemanagede aanbieder |
 
-Als je twijfelt tussen 2a en 2b: begin met **AIO**. Loop je tegen de [AIO-limitaties](https://github.com/nextcloud/all-in-one#limitations) (sub-directory, meerdere domeinen, non-standaard poort), migreer dan naar 2a — dat is een avond werk met een database-export.
+Als je twijfelt tussen 2a en 2b: begin met **AIO**. Loop je tegen de [AIO-limitaties](https://github.com/nextcloud/all-in-one#limitations) (sub-directory, meerdere domeinen, non-standaard poort), migreer dan naar 2a met een database-export.
 
 ## Aandachtspunten voor elke productie-Nextcloud
 
@@ -181,7 +181,7 @@ Redis als distributed memcache is verplicht zodra je meer dan één PHP-proces h
 
 Conduction levert apps die op de officiële Nextcloud-image draaien — onafhankelijk van hostingkeuze. Wat we in de praktijk zien:
 
-- **De meeste Conduction-klanten:** optie 2a, Docker Compose, met externe Postgres en S3-primary-storage, achter Traefik. Voorspelbaar, debugbaar, en je leest het terug in één compose-file.
+- **De meeste Conduction-gebruikers:** optie 2a, Docker Compose, met externe Postgres en S3-primary-storage, achter Traefik. Voorspelbaar, debugbaar, en je leest het terug in één compose-file.
 - **Homelabs en eerste demo's:** optie 2b (AIO) of [`docker-compose up`](/academy/nextcloud-lokaal-draaien). Tien minuten van niets naar werkende cloud.
 - **Grote multi-tenant deployments:** optie 3, Helm, met cert-manager en gemanagede database. Zeldzaam, maar wel groeiend.
 
