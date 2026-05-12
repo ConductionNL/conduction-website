@@ -1,0 +1,193 @@
+---
+slug: openspec-tutorial-1-wat-is-openspec
+title: "OpenSpec leerlijn — Deel 1: Wat is OpenSpec?"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-12
+summary: Een korte introductie op OpenSpec, het spec-first framework dat onder vrijwel al onze projecten draait. Wat een spec is, wat een change is, en waarom we dingen eerst opschrijven voor we ze bouwen. Eerste van twee korte modules.
+tags: [OpenSpec, Spec-first, Tutorial series, Documentation]
+apps: []
+durationMinutes: 12
+series: openspec-tutorial
+partNumber: 1
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
+
+[OpenSpec](https://openspec.dev) is een lichtgewicht framework voor **spec-driven development**: eerst opschrijven wat een feature moet doen, dan pas code schrijven. In deze module van twaalf minuten leer je wat OpenSpec is, welke begrippen erin zitten, en waarom we het bij Conduction onder vrijwel elk project gebruiken. Aan het eind sta je klaar voor deel 2, waarin je je eerste change daadwerkelijk schrijft.
+
+{/* truncate */}
+
+<Outcomes title="Wat je leert in dit deel">
+  <Outcome>Wat OpenSpec is in één zin, en wat het verschil is met een losse README of een ticket.</Outcome>
+  <Outcome>De vier kernbegrippen: <strong>spec</strong>, <strong>requirement</strong>, <strong>scenario</strong> en <strong>change</strong> — en hoe ze samenhangen.</Outcome>
+  <Outcome>Waarom we spec-first werken, en wanneer dat zichzelf terugverdient.</Outcome>
+  <Outcome>Hoe een OpenSpec-project op schijf is opgebouwd, zodat je weet waar je moet kijken.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Basiskennis Git en Markdown. We schrijven specs in <code>.md</code>-bestanden die in je repo leven.</PrerequisiteItem>
+  <PrerequisiteItem>Een werkende ontwikkelmachine. Heb je die nog niet? Volg eerst <a href="/academy/nextcloud-lokaal-draaien">Nextcloud lokaal draaien met Docker</a>.</PrerequisiteItem>
+  <PrerequisiteItem>Toegang tot een Conduction-project waarin je rondkijken kan — een willekeurige app zoals <a href="https://github.com/ConductionNL/openregister">openregister</a> of <a href="https://github.com/ConductionNL/opencatalogi">opencatalogi</a> volstaat.</PrerequisiteItem>
+</Prerequisites>
+
+## In één zin
+
+OpenSpec is een **lichtgewicht conventie voor het bijhouden van requirements naast je code**. De spec leeft in je repo, in Markdown, en evolueert per change in een nette spec-delta — net zoals je code evolueert per commit.
+
+Geen Confluence-pagina die uit sync raakt met de code. Geen Jira-ticket dat alleen jij begrijpt. Geen losse README waarin de echte regels verstopt zitten tussen voorbeelden. Eén plek voor het *wat*, één plek voor het *hoe*.
+
+## Waarom spec-first?
+
+In de praktijk gaat code schrijven sneller dan een spec bedenken. Dus waarom eerst die extra stap?
+
+1. **Aannames vooraf opdrogen.** Wat lijkt op één feature blijkt vaak vier features tegelijk. Door eerst de scenario's op te schrijven, ontdek je gaten en tegenstrijdigheden vóór de code geschreven is — niet erna in een PR-review.
+2. **AI-agenten productief maken.** Onze [Hydra-pipeline](/academy/hydra-tutorial-1-wat-is-hydra) bouwt code uit specs. Hoe scherper de spec, hoe minder bijsturen achteraf. Dezelfde wet geldt voor je menselijke teamleden in een handover.
+3. **Een audit-trail die niet jokt.** Elke change zit in een eigen mapje met een proposal, een spec-delta, een design en een takenlijst. Een halfjaar later weet je nog precies wat er besloten is en waarom.
+4. **Reviewers één bron.** Reviewer ziet de spec-delta en de code naast elkaar. Klopt de code met de spec? Niet "wat had de ontwikkelaar bedoeld", maar "wat staat er".
+
+## De vier kernbegrippen
+
+OpenSpec rust op vier woorden die je terug zult zien in elk project. Een halfuur investeren in deze begrippen scheelt later veel verwarring.
+
+<HexCard title="Spec (capability)">
+  De stabiele beschrijving van een capability — een coherent stuk gedrag dat de app aanbiedt. Eén spec per capability. Lange leefduur.
+</HexCard>
+
+<HexCard title="Requirement">
+  Eén regel binnen een spec. Geschreven met <strong>MUST / SHOULD / MAY</strong> (RFC 2119). Genummerd als <code>REQ-001</code>, <code>REQ-002</code>, enzovoort.
+</HexCard>
+
+<HexCard title="Scenario">
+  Concreet voorbeeld bij een requirement, in <strong>GIVEN / WHEN / THEN</strong>-vorm. Toetsbaar, niet beschrijvend. Per requirement minstens één.
+</HexCard>
+
+<HexCard title="Change">
+  Eén verandering aan een of meer specs. Tijdelijk: begint als voorstel, eindigt gearchiveerd. Bevat een proposal, een spec-delta en een takenlijst.
+</HexCard>
+
+### Hoe ze samenhangen
+
+```
+openspec/
+├── specs/                          ← stabiel — capabilities
+│   └── publications/spec.md        ← bevat REQ-001, REQ-002, … en scenarios
+└── changes/                        ← tijdelijk — wijzigingen in flight
+    └── add-publication-search/
+        ├── proposal.md             ← waarom en wat
+        ├── specs/publications/     ← ADDED / MODIFIED / REMOVED requirements
+        │   └── spec.md
+        ├── design.md               ← hoe (technisch)
+        └── tasks.md                ← implementatie-checklist
+```
+
+Een **change** voegt requirements toe aan, wijzigt of verwijdert requirements uit een **spec**. Zolang de change open staat, leeft de delta in `changes/`. Bij archivering verhuist de delta naar de hoofd-spec en gaat het hele mapje naar `changes/archive/YYYY-MM-DD-<name>/`. Daarmee houd je een complete geschiedenis.
+
+## Een requirement in het wild
+
+Even concreet. Dit is een echte requirement zoals je ze in onze repos tegenkomt:
+
+```markdown
+### REQ-001: Volledige tekstzoekfunctie
+Het systeem MOET full-text zoeken ondersteunen over publicatie-titels
+en -inhoud met behulp van PostgreSQL's tsvector.
+
+#### Scenario: Zoekopdracht levert overeenkomende publicaties op
+- GIVEN publicaties met titels "Klimaatrapport 2026" en "Begrotingsoverzicht"
+- WHEN een gebruiker zoekt op "klimaat"
+- THEN MOETEN de resultaten "Klimaatrapport 2026" bevatten
+- AND MOGEN de resultaten "Begrotingsoverzicht" NIET bevatten
+- AND MOETEN de resultaten op relevantiescore gesorteerd zijn
+```
+
+Drie dingen om te zien:
+
+- **MOET** is geen stijlkeuze. RFC 2119 maakt onderscheid tussen MUST (absoluut), SHOULD (sterk aanbevolen, uitzonderingen mogelijk) en MAY (optioneel). Een reviewer leest dat woord en weet wat de bedoeling is.
+- Het **scenario** is concreet genoeg om een test uit te schrijven. Iemand anders zou hetzelfde gedrag moeten kunnen bouwen zonder met je te overleggen.
+- **Implementatie-vrij.** Geen klassennamen, geen controllers, geen tabelnamen. Die horen in `design.md`, niet hier. De spec beschrijft *gedrag*, niet *implementatie*.
+
+## Spec versus README versus Jira
+
+Een veel gestelde vraag bij nieuwe mensen: "wat schrijf ik dan nog in de README, en wat in Jira?" Eenvoudige vuistregel:
+
+| Document | Bevat | Lezer | Updatefrequentie |
+| --- | --- | --- | --- |
+| **`openspec/specs/`** | Het *wat* — requirements en scenario's. Stabiel gedrag van de app. | Reviewers, AI-agenten, latere developers | Per change |
+| **`openspec/changes/`** | Een *verandering* — voorstel, delta, design en tasks van één in-flight change. | Reviewers tijdens de PR | Eénmalig per change |
+| **`README.md`** | Hoe zet je de app op. Hoe draai je hem. Hoe lever je iets aan. | Nieuwe developers, eerste sessie | Bij doorbroken setup-stap |
+| **GitHub Issue** | Eén concrete taak — gekoppeld aan een change. Status, blocker, discussie. | Wie de taak oppakt | Continu tijdens het werk |
+
+De gulden regel: **gedrag van de app hoort in de spec**. Als je merkt dat je hetzelfde uitlegt in een ticket, een Slack-bericht en de PR-beschrijving, mis je vermoedelijk een spec.
+
+## Wanneer geen OpenSpec?
+
+Spec-first is geen religie. Twee situaties waarin we het overslaan:
+
+- **Een eenmalige tweak** — typo's, één rij toevoegen aan een vertaalbestand, een dependency bumpen. Spec-overhead is hier groter dan de tweak zelf.
+- **Een exploratief prototype** — als je nog niet weet of het idee überhaupt werkt. Schrijf eerst een vieze proof-of-concept om aannames te toetsen, sloop hem weg, en schrijf daarna pas de spec voor de versie die wél in productie gaat.
+
+Voor alles daartussen — een nieuwe feature, een breaking change, een refactor met gevolgen voor consumers — loont OpenSpec zich.
+
+## Hoe ziet een Conduction-repo eruit?
+
+Onze projecten hebben allemaal dezelfde OpenSpec-mappenstructuur. Eén keer kijken in [openregister/openspec](https://github.com/ConductionNL/openregister/tree/development/openspec) geeft je een goed beeld:
+
+- `openspec/specs/` — de capabilities van deze app, één map per domein
+- `openspec/changes/` — de in-flight changes (vaak één per open PR)
+- `openspec/changes/archive/` — afgeronde changes, met datum vooraan, voor de geschiedenis
+- `openspec/architecture/` — repo-specifieke ADR's (architecturele besluiten)
+- `openspec/project.md` — high-level overzicht, bedoeld als instap
+
+Bedrijfsbrede ADR's leven niet in elke app, maar in [hydra/openspec/architecture](https://github.com/ConductionNL/hydra/tree/main/openspec/architecture). Bouw je in een app van Conduction? Dan gelden die ADR's ook voor jou — onze AI-pipeline trekt ze automatisch in elke build.
+
+## Wie schrijft de specs?
+
+Twee patronen, naast elkaar:
+
+1. **Handmatig door een developer of architect** — met behulp van [`/opsx-ff`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md) of [`/opsx-new`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md) in Claude Code. Dat is wat je in deel 2 gaat doen.
+2. **Retrofit op een bestaande app** — voor legacy-code die er was vóór OpenSpec. Zie [retrofit.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/retrofit.md). Niet je eerste klus.
+
+Welke route ook gebruikt wordt, het eindresultaat ziet er identiek uit: een nette change in `openspec/changes/` met de vier verwachte artefacten.
+
+## Pluvo-vragen
+
+Vijf begripsvragen om dit deel af te ronden. Antwoorden staan in de tekst hierboven.
+
+1. **Wat is het kernverschil tussen een spec en een change?**
+   *(Hint: één is stabiel en lang levend, de ander is tijdelijk en hoort bij één wijziging.)*
+
+2. **Waarom schrijven we eerst een spec-delta voordat we code aanpassen?**
+   *(Hint: minstens twee voordelen zitten in deze module — denk aan aannames en aan reviewers.)*
+
+3. **Wat zijn de drie bouwstenen waarmee je in OpenSpec gedrag beschrijft, en welke functie heeft een scenario?**
+   *(Hint: spec → requirement → scenario. Een scenario maakt iets *toetsbaar*.)*
+
+4. **Waar staan de in-flight changes in een Conduction-project, en wat gebeurt er met een change als hij klaar is?**
+   *(Hint: kijk in <code>openspec/changes/</code> en in <code>openspec/changes/archive/</code>.)*
+
+5. **Noem een situatie waarin je OpenSpec juist NIET inzet en gewoon direct codeert.**
+   *(Hint: spec-overhead moet kleiner zijn dan de winst — denk aan triviale tweaks of exploratieve prototypes.)*
+
+<NextSteps title="Volgende stap" lede="Nu je de begrippen kent, schrijven we in deel 2 een echte change van begin tot eind.">
+  <NextStep
+    title="Deel 2 — Je eerste OpenSpec change"
+    href="/academy/openspec-tutorial-2-eerste-change"
+    description="Maak een change met /opsx-new, schrijf een spec-delta met requirements en scenarios, genereer een takenlijst, en valideer het geheel."
+  />
+  <NextStep
+    title="De Hydra-leerlijn"
+    href="/academy/hydra-tutorial-1-wat-is-hydra"
+    description="Wil je zien hoe onze AI-pipeline van een OpenSpec change naar code komt? Lees hoe Hydra die overdracht automatiseert."
+  />
+  <NextStep
+    title="OpenSpec officieel"
+    href="https://openspec.dev"
+    description="De officiële OpenSpec-website met de bron-conventie waar wij op voortbouwen."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Vragen over OpenSpec?"
+  body="Spreek je teamlead of buddy aan, of stel je vraag in #openspec op Slack. Issues op deze tutorial graag op het bijbehorende GitHub-issue."
+  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=OpenSpec%20leerlijn%20deel%201" }}
+/>
