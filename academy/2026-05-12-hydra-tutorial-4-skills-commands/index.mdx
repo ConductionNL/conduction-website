@@ -1,0 +1,164 @@
+---
+slug: hydra-tutorial-4-skills-commands
+title: "Hydra leerlijn — Deel 4: Skills & commands"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-12
+summary: Hoe Hydra's personas hun werk doen via slash-commands en skills, welke families bestaan, en wanneer je zelf een skill aan de loop toevoegt. Vierde van zes korte modules.
+tags: [Hydra, Skills, Commands, OPSX, Intern, Tutorial series]
+apps: []
+durationMinutes: 12
+series: hydra-tutorial
+partNumber: 4
+draft: true
+unlisted: true
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard} from '@conduction/docusaurus-preset/components';
+
+:::warning Intern document — niet extern delen
+Deze leerlijn beschrijft IP van Conduction. Niet doorsturen, niet publiceren, niet citeren in publieke kanalen.
+:::
+
+In de vorige delen ging het over *wat* Hydra doet. Dit deel gaat over *hoe*: de **skills** en **slash-commands** die de personas hun werk laten doen. Aan het eind ken je de drie skill-families en weet je wanneer het de moeite waard is om een nieuwe skill toe te voegen.
+
+{/* truncate */}
+
+<Outcomes title="Wat je leert in dit deel">
+  <Outcome>Wat een Claude-Code-skill is en hoe Hydra ze gebruikt om gedrag bij personas te bundelen.</Outcome>
+  <Outcome>De drie skill-families binnen Hydra: <code>opsx-*</code>, <code>hydra-gate-*</code>, en <code>team-*</code>.</Outcome>
+  <Outcome>Het verschil tussen een skill en een slash-command, en wanneer je voor welke kiest.</Outcome>
+  <Outcome>Wanneer je zelf een skill toevoegt en hoe je dat structureel doet.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Deel 1, 2 en 3 doorgenomen.</PrerequisiteItem>
+  <PrerequisiteItem>Een idee van wat <code>~/.claude/skills/</code> is op je eigen laptop, of in elk geval dat skills bestanden onder die naam zijn.</PrerequisiteItem>
+</Prerequisites>
+
+## Skills, in één alinea
+
+Een **skill** in Claude Code is een mapje met een `SKILL.md` (en optioneel scripts, `examples/`, helpers). Het mapje hangt onder `.claude/skills/<naam>/`. Claude leest de skill in zijn context wanneer hij relevant is — soms expliciet aangeroepen via een slash-command (`/opsx-apply`), soms automatisch geactiveerd op basis van de skill-omschrijving en de huidige situatie.
+
+Voor Hydra zijn skills de **bundel-eenheid van gedrag**: in plaats van duizend regels prompt-tekst direct in een persona's `CLAUDE.md` te plakken, zit het in een skill, hergebruikbaar en testbaar.
+
+## Drie skill-families binnen Hydra
+
+Hydra's `hydra/.claude/skills/` bevat zo'n 50 skills, ongeveer drie families:
+
+### Familie 1: OpenSpec workflow (`opsx-*`)
+
+De OPSX-skills implementeren de Conduction-workflow voor OpenSpec-changes. Voorbeelden:
+
+- `opsx-new` — start een nieuwe change (proposal scaffold, schema-keuze).
+- `opsx-ff` — "fast-forward": maakt de change + alle artefacten (design, tasks, specs) klaar voor implementatie in één pass.
+- `opsx-plan-to-issues` — converteert `tasks.md` naar een tracking-issue.
+- `opsx-apply` — implementeert taken uit een change (de builder gebruikt dit, of een mens).
+- `opsx-verify` — controleert dat de implementatie de change-artefacten dekt vóór archief.
+- `opsx-archive` — archiveert een afgeronde change, syncing delta naar de spec.
+- `opsx-continue` — pak een onderbroken change op waar je gebleven bent.
+- `opsx-reverse-spec` — reverse-engineert een spec uit bestaande code (Bucket 2 cluster).
+- `opsx-annotate` — past `@spec` PHPDoc-tags toe na een coverage-scan (Bucket 1).
+- `opsx-coverage-scan` — audit een legacy app op spec ↔ code coverage.
+
+De Builder (Al Gorithm) heeft de hele OPSX-suite ingebakken in zijn Docker image. Zijn standaard run is in feite: lees context, run `opsx-apply`, run quality, klaar.
+
+### Familie 2: Quality + security gates (`hydra-gate-*`)
+
+Deze zag je al in deel 3 — `hydra-gate-spdx`, `hydra-gate-forbidden-patterns`, en de rest. Elke gate is een skill die één deterministische check beschrijft + uitvoert. De reviewers (Juan Claude en Clyde) hebben deze gates expliciet als "mandatory block" in hun review-checklist; de builder kent ze als anti-patronen die hij moet vermijden.
+
+De parent-skill `hydra-gates` is een dispatcher: hij wordt aangeroepen door de reviewer en activeert vervolgens elke individuele gate.
+
+### Familie 3: Team-rollen (`team-*`)
+
+Skills die een specifiek soort werk modelleren via een persona-frame:
+
+- `team-po` (Product Owner) — schrijft user stories en acceptatiecriteria.
+- `team-sm` (Scrum Master) — beheert backlog en sprint-planning artefacten.
+- `team-architect` — neemt architectuurbeslissingen, schrijft ADR-drafts.
+- `team-backend` — implementeert backend-werk (PHP, services, mappers).
+- `team-frontend` — implementeert frontend-werk (Vue 2, Pinia, NL Design System).
+- `team-reviewer` — een handmatige variant van het reviewer-werk.
+- `team-qa` — schrijft testcases en testplannen.
+
+Deze skills worden zelden in de pipeline gebruikt; ze zijn gericht op de **mens** die naast Hydra in een terminal werkt en even één rol wil invullen.
+
+## Skill versus slash-command
+
+Beide zijn manieren om Claude een bundel gedrag te laten oppakken. Het verschil:
+
+| | Skill | Slash-command |
+|---|---|---|
+| **Bestand** | `.claude/skills/<naam>/SKILL.md` | `.claude/commands/<naam>.md` |
+| **Activering** | Vaak automatisch op basis van context | Altijd handmatig: <code>/<naam></code> |
+| **Persistentie** | Beschikbaar zolang Claude in de juiste cwd zit | Per-conversatie |
+| **Wie gebruikt 'em** | Vooral de pipeline-personas | Vooral mensen op de CLI |
+
+Er bestaat overlap: veel OPSX-functionaliteit is **zowel** als skill als als slash-command beschikbaar. `/opsx-apply` is de slash-command voor mensen; de Builder-container heeft dezelfde skill ingebakken en roept hem programmatic aan.
+
+## Wat er allemaal beschikbaar is
+
+In een fris Hydra-checkout kun je dit zien:
+
+```bash
+ls hydra/.claude/skills/
+# een lange lijst — opsx-*, hydra-gate-*, team-*, test-*, review-pr, journeydoc-*, ...
+```
+
+Daarnaast heeft Hydra zogenaamde **vendor skills** onder `hydra/vendor/skills/`:
+
+- `code-review` — een communautaire review-skill van Anthropic.
+- `trailofbits` — security-patronen van Trail of Bits.
+- `owasp` — OWASP-top-10-checklists.
+
+Die laatste drie laden we in bij Juan en Clyde om hen extra dekking te geven boven op onze eigen `hydra-gate-*` skills.
+
+## Wanneer schrijf je een nieuwe skill?
+
+De pragmatische test: schrijf een skill als…
+
+1. **De check / het gedrag is herhaalbaar** — meer dan eens nodig, op meer dan één plek.
+2. **Het is mechanisch beschrijfbaar** — je kunt het in 1-3 alinea's instrueren, zonder dat het ontaardt in "het hangt van de context af".
+3. **Een persona of een mens zou er baat bij hebben.** Geen skill schrijven omdat het kan.
+
+Voor een fout-positieve gate (deel 3): je past de bestaande skill aan, je schrijft geen nieuwe. Voor een nieuw klasse-fout dat je 3x ziet langskomen: ja, daar verdient het een eigen `hydra-gate-*` skill.
+
+<HexCard title="Tip: gebruik /skill-creator">
+  Hydra heeft een ingebouwde <code>/skill-creator</code> slash-command die je door het maken van een nieuwe skill leidt: scaffold, frontmatter, eval-harness, performance-meting. Roep hem aan vanuit een Claude-sessie in de hydra-repo om met de juiste structuur te starten in plaats van zelf een mapje op te bouwen.
+</HexCard>
+
+## Pluvo-vragen
+
+1. **Wat is het verschil tussen een skill en een slash-command, en waarom bestaan beide?**  
+   *(Hint: de ene activeert vaak automatisch op context, de andere wordt expliciet met een schuine streep aangeroepen.)*
+
+2. **Welke skill-familie gebruikt de Builder het meest, en welke skill is feitelijk zijn standaard "run"?**  
+   *(Hint: het draait om OpenSpec-changes implementeren.)*
+
+3. **Wanneer pas je een bestaande gate-skill aan en wanneer schrijf je een nieuwe?**  
+   *(Hint: één gaat over een fout-positief, de andere over een nieuw klasse-fout dat je vaker ziet.)*
+
+4. **Wat doen de "vendor skills" en waarom houden we die apart van onze eigen <code>hydra-gate-*</code>?**  
+   *(Hint: denk aan herkomst en aan wie ze onderhoudt.)*
+
+<NextSteps title="Volgende stap" lede="In deel 5 gaan we praktisch worden: een echte Hydra-run starten op een echte app, inclusief de label-prefix-truc voor parallelle dev-runs.">
+  <NextStep
+    title="Deel 5 — Een Hydra-run starten op een echte app"
+    href="/academy/hydra-tutorial-5-een-hydra-run-starten"
+    description="Het hele recept: van issue openen tot PR groen krijgen. Met de juiste config in <code>secrets/.env</code> en de <code>HYDRA_LABEL_PREFIX</code>-truc voor wie naast collega-devs werkt."
+  />
+  <NextStep
+    title="Vorige stap — Quality gates"
+    href="/academy/hydra-tutorial-3-quality-gates"
+    description="De mechanische scheidsrechters die deze skills aanvullen."
+  />
+  <NextStep
+    title="Skills directory"
+    href="https://github.com/ConductionNL/hydra/tree/main/.claude/skills"
+    description="Browse de volledige lijst skills in de hydra-repo."
+  />
+</NextSteps>
+
+---
+
+*Intern document — niet extern delen.*

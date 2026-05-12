@@ -1,0 +1,144 @@
+---
+slug: hydra-tutorial-1-wat-is-hydra
+title: "Hydra leerlijn — Deel 1: Wat is Hydra?"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-12
+summary: Een korte introductie op Hydra, Conductions agentic CI/CD-platform. Wat doet het, waarom bestaat het, en welke plek het heeft binnen onze app-fabriek. Eerste van zes korte modules.
+tags: [Hydra, AI, CI/CD, Intern, Tutorial series]
+apps: []
+durationMinutes: 10
+series: hydra-tutorial
+partNumber: 1
+draft: true
+unlisted: true
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
+
+:::warning Intern document — niet extern delen
+Deze leerlijn beschrijft IP van Conduction (skills, gates, prompts, pipelines) en is bedoeld voor medewerkers, vertrouwde ZZP-developers en partners onder NDA. Niet doorsturen, niet publiceren, niet citeren in publieke kanalen.
+:::
+
+Hydra is Conductions interne **agentic CI/CD-platform**: een fabriek die OpenSpec-voorstellen omzet in gereviewde, geteste code op een feature branch. Deze module legt in tien minuten uit wát Hydra is, waaróm het bestaat, en hoe het past binnen onze app-fabriek. Het is het eerste deel van een leerlijn van zes; aan het eind sta je klaar voor deel 2 over de drie pipelines.
+
+{/* truncate */}
+
+<Outcomes title="Wat je leert in dit deel">
+  <Outcome>Wat Hydra is in één zin, en waarom we het hebben gebouwd.</Outcome>
+  <Outcome>De vier container-personas in grote lijnen: Al Gorithm, Juan Claude, Clyde, Axel.</Outcome>
+  <Outcome>Wanneer je Hydra wél inzet, en wanneer juist niet.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Toegang tot de (private) <a href="https://github.com/ConductionNL/hydra">ConductionNL/hydra</a> repo. Vraag dit aan bij je teamlead als je nog geen lid bent.</PrerequisiteItem>
+  <PrerequisiteItem>Basiskennis Git, GitHub issues + PRs, en een idee van wat een Nextcloud-app is.</PrerequisiteItem>
+  <PrerequisiteItem>Bekendheid met Claude Code-CLI op hoofdlijnen (we duiken hier niet in commando's; daarvoor zie deel 4).</PrerequisiteItem>
+  <PrerequisiteItem>Optioneel — de publieke 1-pagina-versie op <a href="https://github.com/ConductionNL/.github/blob/main/docs/hydra/README.md">.github/docs/hydra/README.md</a>. Goede warming-up als je nooit eerder van Hydra hebt gehoord.</PrerequisiteItem>
+</Prerequisites>
+
+## In één zin
+
+Hydra is een **stateless, label-gedreven pipeline** die OpenSpec-voorstellen verandert in feature branches met code, tests, een review-history en een PR — klaar voor menselijke goedkeuring.
+
+Geen "AI assistent die de developer helpt", maar een **fabriek**. Je gooit er een spec in en aan de andere kant rolt er een PR uit waar twee onafhankelijke reviewers naar gekeken hebben.
+
+## Waarom bestaat Hydra?
+
+Conduction bouwt veel open-source apps voor de Nextcloud-werkplek. Het ritme van die fabriek wordt bepaald door twee dingen: hoe snel we **specs** kunnen schrijven, en hoe snel die specs **code** worden. Hydra automatiseert die tweede stap, met drie expliciete doelen:
+
+1. **Doorlooptijd verkorten.** Een gemiddeld OpenSpec-voorstel wordt zonder Hydra in een halve dag tot drie dagen geïmplementeerd. Met Hydra is dat een halfuur tot een paar uur, afhankelijk van complexiteit.
+2. **Kwaliteit borgen.** Geen enkele PR komt het systeem uit zonder mechanische quality gates (PHPCS, Psalm, PHPStan, ESLint, PHPUnit), een onafhankelijke code review en een onafhankelijke security review. Twee paar AI-ogen vóór er een mens kijkt.
+3. **4-eyes principle behouden.** Hydra **merge-t niet zelf** — behalve wanneer een issue expliciet de `yolo`-vlag heeft, en zelfs dan moeten alle gates groen zijn. Een mens drukt op de knop.
+
+## De vier personas
+
+Hydra is intern opgebouwd uit vier ephemere container-personas. Elk speelt één rol, in één container, met scoped credentials en strakke turn-budgets. Je hoeft hun namen nu niet uit het hoofd te kennen — ze komen terug in deel 2 — maar het helpt om vroeg het rollenpatroon te zien:
+
+<HexCard title="Al Gorithm (builder, Haiku)">
+  Bouwt code uit de spec. Ziet nooit reviews terug. Stopt na een vast turn-budget.
+</HexCard>
+
+<HexCard title="Juan Claude van Damme (code reviewer, Sonnet)">
+  Leest alleen de PR-diff, niet de spec. Kan zelf mechanische fixes doorvoeren binnen scope.
+</HexCard>
+
+<HexCard title="Clyde Barcode (security reviewer, Sonnet)">
+  Loopt na Juan Claude. Zelfde shape, plus Semgrep en patroon-matching op CWE-klassen.
+</HexCard>
+
+<HexCard title="Axel Pliér (applier, Sonnet — géén schrijfrechten)">
+  Beslist binair: gaat dit door of niet? Leest beide reviews en de uiteindelijke code. Géén fix-tools.
+</HexCard>
+
+Belangrijk: **Al Gorithm draait op Haiku, de andere drie op Sonnet** (met Opus als fallback). Reden: bouwen volgt patronen en is goedkoop te doen met Haiku; oordelen vraagt meer diepgang. Op Claude Max heb je een aparte Sonnet-only en all-models quota, dus deze splitsing rekt het budget op.
+
+## Wanneer wel, wanneer niet
+
+Hydra is geen wondermiddel. De vuistregel:
+
+**Wel inzetten als:**
+
+- Het werk past binnen één coherente OpenSpec-change (één feature, niet een refactor van het hele systeem).
+- De acceptatiecriteria mechanisch te toetsen zijn (er bestaan tests of die zijn met PHPUnit/Newman/Playwright snel te schrijven).
+- De doel-repo is **gereed** voor Hydra: heeft `hydra-gate-*` labels, een `app-config.json`, en draait de standaard quality-suite.
+
+**Niet inzetten als:**
+
+- Het gaat om een eenmalige spike, prototype, of "even iets uitproberen" zonder reviewer-discipline.
+- De architectuur wijzigt op een manier die niet in één PR past (multi-repo refactor, breaking schema-change met datamigratie).
+- Je geen vertrouwen hebt in de gates op de doel-repo — Hydra is alleen zo veilig als zijn quality checks.
+- Het werk vereist menselijke onderhandeling met een externe partij (klant, leverancier) voordat het kan beginnen.
+
+## Wat Hydra **niet** doet
+
+Een veelgemaakte vergissing: denken dat Hydra je hele product bedenkt. Het tegendeel is waar.
+
+- **Hydra schrijft geen specs.** Die worden vooraf aangeleverd, of een mens schrijft ze handmatig (met `/opsx-ff`).
+- **Hydra doet niet aan visie of strategie.** Welke features we bouwen is een mensenkeuze.
+- **Hydra besluit niet over architectuur.** Daarvoor zijn ADR's, beheerd door mensen (zie `hydra/openspec/architecture/`).
+- **Hydra merge-t niet eigenmachtig.** Behalve `yolo`-issues — en daar zijn alle gates nog steeds harde voorwaarden.
+
+## Pluvo-vragen
+
+Vier begripsvragen om dit deel af te ronden. Antwoorden staan in de tekst hierboven.
+
+1. **Wat is het primaire doel van Hydra?**  
+   *(Hint: het draait om twee dingen — doorlooptijd en kwaliteitsborging op een specifieke stap in onze fabriek.)*
+
+2. **Waarom kiest Hydra voor mechanische quality gates (PHPCS, Psalm, PHPStan, ESLint, PHPUnit) in plaats van alleen AI-review?**  
+   *(Hint: AI-reviewers kunnen overtuigend klinken zonder feitelijk correct te zijn — wat hebben mechanische gates dat AI per definitie niet heeft?)*
+
+3. **Welke vier personas heeft Hydra, en welke is degene die NIET kan schrijven?**  
+   *(Hint: drie schrijven of fixen, één is bewust read-only — die rol is een binaire gate.)*
+
+4. **Noem twee situaties waarin je Hydra juist NIET inzet en handmatig werkt.**  
+   *(Hint: denk aan scope, aan reviewer-discipline op de doel-repo, en aan menselijke onderhandeling.)*
+
+<NextSteps title="Volgende stap" lede="Nu je weet wat Hydra is, kijken we in deel 2 binnen in de drie pipelines.">
+  <NextStep
+    title="Deel 2 — De drie pipelines"
+    href="/academy/hydra-tutorial-2-drie-pipelines"
+    description="Build, code review, security review. Wie doet wat, in welke volgorde, en hoe komt een issue uiteindelijk bij needs-input of done."
+  />
+  <NextStep
+    title="Publieke Hydra-overzichtspagina"
+    href="https://github.com/ConductionNL/.github/blob/main/docs/hydra/README.md"
+    description="De openbare 1-pagina-versie in onze .github-repo. Bedoeld voor wie alleen het wat-en-hoe op hoofdlijnen hoeft te weten, zonder IP-details."
+  />
+  <NextStep
+    title="Het volledige architectuur-document (privé)"
+    href="https://github.com/ConductionNL/hydra/blob/main/openspec/project.md"
+    description="Voor wie nu al het hele plaatje wil zien — alle details, geen samenvattingen. Vereist toegang tot de privé hydra-repo."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Vragen over Hydra of deze leerlijn?"
+  body="Spreek je teamlead aan of stel je vraag in #hydra op Slack. Issues op deze tutorial graag op het bijbehorende GitHub-issue."
+  cta={{ label: "Mail het Hydra-team", href: "mailto:wilco@conduction.nl?subject=Hydra%20leerlijn%20deel%201" }}
+/>
+
+---
+
+*Intern document — niet extern delen.*
