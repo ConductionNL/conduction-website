@@ -67,7 +67,7 @@ Het brede midden. Twee smaken:
 
 ### 2a. Docker Compose
 
-Eigen `docker-compose.yml`, de officiële [`nextcloud`-image](https://hub.docker.com/_/nextcloud), Postgres en Redis ernaast. Dit is hoe wij Conduction-apps draaien voor de meeste gebruikers en hoe je [lokaal Nextcloud draait](/academy/nextcloud-lokaal-draaien). Volledige config-controle, je eigen reverse proxy ervoor (Traefik, Caddy, Nginx Proxy Manager), je eigen TLS-routine.
+Eigen `docker-compose.yml`, de officiële [`nextcloud`-image](https://hub.docker.com/_/nextcloud), Postgres en Redis ernaast. Hetzelfde patroon dat je gebruikt voor [lokaal Nextcloud draaien](/academy/nextcloud-lokaal-draaien). Volledige config-controle, je eigen reverse proxy ervoor (Traefik, Caddy, Nginx Proxy Manager), je eigen TLS-routine.
 
 ### 2b. Nextcloud AIO (All-in-One)
 
@@ -177,15 +177,7 @@ Redis als distributed memcache is verplicht zodra je meer dan één PHP-proces h
 
 `php.ini`: `memory_limit=512M`, `opcache.enable=1`, `opcache.interned_strings_buffer=16`. Nextcloud's [scaling deployment recommendations](https://docs.nextcloud.com/server/latest/admin_manual/installation/deployment_recommendations.html) zijn de canonieke checklist — werk hem af voor productie, ongeacht hostingoptie.
 
-## Wat we zelf draaien
-
-Conduction levert apps die op de officiële Nextcloud-image draaien — onafhankelijk van hostingkeuze. Wat we in de praktijk zien:
-
-- **De meeste Conduction-gebruikers:** optie 2a, Docker Compose, met externe Postgres en S3-primary-storage, achter Traefik. Voorspelbaar, debugbaar, en je leest het terug in één compose-file.
-- **Homelabs en eerste demo's:** optie 2b (AIO) of [`docker-compose up`](/academy/nextcloud-lokaal-draaien). Tien minuten van niets naar werkende cloud.
-- **Grote multi-tenant deployments:** optie 3, Helm, met cert-manager en gemanagede database. Zeldzaam, maar wel groeiend.
-
-Geen van die keuzes is "de juiste" in absolute zin. De beslismatrix is de juiste, voor jou.
+Conduction-apps draaien op de officiële Nextcloud-image en zijn agnostisch over de gekozen hostingoptie. Geen van de drie routes is "de juiste" in absolute zin — de beslismatrix hierboven is de juiste, voor jouw scenario.
 
 ## Volgende stap
 
@@ -197,6 +189,6 @@ Je weet welke hostingoptie bij je past. De vervolg-vraag is wat erop komt:
 
 <ContactCta
   title="Hulp bij de keuze?"
-  body="Hosten voor een gemeente, een onderwijsinstelling, of een SaaS-product? Mail ons — we hebben de drie smaken alle drie in productie zien gaan."
+  body="Hosten voor een gemeente, een onderwijsinstelling, of een SaaS-product? Mail ons — we denken graag mee over de juiste route voor jouw scenario."
   cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=Nextcloud%20hosting" }}
 />
