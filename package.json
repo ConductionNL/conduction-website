@@ -5,8 +5,10 @@
   "description": "conduction.nl, the Conduction company hub. Hosts apps, solutions, partners, plus ConNext and Common Ground vanity landings.",
   "scripts": {
     "docusaurus": "docusaurus",
+    "postinstall": "node scripts/sync-app-downloads.js",
+    "prestart": "node scripts/sync-app-downloads.js",
     "start": "docusaurus start",
-    "prebuild": "python3 .github/scripts/app_downloads.py",
+    "prebuild": "python3 .github/scripts/app_downloads.py && node scripts/sync-app-downloads.js",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",

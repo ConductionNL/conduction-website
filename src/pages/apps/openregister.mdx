@@ -170,10 +170,11 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
   ]}
 />
 
+<div id="integrations" />
 <Showcase
   eyebrow="How OpenRegister plugs into the workspace"
   title="Typed data, surfaced everywhere."
-  lede="Three integration paths that turn registers into the system of record across Mail, Files, workflow tools, and AI assistants."
+  lede="Five integration paths that turn registers into the system of record across Mail, Files, workflow tools, knowledge bases, and AI assistants."
   layout="side"
   defaultOpen="mail-files"
   items={[
@@ -192,9 +193,16 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
       panel: <AppMock app="openconnector" />,
     },
     {
+      id: 'xwiki',
+      title: 'XWiki',
+      summary: 'Embed a live register query into any XWiki page through OpenConnector. Procedure docs stay current automatically. The article and the data live one click apart.',
+      cta: {label: 'See the XWiki integration', href: 'https://docs.conduction.nl/openregister/xwiki'},
+      panel: <AppMock app="opencatalogi" />,
+    },
+    {
       id: 'llms',
       title: 'LLMs (Claude, Mistral, Ollama)',
-      summary: 'Plain-language search across every register. The LLM rewrites your question into a structured query, OpenRegister returns typed rows with citation-stable IDs. Every call audits.',
+      summary: 'Plain-language search across every register. The LLM rewrites your question into a structured query, OpenRegister returns typed rows with citation-stable IDs. Claude and Mistral run as cloud adapters through OpenConnector; Ollama runs as a sidecar on your own hardware. Every call audits.',
       cta: {label: 'See the semantic-search adapter', href: 'https://docs.conduction.nl/openregister/llm-search'},
       panel: <AgentTrace
         lines={[
@@ -208,6 +216,13 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
         cursor
         mode="audit log on (every query recorded)"
       />,
+    },
+    {
+      id: 'presidio',
+      title: 'Presidio (PII redaction)',
+      summary: 'Microsoft Presidio detects personal data in any register row or attached document. DocuDesk runs it before publication; OpenConnector runs it before forwarding to a cloud LLM. The register keeps the source, the outside world only sees the redacted version.',
+      cta: {label: 'See the redaction pipeline', href: 'https://docs.conduction.nl/openregister/presidio'},
+      panel: <AppMock app="docudesk" />,
     },
   ]}
 />
