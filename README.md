@@ -2,7 +2,9 @@
 
 The Docusaurus 3 site for [conduction.nl](https://conduction.nl). Built on `@conduction/docusaurus-preset` for brand defaults; site-specific config lives in [docusaurus.config.js](docusaurus.config.js).
 
-It also serves the `connext.conduction.nl` and `commonground.conduction.nl` vanity entry points (Cloudflare 301-redirects to `/connext` and `/commonground` paths on this site, with locale awareness via `Accept-Language`).
+It also serves the `connext.conduction.nl` and `commonground.conduction.nl` vanity entry points (a Cloudflare worker — configured in the dashboard, not in this repo — 301-redirects to the `/connext` and `/commonground` paths on this site, with locale awareness via `Accept-Language`).
+
+> **Vanity-domain redirect target:** the worker must redirect to `https://www.conduction.nl/connext/` — with the `www.` and the **trailing slash**. The site is built with `url: https://www.conduction.nl` (matching `static/CNAME`) and `trailingSlash: true`. Targeting the bare apex (`conduction.nl`) or the slash-less path (`/connext`) stacks extra GitHub Pages 301s on every request and, if the worker route also matches `www`, can produce a redirect loop. If you see a redirect loop on `connext.conduction.nl`, also check Cloudflare's SSL/TLS mode is **Full** (not "Flexible") — Flexible + GitHub Pages "Enforce HTTPS" is the classic infinite HTTP↔HTTPS loop.
 
 ## Local development
 

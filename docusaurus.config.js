@@ -20,7 +20,15 @@ const {createConfig} = require('@conduction/docusaurus-preset');
 module.exports = createConfig({
   title: 'Conduction',
   tagline: 'Open-source apps voor de Nextcloud-werkplek.',
-  url: 'https://conduction.nl',
+  /* Must match static/CNAME (www.conduction.nl) — GitHub Pages serves
+     only on the CNAME host and 301-redirects the apex to it. Using the
+     bare apex here made every canonical/og:url/sitemap entry point at
+     conduction.nl, adding an apex→www hop on top of whatever the
+     Cloudflare vanity worker already does — a redirect-loop amplifier
+     on connext./commonground. (trailingSlash is true, set by the
+     preset, so the worker must target https://www.conduction.nl/connext/
+     — with the www and the trailing slash — not /connext.) */
+  url: 'https://www.conduction.nl',
   baseUrl: '/',
 
   organizationName: 'ConductionNL',
