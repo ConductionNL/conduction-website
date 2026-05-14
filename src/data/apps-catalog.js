@@ -110,6 +110,13 @@ const PRESENTATION = {
     categories: ['Processes'],
     icon: <svg viewBox="0 0 24 24"><path d="M3 12h6l3-7 3 14 3-7h3"/></svg>,
   },
+  scholiq: {
+    name: 'Scholiq',
+    tagline: 'Learning record + LMS. Cursussen, inschrijvingen, certificaten, compliance-training.',
+    href: '/apps/scholiq',
+    categories: ['Processes'],
+    icon: <svg viewBox="0 0 24 24"><path d="M3 9l9-5 9 5-9 5z"/><path d="M7 11v5c0 1 2.2 2 5 2s5-1 5-2v-5"/><path d="M21 9v6"/></svg>,
+  },
   nldesign: {
     name: 'NLDesign',
     tagline: 'Drop-in NLDS theme for Nextcloud, with the Conduction component variants on top.',
