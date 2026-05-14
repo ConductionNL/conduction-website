@@ -1,0 +1,101 @@
+---
+title: DeskDesk, Conduction
+description: Desk and meeting-room booking on Nextcloud. Plan the office week, reserve a desk, check in. Hybride werken zonder losse SaaS.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+
+<DetailHero
+  appId="deskdesk"
+  crumb={[{label: 'Apps', href: '/apps'}, 'DeskDesk']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.x"
+  locales="NL · EN"
+  title="DeskDesk"
+  tagline={<>Bureau- en vergaderzaalboeking op <span className="next-blue">Nextcloud</span>. Plan je kantoorweek, reserveer een werkplek, check in. Voor hybride teams die hun bezetting niet via een externe SaaS willen regelen.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Read the docs', href: 'https://deskdesk.conduction.nl/'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/deskdesk'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><path d="M3 10h18M5 10v8M19 10v8M8 14h8M7 18v2M17 18v2"/></svg>}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="Eén plek voor je kantoor-bezetting."
+        align="stack"
+        lede="DeskDesk regelt het hybride werken: welke dagen komen mijn collega's, waar zit ik, welke vergaderzaal is vrij. Op een plattegrond van je vestiging, op de typed registers van OpenRegister. Geen losse boeking-app, geen extra inloggen, geen vendor-lock."
+      />
+      <FeatureList>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>}
+          title="Plattegrond per vestiging."
+        >
+          Teken je vloer in, plaats bureaus, vergaderzalen en faciliteiten. Mensen klikken op een plek om te reserveren; jij ziet de bezetting in één oogopslag.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h2M14 14h2M8 18h2M14 18h2"/></svg>}
+          title="Plan je kantoorweek."
+        >
+          Reserveer terugkerend (elke dinsdag) of incidenteel. Zie wie er die dag is, plan teamdagen rond elkaars aanwezigheid.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
+          title="Check-in en no-shows."
+        >
+          Wie er is, scant in (QR of NFC). Wie niet komt opdagen, geeft zijn plek vanzelf vrij. Geen reservering-spookbezetting meer.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+          title="Inzicht voor facility."
+        >
+          Bezettingsgraad per dag, per zone, per faciliteit. Stuurt je heroverwegingen over vierkante meters en koffie-automaten, niet je onderbuikgevoel.
+        </FeatureItem>
+      </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['deskdesk']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="De apps waarop DeskDesk leunt."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="Vestigingen, bureaus, reserveringen en check-ins als typed registers met audit-trail."
+    />
+    <PairCard
+      href="/apps/mydash"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+      name="MyDash"
+      why="Bezettingsgrafieken, no-show-percentages en zone-trends op het dashboard."
+    />
+    <PairCard
+      href="/apps/openconnector"
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+      name="OpenConnector"
+      why="Synct met de toegangs-controle en met Nextcloud Calendar voor het terugzien van je boekingen."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="Hybride werken zonder losse boeking-SaaS."
+  lede={<>DeskDesk pakt bureau- en zaalboeking voor je terug: in je Nextcloud, op je eigen data, met een plattegrond die je zelf onderhoudt.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+/>

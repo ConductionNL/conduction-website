@@ -147,10 +147,24 @@ const PRESENTATION = {
   },
   'app-versions': {
     name: 'App Versions',
-    tagline: 'Nextcloud app scaffold. Template repo for new apps, prefilled and CI-ready. In development.',
+    tagline: 'Pin and roll back any Nextcloud app version. Multi-source picker, audit-trailed. In development.',
     href: '/apps/app-versions',
     categories: ['Data'],
     icon: <svg viewBox="0 0 24 24"><path d="M3 6h18v4H3zM3 14h12v4H3z"/><circle cx="19" cy="16" r="2"/></svg>,
+  },
+  deskdesk: {
+    name: 'DeskDesk',
+    tagline: 'Desk and meeting-room booking. Plan, reserve, and check in from the Nextcloud workspace.',
+    href: '/apps/deskdesk',
+    categories: ['Processes'],
+    icon: <svg viewBox="0 0 24 24"><path d="M3 10h18M5 10v8M19 10v8M8 14h8M7 18v2M17 18v2"/></svg>,
+  },
+  planix: {
+    name: 'Planix',
+    tagline: 'Kanban boards on registers. Cards, lanes, swim-lanes wired directly to typed data.',
+    href: '/apps/planix',
+    categories: ['Processes'],
+    icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="12" rx="1"/><rect x="17" y="3" width="4" height="8" rx="1"/></svg>,
   },
 };
 

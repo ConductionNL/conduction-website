@@ -67,6 +67,13 @@ const PRESENTATION = {
     categories: ['AI'],
     icon: <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 9h2M7 13h6"/></svg>,
   },
+  opentalk: {
+    name: 'OpenTalk',
+    tagline: 'Sidecar for OpenTalk. GDPR-compliant video conferencing, end-to-end encrypted, packaged as a Nextcloud ExApp.',
+    href: '/sidecars/opentalk',
+    categories: ['Workflow'],
+    icon: <svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>,
+  },
 };
 
 export const SIDECAR_CATEGORIES = ['All', 'Registers', 'Workflow', 'Identity', 'AI'];
