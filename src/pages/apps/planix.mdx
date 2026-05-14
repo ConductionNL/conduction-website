@@ -1,0 +1,101 @@
+---
+title: Planix, Conduction
+description: Kanban-boards die op je registers staan. Cards, lanes en swim-lanes rechtstreeks op typed data, geen losse projectmanagement-SaaS.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+
+<DetailHero
+  appId="planix"
+  crumb={[{label: 'Apps', href: '/apps'}, 'Planix']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.x"
+  locales="NL · EN"
+  title="Planix"
+  tagline={<>Kanban-boards die op je <span className="next-blue">Nextcloud</span>-registers staan. Cards, lanes en swim-lanes rechtstreeks op typed data, niet op losse JSON-bestandjes. Voor teams die plannen niet bij Trello, Jira of Monday willen parkeren.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Read the docs', href: 'https://planix.conduction.nl/'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/planix'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="12" rx="1"/><rect x="17" y="3" width="4" height="8" rx="1"/></svg>}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="Plannen op je eigen data."
+        align="stack"
+        lede="Planix tekent een kanban-bord over je registers heen. Een lane per status, een card per object. Sleep een zaak van 'In behandeling' naar 'Afgerond' en het register update mee, met audit-trail. Geen export-import, geen aparte projectmanagement-database."
+      />
+      <FeatureList>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="12" rx="1"/><rect x="17" y="3" width="4" height="8" rx="1"/></svg>}
+          title="Boards over registers."
+        >
+          Kies een register, kies een veld voor de status, en je hebt een kanban. Voor zaken, opdrachten, helpdesk-tickets of je eigen aangemaakte registers.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>}
+          title="Swim-lanes."
+        >
+          Splits het bord per project, team of toegewezen behandelaar. Of zet de swim-lane op een ander veld en bekijk hetzelfde werk vanuit een ander perspectief.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+          title="Workflow op typed data."
+        >
+          Verplaats een card en de status van het object in OpenRegister verandert mee. Validaties, hooks en lifecycle-events draaien net zo hard als bij elke andere update.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+          title="Filters en gespaarde views."
+        >
+          Filter per toegewezen behandelaar, prioriteit of label. Sla de view op, deel hem met je team. Iedereen kijkt naar dezelfde data, maar met zijn eigen lens.
+        </FeatureItem>
+      </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['planix']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="De apps waarop Planix leunt."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="De typed data onder elke kanban-card; statuswijzigingen lopen door de register-hooks."
+    />
+    <PairCard
+      href="/apps/procest"
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      name="Procest"
+      why="Werkstroom op dezelfde objecten: workflow in Procest, dagelijks bord in Planix."
+    />
+    <PairCard
+      href="/apps/mydash"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+      name="MyDash"
+      why="Doorlooptijden, lane-counts en bottleneck-zicht boven op het bord, voor de teamlead."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="Eén bord, je eigen data, geen tussenlaag."
+  lede={<>Planix tekent kanban over typed registers, dus elke verplaatsing is een echte status-update. Open-source, op je eigen Nextcloud, klaar voor audit.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+/>
