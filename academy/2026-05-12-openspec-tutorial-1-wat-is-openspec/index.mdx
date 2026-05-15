@@ -13,6 +13,7 @@ partNumber: 1
 ---
 
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
 
 [OpenSpec](https://openspec.dev) is een lichtgewicht framework voor **spec-driven development**: eerst opschrijven wat een feature moet doen, dan pas code schrijven. In deze module van twaalf minuten leer je wat OpenSpec is, welke begrippen erin zitten, en waarom we het bij Conduction onder vrijwel elk project gebruiken. Aan het eind sta je klaar voor deel 2, waarin je je eerste change daadwerkelijk schrijft.
 
@@ -149,24 +150,124 @@ Twee patronen, naast elkaar:
 
 Welke route ook gebruikt wordt, het eindresultaat ziet er identiek uit: een nette change in `openspec/changes/` met de vier verwachte artefacten.
 
-## Pluvo-vragen
+## Test jezelf
 
-Vijf begripsvragen om dit deel af te ronden. Antwoorden staan in de tekst hierboven.
+Vijf korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
 
-1. **Wat is het kernverschil tussen een spec en een change?**
-   *(Hint: één is stabiel en lang levend, de ander is tijdelijk en hoort bij één wijziging.)*
+<div className="tutorial-quiz">
 
-2. **Waarom schrijven we eerst een spec-delta voordat we code aanpassen?**
-   *(Hint: minstens twee voordelen zitten in deze module — denk aan aannames en aan reviewers.)*
+**1. Wat is het kernverschil tussen een spec en een change?**
 
-3. **Wat zijn de drie bouwstenen waarmee je in OpenSpec gedrag beschrijft, en welke functie heeft een scenario?**
-   *(Hint: spec → requirement → scenario. Een scenario maakt iets *toetsbaar*.)*
+<Details summary="Hint">
 
-4. **Waar staan de in-flight changes in een Conduction-project, en wat gebeurt er met een change als hij klaar is?**
-   *(Hint: kijk in <code>openspec/changes/</code> en in <code>openspec/changes/archive/</code>.)*
+Eén leeft jaren mee, de ander leeft van voorstel tot merge. Waar staat elk in het repo?
 
-5. **Noem een situatie waarin je OpenSpec juist NIET inzet en gewoon direct codeert.**
-   *(Hint: spec-overhead moet kleiner zijn dan de winst — denk aan triviale tweaks of exploratieve prototypes.)*
+</Details>
+
+<Details summary="Antwoord">
+
+- **Spec** beschrijft een stabiele capability — een coherent stuk gedrag van de app. Lange leefduur, één spec per capability. Alle requirements + scenarios staan erin. Leeft in `openspec/specs/<capability>/spec.md`.
+- **Change** is een tijdelijke verandering aan één of meer specs. Bevat een proposal, spec-delta (ADDED/MODIFIED/REMOVED), design en tasks. Leeft in `openspec/changes/<naam>/` zolang hij open staat, en verhuist bij archivering naar `openspec/changes/archive/YYYY-MM-DD-<naam>/`.
+
+Een spec leeft jaren mee; een change leeft van voorstel tot merge en wordt daarna geschiedenis.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Waarom schrijven we eerst een spec-delta voordat we code aanpassen?**
+
+<Details summary="Hint">
+
+Denk aan: aannames, AI-agenten, audit-trail, en reviewers. Welke winst pakt elk?
+
+</Details>
+
+<Details summary="Antwoord">
+
+Vier voordelen die in deze module worden genoemd:
+
+- **Aannames vooraf opdrogen.** Wat lijkt op één feature blijkt vaak vier features tegelijk. Scenario's schrijven brengt gaten en tegenstrijdigheden naar boven vóór de code in plaats van erna in een PR-review.
+- **AI-agenten productief maken.** Onze Hydra-pipeline bouwt code uit specs — hoe scherper de spec, hoe minder bijsturen achteraf. Dezelfde wet geldt voor menselijke teamleden in een handover.
+- **Audit-trail die niet jokt.** Per change één mapje met proposal, delta, design, tasks. Een halfjaar later weet je nog precies wat besloten is en waarom.
+- **Reviewers één bron.** De reviewer ziet spec-delta en code naast elkaar — "klopt de code met de spec" in plaats van "wat had de ontwikkelaar bedoeld".
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Wat zijn de drie bouwstenen waarmee je in OpenSpec gedrag beschrijft, en welke functie heeft een scenario?**
+
+<Details summary="Hint">
+
+Top-down: van capability, naar regel, naar concreet voorbeeld. De laatste maakt de regel _toetsbaar_.
+
+</Details>
+
+<Details summary="Antwoord">
+
+De drie bouwstenen (top-down):
+
+- **Spec** — de stabiele capability-beschrijving, top niveau.
+- **Requirement** — één regel binnen een spec, geschreven met **MUST / SHOULD / MAY** (RFC 2119). Genummerd: `REQ-001`, `REQ-002`, …
+- **Scenario** — concreet **GIVEN / WHEN / THEN**-voorbeeld bij een requirement. Per requirement minstens één.
+
+Het scenario maakt de requirement **toetsbaar**: iemand anders zou hetzelfde gedrag moeten kunnen bouwen of testen zonder met je te overleggen. Geen beschrijving, maar een toets.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Waar staan de in-flight changes in een Conduction-project, en wat gebeurt er met een change als hij klaar is?**
+
+<Details summary="Hint">
+
+Twee mappen: één voor lopend werk, één voor afgeronde geschiedenis. En wat verhuist er waarheen?
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **In-flight changes** staan in `openspec/changes/<naam>/` — proposal, spec-delta in `specs/`, design en tasks.
+- **Bij archivering** (na implementatie + merge naar `development`) gebeurt drie dingen:
+  1. De spec-delta wordt gesynct naar de hoofd-spec in `openspec/specs/`.
+  2. Het hele change-mapje verhuist naar `openspec/changes/archive/YYYY-MM-DD-<naam>/`.
+  3. De geschiedenis blijft compleet — je kunt teruglezen welke change wélke regel introduceerde.
+
+Stap 1 en 2 doe je niet handmatig — `/opsx-archive` (deel 2) regelt het.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. Noem een situatie waarin je OpenSpec juist NIET inzet en gewoon direct codeert.**
+
+<Details summary="Hint">
+
+De overhead moet kleiner zijn dan de winst. Bij welke twee situaties is dat duidelijk niet zo?
+
+</Details>
+
+<Details summary="Antwoord">
+
+Twee situaties uit de module:
+
+- **Eenmalige tweak** — typo's, één rij toevoegen aan een vertaalbestand, een dependency bumpen. De spec-overhead is groter dan de tweak zelf.
+- **Exploratief prototype** — als je nog niet weet of het idee überhaupt werkt. Eerst een vieze proof-of-concept om aannames te toetsen, sloop hem weg, en schrijf daarna pas de spec voor de versie die écht in productie gaat.
+
+Voor alles daartussen — een nieuwe feature, een breaking change, een refactor met gevolgen voor consumers — loont OpenSpec zich wel.
+
+</Details>
+
+</div>
 
 <NextSteps title="Volgende stap" lede="Nu je de begrippen kent, schrijven we in deel 2 een echte change van begin tot eind.">
   <NextStep

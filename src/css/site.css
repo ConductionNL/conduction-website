@@ -144,3 +144,86 @@
   color: var(--c-cobalt-700);
 }
 
+/* Default blockquote treatment, brand-aligned. Infima's default leaves
+   quotes in neutral gray-800 with a 2px gray border, which reads
+   washed-out next to the cobalt-700 body. Bring the quote into the
+   cobalt palette so it carries the brand and stands out as a callout. */
+:root {
+  --ifm-blockquote-color: var(--c-cobalt-900);
+  --ifm-blockquote-border-color: var(--c-blue-cobalt);
+  --ifm-blockquote-border-left-width: 4px;
+  --ifm-blockquote-padding-vertical: var(--space-3);
+  --ifm-blockquote-padding-horizontal: var(--space-5);
+}
+blockquote {
+  background: var(--c-cobalt-50);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: 1.05em;
+}
+
+/* "Test jezelf" sections at the end of academy tutorials: each question
+   sits in a card with collapsible Hint and Antwoord <details> blocks. */
+.tutorial-quiz {
+  margin: var(--space-5) 0 var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  background: var(--c-cobalt-50);
+  border-left: 3px solid var(--c-blue-cobalt);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+.tutorial-quiz > p:first-child {
+  margin-top: 0;
+  font-weight: 600;
+  color: var(--c-cobalt-900);
+}
+/* Docusaurus wraps <Details> with .alert.alert--info from Infima. We need
+   to override those vars so the open body keeps readable contrast against
+   our white card background. */
+.tutorial-quiz details,
+.tutorial-quiz details.alert {
+  --ifm-alert-background-color: white;
+  --ifm-alert-background-color-highlight: transparent;
+  --ifm-alert-foreground-color: var(--c-cobalt-900);
+  --ifm-alert-border-color: var(--c-cobalt-100);
+  margin: var(--space-2) 0 0;
+  background: white;
+  color: var(--c-cobalt-900);
+  border: 1px solid var(--c-cobalt-100);
+  border-left: 1px solid var(--c-cobalt-100);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+}
+.tutorial-quiz details[open] {
+  padding-bottom: var(--space-3);
+}
+/* Docusaurus' own Details theme renders an absolutely-positioned
+   CSS-only border-triangle in summary::before (with padding-left: 1rem
+   on the summary to make room). Strip all of that so our inline chevron
+   flows next to the label instead of being positioned outside the box. */
+.tutorial-quiz details > summary {
+  position: static;
+  padding-left: 0;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9em;
+  color: var(--c-blue-cobalt);
+  list-style: none;
+  user-select: none;
+}
+.tutorial-quiz details > summary::-webkit-details-marker {
+  display: none;
+}
+.tutorial-quiz details > summary::before {
+  content: "▸";
+  position: static;
+  display: inline-block;
+  width: auto;
+  margin-right: 0.4em;
+  border: 0;
+  transform: rotate(0deg);
+  transform-origin: 50% 50%;
+  transition: transform 0.15s ease;
+}
+.tutorial-quiz details[open] > summary::before,
+.tutorial-quiz details[data-collapsed='false'] > summary::before {
+  transform: rotate(90deg);
+}

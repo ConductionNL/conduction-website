@@ -13,6 +13,7 @@ partNumber: 2
 ---
 
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
 
 Tijd om OpenSpec aan het werk te zien. In dit deel maak je in een Conduction-project je **eerste echte change** — van leeg mapje, via een spec-delta met requirement en scenario, naar een gevalideerd voorstel klaar voor implementatie. We doen dat met de Claude Code-skills [`/opsx-new`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md) en [`/opsx-ff`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md).
 
@@ -271,24 +272,129 @@ Stap 3 en 4 doe je niet met de hand. Daarvoor draai je in dezelfde repo:
   </TroubleshootingItem>
 </Troubleshooting>
 
-## Pluvo-vragen
+## Test jezelf
 
-Vijf vragen om dit deel af te ronden. Antwoorden staan in de tekst hierboven.
+Vijf korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
 
-1. **Welk commando gebruik je om een nieuwe lege change te starten, en wat staat er direct in het mapje na die stap?**
-   *(Hint: kebab-case naam, één YAML-bestand.)*
+<div className="tutorial-quiz">
 
-2. **Wat is het verschil tussen `/opsx-ff` en handmatig artefacten schrijven, en wanneer kies je welke?**
-   *(Hint: snelheid versus controle. Eén commando, alles in één klap, versus per artefact bijsturen.)*
+**1. Welk commando gebruik je om een nieuwe lege change te starten, en wat staat er direct in het mapje na die stap?**
 
-3. **Welke drie soorten delta-secties kun je in een spec-delta schrijven, en wat doe je in elke?**
-   *(Hint: ADDED, MODIFIED, REMOVED.)*
+<Details summary="Hint">
 
-4. **Welke vier dingen controleert `/opsx-verify`, en welke fout maakt het stilzwijgend NIET vindbaar als je hashtags verkeerd zet?**
-   *(Hint: compleetheid, correctheid, coherentie, test-dekking. Drie hashtags bij een scenario.)*
+Eén commando, één naam in kebab-case. Direct daarna is het mapje vrijwel leeg op één metadata-bestandje na.
 
-5. **Wanneer is een change klaar om gearchiveerd te worden, en welk commando draai je dan?**
-   *(Hint: tasks afgevinkt, code in development, delta gesynct naar hoofd-spec.)*
+</Details>
+
+<Details summary="Antwoord">
+
+**`/opsx-new <naam>`** met de change-naam in kebab-case (bijv. `add-publication-search` — niet `AddPublicationSearch` of `add_publication_search`). De change-naam wordt ook een GitHub-issue-label, dus kort en leesbaar.
+
+Direct na de stap staat in het mapje:
+
+```
+openspec/changes/<naam>/
+└── .openspec.yaml
+```
+
+Eén bestand — `.openspec.yaml` met metadata (schema-versie, aanmaakdatum). Verder leeg; proposal, delta, design en tasks komen pas daarna.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Wat is het verschil tussen `/opsx-ff` en handmatig artefacten schrijven, en wanneer kies je welke?**
+
+<Details summary="Hint">
+
+Snelheid vs. controle. De ene levert in één run alles op, de andere laat je per artefact terugkijken en bijsturen.
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **`/opsx-ff`** ("fast-forward") — genereert proposal, specs, design en tasks in één run na een paar setup-vragen. Kies hem als je het beeld al helder hebt en typewerk wil besparen.
+- **Handmatig of `/opsx-continue`** — je schrijft (of genereert) per artefact, leest terug, scherpt aan, en gaat dan pas verder. Kies dit bij architecturale keuzes waar je per stap wil meedenken. `/opsx-explore` zit nog een stap eerder: die maakt nog niets aan, maar denkt mee bij de brainstorm.
+
+In de praktijk: vaak `/opsx-ff` voor een ruwe schets en daarna handmatig bijsturen.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Welke drie soorten delta-secties kun je in een spec-delta schrijven, en wat doe je in elke?**
+
+<Details summary="Hint">
+
+Drie hoofdletter-woorden, alledrie een werkwoord voor wat ze met requirements doen.
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **ADDED Requirements** — nieuwe requirements die nog niet in de hoofd-spec staan.
+- **MODIFIED Requirements** — bestaande requirements die anders worden. Vermeld erbij wat het vorige gedrag was — bijvoorbeeld *(Voorheen: sessies verliepen na 30 minuten.)* — zodat reviewers de wijziging kunnen volgen.
+- **REMOVED Requirements** — requirements die vervallen.
+
+Bij archivering gaan ADDED-regels naar de hoofd-spec, MODIFIED overschrijven hun voorganger, en REMOVED-regels verdwijnen.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Welke vier dingen controleert `/opsx-verify`, en welke fout maakt het stilzwijgend NIET vindbaar als je hashtags verkeerd zet?**
+
+<Details summary="Hint">
+
+Vier C's beginnen niet allemaal met een C, maar bijna: completeness, correctness, coherence, coverage. En het stille gat zit bij scenario-headers.
+
+</Details>
+
+<Details summary="Antwoord">
+
+`/opsx-verify` controleert vier dingen:
+
+1. **Compleetheid** — alle vier artefacten aanwezig en niet leeg.
+2. **Correctheid** — scenario's gebruiken `####`, requirements gebruiken RFC 2119-keywords (MUST/SHOULD/MAY).
+3. **Coherentie** — verwijzingen tussen tasks en requirements kloppen.
+4. **Test-dekking** — elk nieuw scenario heeft een corresponderende test in `tasks.md`.
+
+**De stilzwijgende fout**: drie hashtags i.p.v. vier bij een scenario (`### Scenario:` in plaats van `#### Scenario:`). De parser herkent `###` niet als scenario en negeert hem zonder error. Resultaat: een spec zonder scenario, die er voor `/opsx-verify` wél compleet uitziet. Meest voorkomende OpenSpec-fout — daarom is "tellen tot vier" de eerste reflex bij een vreemde verify-uitkomst.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. Wanneer is een change klaar om gearchiveerd te worden, en welk commando draai je dan?**
+
+<Details summary="Hint">
+
+Vier voorwaarden: tasks, code in development, delta in hoofd-spec, en mapje verhuisd. Het laatste hoef je niet zelf te doen.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Een change is klaar om gearchiveerd te worden als:
+
+1. Alle taken in `tasks.md` afgevinkt zijn.
+2. De implementatie in `development` zit (PR gemerged).
+3. De spec-delta is gesynct naar de hoofd-spec in `openspec/specs/`.
+4. Het mapje is verplaatst naar `openspec/changes/archive/YYYY-MM-DD-<naam>/`.
+
+Stap 3 en 4 doe je niet handmatig — draai **`/opsx-archive`**. Die controleert of alle taken klaar zijn, syncht de delta via `/opsx-sync`, en verhuist het mapje met datum vooraan. Daarna is je change geschiedenis.
+
+</Details>
+
+</div>
 
 <NextSteps title="Volgende stap" lede="Je eerste change staat. Een paar logische vervolgstappen:">
   <NextStep
