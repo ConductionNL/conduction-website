@@ -200,6 +200,22 @@ Een laatste stuk syntax dat je verderop tegen gaat komen, maar nog niet nodig he
 
 Vooral de `` !`command` ``-syntax is krachtig: hij draait *voordat* de skill in context komt, dus je kunt runtime-informatie (current branch, git-user, datum) als context meegeven aan Claude. Niet nodig voor onze mini-skill, maar goed om te kennen voor wanneer je meer dynamische skills schrijft.
 
+### De gebruiker iets vragen: `AskUserQuestion`
+
+Sommige skills hebben input nodig die je niet uit shell-commando's kunt afleiden — bijvoorbeeld een keuze tussen twee aanpakken, of confirmatie vóór een destructieve actie. Daarvoor is er de **`AskUserQuestion`** tool: een ingebouwde Claude Code-tool waarmee een skill midden in z'n uitvoering een korte multiple-choice vraag aan de gebruiker stelt en op het antwoord wacht.
+
+In je `SKILL.md` instrueer je 'm gewoon in tekst:
+
+```markdown
+3. **Confirm before applying**
+
+   Use the `AskUserQuestion` tool to ask: *"Apply this migration to the
+   production database?"* with options `Yes, apply now` and `No, abort`.
+   Only continue to step 4 if the user picks the first option.
+```
+
+Wanneer gebruiken: bij beslismomenten waar Claude niet zelfstandig mag kiezen (production-deploys, branch-strategie, gevoelige refactors). Wanneer níet: voor info die je uit `git`, `gh` of het bestand zelf kunt halen — dan is `` !`command` `` of een Read-call sneller en minder storend. Voor `git-status-summary` is er geen keuzemoment, dus we gebruiken hem niet — maar onthou hem voor je volgende, zwaardere skill.
+
 ## Stap 4 — Lokaal testen
 
 Vóór je de skill deelt: test hem zelf. Drie soorten tests:
@@ -258,7 +274,8 @@ Binnen Conduction houden we een lijst bij van alle interne skills (zowel persoon
 
 1. **Voeg 'm toe aan de relevante repo** — meestal `<repo>/.claude/skills/<naam>/` met een gewone commit.
 2. **Update de `README.md` van die `.claude/skills/`-folder** als die bestaat — voeg een regel toe met naam, één-zin-omschrijving, en wanneer je hem aanroept.
-3. **Open een PR** en laat één teamgenoot de skill triggeren in zijn eigen sessie. Niet de description theoretisch beoordelen — letterlijk een prompt typen die zou moeten triggeren.
+3. **Update de Hydra skill-docs in [`ConductionNL/.github`](https://github.com/ConductionNL/.github)** als de skill in een Hydra-pipeline meedraait — de centrale documentatie over welke skills Hydra kent, in welke familie ze horen en wat ze doen, leeft daar. Zonder die update weet de rest van het team (en latere Hydra-runs) niet dat je skill bestaat.
+4. **Open een PR** en laat één teamgenoot de skill triggeren in zijn eigen sessie. Niet de description theoretisch beoordelen — letterlijk een prompt typen die zou moeten triggeren.
 
 Voor globaal-persoonlijke skills (`~/.claude/skills/`) hoeft niets gecommit te worden — het is je eigen workshop.
 
@@ -326,13 +343,13 @@ Globaal (`~/.claude/skills/`) is voor skills die jij over álle repo's heen hand
 
 <Details summary="Hint">
 
-Het slash-command moet ergens vandaan komen. Wat ziet Claude eerst — de map of het frontmatter-veld?
+De naam die je achter `/` typt moet ergens vandaan komen. Wat ziet Claude eerst — de map of het frontmatter-veld?
 
 </Details>
 
 <Details summary="Antwoord">
 
-Claude vindt skills door je `~/.claude/skills/` en `.claude/skills/` te scannen op mappen met een `SKILL.md`. Voor het slash-command kijkt hij naar het `name`-veld in de frontmatter. Komen die niet overeen, dan zijn er twee mogelijke symptomen:
+Claude vindt skills door je `~/.claude/skills/` en `.claude/skills/` te scannen op mappen met een `SKILL.md`. Voor de slash-trigger kijkt hij naar het `name`-veld in de frontmatter. Komen die niet overeen, dan zijn er twee mogelijke symptomen:
 
 - **`/foldername` werkt niet** maar `/nameveld` wel — verwarrend, want je teamgenoot kent alleen de mapnaam uit Git.
 - **Auto-trigger werkt onverwacht** — Claude koppelt de description aan het frontmatter-name, niet aan de mapnaam.

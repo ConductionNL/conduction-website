@@ -99,7 +99,7 @@ Drie velden vragen extra aandacht:
 
 | Veld | Functie |
 |---|---|
-| `name` | Moet **exact gelijk** zijn aan de mapnaam. Folder heet `review-pr` → `name: review-pr`. Wijkt het af, dan triggert het slash-command niet. |
+| `name` | Moet **exact gelijk** zijn aan de mapnaam. Folder heet `review-pr` → `name: review-pr`. Wijkt het af, dan kun je de skill niet via `/<naam>` triggeren. |
 | `description` | Het belangrijkste veld van de hele skill. Hierop beslist Claude of de skill relevant is. Action-oriented, derde persoon, met concrete trigger-woorden. |
 | `metadata.tags` / `metadata.category` | Vrij in te vullen, handig voor filteren en groeperen — geen invloed op triggering. |
 
@@ -149,11 +149,11 @@ Skills heten standaard `<namespace>-<action>` met alleen kleine letters, cijfers
 | `team-` | Scrum team-rollen (`team-backend`, `team-qa`) |
 | `hydra-gate-` | Quality- en security-gates binnen Hydra |
 
-De mapnaam, het `name`-veld én het slash-commando moeten allemaal exact gelijk zijn.
+De mapnaam, het `name`-veld én de manier waarop je 'm typt (`/<naam>`) moeten allemaal exact gelijk zijn.
 
-## Skill vs. prompt vs. command vs. agent
+## Skill vs. prompt vs. agent
 
-Een veelgehoorde vraag: wanneer is een skill de juiste keuze, en wanneer iets anders? Vier categorieën, kort:
+Een veelgehoorde vraag: wanneer is een skill de juiste keuze, en wanneer iets anders? Drie categorieën, kort:
 
 <HexCard title="Gewone prompt">
   Eenmalig, of iets wat je sneller schrijft dan op te zoeken. Geen herhaalbaar patroon. Voorbeeld: <em>"refactor deze functie naar early-return-stijl"</em>.
@@ -161,10 +161,6 @@ Een veelgehoorde vraag: wanneer is een skill de juiste keuze, en wanneer iets an
 
 <HexCard title="Skill">
   Herhaalbaar gedrag, mechanisch te beschrijven, met side-effects of een vast stappenplan. Voorbeelden: <code>/review-pr</code>, <code>/opsx-new</code>, <code>/create-pr</code>.
-</HexCard>
-
-<HexCard title="Slash-command (legacy)">
-  In oudere versies van Claude Code stonden er files in <code>.claude/commands/*.md</code> als aparte categorie. Anthropic heeft die samengevoegd: een file in <code>.claude/commands/</code> werkt nog steeds, maar skills zijn nu het aanbevolen format en bieden meer features (supporting files, frontmatter-controle, auto-activering). Nieuw werk: altijd een skill.
 </HexCard>
 
 <HexCard title="Subagent">
@@ -197,25 +193,21 @@ Vier korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik 
 
 <div className="tutorial-quiz">
 
-**1. Wat is het verschil tussen een skill en een command in Claude Code?**
+**1. Wanneer kies je voor een skill, en wanneer voor een gewone prompt of een subagent?**
 
 <Details summary="Hint">
 
-Denk aan de geschiedenis: in oudere versies waren het twee aparte mechanismen. Wat is er sindsdien gebeurd?
+Denk aan herhaalbaarheid, mechanische beschrijfbaarheid, en isolatie. Bij welke combinaties valt de keuze welke kant op?
 
 </Details>
 
 <Details summary="Antwoord">
 
-In oudere versies van Claude Code waren `.claude/commands/*.md` files een aparte categorie naast skills. Anthropic heeft die samengevoegd: een file in `.claude/commands/` werkt nog steeds, maar **skills zijn nu het aanbevolen format**.
+- **Gewone prompt** — eenmalig, of iets wat je sneller schrijft dan op te zoeken. Geen herhaalbaar patroon. Bijvoorbeeld: *"refactor deze functie naar early-return-stijl"*.
+- **Skill** — herhaalbaar gedrag, mechanisch te beschrijven, met side-effects of een vast stappenplan. Voorbeelden: `/review-pr`, `/opsx-new`, `/create-pr`. Je teamgenoot zou ook willen dat dit consistent gebeurt.
+- **Subagent** — een aparte uitvoeringscontext met eigen tools en tokenbudget. Voor isolatie: zware exploratie, parallelle reviews. Een skill kan een subagent oproepen, maar is niet hetzelfde.
 
-Skills hebben extra mogelijkheden die commands niet hebben:
-
-- Supporting files in subfolders (`templates/`, `references/`, `examples/`, `scripts/`)
-- Frontmatter-controle over hoe ze geactiveerd worden (handmatig, automatisch, of beide)
-- Auto-activering door Claude zelf op basis van de `description`
-
-Praktisch: als iemand het heeft over "de `/review-pr` slash-command", dan bedoelt diegene de skill die in `.claude/skills/review-pr/` staat. De naam achter de schuine streep is altijd de naam van een skill-map. Voor nieuw werk: schrijf een skill, geen command.
+Vuistregel: één-keer-werk → prompt. Herhaalbaar werk → skill. Zware isolatie van een sub-werkstroom → subagent.
 
 </Details>
 
@@ -235,7 +227,7 @@ Twee velden zijn écht verplicht. Eén ervan beslist over de mapnaam, de ander b
 
 Verplicht zijn:
 
-- **`name`** — moet exact gelijk zijn aan de mapnaam (folder `review-pr` → `name: review-pr`). Wijkt het af, dan triggert het slash-command niet.
+- **`name`** — moet exact gelijk zijn aan de mapnaam (folder `review-pr` → `name: review-pr`). Wijkt het af, dan kun je de skill niet via `/<naam>` triggeren.
 - **`description`** — wat Claude leest om te beslissen of de skill relevant is. Action-oriented, derde persoon, concrete trigger-woorden vooraan.
 
 Optioneel, maar veel gebruikt:
