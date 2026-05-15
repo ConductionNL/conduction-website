@@ -10,11 +10,11 @@ apps: []
 durationMinutes: 20
 series: hydra-tutorial
 partNumber: 5
-draft: true
 unlisted: true
 ---
 
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, Troubleshooting, TroubleshootingItem} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
 
 :::warning Intern document — niet extern delen
 Deze leerlijn beschrijft IP van Conduction. Niet doorsturen, niet publiceren, niet citeren in publieke kanalen.
@@ -27,7 +27,7 @@ In de eerste vier delen ging het om concept, pipelines, gates en skills. Tijd om
 <Outcomes title="Wat je leert in dit deel">
   <Outcome>Hoe je <code>secrets/.env</code> + <code>secrets/credentials.json</code> opzet voor een lokale Hydra-run.</Outcome>
   <Outcome>Hoe je de container images lokaal bouwt (of uit GHCR pulled).</Outcome>
-  <Outcome>Hoe je een spec klaar maakt en het issue triggert.</Outcome>
+  <Outcome>Hoe je een OpenSpec-change klaar maakt en het issue triggert.</Outcome>
   <Outcome>Hoe je via <strong><code>HYDRA_LABEL_PREFIX</code></strong> een eigen label-namespace claimt zodat je met meerdere devs niet op elkaars stage-labels staat.</Outcome>
   <Outcome>Hoe je de pijplijn volgt: <code>logs/supervisor.log</code>, sloten, en pipeline-comments op de PR.</Outcome>
 </Outcomes>
@@ -250,19 +250,97 @@ Heb je `yolo` gezet en is alles groen? Dan zie je `done` op het issue verschijne
   </TroubleshootingItem>
 </Troubleshooting>
 
-## Pluvo-vragen
+## Test jezelf
 
-1. **Wat is het probleem dat <code>HYDRA_LABEL_PREFIX</code> oplost, en wanneer hoef je hem expliciet NIET te zetten?**  
-   *(Hint: denk aan twee devs op dezelfde target-repo's; en denk aan productie/CI waar één canonieke set labels juist gewenst is.)*
+Vier korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
 
-2. **Welke labels worden door <code>HYDRA_LABEL_PREFIX</code> WEL en welke NIET geprefixed?**  
-   *(Hint: stage-labels zoals <code>build:queued</code> en herstel-labels zoals <code>retry:queued</code> wel; metadata zoals <code>yolo</code> en <code>openspec</code> niet — die zijn gedeeld.)*
+<div className="tutorial-quiz">
 
-3. **Waarom roep je <code>./scripts/hydra-label.sh</code> aan in plaats van <code>gh issue edit --add-label</code> bij het triggeren van een run?**  
-   *(Hint: denk aan board-sync en het automatisch respecteren van de label-prefix.)*
+**1. Wat is het probleem dat `HYDRA_LABEL_PREFIX` oplost, en wanneer hoef je hem expliciet NIET te zetten?**
 
-4. **Wat gebeurt er als je <code>HYDRA_LABEL_PREFIX</code> wijzigt terwijl er nog een Hydra-run loopt? En wat is de juiste werkwijze als je toch wilt wijzigen?**  
-   *(Hint: niets goeds — eerst de pijplijn drainen tot alles done/needs-input is.)*
+<Details summary="Hint">
+
+Wat gebeurt er als twee Hydra-instances tegelijk dezelfde target-repo bekijken? En waarom is dat juist géén probleem in productie?
+
+</Details>
+
+<Details summary="Antwoord">
+
+**Probleem dat het oplost:** zodra meerdere devs lokaal tegelijk Hydra draaien tegen dezelfde target-repos zien hun supervisors elkaars labels en pakken elkaars werk op. Race-conditions, dubbele PRs, labels die over elkaar pingen. Met een eigen prefix (`wilco-build:queued`) heeft elke dev zijn eigen namespace.
+
+**Wanneer NIET zetten:**
+
+- **Productie / GitHub Actions / cron-managed deployment** — daar wil je juist de canonieke (kale) labels: één bron van waarheid, geen verdwaalde dev-prefix.
+- **Lokale solo-run** zonder collega's op dezelfde repos — werkt zonder ook; mag wel maar hoeft niet.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Welke labels worden door `HYDRA_LABEL_PREFIX` WEL en welke NIET geprefixed?**
+
+<Details summary="Hint">
+
+Wat Hydra zelf doorzet in zijn state-machine wordt geprefixed. Wat over het werk-zélf gaat (eigenschap van het issue, geen pipeline-state) wordt gedeeld.
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **WEL geprefixed**: **stage-labels** (`ready-to-build`, `build:queued/running/pass/fail`, `code-review:*`, `security-review:*`, `applier:*`) en **herstel-labels** (`retry:queued`, `rebuild:queued`, `needs-input`). Allemaal labels die Hydra zelf beheert in de state-machine.
+- **NIET geprefixed**: **metadata** die over de aard van het werk gaat, niet over een Hydra-instance: **`yolo`** (mag auto-mergen) en **`openspec`** (volgt OpenSpec-werkmodel). Twee devs op één issue zijn het immers eens over of het een yolo-issue is — geen reden om dat per-dev op te splitsen.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Waarom roep je `./scripts/hydra-label.sh` aan in plaats van `gh issue edit --add-label` bij het triggeren van een run?**
+
+<Details summary="Hint">
+
+Twee dingen waar het script automatisch voor zorgt en de directe `gh`-aanroep niet.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Twee redenen:
+
+1. **Respecteert `HYDRA_LABEL_PREFIX` automatisch** — je tikt `add ready-to-build`, het script maakt er `wilco-ready-to-build` van. Met `gh issue edit --add-label` moet je de prefix met de hand meetypen en bij elke verandering aanpassen — recipe voor typos en namespace-drift.
+2. **Synct het GitHub Project-bord direct.** `gh issue edit` werkt ook, maar het board blijft dan "in de oude kolom" tot `reconcile.sh` (om de 10 minuten) het opraapt. Met `hydra-label.sh` zie je de kolom-overgang meteen.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Wat gebeurt er als je `HYDRA_LABEL_PREFIX` wijzigt terwijl er nog een Hydra-run loopt? En wat is de juiste werkwijze als je toch wilt wijzigen?**
+
+<Details summary="Hint">
+
+De lopende run kijkt naar labels in de oude namespace, jouw nieuwe supervisor in een andere. Wat blijft er over?
+
+</Details>
+
+<Details summary="Antwoord">
+
+**Wat er gebeurt:** de lopende run kijkt naar labels in de oude namespace; jouw supervisor met nieuwe prefix kijkt naar een andere set. Lopend werk wordt door niemand meer opgepakt (orphaned), of erger — labels van beide namespaces komen op één issue terecht.
+
+**Juiste werkwijze:**
+
+1. Zet geen nieuw werk meer in de oude prefix.
+2. **Drain de pijplijn**: wacht tot alle issues met de oude prefix op `done` of `needs-input` staan.
+3. Pas dán `HYDRA_LABEL_PREFIX` aanpassen in `secrets/.env` en de supervisor herstarten.
+4. `./scripts/create-labels.sh --repo ... --prefix <nieuw>` om de nieuwe namespace op de doel-repo's te seeden.
+
+</Details>
+
+</div>
 
 <NextSteps title="Volgende stap" lede="Pijplijn loopt? Mooi. Maar wat doe je als het mis gaat? Deel 6 behandelt herstel- en escalatie-patronen.">
   <NextStep

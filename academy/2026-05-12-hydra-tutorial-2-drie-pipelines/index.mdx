@@ -10,11 +10,11 @@ apps: []
 durationMinutes: 15
 series: hydra-tutorial
 partNumber: 2
-draft: true
 unlisted: true
 ---
 
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
 
 :::warning Intern document — niet extern delen
 Deze leerlijn beschrijft IP van Conduction. Niet doorsturen, niet publiceren, niet citeren in publieke kanalen.
@@ -61,11 +61,11 @@ De pijplijn heeft één belangrijke regel: **iedere uitkomst na review is termin
 
 ## Pipeline 1: Build (Al Gorithm, Haiku)
 
-De builder krijgt de spec, een schone clone van de doel-repo, en een turn-budget. Geen review-history, geen feedback van eerdere runs. Hij implementeert de tasks uit `tasks.md`, draait de quality-suite, opent een draft-PR.
+De builder krijgt de change, een schone clone van de doel-repo, en een turn-budget. Geen review-history, geen feedback van eerdere runs. Hij implementeert de tasks uit `tasks.md`, draait de quality-suite, opent een draft-PR.
 
 Volgorde binnen de build-fase:
 
-1. **Implementatie** — leest `proposal.md`, `design.md`, `tasks.md`, schrijft code.
+1. **Implementatie** — leest `proposal.md`, `design.md` en `tasks.md` uit `openspec/changes/<slug>/` in de doel-repo, schrijft code.
 2. **Quality checks** — PHPCS, PHPMD, Psalm, PHPStan, ESLint, Stylelint, `composer audit`, `npm audit`.
 3. **PHPUnit + Newman** — backend en API-tests.
 4. **Browser-tests** — Playwright MCP loopt door de UI heen.
@@ -82,13 +82,13 @@ Belangrijk: Al Gorithm draait op **Haiku**. Reden uit deel 1: hij volgt patronen
 
 Zodra `build:pass` gezet wordt, queue-t de supervisor automatisch `code-review:queued`. Juan Claude pakt het op:
 
-1. Leest **alleen de PR-diff** (`HYDRA_REVIEW_SCOPE=diff`, ADR-020). Niet de spec, niet de hele repo. Zo blijft de scope behapbaar en wordt elke regel die hij commentaar geeft daadwerkelijk in deze PR aangeraakt.
+1. Leest **alleen de PR-diff** (`HYDRA_REVIEW_SCOPE=diff`, ADR-020). Zo blijft de scope behapbaar en wordt elke regel die hij commentaar geeft daadwerkelijk in deze PR aangeraakt.
 2. Loopt de ADR-bibliotheek en gate-skills langs (zie deel 3).
 3. Voor **mechanische, in-scope fouten** mag hij zelf fixen (ADR-021: bounded-fix scope). PHPCS-headers ontbreken? Hij voegt ze toe. Pijnlijke variabele-naam? Niet zijn pakkie-an.
 4. Voor elk gevonden probleem schrijft hij een inline-comment op de PR met prefix `[fixed:...]` of `[unfixed:...]`.
 5. Hij commit + pusht zijn fixes naar de feature branch en zet `code-review:pass` of `code-review:fail` op het issue.
 
-De verdict-JSON die hij schrijft (`reviews/1.json`) bevat `fixes_applied[]` en `unfixed[]` — dat is wat Axel Pliér later leest om zijn binaire beslissing te nemen.
+Juan's `fixes_applied[]` en `unfixed[]` schrijft hij niet zelf weg als JSON — de orchestrator bundelt ze pas na de volgende stap (Clyde) tot één rondebestand. Zie ["Hoe verdicts gepersisteerd worden"](#hoe-verdicts-gepersisteerd-worden) hieronder.
 
 ## Pipeline 3: Security review (Clyde Barcode, Sonnet)
 
@@ -99,6 +99,10 @@ Direct na code-review (of die nu `:pass` of `:fail` was) queue-t de supervisor `
 - Schrijft `security-review:pass` of `security-review:fail`.
 
 Waarom sequentieel en niet parallel? Omdat Clyde reviewed wat Juan Claude heeft achtergelaten. Parallel zou betekenen dat Clyde naar pre-fix code kijkt — dan zou hij security-issues vinden die Juan Claude al weggepoetst had en moet je de verdicts gaan reconciliëren. Sequentieel is simpeler en duidelijker.
+
+## Hoe verdicts gepersisteerd worden
+
+Na een complete review-ronde (Juan + Clyde achter elkaar) bundelt de orchestrator beide verdicts in **één** bestand op de feature branch: `openspec/changes/<slug>/reviews/<ronde>.json` in de doel-repo. Rondes nummeren sequentieel — `1.json` na de eerste pass, `2.json` na een `retry:queued`-cyclus, enzovoort (gewoon `ls reviews/*.json | wc -l` plus één). Daarin zitten de `fixes_applied[]` én `unfixed[]` van **beide** reviewers samen — dat is wat Axel Pliér straks leest. Een geaggregeerde status-snapshot loopt parallel mee naar `openspec/changes/<slug>/hydra.json` (zie deel 6 voor de structuur en hoe je hem uitleest).
 
 ## De applier: Axel Pliér's binaire gate
 
@@ -137,24 +141,99 @@ Naast de stage-labels zijn er metadata-labels die ernaast bestaan:
 
 Twee menselijk-getriggerde herstel-labels die teruggrijpen in de pijplijn. Allebei **single-shot** (geen loop):
 
-- **`retry:queued`** — de bestaande PR blijft staan. Hydra bouwt een `feedback.md` met daarin de `unfixed[]`-bevindingen + applier-blockers, dispatcht Al Gorithm in `HYDRA_MODE=fix`, gescoped tot precies de geflagde bestanden. Goedkoop. Geschikt voor: "de reviewers hadden gelijk, builder moet alleen even bijschaven".
-- **`rebuild:queued`** — bestaande PR sluit, branch reset naar `development`, alle cycle-labels eraf, terug naar `build:queued`. Duur. Geschikt voor: "de aanpak van Al Gorithm klopte niet, we beginnen opnieuw met dezelfde spec".
+- **`retry:queued`** — de bestaande PR blijft staan. Hydra bouwt een efemere `feedback.md` (in een `/tmp/hydra-retry-XXXXXX/`-werkmap, niet gecommit) met daarin de `unfixed[]`-bevindingen + applier-blockers, mount die als `/workspace/feedback.md` in de builder-container, en dispatcht Al Gorithm in `HYDRA_MODE=fix` gescoped tot precies de geflagde bestanden. Goedkoop. Geschikt voor: "de reviewers hadden gelijk, builder moet alleen even bijschaven".
+- **`rebuild:queued`** — bestaande PR sluit, branch reset naar `development`, alle cycle-labels eraf, terug naar `build:queued`. Duur. Geschikt voor: "de aanpak van Al Gorithm klopte niet, we beginnen opnieuw met dezelfde change".
 
 Stelregel: pak altijd het goedkoopste herstel eerst. Eerst `gh pr update-branch <N>` (development → PR mergen), dan `retry:queued`, dan pas `rebuild:queued`. Deel 6 gaat hier dieper op in.
 
-## Pluvo-vragen
+## Test jezelf
 
-1. **In welke volgorde lopen de drie pipelines, en waarom is security-review sequentieel ná code-review en niet parallel?**  
-   *(Hint: denk aan wat Clyde Barcode leest — de pre- of de post-fix versie.)*
+Vier korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
 
-2. **Wat is het verschil tussen <code>build:fail</code> en <code>code-review:fail</code> qua vervolgactie?**  
-   *(Hint: één leidt direct tot <code>needs-input</code>; bij de andere loopt de pijplijn nog door naar de volgende stage.)*
+<div className="tutorial-quiz">
 
-3. **In welke situatie wordt Axel Pliér (de applier) overgeslagen, en waarom is dat een bewuste keuze?**  
-   *(Hint: er zijn twee scenario's — beide gaan over of er iets *veranderd* is na de oorspronkelijke build.)*
+**1. In welke volgorde lopen de drie pipelines, en waarom is security-review sequentieel ná code-review en niet parallel?**
 
-4. **Wanneer kies je <code>retry:queued</code> en wanneer <code>rebuild:queued</code>?**  
-   *(Hint: de keuze hangt af van of de oorspronkelijke build-aanpak deugde of niet.)*
+<Details summary="Hint">
+
+Denk aan welke versie van de code Clyde Barcode ziet: vóór of ná de fixes van Juan Claude?
+
+</Details>
+
+<Details summary="Antwoord">
+
+De volgorde is **build → code-review → security-review** (en daarna applier of `needs-input`).
+
+Security-review draait **na** code-review zodat Clyde Barcode de PR-staat ziet **ná** Juan Claude's bounded fixes. Parallel zou betekenen dat Clyde naar pre-fix code kijkt en security-issues vindt die Juan al weggepoetst had. Je zou dan verdicts moeten gaan reconciliëren. Sequentieel is simpeler en houdt de "wie reviewed wat"-grens scherp.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Wat is het verschil tussen `build:fail` en `code-review:fail` qua vervolgactie?**
+
+<Details summary="Hint">
+
+Bij één stopt de pijplijn meteen, bij de andere loopt hij nog door naar de volgende stage. Welke is welke, en waarom?
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **`build:fail`** = de PR is niet (correct) opengezet, er valt niets te reviewen. Issue gaat **direct naar `needs-input`**. Pijplijn stopt.
+- **`code-review:fail`** = de PR staat, Juan Claude heeft afgekeurd, maar de pijplijn **loopt nog door** naar `security-review` (altijd, ook bij `:fail`). Pas na security-review wordt besloten: minstens één review `:fail` → applier overgeslagen → `needs-input`.
+
+Reden voor het verschil: zonder PR is er geen werk om over te oordelen; mét PR willen we beide reviewers laten zien wat er ligt, zodat een mens later een compleet beeld heeft.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. In welke situatie wordt Axel Pliér (de applier) overgeslagen, en waarom is dat een bewuste keuze?**
+
+<Details summary="Hint">
+
+Er zijn twee scenario's. Het ene draait om "is er na de oorspronkelijke build iets veranderd?", het andere om "wie heeft het laatste woord?"
+
+</Details>
+
+<Details summary="Antwoord">
+
+Twee scenario's:
+
+1. **Beide reviews `:pass` én 0 fixes gepusht** door Juan/Clyde. De code is identiek aan wat de builder oplevert; er is niets nieuws om te beoordelen. Axel overgeslagen → `done`. Bespaart Sonnet-tokens.
+2. **Eén van beide reviews `:fail`.** De reviewers zijn de autoriteit; hun afwijzing trumpt de applier. Axel overgeslagen → `needs-input`.
+
+Axel draait dus **alleen** wanneer er wél fixes zijn gepusht én beide reviews zijn geslaagd — dan oordeelt hij of die fixes de uiteindelijke staat goed maken.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Wanneer kies je `retry:queued` en wanneer `rebuild:queued`?**
+
+<Details summary="Hint">
+
+Het kantelpunt is: **deugde de build-aanpak van Al Gorithm?** Bij ja → goedkoop pad. Bij nee → opnieuw beginnen.
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **`retry:queued`** als de **builder-aanpak in principe goed was** en de reviewers terechte, lokale bevindingen hadden. De bestaande PR blijft staan; de builder krijgt `feedback.md` en fixed gescoped tot de geflagde files. **Goedkoop, single-shot.**
+- **`rebuild:queued`** als de **build-aanpak zelf verkeerd was** — verkeerde implementatie, stub-methods, requirements gemist. PR sluit, branch reset naar `development`, alle cycle-labels eraf, terug naar `build:queued`. **Duur.**
+
+Stelregel: altijd het goedkoopste eerst — `gh pr update-branch` → `retry:queued` → pas dán `rebuild:queued`.
+
+</Details>
+
+</div>
 
 <NextSteps title="Volgende stap" lede="Nu je het pipeline-skelet ziet, gaan we in deel 3 in op de quality gates — de mechanische scheidsrechters die alle drie de personas in toom houden.">
   <NextStep

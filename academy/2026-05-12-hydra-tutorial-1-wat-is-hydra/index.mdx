@@ -10,14 +10,18 @@ apps: []
 durationMinutes: 10
 series: hydra-tutorial
 partNumber: 1
-draft: true
 unlisted: true
 ---
 
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
 
 :::warning Intern document — niet extern delen
 Deze leerlijn beschrijft IP van Conduction (skills, gates, prompts, pipelines) en is bedoeld voor medewerkers, vertrouwde ZZP-developers en partners onder NDA. Niet doorsturen, niet publiceren, niet citeren in publieke kanalen.
+:::
+
+:::tip Aanbevolen vooraf — de OpenSpec-leerlijn
+Hydra werkt op OpenSpec-changes. Ben je nog niet bekend met begrippen als **spec**, **change**, **requirement** en **scenario**? Doe dan eerst de [OpenSpec-leerlijn](/academy/openspec-tutorial-1-wat-is-openspec) (deel 1 + 2, samen ~30 minuten). Dat scheelt veel terugzoeken in de rest van deze modules.
 :::
 
 Hydra is Conductions interne **agentic CI/CD-platform**: een fabriek die OpenSpec-voorstellen omzet in gereviewde, geteste code op een feature branch. Deze module legt in tien minuten uit wát Hydra is, waaróm het bestaat, en hoe het past binnen onze app-fabriek. Het is het eerste deel van een leerlijn van zes; aan het eind sta je klaar voor deel 2 over de drie pipelines.
@@ -41,11 +45,13 @@ Hydra is Conductions interne **agentic CI/CD-platform**: een fabriek die OpenSpe
 
 Hydra is een **stateless, label-gedreven pipeline** die OpenSpec-voorstellen verandert in feature branches met code, tests, een review-history en een PR — klaar voor menselijke goedkeuring.
 
-Geen "AI assistent die de developer helpt", maar een **fabriek**. Je gooit er een spec in en aan de andere kant rolt er een PR uit waar twee onafhankelijke reviewers naar gekeken hebben.
+Geen "AI assistent die de developer helpt", maar een **fabriek**. Je gooit er een OpenSpec-change in en aan de andere kant rolt er een PR uit waar twee onafhankelijke reviewers naar gekeken hebben.
+
+Concreet: Hydra werkt op het `openspec/changes/<slug>/` mapje — `proposal.md`, `design.md`, `tasks.md` en de spec-delta. Als die termen nieuw zijn, doe eerst de OpenSpec-leerlijn (zie tip bovenaan).
 
 ## Waarom bestaat Hydra?
 
-Conduction bouwt veel open-source apps voor de Nextcloud-werkplek. Het ritme van die fabriek wordt bepaald door twee dingen: hoe snel we **specs** kunnen schrijven, en hoe snel die specs **code** worden. Hydra automatiseert die tweede stap, met drie expliciete doelen:
+Conduction bouwt veel open-source apps voor de Nextcloud-werkplek. Het ritme van die fabriek wordt bepaald door twee dingen: hoe snel we **changes** kunnen schrijven, en hoe snel die changes **code** worden. Hydra automatiseert die tweede stap, met drie expliciete doelen:
 
 1. **Doorlooptijd verkorten.** Een gemiddeld OpenSpec-voorstel wordt zonder Hydra in een halve dag tot drie dagen geïmplementeerd. Met Hydra is dat een halfuur tot een paar uur, afhankelijk van complexiteit.
 2. **Kwaliteit borgen.** Geen enkele PR komt het systeem uit zonder mechanische quality gates (PHPCS, Psalm, PHPStan, ESLint, PHPUnit), een onafhankelijke code review en een onafhankelijke security review. Twee paar AI-ogen vóór er een mens kijkt.
@@ -56,11 +62,11 @@ Conduction bouwt veel open-source apps voor de Nextcloud-werkplek. Het ritme van
 Hydra is intern opgebouwd uit vier ephemere container-personas. Elk speelt één rol, in één container, met scoped credentials en strakke turn-budgets. Je hoeft hun namen nu niet uit het hoofd te kennen — ze komen terug in deel 2 — maar het helpt om vroeg het rollenpatroon te zien:
 
 <HexCard title="Al Gorithm (builder, Haiku)">
-  Bouwt code uit de spec. Ziet nooit reviews terug. Stopt na een vast turn-budget.
+  Bouwt code uit de change. Ziet nooit reviews terug. Stopt na een vast turn-budget.
 </HexCard>
 
 <HexCard title="Juan Claude van Damme (code reviewer, Sonnet)">
-  Leest alleen de PR-diff, niet de spec. Kan zelf mechanische fixes doorvoeren binnen scope.
+  Leest alleen de PR-diff. Kan zelf mechanische fixes doorvoeren binnen scope.
 </HexCard>
 
 <HexCard title="Clyde Barcode (security reviewer, Sonnet)">
@@ -94,26 +100,105 @@ Hydra is geen wondermiddel. De vuistregel:
 
 Een veelgemaakte vergissing: denken dat Hydra je hele product bedenkt. Het tegendeel is waar.
 
-- **Hydra schrijft geen specs.** Die worden vooraf aangeleverd, of een mens schrijft ze handmatig (met `/opsx-ff`).
+- **Hydra schrijft geen changes (of specs).** Die worden vooraf aangeleverd, of een mens schrijft ze handmatig (met `/opsx-ff`).
 - **Hydra doet niet aan visie of strategie.** Welke features we bouwen is een mensenkeuze.
 - **Hydra besluit niet over architectuur.** Daarvoor zijn ADR's, beheerd door mensen (zie `hydra/openspec/architecture/`).
 - **Hydra merge-t niet eigenmachtig.** Behalve `yolo`-issues — en daar zijn alle gates nog steeds harde voorwaarden.
 
-## Pluvo-vragen
+## Test jezelf
 
-Vier begripsvragen om dit deel af te ronden. Antwoorden staan in de tekst hierboven.
+Vier korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
 
-1. **Wat is het primaire doel van Hydra?**  
-   *(Hint: het draait om twee dingen — doorlooptijd en kwaliteitsborging op een specifieke stap in onze fabriek.)*
+<div className="tutorial-quiz">
 
-2. **Waarom kiest Hydra voor mechanische quality gates (PHPCS, Psalm, PHPStan, ESLint, PHPUnit) in plaats van alleen AI-review?**  
-   *(Hint: AI-reviewers kunnen overtuigend klinken zonder feitelijk correct te zijn — wat hebben mechanische gates dat AI per definitie niet heeft?)*
+**1. Wat is het primaire doel van Hydra?**
 
-3. **Welke vier personas heeft Hydra, en welke is degene die NIET kan schrijven?**  
-   *(Hint: drie schrijven of fixen, één is bewust read-only — die rol is een binaire gate.)*
+<Details summary="Hint">
 
-4. **Noem twee situaties waarin je Hydra juist NIET inzet en handmatig werkt.**  
-   *(Hint: denk aan scope, aan reviewer-discipline op de doel-repo, en aan menselijke onderhandeling.)*
+Hydra doet één specifieke stap in onze fabriek. Welke stap, en welke twee voordelen levert dat op?
+
+</Details>
+
+<Details summary="Antwoord">
+
+Hydra automatiseert de stap van **OpenSpec-change naar gereviewde feature-branch + PR**. Drie expliciete doelen:
+
+1. **Doorlooptijd verkorten** — van een halve dag tot drie dagen handmatig naar een halfuur tot een paar uur.
+2. **Kwaliteit borgen** — verplichte mechanische gates (PHPCS, Psalm, PHPStan, ESLint, PHPUnit) + twee onafhankelijke AI-reviews.
+3. **4-eyes-principe behouden** — Hydra merge-t niet zelf; een mens drukt op de knop. Uitzondering: `yolo`-issues, en zelfs dan moeten alle gates groen zijn.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Waarom kiest Hydra voor mechanische quality gates (PHPCS, Psalm, PHPStan, ESLint, PHPUnit) in plaats van alleen AI-review?**
+
+<Details summary="Hint">
+
+AI-reviewers kunnen overtuigend klinken zonder feitelijk correct te zijn. Mechanische checks hebben één eigenschap die AI-review per definitie mist.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Mechanische gates zijn **deterministisch en niet te overtuigen**. PHPStan kun je niet ompraten; ESLint trekt zich niets aan van een goed onderbouwd verhaal. Twee gevolgen:
+
+1. **Vals-positieven en hallucinaties worden gefilterd** vóórdat een reviewer ernaar kijkt — een PR die de gates niet haalt komt niet eens bij Juan Claude of Clyde langs.
+2. **Standaarden zijn afdwingbaar over de hele fleet** — codestijl, types en testresultaten zijn objectief, niet afhankelijk van wie er die dag reviewed.
+
+AI-review komt erbovenop, niet in plaats ervan. Beide lagen vangen verschillende klassen van problemen.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Welke vier personas heeft Hydra, en welke is degene die NIET kan schrijven?**
+
+<Details summary="Hint">
+
+Eén persona is bewust read-only — zijn rol is een binaire gate ("gaat dit door of niet?"). Hij heeft geen Write- of Edit-tools.
+
+</Details>
+
+<Details summary="Antwoord">
+
+De vier personas:
+
+- **Al Gorithm** — builder (Haiku). Schrijft code.
+- **Juan Claude van Damme** — code reviewer (Sonnet). Mag bounded fixes pushen.
+- **Clyde Barcode** — security reviewer (Sonnet). Mag ook bounded fixes pushen.
+- **Axel Pliér** — applier (Sonnet, **géén schrijfrechten**). Leest de uiteindelijke diff + beide reviews en geeft één binair antwoord: `pass: true` of `pass: false`. Hij oordeelt, hij grijpt niet in.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Noem twee situaties waarin je Hydra juist NIET inzet en handmatig werkt.**
+
+<Details summary="Hint">
+
+Denk aan: past het werk in één change, is de doel-repo klaar, en is er iets niet-technisch dat eerst opgelost moet worden.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Een paar veelgenoemde:
+
+- **Het werk past niet in één OpenSpec-change** — multi-repo refactor, breaking schema-change met datamigratie.
+- **De doel-repo is niet gereed** — geen `hydra-gate-*` labels, geen `app-config.json`, of een onbetrouwbare quality-suite. Hydra is alleen zo veilig als zijn gates.
+- **Spike of prototype zonder reviewer-discipline** — "even iets uitproberen". De overhead weegt niet op tegen de winst.
+- **Menselijke onderhandeling vereist** — een klant, leverancier of juridisch punt moet eerst opgelost worden voor het werk kan beginnen.
+
+</Details>
+
+</div>
 
 <NextSteps title="Volgende stap" lede="Nu je weet wat Hydra is, kijken we in deel 2 binnen in de drie pipelines.">
   <NextStep

@@ -10,11 +10,11 @@ apps: []
 durationMinutes: 15
 series: hydra-tutorial
 partNumber: 6
-draft: true
 unlisted: true
 ---
 
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, Troubleshooting, TroubleshootingItem, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
 
 :::warning Intern document — niet extern delen
 Deze leerlijn beschrijft IP van Conduction. Niet doorsturen, niet publiceren, niet citeren in publieke kanalen.
@@ -129,25 +129,105 @@ Niet elk `needs-input`-issue verdient een geautomatiseerd fix-pad. Soms is de me
 
 Voorbeelden:
 
-- Een kleine semantische beslissing die de Builder niet kan maken zonder context buiten de spec (bijv. "moet dit veld optional of required zijn?").
+- Een kleine semantische beslissing die de Builder niet kan maken zonder context buiten de change (bijv. "moet dit veld optional of required zijn?").
 - Een interactie met een externe partij (open ticket bij een leverancier).
 - Een gate die fout-positief is en een fix in `hydra/` zelf vereist (waarover je niet binnen één retry-cyclus uit bent).
 
 Hydra is een fabriek, geen ideologie. Pak de menselijke shortcut als die billijker is.
 
-## Pluvo-vragen
+## Test jezelf
 
-1. **In welke volgorde probeer je de interventies in de ladder, en waarom?**  
-   *(Hint: van goedkoop naar duur; behoud zoveel mogelijk reeds gedaan werk.)*
+Vier korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
 
-2. **Wat is het verschil tussen "Reviewer-labels resetten" en <code>retry:queued</code>?**  
-   *(Hint: één pakt de builder-output ongemoeid, de andere dispatch de builder opnieuw met feedback.)*
+<div className="tutorial-quiz">
 
-3. **Wanneer is het zinvoller om met de hand de fix te maken in plaats van opnieuw <code>retry:queued</code>?**  
-   *(Hint: denk aan herhaalde failures op dezelfde mechanische gate.)*
+**1. In welke volgorde probeer je de interventies in de ladder, en waarom?**
 
-4. **Wat doe je als je 3+ identieke <code>needs-input</code>-comments ziet binnen korte tijd?**  
-   *(Hint: dat is geen retry-vraag, dat is een infra-bug-indicator.)*
+<Details summary="Hint">
+
+Eén dimensie: kosten. De andere: hoeveel reeds-gedaan werk je verliest.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Van **goedkoop naar duur**, met als doel zo veel mogelijk reeds-gedaan werk te behouden:
+
+1. **`gh pr update-branch`** — gratis. Alle build/review/applier-werk blijft staan, alleen dependencies vernieuwen.
+2. **Reviewer-labels resetten** — kost 2× reviewer + applier. Builder-output blijft.
+3. **`retry:queued`** — kost 1× builder + 2× reviewer + applier. Branch + PR blijven; builder fixed gescoped via `feedback.md`.
+4. **`rebuild:queued`** — volledige cyclus. PR sluit, branch reset, vanaf scratch.
+5. **Handmatige fix** — als de loop op een fout-positieve gate hangt of een mens een semantische beslissing moet maken.
+
+Reach voor `rebuild:queued` alleen als de oorspronkelijke build fundamenteel verkeerd was; anders verspil je goed werk.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Wat is het verschil tussen "Reviewer-labels resetten" en `retry:queued`?**
+
+<Details summary="Hint">
+
+De vraag is: **wordt de builder opnieuw aangeroepen, ja of nee?**
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **Reviewer-labels resetten** (stage-labels strippen + `code-review:queued` opnieuw zetten): **de builder wordt NIET opnieuw aangeroepen**. PR + builder-output blijven exact zoals ze waren; alleen Juan en Clyde draaien opnieuw. Geschikt als de **review-contracten** zijn aangepast (nieuwe ADR, nieuwe gate-skill) en je wilt herbeoordelen zonder de code te veranderen.
+- **`retry:queued`**: **builder wordt wél opnieuw aangeroepen**, in `HYDRA_MODE=fix`, met `feedback.md` (uit `hydra.json`) als input. Hij maakt nieuwe commits, dan draaien reviewers opnieuw. Geschikt als reviewers **terechte findings** hadden en de builder alleen even moet bijschaven.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Wanneer is het zinvoller om met de hand de fix te maken in plaats van opnieuw `retry:queued`?**
+
+<Details summary="Hint">
+
+Als hetzelfde patroon zich herhaalt op dezelfde mechanische gate is meer geld erin gooien niet de oplossing.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Als hetzelfde issue **3 keer of vaker** naar `needs-input` is gegaan om dezelfde reden — typisch een mechanische gate zoals `spdx-headers: fail`. Iedere `retry:queued` reproduceert hetzelfde patroon: builder maakt dezelfde fout, reviewer ziet het als boilerplate, recheck slaat rood.
+
+In dat geval:
+
+- Check eerst of het een **fout-positieve gate** is (zie deel 3). Zo ja: gate-detectie aanscherpen.
+- Zo nee: **fix het met de hand** (bijv. zelf SPDX-headers committen op de feature branch) en gebruik label-reset om de reviewers opnieuw te laten oordelen.
+
+Tijd: minuten. Goedkoper dan nog een Sonnet-cyclus verspillen aan iets wat steeds opnieuw fout gaat.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Wat doe je als je 3+ identieke `needs-input`-comments ziet binnen korte tijd?**
+
+<Details summary="Hint">
+
+Dit zegt iets over de pijplijn-zélf, niet over één issue. Welk soort fix is dat?
+
+</Details>
+
+<Details summary="Antwoord">
+
+**Dit is een infra-bug, geen retry-vraag.** Ergens in de completion-handler ontbreekt een terminal-state guard, waardoor een tight loop elke tick een nieuwe escalation-comment plaatst op een al-terminaal issue. Voorbeeld: 134 duplicate comments overnight op 23 april 2026 — fix was een terminal-state guard vóór alle side-effects (zie CLAUDE.md sectie "Terminal-state guards").
+
+**Wat doe je:** open een **infra-issue** in `hydra/`, niet een nieuwe `retry:queued`. Een retry doet niets met de comment-storm en kan zelfs meer chaos toevoegen.
+
+</Details>
+
+</div>
 
 <NextSteps title="Klaar — wat nu?" lede="Je hebt de hele leerlijn doorlopen. Wat is verstandig daarna?">
   <NextStep
