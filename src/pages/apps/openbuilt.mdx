@@ -10,7 +10,7 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
   appId="openbuilt"
   crumb={[{label: 'Apps', href: '/apps'}, 'OpenBuilt']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.x"
+  version="v0.3"
   locales="NL · EN"
   title="OpenBuilt"
   tagline={<>An app builder for citizen developers on <span className="next-blue">Nextcloud</span>. Compose your own app from OpenRegister schemas, OpenConnector APIs, Procest workflows, and DocuDesk documents. No PHP, no scaffolding.</>}
@@ -28,26 +28,38 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
         eyebrow="What it does"
         title="Bouw je eigen app, zonder code."
         align="stack"
-        lede="OpenBuilt laat niet-technische gebruikers eigen apps samenstellen uit de bouwstenen van het Conduction-ecosysteem. Schema's uit OpenRegister, integraties uit OpenConnector, workflows uit Procest, documenten uit DocuDesk. Alles draait als virtuele app in OpenBuilt; export naar een echte Nextcloud-app volgt in fase 2."
+        lede="OpenBuilt laat niet-technische gebruikers eigen apps samenstellen uit de bouwstenen van het Conduction-ecosysteem. Schema's uit OpenRegister, integraties uit OpenConnector, workflows uit Procest, documenten uit DocuDesk. Een wizard staat de app op, drie tiers (development, staging, productie) leveren een productiepad, en de bovenbalk-entry verschijnt zodra je publiceert. Export naar een echte Nextcloud-app volgt in fase 2."
       />
       <FeatureList>
         <FeatureItem
           icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>}
-          title="Visuele app-designer."
+          title="Wizard in drie stappen."
         >
-          Kies een register, voeg pagina's toe, koppel formulieren aan schema's. Een manifest beschrijft de app; OpenBuilt rendert hem.
+          Slug, versie-ketting, rechten. Klikken op klaar geeft je een werkende app, eigen registers voor development, staging en productie, en de eerste pagina-set. Geen JSON, geen scaffolding.
         </FeatureItem>
         <FeatureItem
           icon={<svg viewBox="0 0 24 24"><path d="M3 12h6l3-7 3 14 3-7h3"/></svg>}
           title="Workflows declaratief, geen service-code."
         >
-          State machines, aggregaties, notificaties en berekeningen leef in de schema-metadata. Geen PHP-service per app, conform ADR-031.
+          State machines, aggregaties, berekeningen en notificaties leven in de schema-metadata. Geen PHP-service per app, conform ADR-031.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8M6 8v8M18 8v8M8 18h8"/></svg>}
+          title="Dev, staging, productie per app."
+        >
+          Elke versie krijgt z'n eigen register. Promote tussen tiers met drie strategieën. Rollback is één klik op de productionVersion-pointer.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9-9 9z"/><path d="M12 3v18M3 12h18"/></svg>}
+          title="Eén Nextcloud, één bovenbalk."
+        >
+          Elke gepubliceerde app krijgt automatisch een eigen top-bar-entry naast Files en Mail. Met per-app icoon, eigen rechten en geen extra installatie.
         </FeatureItem>
         <FeatureItem
           icon={<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>}
-          title="Virtuele apps eerst, echte app als optie."
+          title="Virtuele app eerst, echte app als optie."
         >
-          Virtuele apps draaien in de OpenBuilt-shell. Klaar voor productie? Exporteer naar een echte Nextcloud-app met eigen ID en namespace.
+          Virtuele apps draaien in de OpenBuilt-shell. Klaar voor productie? Exporteer naar een echte Nextcloud-app met eigen ID en namespace (Phase 2).
         </FeatureItem>
       </FeatureList>
     </div>
