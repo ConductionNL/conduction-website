@@ -17,7 +17,7 @@ Voor elke andere tutorial in deze academy heb je een werkende Nextcloud nodig. D
 
 <Outcomes title="Wat je leert">
   <Outcome>Een werkende Nextcloud op <code>http://localhost:8080</code> opzetten met Docker.</Outcome>
-  <Outcome>Postgres voor data, Redis voor cache en Nextcloud voor het werk in één compose-bestand combineren.</Outcome>
+  <Outcome>Postgres voor data, Redis voor cache, Nextcloud voor het werk en <code>notify_push</code> voor realtime updates in één compose-bestand combineren.</Outcome>
   <Outcome>Een admin-account aanmaken waar je naar believen Conduction-apps op installeert.</Outcome>
   <Outcome>Met één commando de hele stack weer opruimen.</Outcome>
 </Outcomes>
@@ -90,12 +90,25 @@ services:
       REDIS_HOST: redis
       NEXTCLOUD_TRUSTED_DOMAINS: "localhost"
 
+  notify_push:
+    image: icewind1991/notify_push:latest
+    restart: unless-stopped
+    depends_on: [nextcloud, db, redis]
+    ports:
+      - "7867:7867"
+    volumes:
+      - nextcloud:/nextcloud:ro
+    environment:
+      NEXTCLOUD_URL: http://nextcloud
+      DATABASE_URL: postgres://nextcloud:nextcloud@db/nextcloud
+      REDIS_URL: redis://redis:6379
+
 volumes:
   db:
   nextcloud:
 ```
 
-Drie services, allemaal officiële images, geen custom build. De `./apps`-bind-mount is optioneel: handig als je een Conduction-app als zip naast de installatie wilt zetten in plaats van via de app store.
+Vier services, allemaal officiële images, geen custom build. De `./apps`-bind-mount is optioneel: handig als je een Conduction-app als zip naast de installatie wilt zetten in plaats van via de app store. `notify_push` is de WebSocket push-server die Conduction-apps gebruiken voor realtime updates — meer daarover in stap 5.
 
 ## Stap 2: Start de stack
 
@@ -133,6 +146,32 @@ Klik je avatar rechtsboven en kies **Apps**. De Conduction-apps staan onder **In
 
 Na elke install draait de schema-bootstrap automatisch. Voorbeelddata is binnen seconden zichtbaar.
 
+Installeer ook de `notify_push`-app (onder **Integration**). Die is de Nextcloud-zijde van de WebSocket push-server die je in stap 1 al hebt gestart — je hoeft hem alleen te enabelen, geen verdere config nodig.
+
+## Stap 5: Koppel `notify_push` aan de push-server
+
+`notify_push` heeft één eenmalige setup-stap zodat de Nextcloud-app weet waar de Rust-binary draait. Voer in de werkmap uit:
+
+```bash
+docker compose exec --user www-data nextcloud php occ config:system:set redis host --value redis
+docker compose exec --user www-data nextcloud php occ config:system:set redis port --value 6379 --type integer
+docker compose exec --user www-data nextcloud php occ config:system:set memcache.distributed --value '\OC\Memcache\Redis'
+docker compose exec --user www-data nextcloud php occ config:system:set trusted_proxies 0 --value 172.16.0.0/12
+docker compose exec --user www-data nextcloud php occ notify_push:setup http://notify_push:7867
+```
+
+De eerste drie regels vertellen Nextcloud dat Redis de gedeelde cache is — `notify_push` luistert daarop voor change-events. De vierde regel markeert het Docker-netwerk als trusted zodat de push-server bij Nextcloud terugmag bellen voor authenticatie. De laatste regel registreert de URL bij de Nextcloud-app.
+
+Verifieer dat alles werkt:
+
+```bash
+docker compose exec --user www-data nextcloud php occ notify_push:self-test
+```
+
+Je krijgt een lijstje vinkjes — `redis is configured`, `push server is receiving redis messages`, `push server can connect to the Nextcloud server`, et cetera. De waarschuwing over `unencrypted http` is voor lokaal werk normaal; in productie zit `notify_push` achter dezelfde reverse proxy als Nextcloud, dus dan is dat geen issue.
+
+Vanaf nu krijgen apps die op `notify_push` luisteren — zoals OpenRegister's live-update-integratie via `@conduction/nextcloud-vue` — direct doorduwingen op object-wijzigingen, zonder dat de browser hoeft te pollen.
+
 ## Wat je krijgt
 
 | Eigenschap | Waarde |
@@ -169,6 +208,10 @@ Na `down -v` is je laptop weer schoon. Twee minuten later kun je opnieuw beginne
 **Nextcloud toont "Trusted domain"-foutmelding:** voeg de host toe aan `NEXTCLOUD_TRUSTED_DOMAINS` (komma-gescheiden) en herstart met `docker compose up -d`.
 
 **App-store install werkt niet:** controleer of Nextcloud naar buiten kan. In een corporate netwerk soms blokkade op `apps.nextcloud.com`. Een proxy via `HTTP_PROXY`-env-variabelen lost dit op.
+
+**`notify_push` self-test faalt op `is not trusted as a reverse proxy`:** het Docker-netwerk-bereik in jouw setup wijkt af van `172.16.0.0/12`. Bekijk het bereik met `docker network inspect $(docker network ls --filter name=conduction-demo -q) --format '{{range .IPAM.Config}}{{.Subnet}}{{end}}'` en pas de `trusted_proxies`-regel uit stap 5 aan met die subnet.
+
+**`notify_push` blijft restarten na `docker compose up -d`:** kijk in de logs (`docker compose logs notify_push`) of je `× No redis server is configured` ziet. Dat betekent dat Nextcloud's `memcache.distributed`-config nog niet op Redis staat — voer de eerste drie `occ config:system:set`-commando's uit stap 5 uit, en herstart dan met `docker compose up -d notify_push`.
 
 ## Volgende stap
 

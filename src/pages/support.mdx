@@ -8,11 +8,11 @@ import {Section, SectionHead, HowSteps, HowStep, Card, Pill, HexBullet, HexNetwo
 import {PARTNERS, BECOME_PARTNER} from '@site/src/data/partners-catalog';
 
 export const TIER_PILL = {
-  partner:   {background: 'var(--c-cobalt-50)', color: 'var(--c-cobalt-700)'},
-  certified: {background: 'var(--c-gold-500)',  color: 'var(--c-cobalt-900)'},
-  strategic: {background: 'white',              color: 'var(--c-blue-cobalt)'},
+  host:      {background: 'var(--c-cobalt-50)', color: 'var(--c-cobalt-700)'},
+  service:   {background: 'var(--c-gold-500)',  color: 'var(--c-cobalt-900)'},
+  certified: {background: 'white',              color: 'var(--c-blue-cobalt)'},
 };
-export const TIER_CARD_STRATEGIC = {
+export const TIER_CARD_CERTIFIED = {
   background: 'var(--c-blue-cobalt)',
   borderColor: 'var(--c-blue-cobalt)',
   color: 'white',
@@ -54,17 +54,17 @@ export const TIER_PILL_BASE = {
     eyebrow="How support works"
     title="Three paths, picked by what you need."
     align="stack"
-    lede="Most teams never need anything beyond the docs. When you do, find a partner. For mission-critical or regulated rollouts, ask for a strategic engagement."
+    lede="Most teams never need anything beyond the docs. When you do, find a partner. For tenders or mission-critical rollouts, work with a Certified partner."
   />
   <HowSteps>
     <HowStep title="Try it yourself.">
       Install from the app store. Read the docs. Ask in the public GitHub Issues or community Discord. Most MKB and pilot users never need anything else, and that stays free, forever.
     </HowStep>
     <HowStep title="Find a partner.">
-      Running Conduction apps in production, or planning to? A partner deploys, configures, and supports the stack for you. Hourly, retainer, or project-based, whatever your contracting team prefers.
+      Running Conduction apps in production, or planning to? A Host or Service partner deploys, configures, and supports the stack for you. Hourly, retainer, or project-based.
     </HowStep>
-    <HowStep title="Strategic engagement.">
-      Mission-critical workloads, multi-app rollouts, or government tenders go through Strategic partners, co-developing with Conduction engineers and shaping the roadmap.
+    <HowStep title="Certified engagement.">
+      Public tenders, multi-app rollouts, and joint roadmap work go through Certified partners. They are trained and audited by us, and may co-respond to tenders with our products.
     </HowStep>
   </HowSteps>
 </Section>
@@ -78,9 +78,9 @@ export const TIER_PILL_BASE = {
   />
   <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24}}>
     <Card padding="lg">
-      <span style={{...TIER_PILL_BASE, ...TIER_PILL.partner}}>Partner</span>
-      <h3 style={{fontSize: 22, fontWeight: 700, margin: '18px 0 12px', color: 'var(--c-cobalt-900)'}}>Implementation, on demand.</h3>
-      <div style={{fontSize: 14, color: 'var(--c-cobalt-700)', lineHeight: 1.6, margin: '0 0 20px'}}>Self-certified on the apps. Installs and configures for one or two clients in a region or sector.</div>
+      <span style={{...TIER_PILL_BASE, ...TIER_PILL.host}}>Host</span>
+      <h3 style={{fontSize: 22, fontWeight: 700, margin: '18px 0 12px', color: 'var(--c-cobalt-900)'}}>Ships our apps to their customers.</h3>
+      <div style={{fontSize: 14, color: 'var(--c-cobalt-700)', lineHeight: 1.6, margin: '0 0 20px'}}>Hosts and resells the open-source apps through their own channels. May offer Nextcloud-supported variants. No SLA with Conduction.</div>
       <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: 'var(--c-cobalt-800)'}}>
         <li><HexBullet size="sm" color="var(--c-mint-500)" /> Public listing in the directory</li>
         <li><HexBullet size="sm" color="var(--c-mint-500)" /> Community Slack access</li>
@@ -88,25 +88,26 @@ export const TIER_PILL_BASE = {
       </ul>
     </Card>
     <Card padding="lg">
-      <span style={{...TIER_PILL_BASE, ...TIER_PILL.certified}}>Certified</span>
-      <h3 style={{fontSize: 22, fontWeight: 700, margin: '18px 0 12px', color: 'var(--c-cobalt-900)'}}>Certified on the apps you ship.</h3>
-      <div style={{fontSize: 14, color: 'var(--c-cobalt-700)', lineHeight: 1.6, margin: '0 0 20px'}}>Conduction-certified per app. Joint go-to-market on tenders. Higher SLA on shared customers.</div>
+      <span style={{...TIER_PILL_BASE, ...TIER_PILL.service}}>Service</span>
+      <h3 style={{fontSize: 22, fontWeight: 700, margin: '18px 0 12px', color: 'var(--c-cobalt-900)'}}>SLA, third-line, named contacts.</h3>
+      <div style={{fontSize: 14, color: 'var(--c-cobalt-700)', lineHeight: 1.6, margin: '0 0 20px'}}>Hosts and ships our apps with an SLA from Conduction. Third-line support from our engineers, named contacts, input on bug priority and feature requests.</div>
       <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: 'var(--c-cobalt-800)'}}>
-        <li><HexBullet size="sm" color="var(--c-mint-500)" /> Everything in Partner</li>
-        <li><HexBullet size="sm" color="var(--c-mint-500)" /> Certified gold avatar</li>
-        <li><HexBullet size="sm" color="var(--c-mint-500)" /> Co-branded case-study slot</li>
-        <li><HexBullet size="sm" color="var(--c-mint-500)" /> Pre-release access (one minor)</li>
+        <li><HexBullet size="sm" color="var(--c-mint-500)" /> Everything in Host</li>
+        <li><HexBullet size="sm" color="var(--c-mint-500)" /> Official Nextcloud partner</li>
+        <li><HexBullet size="sm" color="var(--c-mint-500)" /> SLA contract with Conduction</li>
+        <li><HexBullet size="sm" color="var(--c-mint-500)" /> Direct line to third-line support</li>
+        <li><HexBullet size="sm" color="var(--c-mint-500)" /> Roadmap and bug-priority input</li>
       </ul>
     </Card>
-    <Card padding="lg" style={TIER_CARD_STRATEGIC}>
-      <span style={{...TIER_PILL_BASE, ...TIER_PILL.strategic}}>Strategic</span>
-      <h3 style={{fontSize: 22, fontWeight: 700, margin: '18px 0 12px', color: 'white'}}>Shared roadmap, shared release.</h3>
-      <div style={{fontSize: 14, color: 'rgba(255,255,255,0.78)', lineHeight: 1.6, margin: '0 0 20px'}}>Conduction's deepest partners. Joint roadmap commitments and shared engineering, by invitation only.</div>
+    <Card padding="lg" style={TIER_CARD_CERTIFIED}>
+      <span style={{...TIER_PILL_BASE, ...TIER_PILL.certified}}>Certified</span>
+      <h3 style={{fontSize: 22, fontWeight: 700, margin: '18px 0 12px', color: 'white'}}>Trained, audited, tender-eligible.</h3>
+      <div style={{fontSize: 14, color: 'rgba(255,255,255,0.78)', lineHeight: 1.6, margin: '0 0 20px'}}>Trained by Conduction, audited annually, on the joint roadmap. Eligible to co-respond to public tenders alongside us.</div>
       <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: 'rgba(255,255,255,0.92)'}}>
-        <li><HexBullet size="sm" color="var(--c-orange-knvb)" /> Everything in Certified</li>
+        <li><HexBullet size="sm" color="var(--c-orange-knvb)" /> Everything in Service</li>
+        <li><HexBullet size="sm" color="var(--c-orange-knvb)" /> Trained + audited certification</li>
         <li><HexBullet size="sm" color="var(--c-orange-knvb)" /> Joint roadmap planning</li>
-        <li><HexBullet size="sm" color="var(--c-orange-knvb)" /> Engineering hours from Conduction</li>
-        <li><HexBullet size="sm" color="var(--c-orange-knvb)" /> Co-sale on government tenders</li>
+        <li><HexBullet size="sm" color="var(--c-orange-knvb)" /> Tender-eligible with our products</li>
       </ul>
     </Card>
   </div>
@@ -251,9 +252,9 @@ export const TIER_PILL_BASE = {
         <label style={{display: 'block'}}>
           <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginBottom: 6}}>Tier you're applying for</span>
           <select name="tier" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.08)', color: 'white'}}>
-            <option>Partner</option>
-            <option>Certified</option>
-            <option>Strategic (by invitation)</option>
+            <option>Host</option>
+            <option>Service</option>
+            <option>Certified (by invitation)</option>
           </select>
         </label>
       </div>
