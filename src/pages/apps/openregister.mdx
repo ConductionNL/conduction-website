@@ -4,7 +4,7 @@ description: Schema-driven object store with audit trail. The data foundation un
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, McpToolShelf, AppCrossLinks} from '@conduction/docusaurus-preset/components';
 
 <DetailHero
   appId="openregister"
@@ -225,6 +225,68 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
       panel: <AppMock app="docudesk" />,
     },
   ]}
+/>
+
+<McpToolShelf
+  eyebrow="AI chat tools"
+  title="What OpenRegister adds to the workspace AI."
+  lede="Install OpenRegister and the workspace chat gets five new tools. The AI can search registers, fetch a typed record, describe a schema, and read the signed audit trail, all citation-stable and all under the caller's own session."
+  tools={[
+    {
+      icon: <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/></svg>,
+      name: 'Search registers',
+      id: 'openregister.search',
+      description: 'Plain-language search across every register the caller can read. Returns typed rows with citation IDs.',
+      status: 'stable',
+    },
+    {
+      icon: <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>,
+      name: 'List registers',
+      id: 'openregister.listRegisters',
+      description: 'Enumerate the registers visible to the caller, with their schemas and row counts.',
+      status: 'stable',
+    },
+    {
+      icon: <svg viewBox="0 0 24 24"><path d="M5 4h14v6H5zM5 14h14v6H5zM9 4v16"/></svg>,
+      name: 'Get object',
+      id: 'openregister.getObject',
+      description: 'Fetch one object by citation ID and return its full typed body.',
+      status: 'stable',
+    },
+    {
+      icon: <svg viewBox="0 0 24 24"><path d="M3 7h18M6 12h12M9 17h6"/></svg>,
+      name: 'Describe schema',
+      id: 'openregister.describeSchema',
+      description: "Return a schema's JSON Schema body so the AI can validate before suggesting a write.",
+      status: 'stable',
+    },
+    {
+      icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>,
+      name: 'Object audit history',
+      id: 'openregister.getAuditTrail',
+      description: 'Read the signed audit log for an object: who changed which field, when, from which session.',
+      status: 'beta',
+    },
+    {
+      icon: <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>,
+      name: 'Create object',
+      id: 'openregister.createObject',
+      description: 'Write a new object into a register, after schema validation. Available with write-scope sessions.',
+      status: 'soon',
+    },
+  ]}
+  showIds={false}
+  trace={<AgentTrace
+    lines={[
+      {kind: 'tool', text: 'openregister - search (MCP)(query: "open Woo cases'},
+      {kind: 'continuation', text: 'past their deadline in maart 2026")'},
+      {kind: 'note', bullet: 'info', text: 'Rewriting natural language to a typed query', muted: '(claude-sonnet-4-6)'},
+      {kind: 'note', bullet: 'done', text: 'Returned 14 register rows with citation IDs'},
+      {kind: 'status', text: 'Synthesising answer'},
+    ]}
+    cursor
+    mode="audit log on (every query recorded)"
+  />}
 />
 
 <Section spacing="default" background="tinted">
