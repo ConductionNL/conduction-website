@@ -17,7 +17,57 @@
 
 const {createConfig} = require('@conduction/docusaurus-preset');
 
-module.exports = createConfig({
+/* Structured data emitted on every page via top-level `headTags`. These
+   are static JSON-LD blocks that don't need hydration — AI crawlers
+   without a JS engine (GPTBot, ClaudeBot, PerplexityBot, OAI-SearchBot)
+   read them straight from the SSG HTML. Organization carries the legal-
+   entity facts; WebSite ties URLs to the Organization via @id. Per-app
+   SoftwareApplication schemas are emitted by the /apps/<slug> pages
+   themselves (TODO, tracked separately). */
+const ORGANIZATION_JSONLD = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': 'https://www.conduction.nl/#org',
+  name: 'Conduction B.V.',
+  alternateName: 'Conduction',
+  url: 'https://www.conduction.nl/',
+  logo: 'https://www.conduction.nl/img/brand/avatar-conduction-gold-on-white.svg',
+  foundingDate: '2019',
+  description:
+    'Dutch open-source software company building EUPL-1.2 apps for the Nextcloud workspace.',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Lauriergracht 14h',
+    postalCode: '1016 RR',
+    addressLocality: 'Amsterdam',
+    addressCountry: 'NL',
+  },
+  email: 'info@conduction.nl',
+  telephone: '+31-85-303-6840',
+  taxID: 'NL860784241B01',
+  vatID: 'NL860784241B01',
+  identifier: {
+    '@type': 'PropertyValue',
+    propertyID: 'KvK',
+    value: '76741850',
+  },
+  sameAs: [
+    'https://github.com/ConductionNL',
+    'https://www.linkedin.com/company/conduction/',
+  ],
+};
+
+const WEBSITE_JSONLD = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': 'https://www.conduction.nl/#website',
+  url: 'https://www.conduction.nl/',
+  name: 'Conduction',
+  publisher: {'@id': 'https://www.conduction.nl/#org'},
+  inLanguage: ['en', 'nl'],
+};
+
+const config = createConfig({
   title: 'Conduction',
   tagline: 'Open-source apps voor de Nextcloud-werkplek.',
   /* Must match static/CNAME (www.conduction.nl) — GitHub Pages serves
@@ -77,6 +127,20 @@ module.exports = createConfig({
         },
         theme: {
           customCss: [require.resolve('./src/css/site.css')],
+        },
+        /* Built-in @docusaurus/plugin-sitemap (loaded via the classic
+           preset). Each locale outputs its own sitemap.xml (en at /,
+           nl at /nl/) — both are advertised in static/robots.txt so AI
+           crawlers without locale-suffix discovery still see Dutch
+           pages. /academy/tags/* is excluded because tag pages are
+           thin and confuse AI summarisers more than they help SEO.
+           ignorePatterns matches route paths *after* the locale prefix
+           is applied, so we list both forms. */
+        sitemap: {
+          changefreq: 'weekly',
+          priority: 0.5,
+          ignorePatterns: ['/academy/tags/**', '/nl/academy/tags/**'],
+          filename: 'sitemap.xml',
         },
       },
     ],
@@ -163,3 +227,34 @@ module.exports = createConfig({
     // ],
   ],
 });
+
+/* AI-crawler discoverability extras, applied after createConfig() so the
+   preset stays unaware of them. Three things wired here:
+     1. headTags[] — Organization + WebSite JSON-LD on every page. SSG-
+        rendered so non-JS crawlers see them in raw HTML.
+     2. themeConfig.image — default og:image (1200x630 PNG). Used as the
+        OpenGraph card on every page that doesn't set its own image.
+     3. themeConfig.metadata — adds twitter:site, ensures og:type=website
+        baseline (page-level frontmatter can override). */
+config.headTags = [
+  {
+    tagName: 'script',
+    attributes: {type: 'application/ld+json'},
+    innerHTML: JSON.stringify(ORGANIZATION_JSONLD),
+  },
+  {
+    tagName: 'script',
+    attributes: {type: 'application/ld+json'},
+    innerHTML: JSON.stringify(WEBSITE_JSONLD),
+  },
+];
+
+config.themeConfig.image = 'img/og-conduction.png';
+config.themeConfig.metadata = [
+  ...(config.themeConfig.metadata || []),
+  {name: 'twitter:site', content: '@ConductionNL'},
+  {name: 'twitter:card', content: 'summary_large_image'},
+  {property: 'og:type', content: 'website'},
+];
+
+module.exports = config;
