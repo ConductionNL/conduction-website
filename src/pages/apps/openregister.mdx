@@ -172,41 +172,41 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
 
 <div id="integrations" />
 <Showcase
-  eyebrow="How OpenRegister plugs into the workspace"
-  title="One sidebar tab per Nextcloud app you already run."
-  lede="Every object surfaces the linked entities from the rest of the workspace as leaves on the sidebar. Six core leaves ship with the install. Eighteen more light up the moment you enable the underlying Nextcloud app. Two external leaves reach beyond the workspace via OpenConnector."
+  eyebrow="Integrations"
+  title="Apps that truly work together."
+  lede="OpenRegister is what turns an office suite into a workspace. Every Nextcloud app on the install can read and write the same registers, and every register surfaces what lives in those apps. The integration runs on three levels at once: sidebar tabs that show linked records, dashboard widgets on every user's home screen, and a shared service layer that lets one app call another's data without anyone copy-pasting between tabs."
   layout="side"
-  defaultOpen="core"
+  defaultOpen="data-everywhere"
   items={[
     {
-      id: 'core',
-      title: 'Core (Files, Notes, Tags, Tasks, Audit trail, Shares)',
-      summary: "Six leaves ship with every install. Every object gets an auto-created folder for attached files, free-form notes scoped to the record, system tags from the workspace taxonomy, CalDAV tasks linked back to the record, a signed audit trail, and visibility into every Nextcloud share against the object's files.",
-      cta: {label: 'See the core leaves', href: 'https://openregister.conduction.nl/docs/Integrations/leaf-system'},
+      id: 'data-everywhere',
+      title: 'Files, mail, and shares stay with the record.',
+      summary: "Every object in a register gets an auto-created folder. Drop files into it, write notes against the record, tag rows from the same workspace taxonomy your files use. Add a mail to a project and your colleagues see it without anyone forwarding. When someone shares one of those files in Nextcloud, the share is visible on the record. The case file is part of the workspace, not a parallel storage to keep in sync.",
+      cta: {label: 'See the integration guide', href: 'https://openregister.conduction.nl/docs/Integrations/leaf-system'},
       panel: <AppMock app="openregister" />,
     },
     {
-      id: 'communication',
-      title: 'Communication (Calendar, Contacts, Mail, Talk)',
-      summary: 'Four leaves that light up when you enable the matching Nextcloud groupware app. NC Calendar surfaces CalDAV events linked to the record. NC Contacts pulls in the parties involved. NC Mail surfaces the inbound and outbound thread. NC Talk carries the conversations that decided the case. One Nextcloud login covers all four.',
-      cta: {label: 'See the communication leaves', href: 'https://openregister.conduction.nl/docs/Integrations/calendar'},
+      id: 'groupware',
+      title: 'Your CRM uses your real contacts and calendar.',
+      summary: "When a CRM app needs contacts, it reads Nextcloud Contacts; when it needs an agenda, it writes to Nextcloud Calendar. Open a lead, see the meetings about it. Click a contact, jump straight into a Talk conversation. Mail threads link back to the case automatically. One Nextcloud login covers all of it, and nobody maintains a second address book.",
+      cta: {label: 'See the groupware integrations', href: 'https://openregister.conduction.nl/docs/Integrations/calendar'},
       panel: <AppMock app="openconnector" />,
     },
     {
-      id: 'knowledge',
-      title: 'Knowledge & documents (Bookmarks, Collectives, Maps, Photos)',
-      summary: 'Four leaves that turn a case folder into a live reference workspace. NC Bookmarks for regulatory sources and partner URLs. NC Collectives for the team wiki on the case. NC Maps for site visits and on-the-ground evidence. NC Photos for signed, geo-tagged photographic evidence. All scoped to the record, all running under the same workspace login.',
-      cta: {label: 'See the knowledge leaves', href: 'https://openregister.conduction.nl/docs/Integrations/collectives'},
+      id: 'project-knowledge',
+      title: 'Project knowledge, attached to the project.',
+      summary: "Bookmarks become regulatory references on a case. Collectives wiki pages become the team's working memory on the project. Maps mark the site visits. Photos carry signed, geo-tagged evidence. The project stops being a folder of PDFs and becomes a live reference workspace where new colleagues can catch up without an hour of forwarding threads.",
+      cta: {label: 'See the knowledge integrations', href: 'https://openregister.conduction.nl/docs/Integrations/collectives'},
       panel: <AppMock app="opencatalogi" />,
     },
     {
-      id: 'workflow',
-      title: 'Workflow & analytics (Activity, Analytics, Cospend, Deck, Flow, Forms, Polls, TimeManager)',
-      summary: 'Eight leaves that cover per-case work. NC Deck for kanban. NC Flow for automation rules on register events. NC Forms for citizen intake. NC Polls for stakeholder check-ins. NC TimeManager for billable hours. NC Cospend for budget and expense tracking. NC Activity for the running stream of who touched what. NC Analytics for KPIs that reference the same typed data the case is built on.',
-      cta: {label: 'See the workflow leaves', href: 'https://openregister.conduction.nl/docs/Integrations/flow'},
+      id: 'workflow-from-anywhere',
+      title: 'Open a ticket or lead straight from a Talk message.',
+      summary: "Workflow apps call into registers and registers call back. A Talk message becomes a ticket without leaving the conversation. A public Forms intake writes typed rows the team can act on. An NC Flow rule fires when a case archives. Hours, budget, polls, and KPIs all track against the same typed data the case is built on. Every app gets the data layer; every app contributes back to it.",
+      cta: {label: 'See the workflow integrations', href: 'https://openregister.conduction.nl/docs/Integrations/flow'},
       panel: <AgentTrace
         lines={[
-          {kind: 'tool',  text: 'openregister - leaf.flow (NC Flow)(rule:',
+          {kind: 'tool',  text: 'openregister - integration.flow (NC Flow)(rule:',
                           },
           {kind: 'continuation', text: '"on case.archived fire retention webhook")'},
           {kind: 'note',  bullet: 'info', text: 'Triggered by schema event archived=true'},
@@ -214,14 +214,14 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
           {kind: 'status', text: 'Audit entry written, citation-stable'},
         ]}
         cursor
-        mode="audit log on (every leaf write recorded)"
+        mode="audit log on (every integration call recorded)"
       />,
     },
     {
-      id: 'external',
-      title: 'External via OpenConnector (XWiki, OpenProject, Windmill, n8n, LLMs)',
-      summary: "Two external leaves ship: XWiki for knowledge-base articles and OpenProject for work packages. Both run through OpenConnector, the same path that lets you trigger Windmill or n8n on register events, redact PII with Presidio, and search registers in plain language through Claude, Mistral, or Ollama. Write your own leaf with the scaffold script and it appears on every register the moment your app is installed.",
-      cta: {label: 'See the external leaves', href: 'https://openregister.conduction.nl/docs/Integrations/xwiki'},
+      id: 'beyond-the-workspace',
+      title: 'Outside systems, in the same fabric.',
+      summary: "OpenConnector reaches XWiki for runbooks, OpenProject for work packages, Windmill and n8n for automation, Presidio for PII redaction, and any LLM (Claude, Mistral, Ollama) for plain-language search across registers. The outside app stays its own app, but the workspace treats its data as a first-class part of the record. Write your own integration with the scaffold script and it shows up wherever the app is installed.",
+      cta: {label: 'See the external integrations', href: 'https://openregister.conduction.nl/docs/Integrations/xwiki'},
       panel: <AppMock app="docudesk" />,
     },
   ]}
