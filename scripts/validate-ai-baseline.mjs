@@ -189,6 +189,41 @@ check('og:image URL resolves to a file in the build', () => {
   return {ok: true, msg: `${path} (${size} bytes)`};
 });
 
+/* FAQPage regression markers. Three high-traffic pages should always
+   ship FAQ content with FAQPage JSON-LD attached, since AI answer
+   engines weight FAQ-typed Q&A heavily. The schema fires from
+   @conduction/docusaurus-preset >= 3.4.0's <FAQ> component, so a
+   missing block on any of these pages flags either content removal
+   or a preset regression. */
+function checkFaqPage(pagePath, label, minQuestions) {
+  const path = join(buildDir, `${pagePath}/index.html`);
+  if (!existsSync(path)) return {ok: false, msg: `${label} page not built`};
+  const html = readFileSync(path, 'utf8');
+  const blocks = extractJsonLdBlocks(html);
+  let faq = null;
+  for (const b of blocks) {
+    try {
+      const obj = JSON.parse(b);
+      if (obj['@type'] === 'FAQPage') {faq = obj; break;}
+    } catch {}
+  }
+  if (!faq) return {ok: false, msg: `${label}: no FAQPage block`};
+  const qs = Array.isArray(faq.mainEntity) ? faq.mainEntity : [];
+  if (qs.length < minQuestions) {
+    return {ok: false, msg: `${label}: only ${qs.length} Question entries (want >=${minQuestions})`};
+  }
+  return {ok: true, msg: `${label}: ${qs.length} Q&A`};
+}
+
+check('/support has FAQPage JSON-LD with >= 5 questions', () =>
+  checkFaqPage('support', '/support', 5));
+
+check('/install has FAQPage JSON-LD with >= 5 questions', () =>
+  checkFaqPage('install', '/install', 5));
+
+check('/iso has FAQPage JSON-LD with >= 5 questions', () =>
+  checkFaqPage('iso', '/iso', 5));
+
 /* Per-app SoftwareApplication regression marker */
 check('/apps/openregister has SoftwareApplication JSON-LD', () => {
   const path = join(buildDir, 'apps/openregister/index.html');
