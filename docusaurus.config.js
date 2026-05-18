@@ -17,6 +17,12 @@
 
 const {createConfig} = require('@conduction/docusaurus-preset');
 
+/* AI-crawler baseline (Organization + WebSite JSON-LD, og:image,
+   twitter meta, FAQPage schema from <FAQ>, SoftwareApplication schema
+   from <DetailHero>) comes from @conduction/docusaurus-preset >= 3.4.0
+   automatically. We override only the bits that are specific to this
+   site (robots.txt + llms.txt in static/, the sitemap config below
+   because we pass our own classic-preset overrides). */
 module.exports = createConfig({
   title: 'Conduction',
   tagline: 'Open-source apps voor de Nextcloud-werkplek.',
@@ -77,6 +83,20 @@ module.exports = createConfig({
         },
         theme: {
           customCss: [require.resolve('./src/css/site.css')],
+        },
+        /* Built-in @docusaurus/plugin-sitemap (loaded via the classic
+           preset). Each locale outputs its own sitemap.xml (en at /,
+           nl at /nl/) — both are advertised in static/robots.txt so AI
+           crawlers without locale-suffix discovery still see Dutch
+           pages. /academy/tags/* is excluded because tag pages are
+           thin and confuse AI summarisers more than they help SEO.
+           ignorePatterns matches route paths *after* the locale prefix
+           is applied, so we list both forms. */
+        sitemap: {
+          changefreq: 'weekly',
+          priority: 0.5,
+          ignorePatterns: ['/academy/tags/**', '/nl/academy/tags/**'],
+          filename: 'sitemap.xml',
         },
       },
     ],
