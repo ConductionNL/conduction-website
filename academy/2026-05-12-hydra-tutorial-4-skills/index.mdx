@@ -73,8 +73,8 @@ Elke pipeline-container heeft een eigen, beperkte set skills in zijn Docker-imag
 | Container | Persona | Skills in image | Hoofdfunctie |
 |---|---|---|---|
 | **Builder** | Al Gorithm | **Alle** `.claude/skills/*` + alle vendor skills | Implementeert taken; primair `opsx-apply`. Heeft de overige opsx-skills bij de hand voor context bij verifiëren, hertrouw zoeken, fixen na quality-fail. |
-| **Reviewer** | Juan Claude | `hydra-gates` + 8 `hydra-gate-*` skills + vendor `code-review` | Mandatory hydra-gates check + diepere code-review via de Anthropic community-skill. |
-| **Security** | Clyde Barcode | `hydra-gates` + 8 `hydra-gate-*` skills + vendor `trailofbits` + vendor `owasp` | Mandatory hydra-gates + SAST (Semgrep) + OWASP-top-10-checklists. |
+| **Reviewer** | Juan Claude | `hydra-gates` + 13 `hydra-gate-*` skills + vendor `code-review` | Mandatory hydra-gates check + diepere code-review via de Anthropic community-skill. |
+| **Security** | Clyde Barcode | `hydra-gates` + 13 `hydra-gate-*` skills + vendor `trailofbits` + vendor `owasp` | Mandatory hydra-gates + SAST (Semgrep) + OWASP-top-10-checklists. |
 | **Applier** | Axel Plier | **Geen skills** | Past kleine, deterministische fixes toe puur via zijn `CLAUDE.md` — geen skill-laag nodig. |
 | **Browser UI Tester** | (sonnet, headless) | Eén skill: `hydra-ui-test` | Logt in, navigeert de live app via Playwright MCP, levert verdict JSON. |
 
@@ -203,7 +203,7 @@ Naast de eigen skills heeft Hydra **vendor skills** onder `hydra/vendor/skills/`
 - `trailofbits` — Semgrep-based static-analysis methodologie van Trail of Bits. → 🤖 Security container.
 - `owasp` — OWASP-top-10:2025 + ASVS 5.0-checklists. → 🤖 Security container.
 
-Die drie zitten dus **wél** in de fabriek (containers). We laden ze bij Juan en Clyde voor extra dekking boven op de eigen `hydra-gate-*`. Onderhoud ligt bij externe partijen — we updaten ze door de bron te volgen, niet door zelf te editen.
+Die drie zitten dus **wél** in de fabriek (containers). Ze worden bij Juan en Clyde geladen voor extra dekking boven op de eigen `hydra-gate-*`. Onderhoud ligt bij externe partijen — updaten gaat door de bron te volgen, niet door zelf te editen.
 
 ## Wanneer schrijf je een nieuwe skill?
 
@@ -265,8 +265,8 @@ Drie containers (Builder, Reviewer, Security) hebben elk een specifieke set in h
 **In de pipeline-containers** (🤖 fabriek):
 
 - **Builder** — alle `.claude/skills/*` ingebakken, maar de standaard-run is `opsx-apply`. De andere opsx-skills zijn er voor context.
-- **Reviewer** — `hydra-gates` + 8 individuele `hydra-gate-*` + vendor `code-review`.
-- **Security** — `hydra-gates` + 8 individuele `hydra-gate-*` + vendor `trailofbits` + vendor `owasp`.
+- **Reviewer** — `hydra-gates` + 13 individuele `hydra-gate-*` + vendor `code-review`.
+- **Security** — `hydra-gates` + 13 individuele `hydra-gate-*` + vendor `trailofbits` + vendor `owasp`.
 - **Applier** — géén skills (puur CLAUDE.md).
 - **Browser UI Tester** — alleen `hydra-ui-test`.
 

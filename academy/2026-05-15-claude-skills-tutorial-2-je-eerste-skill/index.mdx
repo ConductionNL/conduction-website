@@ -166,6 +166,9 @@ working directory.
   This skill is read-only.
 - Never call `git status` without `--porcelain` — the human-readable form is
   fragile across locales and Git versions.
+- Never pass `--ignored` to `git status`. The "X is not blank and not `?`"
+  staged-check would otherwise also match `!` (ignored) lines and produce
+  a wrong staged group.
 - Do not invent files. Only list what `git status --porcelain` actually returns.
 ````
 

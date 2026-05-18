@@ -90,7 +90,7 @@ Elke entry is **gedateerd en atomair** (één inzicht per bullet). De file kent 
 
 ### De "Capture Learnings"-stap in `SKILL.md`
 
-`learnings.md` vult zichzelf niet — Claude doet dat alleen als je hem er expliciet om vraagt. De manier waarop is een vaste stap, helemaal onderaan in `SKILL.md`, na alle uitvoeringsstappen en vóór de guardrails. Hieronder een voorbeeld zoals het in onze `create-pr`-skill staat — kort, met de vijf rubrieken vooropgesteld zodat Claude ze niet vergeet:
+`learnings.md` vult zichzelf niet — Claude doet dat alleen als je hem er expliciet om vraagt. De manier waarop is een vaste stap, helemaal onderaan in `SKILL.md`, na alle uitvoeringsstappen en vóór de guardrails. Hieronder een voorbeeld zoals het in Conductions `create-pr`-skill staat — kort, met de vijf rubrieken vooropgesteld zodat Claude ze niet vergeet:
 
 ```markdown
 ## Capture Learnings
@@ -168,7 +168,7 @@ L7 is geen "betere skill" — het is een **andere soort skill**. Een L7-skill le
 - Heeft **autonomy** binnen een gedefinieerde scope — niet alles vraagt om bevestiging.
 - Doet **parallel werk** (acht agents tegelijk, fan-out/fan-in).
 
-### Orkestratie-patronen die we in Hydra gebruiken
+### Orkestratie-patronen in Hydra
 
 | Patroon | Voorbeeld in Hydra | Beschrijving |
 |---|---|---|
@@ -192,7 +192,7 @@ Dat heet *structureel L7, maturity L4*. Het probleem: zodra hij faalt, weet niem
 
 Eén skill op L6 of L7 brengen is overzichtelijk. Maar zodra je een library van tien, twintig of (zoals in Hydra) ~70 skills hebt, wil je in één oogopslag zien welke skill op welk niveau zit — en welke achteruit kachelen.
 
-Daarvoor gebruiken we in onze eigen skill-toolchain twee bestanden onder `.claude/skills/`:
+Daarvoor zitten er in de Conduction-skill-toolchain twee bestanden onder `.claude/skills/`:
 
 - **`skill-level-overview.html`** — een lokaal, statisch HTML-dashboard. Eén tabel met per skill: huidige maturity (groene dots), target maturity (badge), regelaantal van `SKILL.md` (gekleurd: groen ≤200, geel rond 450, rood >500), en oranje rings voor "structureel aanwezig maar nog niet mature". Sorteerbaar per kolom. Je opent 'm lokaal — `xdg-open` op Linux, `open` op macOS, of dubbelklik in de file-explorer.
 - **`update-skill-overview.sh`** — een bash-script dat over alle skill-folders heen scant, structurele markers detecteert (frontmatter aanwezig, guardrails, evals met genoeg trigger-tests, dated learnings, agent-spawns), en de HTML up-to-date schrijft. Eén `./update-skill-overview.sh` en je dashboard klopt weer.
