@@ -10,6 +10,8 @@
     "start": "docusaurus start",
     "prebuild": "python3 .github/scripts/app_downloads.py && node scripts/sync-app-downloads.js",
     "build": "docusaurus build",
+    "postbuild": "node scripts/validate-ai-baseline.mjs",
+    "validate:ai-baseline": "node scripts/validate-ai-baseline.mjs",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -19,7 +21,7 @@
     "ci": "npm ci --legacy-peer-deps && npm run build"
   },
   "dependencies": {
-    "@conduction/docusaurus-preset": "^3.3.0",
+    "@conduction/docusaurus-preset": "^3.4.0",
     "@docusaurus/core": "^3.5.0",
     "@docusaurus/preset-classic": "^3.5.0",
     "@mdx-js/react": "^3.0.0",
