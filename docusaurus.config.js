@@ -102,6 +102,27 @@ module.exports = createConfig({
     ],
   ],
 
+  /* Keep the canal-footer's Privacy / Terms / ISO links on relative
+     routes. The preset's default ships absolute https://www.conduction.nl/*
+     URLs so per-app subdomain footers don't 404, but this IS the
+     marketing site that hosts those pages, so a relative link is the
+     cleaner UX (no needless cross-host hop). */
+  legalLinks: {
+    privacy: '/privacy',
+    terms: '/terms',
+    iso: '/iso',
+  },
+
+  /* Search Console / Bing Webmaster / etc. verification tokens are
+     filled by ops once the property has been claimed; the preset
+     emits a meta tag for each token present. Leave keys absent until
+     a real token is available, otherwise a stale placeholder ends up
+     in the production HTML. */
+  // searchConsoleVerification: {
+  //   google: '...',
+  //   bing:   '...',
+  // },
+
   /* Brand top-navbar pattern: five left-side section links + locale
      dropdown + Partners ghost + Install primary CTA on the right.
      Title text is set here as the default ("Conduction"); the swizzled
