@@ -1,61 +1,61 @@
 ---
 slug: nextcloud-lokaal-draaien
-title: Nextcloud lokaal draaien met Docker
+title: Run Nextcloud locally with Docker
 contentType: tutorial
 authors: [conduction]
 date: 2026-05-07
-summary: Drie commando's, vier stappen, een kwartier werk. Daarna draait er een schone Nextcloud op je laptop, klaar om Conduction-apps op te installeren.
-tags: [Nextcloud, Docker, Setup, Demo, Lokaal]
+summary: Three commands, four steps, a quarter of an hour. After that you have a clean Nextcloud running on your laptop, ready for Conduction apps.
+tags: [Nextcloud, Docker, Setup, Demo, Local]
 durationMinutes: 15
 ---
 
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, ContactCta} from '@conduction/docusaurus-preset/components';
 
-Voor elke andere tutorial in deze academy heb je een werkende Nextcloud nodig. Dit is de snelste route: drie commando's en je draait de officiële Nextcloud-image lokaal, identiek aan productie. Geen sales-call, geen demo-omgeving die offline kan, geen custom Dockerfile. Daarna installeer je de Conduction-apps via de Nextcloud app store, hetzelfde pad als productie.
+Every other tutorial in this academy needs a working Nextcloud. This is the fastest route: three commands and you run the official Nextcloud image locally, identical to production. No sales call, no demo environment that can go offline, no custom Dockerfile. After that you install the Conduction apps from the Nextcloud app store, the same path as production.
 
 {/* truncate */}
 
-<Outcomes title="Wat je leert">
-  <Outcome>Een werkende Nextcloud op <code>http://localhost:8080</code> opzetten met Docker.</Outcome>
-  <Outcome>Postgres voor data, Redis voor cache, Nextcloud voor het werk en <code>notify_push</code> voor realtime updates in één compose-bestand combineren.</Outcome>
-  <Outcome>Een admin-account aanmaken waar je naar believen Conduction-apps op installeert.</Outcome>
-  <Outcome>Met één commando de hele stack weer opruimen.</Outcome>
+<Outcomes title="What you'll learn">
+  <Outcome>How to run a working Nextcloud on <code>http://localhost:8080</code> with Docker.</Outcome>
+  <Outcome>How to combine Postgres for data, Redis for cache, Nextcloud for the work, and <code>notify_push</code> for realtime updates in one compose file.</Outcome>
+  <Outcome>How to create an admin account where you can install Conduction apps at will.</Outcome>
+  <Outcome>How to tear down the whole stack with one command.</Outcome>
 </Outcomes>
 
-Daarna kun je verder met [Een Woo-register opzetten](/academy/woo-register-opzetten), [Bestanden uploaden bij een Woo-publicatie](/academy/woo-bestanden-uploaden), of een eigen experiment.
+After this you can move on to [Set up a Woo register](/academy/woo-register-opzetten), [Upload files to a Woo publication](/academy/woo-bestanden-uploaden), or your own experiment.
 
-<Prerequisites title="Wat je nodig hebt">
-  <PrerequisiteItem>Een laptop met minimaal 4 GB vrij geheugen.</PrerequisiteItem>
-  <PrerequisiteItem>Docker, lokaal draaiend.</PrerequisiteItem>
-  <PrerequisiteItem>Een terminal en een teksteditor.</PrerequisiteItem>
+<Prerequisites title="What you need">
+  <PrerequisiteItem>A laptop with at least 4 GB of free memory.</PrerequisiteItem>
+  <PrerequisiteItem>Docker, running locally.</PrerequisiteItem>
+  <PrerequisiteItem>A terminal and a text editor.</PrerequisiteItem>
 </Prerequisites>
 
-Op een schone laptop is stap 0 (Docker installeren) ongeveer tien minuten. Daarna is stap 1 t/m 3 samen een kwartier.
+On a clean laptop, step 0 (installing Docker) takes about ten minutes. After that, steps 1 through 3 together take a quarter of an hour.
 
-## Stap 0: Zorg dat Docker draait
+## Step 0: Make sure Docker is running
 
-Eenmalig.
+One-time setup.
 
-- **Mac of Linux:** installeer [Docker Desktop](https://docs.docker.com/get-docker/).
-- **Windows:** zet eerst [WSL 2](https://learn.microsoft.com/nl-nl/windows/wsl/install) aan en installeer daarna Docker Desktop.
+- **Mac or Linux:** install [Docker Desktop](https://docs.docker.com/get-docker/).
+- **Windows:** first enable [WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install), then install Docker Desktop.
 
-Test of het werkt:
+Check that it works:
 
 ```bash
 docker --version
 docker compose version
 ```
 
-Allebei moeten een versie teruggeven, geen foutmelding.
+Both should return a version, not an error.
 
-## Stap 1: Maak een werkmap en het compose-bestand
+## Step 1: Create a working directory and the compose file
 
 ```bash
 mkdir conduction-demo
 cd conduction-demo
 ```
 
-Sla het volgende op als `docker-compose.yml` in die map:
+Save the following as `docker-compose.yml` in that directory:
 
 ```yaml title="docker-compose.yml"
 services:
@@ -108,49 +108,49 @@ volumes:
   nextcloud:
 ```
 
-Vier services, allemaal officiële images, geen custom build. De `./apps`-bind-mount is optioneel: handig als je een Conduction-app als zip naast de installatie wilt zetten in plaats van via de app store. `notify_push` is de WebSocket push-server die Conduction-apps gebruiken voor realtime updates — meer daarover in stap 5.
+Four services, all official images, no custom build. The `./apps` bind mount is optional. It is handy when you want to drop a Conduction app next to the installation as a zip instead of going through the app store. `notify_push` is the WebSocket push server that Conduction apps use for realtime updates. More on that in step 5.
 
-## Stap 2: Start de stack
+## Step 2: Start the stack
 
 ```bash
 docker compose up -d
 ```
 
-De eerste keer trekt Docker ongeveer 750 MB aan images binnen. Daarna start de stack in seconden.
+The first time, Docker pulls about 750 MB of images. After that the stack starts in seconds.
 
-Volg de logs terwijl Nextcloud zichzelf bootstrapt:
+Follow the logs while Nextcloud bootstraps itself:
 
 ```bash
 docker compose logs -f nextcloud
 ```
 
-Wacht tot je `apache2 -D FOREGROUND` of vergelijkbaar ziet, en `Ctrl+C` om de log-volger af te sluiten. De containers blijven draaien.
+Wait until you see `apache2 -D FOREGROUND` or similar, then `Ctrl+C` to exit the log follower. The containers keep running.
 
-## Stap 3: Voltooi de Nextcloud setup-wizard
+## Step 3: Finish the Nextcloud setup wizard
 
-Open `http://localhost:8080` in je browser. Nextcloud toont een setup-wizard:
+Open `http://localhost:8080` in your browser. Nextcloud shows a setup wizard:
 
-1. Vul een **admin-naam** en **wachtwoord** in. `admin` en `admin` is prima voor lokaal werk; in productie natuurlijk niet.
-2. Onder **Storage & database** kies je niets, want de Postgres-config zit al in `docker-compose.yml`.
-3. Klik op **Install**.
+1. Fill in an **admin name** and **password**. `admin` and `admin` is fine for local work. In production it is not.
+2. Under **Storage & database**, pick nothing. The Postgres config is already in `docker-compose.yml`.
+3. Click **Install**.
 
-Na een halve minuut land je op het dashboard, ingelogd als admin.
+After half a minute, you land on the dashboard, signed in as admin.
 
-## Stap 4: Installeer de Conduction-apps
+## Step 4: Install the Conduction apps
 
-Klik je avatar rechtsboven en kies **Apps**. De Conduction-apps staan onder **Integration** en **Office & text**. Onze suggestie voor een eerste demo:
+Click your avatar in the top right and choose **Apps**. The Conduction apps are listed under **Integration** and **Office & text**. Our suggestion for a first demo:
 
-- **OpenRegister.** De typed-data foundation. Installeer deze als eerste, alle andere apps lezen ervan af.
-- **OpenCatalogi.** Maakt elk register doorzoekbaar als publieke entry. Federation naar `data.overheid.nl`.
-- **OpenConnector.** Trekt voorbeelddata binnen via REST, SOAP en file-drops.
+- **OpenRegister.** The typed-data foundation. Install this first. Every other app reads from it.
+- **OpenCatalogi.** Makes every register searchable as a public entry. Federates to `data.overheid.nl`.
+- **OpenConnector.** Pulls in sample data via REST, SOAP, and file drops.
 
-Na elke install draait de schema-bootstrap automatisch. Voorbeelddata is binnen seconden zichtbaar.
+After every install, the schema bootstrap runs automatically. Sample data is visible within seconds.
 
-Installeer ook de `notify_push`-app (onder **Integration**). Die is de Nextcloud-zijde van de WebSocket push-server die je in stap 1 al hebt gestart — je hoeft hem alleen te enabelen, geen verdere config nodig.
+Also install the `notify_push` app (under **Integration**). It is the Nextcloud side of the WebSocket push server you already started in step 1. You only have to enable it. No further config needed.
 
-## Stap 5: Koppel `notify_push` aan de push-server
+## Step 5: Wire `notify_push` to the push server
 
-`notify_push` heeft één eenmalige setup-stap zodat de Nextcloud-app weet waar de Rust-binary draait. Voer in de werkmap uit:
+`notify_push` has one one-off setup step so the Nextcloud app knows where the Rust binary runs. Run this in your working directory:
 
 ```bash
 docker compose exec --user www-data nextcloud php occ config:system:set redis host --value redis
@@ -160,71 +160,71 @@ docker compose exec --user www-data nextcloud php occ config:system:set trusted_
 docker compose exec --user www-data nextcloud php occ notify_push:setup http://notify_push:7867
 ```
 
-De eerste drie regels vertellen Nextcloud dat Redis de gedeelde cache is — `notify_push` luistert daarop voor change-events. De vierde regel markeert het Docker-netwerk als trusted zodat de push-server bij Nextcloud terugmag bellen voor authenticatie. De laatste regel registreert de URL bij de Nextcloud-app.
+The first three lines tell Nextcloud that Redis is the shared cache. `notify_push` listens on it for change events. The fourth line marks the Docker network as trusted so the push server can call back to Nextcloud for authentication. The last line registers the URL with the Nextcloud app.
 
-Verifieer dat alles werkt:
+Verify everything works:
 
 ```bash
 docker compose exec --user www-data nextcloud php occ notify_push:self-test
 ```
 
-Je krijgt een lijstje vinkjes — `redis is configured`, `push server is receiving redis messages`, `push server can connect to the Nextcloud server`, et cetera. De waarschuwing over `unencrypted http` is voor lokaal werk normaal; in productie zit `notify_push` achter dezelfde reverse proxy als Nextcloud, dus dan is dat geen issue.
+You get a list of checkmarks: `redis is configured`, `push server is receiving redis messages`, `push server can connect to the Nextcloud server`, and so on. The warning about `unencrypted http` is normal for local work. In production, `notify_push` sits behind the same reverse proxy as Nextcloud, so it is not an issue there.
 
-Vanaf nu krijgen apps die op `notify_push` luisteren — zoals OpenRegister's live-update-integratie via `@conduction/nextcloud-vue` — direct doorduwingen op object-wijzigingen, zonder dat de browser hoeft te pollen.
+From now on, apps that listen to `notify_push` (like OpenRegister's live-update integration via `@conduction/nextcloud-vue`) get direct pushes on object changes. The browser does not have to poll.
 
-## Wat je krijgt
+## What you get
 
-| Eigenschap | Waarde |
+| Property | Value |
 | --- | --- |
-| Eerste boot | Ongeveer drie minuten (eerste keer 750 MB download) |
-| Volgende boots | Seconden |
-| Image | Officiële `nextcloud:latest`, identiek aan productie |
-| Geheugen | Rond 1 GB onder lichte load |
-| Reset | `docker compose down -v` (verwijdert volumes) |
+| First boot | About three minutes (first run downloads 750 MB) |
+| Subsequent boots | Seconds |
+| Image | Official `nextcloud:latest`, identical to production |
+| Memory | Around 1 GB under light load |
+| Reset | `docker compose down -v` (removes volumes) |
 
-Geen vooraf opgenomen screencast, geen demo-omgeving die offline kan. Wat je hier ziet, is precies wat een echte klant ziet.
+No pre-recorded screencast, no demo environment that can go offline. What you see here is exactly what a real customer sees.
 
-## Reset of stoppen
+## Reset or stop
 
 ```bash
-# tijdelijk stoppen, data behouden
+# temporarily stop, keep data
 docker compose stop
 
-# weer starten
+# start again
 docker compose start
 
-# helemaal opruimen, ook volumes
+# tear down completely, including volumes
 docker compose down -v
 ```
 
-Na `down -v` is je laptop weer schoon. Twee minuten later kun je opnieuw beginnen.
+After `down -v`, your laptop is clean again. Two minutes later, you can start over.
 
-## Probleemoplossing
+## Troubleshooting
 
-**Apache port 8080 in gebruik:** wijzig `"8080:80"` naar bijvoorbeeld `"8081:80"` in `docker-compose.yml`. Vergeet niet de URL aan te passen naar `http://localhost:8081`.
+**Apache port 8080 in use:** change `"8080:80"` to something like `"8081:80"` in `docker-compose.yml`. Remember to update the URL to `http://localhost:8081`.
 
-**Setup-wizard wil opnieuw beginnen:** waarschijnlijk is de Postgres-database leeg geraakt. Voer `docker compose down -v` uit en start opnieuw met `docker compose up -d`.
+**Setup wizard wants to start over:** the Postgres database probably emptied out. Run `docker compose down -v` and start again with `docker compose up -d`.
 
-**Nextcloud toont "Trusted domain"-foutmelding:** voeg de host toe aan `NEXTCLOUD_TRUSTED_DOMAINS` (komma-gescheiden) en herstart met `docker compose up -d`.
+**Nextcloud shows a "Trusted domain" error:** add the host to `NEXTCLOUD_TRUSTED_DOMAINS` (comma-separated) and restart with `docker compose up -d`.
 
-**App-store install werkt niet:** controleer of Nextcloud naar buiten kan. In een corporate netwerk soms blokkade op `apps.nextcloud.com`. Een proxy via `HTTP_PROXY`-env-variabelen lost dit op.
+**App store install does not work:** check that Nextcloud can reach the internet. Corporate networks sometimes block `apps.nextcloud.com`. A proxy via `HTTP_PROXY` env variables fixes this.
 
-**`notify_push` self-test faalt op `is not trusted as a reverse proxy`:** het Docker-netwerk-bereik in jouw setup wijkt af van `172.16.0.0/12`. Bekijk het bereik met `docker network inspect $(docker network ls --filter name=conduction-demo -q) --format '{{range .IPAM.Config}}{{.Subnet}}{{end}}'` en pas de `trusted_proxies`-regel uit stap 5 aan met die subnet.
+**`notify_push` self-test fails on `is not trusted as a reverse proxy`:** the Docker network range in your setup differs from `172.16.0.0/12`. Inspect the range with `docker network inspect $(docker network ls --filter name=conduction-demo -q) --format '{{range .IPAM.Config}}{{.Subnet}}{{end}}'` and update the `trusted_proxies` line from step 5 with that subnet.
 
-**`notify_push` blijft restarten na `docker compose up -d`:** kijk in de logs (`docker compose logs notify_push`) of je `× No redis server is configured` ziet. Dat betekent dat Nextcloud's `memcache.distributed`-config nog niet op Redis staat — voer de eerste drie `occ config:system:set`-commando's uit stap 5 uit, en herstart dan met `docker compose up -d notify_push`.
+**`notify_push` keeps restarting after `docker compose up -d`:** check the logs (`docker compose logs notify_push`) for `× No redis server is configured`. That means Nextcloud's `memcache.distributed` config is not on Redis yet. Run the first three `occ config:system:set` commands from step 5, then restart with `docker compose up -d notify_push`.
 
-## Volgende stap
+## Next step
 
-Een werkende Nextcloud is de aanleiding voor de andere tutorials in deze serie:
+A working Nextcloud is the entry point for the other tutorials in this series:
 
-- [Een Woo-register opzetten](/academy/woo-register-opzetten) — importeer het canonieke Woo-register in OpenRegister
-- [Bestanden uploaden bij een Woo-publicatie](/academy/woo-bestanden-uploaden) — vier upload-modes voor documenten
-- [Build je eerste Conduction-app](/academy/build-an-app) — eindigt met een geïnstalleerde app op deze stack
+- [Set up a Woo register](/academy/woo-register-opzetten): import the canonical Woo register into OpenRegister
+- [Upload files to a Woo publication](/academy/woo-bestanden-uploaden): four upload modes for documents
+- [Build your first Conduction app](/academy/build-an-app): ends with an installed app on this stack
 
-Stuur het `docker-compose.yml` naar een collega als je dit samen wilt zien werken.
+Send the `docker-compose.yml` to a colleague if you want to see this work together.
 
 <ContactCta
-  title="Wil je meer weten?"
-  body="Mail ons. We helpen je in een halve dag op weg met je eigen Conduction-stack op Nextcloud, van eerste demo tot productie."
-  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=Nextcloud%20setup" }}
+  title="Want to know more?"
+  body="Send us an email. We help you set up your own Conduction stack on Nextcloud in half a day, from first demo to production."
+  cta={{ label: "Email us", href: "mailto:info@conduction.nl?subject=Nextcloud%20setup" }}
 />
