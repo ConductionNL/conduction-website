@@ -1,0 +1,216 @@
+---
+slug: deskdesk-tutorial-1-scaffold
+title: "Bouw een Nextcloud-app op de Conduction-stack, Deel 1: Scaffold"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-10
+summary: Kloon de Conduction-app-template, hernoem hem naar DeskDesk, bouw, activeer en zie het canonieke app-chassis. Het eerste van vier delen die een werkende bureau-reserveringsapp bouwen op de volledige Conduction-stack.
+tags: [App development, Nextcloud, OpenRegister, nextcloud-vue, Tutorial series]
+apps: [openregister]
+durationMinutes: 20
+series: deskdesk-tutorial
+partNumber: 1
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  AtomZones,
+  NextSteps,
+  NextStep,
+  HexCard,
+} from '@conduction/docusaurus-preset/components';
+
+Dit is **Deel 1 van een vierdelige tutorial** waarin we **DeskDesk** bouwen, een flexibele bureau-reserveringsapp voor een open-kantoor-omgeving, op de volledige Conduction Nextcloud-stack. Het eindproduct: kies een bureau op een verdieping, boek een slot, zie je boeking in je Nextcloud Calendar, en haal zone-specifieke kennisartikelen uit xWiki op naast de boeking. Elk onderdeel hergebruikt wat `@conduction/nextcloud-vue` en OpenRegister je al gratis geven.
+
+In Deel 1 zet je de app op, hernoem je hem, bouw je hem, en zie je het canonieke app-chassis op je scherm. Geen data, nog geen integraties. We krijgen eerst het skelet goed.
+
+{/* truncate */}
+
+<Outcomes title="Wat je hebt aan het eind van Deel 1">
+  <Outcome>Een werkende <strong>DeskDesk</strong>-app geïnstalleerd in je lokale Nextcloud, te bereiken vanuit de app-shelf.</Outcome>
+  <Outcome>Een helder mentaal model van het canonieke Conduction-app <strong>chassis</strong>: topbar, linker navigatie, hoofdkolom, paginakop, sidebar.</Outcome>
+  <Outcome>Vertrouwen met het <strong>nextcloud-app-template</strong> hernoem-ritueel: <code>id</code>, namespace, de paar bestanden die je moet aanraken, de rest laat je voor later.</Outcome>
+  <Outcome>Een schone basis voor Deel 2, waar het chassis echte data gaat dragen.</Outcome>
+</Outcomes>
+
+## Wat we bouwen, over alle vier delen heen
+
+| Deel | Titel | Voegt toe |
+|---|---|---|
+| 1 | Scaffold (je bent hier) | Lege app-schil, chassis zichtbaar, navigeerbaar |
+| 2 | Schema's + manifest | Desk- en booking-schema's, volledige CRUD, dashboard |
+| 3 | Schema-gedreven integraties | Boekingen verschijnen in NC Calendar via de OpenRegister calendar provider |
+| 4 | Externe kennis + ship | xWiki-bron via OpenConnector, sidebar-tab, packagen, publiceren |
+
+Dezelfde vorm, twee repos:
+
+- **App-broncode:** [`ConductionNL/deskdesk`](https://github.com/ConductionNL/deskdesk), de daadwerkelijke Nextcloud-app die je vanuit de template forkt.
+- **Tutorial-broncode:** [`ConductionNL/conduction-website`](https://github.com/ConductionNL/conduction-website), de post die je nu leest.
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Een draaiende Nextcloud (28+) met admin-toegang. Heb je er nog geen, volg dan eerst <a href="/academy/nextcloud-lokaal-draaien">Nextcloud lokaal draaien met Docker</a>.</PrerequisiteItem>
+  <PrerequisiteItem><strong>OpenRegister</strong> geïnstalleerd en actief in die Nextcloud (Apps → zoek "OpenRegister" → Download).</PrerequisiteItem>
+  <PrerequisiteItem>Node.js 20+ en PHP 8.1+ op je host, plus Composer en de GitHub CLI (<code>gh</code>). De template komt met PHPCS, Psalm, PHPStan en ESLint-configs klaar voor gebruik.</PrerequisiteItem>
+  <PrerequisiteItem>Een GitHub-account zodat je de template kunt forken naar je eigen organisatie (of <code>ConductionNL</code> als je toegang hebt).</PrerequisiteItem>
+</Prerequisites>
+
+## Stap 1: Gebruik de template
+
+[`ConductionNL/nextcloud-app-template`](https://github.com/ConductionNL/nextcloud-app-template) is een GitHub *repository template*. De knop "Use this template" geeft je een verse repo met de volledige starter kit: Vue 2 + Pinia-frontend, PHP-backend, OpenRegister-bedrading, kwaliteitspijplijn, OpenSpec-scaffolding, GitHub Actions.
+
+```bash title="Pick a name. We're calling ours deskdesk."
+gh repo create ConductionNL/deskdesk \
+  --template ConductionNL/nextcloud-app-template \
+  --public \
+  --description "Flexible desk booking for open-office environments"
+```
+
+Kloon hem daarna naast je andere Nextcloud-apps. De meeste workspaces houden ze in één `apps-extra/`-map die de dev-container mount.
+
+```bash
+cd /path/to/your/nextcloud/workspace/apps-extra
+git clone https://github.com/ConductionNL/deskdesk.git
+cd deskdesk
+```
+
+Je hebt nu een directory met de volledige template-inhoud onder de nieuwe naam. Binnenin is nog niets hernoemd. De map heet `deskdesk/`, maar elk bestand zegt nog `app-template`, `AppTemplate`, `OCA\AppTemplate`. Stap 2 lost dat op.
+
+## Stap 2: Hernoem de app
+
+Nextcloud vereist dat drie identifiers overeenkomen:
+
+- De directorynaam (`deskdesk/`) ✅ klaar
+- De `<id>` in `appinfo/info.xml`
+- De PHP-namespace (`OCA\AppTemplate` → `OCA\DeskDesk`)
+
+Plus een handvol ondersteunende bestanden die naar het oude id verwijzen. De volledige lijst is klein genoeg om met de hand te doen, en met de hand doen is hier de juiste keuze. Project-geheugen: **gebruik nooit `sed` of scripted edits op code-bestanden**, gebruik een echte editor met project-aware refactoring, of lees elk bestand één keer voor je het wijzigt.
+
+### 2a. De boot-kritische bestanden
+
+Dit zijn degene die voorkomen dat Nextcloud de app überhaupt opstart. Bewerk elk met `Find & replace all` in je editor: `AppTemplate` → `DeskDesk` en `app-template` → `deskdesk`:
+
+| Bestand | Vervangen |
+|---|---|
+| `appinfo/info.xml` | `<id>`, `<name>`, `<namespace>`, `<navigation>`, `<settings>` paden |
+| `composer.json` | `name`, `description`, het `psr-4` autoload-prefix |
+| `package.json` | `name` |
+| `webpack.config.js` | de `appId`-constante |
+| `templates/index.php` en `templates/settings/admin.php` | `OCA\AppTemplate` → `OCA\DeskDesk`, het `data-*` element-id |
+| `lib/AppInfo/Application.php` | namespace, `APP_ID`-constante, docblock |
+| Elk ander PHP-bestand in `lib/` | `namespace OCA\AppTemplate\…` → `namespace OCA\DeskDesk\…`, elke `use OCA\AppTemplate\…` import, elke docblock |
+| `appinfo/routes.php` | alleen docblock |
+| Elk Vue-bestand in `src/` | de `t('app-template', '…')` vertaalnamespace wordt `t('deskdesk', '…')` |
+| `src/router/index.js` | `generateUrl('/apps/app-template')` → `generateUrl('/apps/deskdesk')` |
+| `src/store/store.js`, `src/store/modules/settings.js` | `'/apps/app-template/api/settings'` → `'/apps/deskdesk/api/settings'`, fallback register-slug |
+| `src/settings.js` | `loadTranslations('app-template', …)` en de `#app-template-settings` mount-selector |
+| `lib/Settings/app_template_register.json` | hernoem naar `lib/Settings/deskdesk_register.json` (en het `app`-veld erin) |
+
+### 2b. De "kan later"-bestanden
+
+Tests (`tests/Unit/AppTemplateTest.php`, de integratie-Postman-collectie), `phpcs.xml` / `phpmd.xml` / `REUSE.toml` headers, en de `.github/` workflow-inputs. Die verwijzen alleen in metadata naar het template-id; de app start prima zonder dat je ze aanraakt. Fix ze als je CI opzet.
+
+### 2c. Eén Nextcloud-versie compatibiliteitsfix
+
+De `lib/AppInfo/Application.php` van de template registreert een repair step at runtime:
+
+```php title="Original — fails on some Nextcloud builds"
+$context->registerRepairStep(InitializeSettings::class);
+```
+
+`registerRepairStep()` ontbreekt op `IRegistrationContext` in een paar Nextcloud-builds (je ziet `Call to undefined method` in `nextcloud.log`). Verplaats het naar `appinfo/info.xml` in plaats daarvan, zelfde effect, beter draagbaar:
+
+```xml title="appinfo/info.xml — append after the <settings> block"
+<repair-steps>
+    <install>
+        <step>OCA\DeskDesk\Repair\InitializeSettings</step>
+    </install>
+    <post-migration>
+        <step>OCA\DeskDesk\Repair\InitializeSettings</step>
+    </post-migration>
+</repair-steps>
+```
+
+Haal daarna de `registerRepairStep()`-regel en de `use OCA\DeskDesk\Repair\InitializeSettings;` import weg uit `lib/AppInfo/Application.php`.
+
+## Stap 3: Bouwen en activeren
+
+De template levert zijn build-output ongecommit. Het eerste in een verse kloon is dus dependencies installeren en de JS-bundels bouwen, anders is de app-UI gewoon een lege `<div id="content">`.
+
+```bash
+composer install --no-dev
+composer dump-autoload
+npm install --legacy-peer-deps
+npm run build
+```
+
+Zorg daarna dat je Nextcloud-container de directory kan zien. In een typische Docker-setup is de `apps-extra/` host-directory gemount op `/var/www/html/custom_apps/` in de container. Gebruikt je compose-file één bind-mount per app, voeg dan een regel toe voor `deskdesk` en restart. Anders:
+
+```bash title="Quick path: copy + chown for a one-shot install"
+docker cp ./deskdesk nextcloud:/var/www/html/custom_apps/
+docker exec -u root nextcloud chown -R www-data:www-data /var/www/html/custom_apps/deskdesk
+```
+
+Nu activeren:
+
+```bash
+docker exec nextcloud php occ app:enable deskdesk
+```
+
+Je zou moeten zien:
+
+```
+deskdesk 0.1.0 enabled
+```
+
+Open `http://localhost:8080/apps/deskdesk/` en log in. Je ziet een placeholder-dashboard met voorbeeld-KPI-kaarten, twee lege panelen, drie nav-items (Dashboard / Items / Documentation) en een Settings-entry vastgezet onderaan de rail. Dat is het chassis.
+
+## Het chassis: de hele bedoeling van Deel 1
+
+Elke Conduction-app, DeskDesk, OpenRegister, OpenCatalogi, Procest, MyDash, de dozijn anderen, ziet er op het eerste gezicht hetzelfde uit. Dezelfde vijf structurele stukken, dezelfde plek, hetzelfde gedrag. Die herkenbaarheid is wat `@conduction/nextcloud-vue` afdwingt: een gebruiker die één app leerde, navigeert de volgende zonder docs.
+
+Het chassis is **één vorm, vijf atomen**. Elke kaart hieronder focust op één atoom: de gefocuste zone staat op volledige dekking met een KNVB-oranje rand, de rest vervaagt naar 25% zodat je ziet *waar* het atoom zit.
+
+<AtomZones />
+
+In Deel 2 leer je hoe `manifest.json` plus een JSON-schema deze atomen vult met echte data. De placeholder `Items`-nav-entry, het lege dashboard, en het "article"-schema dat je op het scherm zag, worden allemaal **bureaus**, **boekingen**, en een echt bezettings-dashboard, zonder dat je één atoom met de hand uitlegt.
+
+## Troubleshooting
+
+<HexCard title="App-UI is een lege rechthoek">
+  De <code>js/</code> build-output is niet gecommit. Draai <code>npm run build</code> voor je de app activeert, of na elke frontend-wijziging. Het lege-rechthoek-symptoom betekent altijd "de bundel ontbreekt".
+</HexCard>
+
+<HexCard title="`Could not download app deskdesk` bij occ app:enable">
+  Nextcloud vereist dat de directorynaam exact overeenkomt met de <code>&lt;id&gt;</code> in <code>appinfo/info.xml</code>. Heb je de repo onder een andere naam gekloond, hernoem dan de directory of zet een relatieve symlink: <code>ln -s your-clone-name ../deskdesk</code>.
+</HexCard>
+
+<HexCard title="`Call to undefined method ...registerRepairStep()` in nextcloud.log">
+  Stap 2c dekt dit. De fix is de repair-step-registratie verplaatsen van <code>lib/AppInfo/Application.php</code> naar het <code>&lt;repair-steps&gt;</code>-blok in <code>appinfo/info.xml</code>.
+</HexCard>
+
+<HexCard title="`Class not found` na de hernoeming">
+  Draai <code>composer dump-autoload</code> vanuit de app-directory. De classmap van PHP cachet de oude <code>OCA\AppTemplate</code>-map totdat je hem regenereert.
+</HexCard>
+
+## Wat volgt
+
+<NextSteps>
+  <NextStep
+    title="Deel 2: Schema's + manifest"
+    href="/academy/deskdesk-tutorial-2-schemas-manifest"
+    description="Definieer de desk-, booking- en floor-schema's in OpenRegister. Bedraad ze in een manifest.json die CnAppRoot leest. Zie CnIndexPage / CnDetailPage / CnDashboardPage volledige CRUD renderen zonder lijmcode."
+  />
+  <NextStep
+    title="De componentreferentie"
+    href="https://nextcloud-vue.conduction.nl/docs/components/"
+    description="Blader door elke Cn*-component die de bibliotheek levert. Live playgrounds, prop-tabellen, slot-referentie."
+  />
+  <NextStep
+    title="App-design-principes"
+    href="https://nextcloud-vue.conduction.nl/docs/architecture/app-design-principles/"
+    description="Lees het architectuurverhaal achter het chassis en de vijf atomen, dezelfde visual als hierboven, met de volledige design-onderbouwing."
+  />
+</NextSteps>
