@@ -158,7 +158,7 @@ module.exports = createConfig({
       {
         title: 'Solutions',
         items: [
-          {label: 'WOO compliance',  to: '/solutions/woo'},
+          {label: 'OpenWoo',         to: '/solutions/openwoo'},
           {label: 'Software catalog',to: '/solutions/software-catalog'},
           {label: 'Support',         to: '/support'},
           {label: 'ConNext',         to: '/connext'},
@@ -222,6 +222,15 @@ module.exports = createConfig({
              two indexed entry points to the canonical app site. */
           {from: '/openconnector', to: 'https://openconnector.conduction.nl/'},
           {from: '/openconnector/support', to: 'https://openconnector.conduction.nl/support/'},
+          /* OpenWoo brand rename: /solutions/woo conflated the law (Wet
+             open overheid) with the product. The page lives at
+             /solutions/openwoo since the fold-openwoo-into-fleet change;
+             keep inbound links working from anywhere that already shipped
+             the old URL (presentations, partner pages, press). The `nl`
+             locale doesn't emit page-route variants for src/pages/*.mdx
+             so /nl/solutions/openwoo doesn't exist as a target — same
+             pattern as the /over-ons → /about/ entry above. */
+          {from: '/solutions/woo', to: '/solutions/openwoo'},
         ],
       },
     ],
