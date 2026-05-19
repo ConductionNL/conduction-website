@@ -64,10 +64,11 @@ Iedere check is rood of groen. Eén rode check → `build:fail` (in de pre-revie
 
 ## Categorie 2: Hydra-specifieke gates
 
-Naast de generieke tools heeft Hydra **een eigen reeks `hydra-gate-*` skills** voor zaken die Conduction-specifiek zijn. Die zitten in `hydra/.claude/skills/`. De huidige set:
+Naast de generieke tools heeft Hydra **een eigen reeks `hydra-gate-*` skills** voor zaken die Conduction-specifiek zijn. Die zitten in `hydra/.claude/skills/`. De huidige set telt 14 skills: één dispatcher die de andere 13 mechanische gates achter elkaar aanroept.
 
 | Gate | Wat het controleert |
 |---|---|
+| `hydra-gates` | Dispatcher: roept de 13 gates hieronder achter elkaar aan en levert één pass/fail-overzicht. |
 | `hydra-gate-spdx` | Iedere nieuwe PHP-file heeft een EUPL-1.2 SPDX-header. |
 | `hydra-gate-forbidden-patterns` | Geen `dd(`, `var_dump`, `dump(`, `console.log` blijft over. |
 | `hydra-gate-composer-audit` | Mirror van de generieke composer-audit, voor de reviewer's mandatory block. |
@@ -234,7 +235,3 @@ De **quality-recheck** draait alle mechanische gates opnieuw op de uiteindelijke
     description="De officiële motivatie achter de diff-only scope."
   />
 </NextSteps>
-
----
-
-*Intern document — niet extern delen.*
