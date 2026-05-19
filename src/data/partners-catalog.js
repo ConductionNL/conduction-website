@@ -46,7 +46,7 @@ export const PARTNERS = [
     logo: '/img/partners/acato.svg',
     summary: <>Digital agency uit Almere. Bouwt toegankelijke websites en webapplicaties voor gemeenten en overheidsorganisaties, met focus op WCAG 2.2 AA en NLDS. Levert de Conduction Woo-solution op OpenCatalogi, OpenRegister en OpenConnector.</>,
     apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
-    solutions: ['woo'],
+    solutions: ['openwoo'],
   },
 
   // --------------------------------------------------------------
@@ -58,7 +58,7 @@ export const PARTNERS = [
     logo: '/img/partners/shift2.png',
     summary: <>Nederlandse softwarebouwer voor gemeenten, waterschappen en provincies, onderdeel van de Conxillium-groep. Levert CMS, burgerzaken en formulieren, en daarnaast de Conduction Woo-solution op OpenCatalogi, OpenRegister en OpenConnector.</>,
     apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
-    solutions: ['woo'],
+    solutions: ['openwoo'],
   },
 
   // --------------------------------------------------------------
@@ -95,7 +95,7 @@ export const PARTNERS = [
     logo: '/img/partners/bct.png',
     summary: <>Nederlandse leverancier van informatie- en documentmanagement-software (Corsa, Verix). Levert de Conduction Woo-solution aan organisaties die hun informatie-governance op orde willen krijgen.</>,
     apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
-    solutions: ['woo'],
+    solutions: ['openwoo'],
   },
   {
     tier: 'host',
@@ -103,7 +103,7 @@ export const PARTNERS = [
     logo: '/img/partners/open-gemeenten.png',
     summary: <>Open-source platform voor gemeentelijke websites. Bedient ruim 30 gemeenten met toegankelijke sites (WCAG, internet.nl). Levert daarnaast de Conduction Woo-solution.</>,
     apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
-    solutions: ['woo'],
+    solutions: ['openwoo'],
   },
   {
     tier: 'host',
@@ -111,7 +111,7 @@ export const PARTNERS = [
     logo: '/img/partners/exxellence.png',
     summary: <>Nederlandse leverancier van zaakgericht-werken-software voor gemeenten (xxllnc Zaken, plus apps voor belastingen en het sociaal domein). Levert daarnaast de Conduction Woo-solution.</>,
     apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
-    solutions: ['woo'],
+    solutions: ['openwoo'],
   },
   {
     href: '/partners/yard',
@@ -120,7 +120,7 @@ export const PARTNERS = [
     logo: '/img/partners/yard.png',
     summary: <>Digital agency uit Utrecht voor gemeenten, zorg en kennisorganisaties. Open-source-georiënteerd, ruim 80 projecten. Levert de Conduction Woo-solution.</>,
     apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
-    solutions: ['woo'],
+    solutions: ['openwoo'],
   },
   {
     tier: 'host',
@@ -128,7 +128,7 @@ export const PARTNERS = [
     logo: '/img/partners/io.webp',
     summary: <>Belgisch-Nederlands digital agency met kantoren in Amsterdam en Rotterdam. Bouwt klantgerichte digitale platforms en levert de Conduction Woo-solution aan publieke en semi-publieke organisaties.</>,
     apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
-    solutions: ['woo'],
+    solutions: ['openwoo'],
   },
   {
     tier: 'host',

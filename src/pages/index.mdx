@@ -1,12 +1,13 @@
 ---
-title: Conduction, Public Tech for Nextcloud
-description: Conduction builds open-source apps for the Nextcloud workspace. Tech to serve people. Apps you install yourself, support when you want it managed, advisory when you want a partner.
+title: Public Tech for Nextcloud
+description: Open-source apps that plug into the Nextcloud workspace. Install yourself, get managed support, or bring a partner. EUPL-1.2, ISO 27001, Amsterdam.
 hide_table_of_contents: true
 ---
 
 import {Hero, StatsStrip, AppsPreview, CtaBanner, PairRow, PairCard, Section, SectionHead, Clients, DEFAULT_CLIENTS, PartnerDirectory, CommonGroundPlus, HexRain} from '@conduction/docusaurus-preset/components';
 import {totalDownloads, formatDownloads} from '@conduction/docusaurus-preset/data';
 import {PARTNERS, BECOME_PARTNER, totalPartners} from '@site/src/data/partners-catalog';
+import {APP_COUNT} from '@site/src/data/apps-catalog';
 
 {/* Conduction main landing. Public Tech framing: tech to serve people.
     Three doors out: install an app yourself, get it as managed SaaS, or
@@ -17,7 +18,7 @@ import {PARTNERS, BECOME_PARTNER, totalPartners} from '@site/src/data/partners-c
 
 <Hero
   eyebrow={<>Public Tech · open-source apps for <span className="next-blue">Nextcloud</span></>}
-  title={<>Tech to serve people.<br/>One workspace.<br/>Twelve apps.</>}
+  title={<>Tech to serve people.<br/>One workspace.<br/>{APP_COUNT} apps.</>}
   lede={<>We are Conduction. We build open-source apps that plug into <span className="next-blue">Nextcloud</span>. Catalogs, registers, document handling, integrations. Install yourself, host with us as SaaS, or bring in a partner. Same code, same licence, no procurement track required.</>}
   primaryCta={{label: <>Install from <span className="next-blue">Nextcloud</span> app store</>, href: '/apps'}}
   secondaryCta={{label: 'Run a local demo', href: '/demo'}}
@@ -27,7 +28,7 @@ import {PARTNERS, BECOME_PARTNER, totalPartners} from '@site/src/data/partners-c
 </Hero>
 
 <StatsStrip stats={[
-  { value: '12', label: <>apps in the ecosystem,<br/>all open-source</> },
+  { value: String(APP_COUNT), label: <>apps in the ecosystem,<br/>all open-source</> },
   { value: '2 min', label: <>from app store install<br/>to working solution</> },
   { value: '€0', label: <>for the apps,<br/>support is optional</> },
   { value: totalPartners, label: <>certified and partner<br/>implementers</> },

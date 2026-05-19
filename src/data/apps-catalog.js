@@ -68,13 +68,6 @@ const PRESENTATION = {
     categories: ['Dashboards'],
     icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>,
   },
-  openwoo: {
-    name: 'OpenWoo',
-    tagline: 'WOO-compliant publication flow. Active disclosure, queryable archive, citation-stable URLs.',
-    href: '/apps/openwoo',
-    categories: ['Processes'],
-    icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>,
-  },
   zaakafhandelapp: {
     name: 'ZaakAfhandelApp',
     tagline: 'Citizen-facing case-status portal. ZGW APIs, archief koppelvlakken, audit trail.',
@@ -117,6 +110,13 @@ const PRESENTATION = {
     categories: ['Processes'],
     icon: <svg viewBox="0 0 24 24"><path d="M3 12h6l3-7 3 14 3-7h3"/></svg>,
   },
+  scholiq: {
+    name: 'Scholiq',
+    tagline: 'Learning record + LMS. Cursussen, inschrijvingen, certificaten, compliance-training.',
+    href: '/apps/scholiq',
+    categories: ['Processes'],
+    icon: <svg viewBox="0 0 24 24"><path d="M3 9l9-5 9 5-9 5z"/><path d="M7 11v5c0 1 2.2 2 5 2s5-1 5-2v-5"/><path d="M21 9v6"/></svg>,
+  },
   nldesign: {
     name: 'NLDesign',
     tagline: 'Drop-in NLDS theme for Nextcloud, with the Conduction component variants on top.',
@@ -124,10 +124,49 @@ const PRESENTATION = {
     categories: ['Documents'],
     icon: <svg viewBox="0 0 24 24"><path d="M4 4h16v6H4z"/><path d="M4 14h7v6H4z"/><path d="M14 14h6v6h-6z"/></svg>,
   },
+  shillinq: {
+    name: 'Shillinq',
+    tagline: 'Business administration on Nextcloud. Invoices, contracts, procurement on shared registers.',
+    href: '/apps/shillinq',
+    categories: ['Processes'],
+    icon: <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="19" cy="18" r="2"/></svg>,
+  },
+  openbuilt: {
+    name: 'OpenBuilt',
+    tagline: 'Citizen-developer app builder. Compose Nextcloud apps from registers, connectors, workflows, no PHP.',
+    href: '/apps/openbuilt',
+    categories: ['Processes'],
+    icon: <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9-9 9z"/><path d="M9 12h6M12 9v6"/></svg>,
+  },
+  doriath: {
+    name: 'Doriath',
+    tagline: 'Self-hosted password and secrets vault. Per-user, per-team, audited. In development.',
+    href: '/apps/doriath',
+    categories: ['Connectors'],
+    icon: <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>,
+  },
+  'app-versions': {
+    name: 'App Versions',
+    tagline: 'Pin and roll back any Nextcloud app version. Multi-source picker, audit-trailed. In development.',
+    href: '/apps/app-versions',
+    categories: ['Data'],
+    icon: <svg viewBox="0 0 24 24"><path d="M3 6h18v4H3zM3 14h12v4H3z"/><circle cx="19" cy="16" r="2"/></svg>,
+  },
 };
 
 /* Categories the website filters by, in the order the chips render. */
 export const APP_CATEGORIES = ['All', 'Data', 'Processes', 'Connectors', 'Documents', 'AI', 'Dashboards'];
+
+/* Site-wide app-count constants — the single source of truth for "we ship N apps".
+   APP_COUNT is the size of the PRESENTATION map (every Conduction app, including
+   in-development ones). Use this in copy instead of hardcoding a digit or word,
+   so the headline number stays in sync with the registry. INTEGRATED_COUNT is the
+   number of third-party tools we surface in the External-tools shelf on /connext;
+   ECOSYSTEM_COUNT is the headline "apps in the diagram" total used as the page
+   title. Update INTEGRATED_COUNT whenever the shelf changes. */
+export const APP_COUNT = Object.keys(PRESENTATION).length;
+export const INTEGRATED_COUNT = 14;
+export const ECOSYSTEM_COUNT = APP_COUNT + INTEGRATED_COUNT;
 
 /* Pick a status label from the version string. The Nextcloud app
    store leaves the latest_version as-is, so "0.7.9-beta.8" reads as
@@ -192,7 +231,7 @@ export function getApps() {
   return out;
 }
 
-/* Convenience: the totals strip ("12 apps in the store · 22,400 installs"). */
+/* Convenience: the totals strip ("N apps in the store · M installs"). */
 export function getCatalogTotals() {
   const apps = getApps();
   const installs = apps.reduce((n, a) => n + (a.downloads || 0), 0);

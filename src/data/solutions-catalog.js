@@ -15,11 +15,11 @@ import React from 'react';
 
 export const SOLUTIONS = [
   {
-    slug: 'woo',
-    href: '/solutions/woo', sector: 'public', sectorLabel: 'Publieke sector',
-    title: 'WOO compliance, by Friday.',
-    shortTitle: 'WOO compliance',
-    outcome: <>Live WOO portal at your hosted <span className="next-blue">Nextcloud</span>. Every law category becomes a register, every register publishes through OpenCatalogi, every connector ingests from your DMS.</>,
+    slug: 'openwoo',
+    href: '/solutions/openwoo', sector: 'public', sectorLabel: 'Publieke sector',
+    title: 'OpenWoo. Wet open overheid, by Friday.',
+    shortTitle: 'OpenWoo',
+    outcome: <>Live OpenWoo-portal at your hosted <span className="next-blue">Nextcloud</span>. Each Wet open overheid-categorie becomes a register, every register publishes through OpenCatalogi, every connector ingests from your DMS.</>,
     builtOn: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'], goals: ['compliance'], status: 'production',
     icon: <svg viewBox="0 0 24 24"><path d="M12 3l9 4v5c0 5-4 8-9 9-5-1-9-4-9-9V7l9-4z"/><path d="M9 12l2 2 4-4"/></svg>,
   },
@@ -42,13 +42,13 @@ export const SOLUTIONS = [
     icon: <svg viewBox="0 0 24 24"><path d="M3 4h18v4H3z"/><path d="M5 8v12h14V8"/><path d="M9 12h6"/></svg>,
   },
   {
-    slug: 'software-catalog',
-    href: '/solutions/software-catalog', sector: 'public', sectorLabel: 'Publieke sector',
-    title: 'Software catalog for the gemeente.',
-    shortTitle: 'Software catalog',
-    outcome: 'A public software catalogue, apps, datasets, APIs your organisation uses, searchable in one place, federated to data.overheid.nl.',
-    builtOn: ['OpenCatalogi', 'OpenRegister'], goals: ['integration'], status: 'production',
-    icon: <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/></svg>,
+    slug: 'anonimiseren',
+    href: '/solutions/anonimiseren', sector: ['public', 'mkb'], sectorLabel: 'Publiek & MKB',
+    title: 'Anonimiseren, voor je het publiceert.',
+    shortTitle: 'Anonimiseren',
+    outcome: <>Privacy-by-design pipeline op <span className="next-blue">Nextcloud</span>. DocuDesk en OpenRegister sporen PII op en redacteren records en documenten voordat ze de organisatie verlaten. Presidio onder de motorkap, AVG-uitlegbaar.</>,
+    builtOn: ['DocuDesk', 'OpenRegister', 'Presidio'], goals: ['compliance'], status: 'pilot',
+    icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/><path d="M9 8h6"/></svg>,
   },
   {
     slug: 'mkb-workspace',
@@ -58,15 +58,6 @@ export const SOLUTIONS = [
     outcome: <>Files, calendar, talk, dashboards, your full open-source workspace on <span className="next-blue">Nextcloud</span>, with MyDash on top.</>,
     builtOn: ['MyDash', 'OpenRegister'], goals: ['reporting'], status: 'production',
     icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>,
-  },
-  {
-    slug: 'legacy-erp',
-    href: '/solutions/legacy-erp', sector: 'mkb', sectorLabel: 'MKB',
-    title: 'One legacy ERP, every modern tool.',
-    shortTitle: 'Legacy ERP bridge',
-    outcome: 'OpenConnector pulls from your ERP, fills typed registers, exposes an API to whatever your team uses today.',
-    builtOn: ['OpenConnector', 'OpenRegister'], goals: ['integration'], status: 'pilot',
-    icon: <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>,
   },
 ];
 

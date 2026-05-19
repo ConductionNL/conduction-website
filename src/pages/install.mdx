@@ -4,7 +4,7 @@ description: Two minutes from the Nextcloud app store to a working Conduction ap
 hide_table_of_contents: true
 ---
 
-import {Section, SectionHead, HowSteps, HowStep, AppsPreview, CtaBanner, Button} from '@conduction/docusaurus-preset/components';
+import {Section, SectionHead, HowSteps, HowStep, AppsPreview, CtaBanner, Button, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
 
 <Section spacing="default">
   <SectionHead
@@ -81,3 +81,27 @@ import {Section, SectionHead, HowSteps, HowStep, AppsPreview, CtaBanner, Button}
   primaryCta={{label: 'Talk to a partner', href: '/partners'}}
   secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/install'}}
 />
+
+<FAQ title="Install FAQ.">
+  <FAQItem question="Do I need to be a Nextcloud administrator to install a Conduction app?" defaultOpen>
+    Yes. Conduction apps install from the Nextcloud app store, which only the administrator role can access. Once installed, you grant per-user or per-group access through the standard Nextcloud app permissions screen. Regular users do not need any extra setup.
+  </FAQItem>
+  <FAQItem question="What Nextcloud version do I need?">
+    Conduction apps target the latest two Nextcloud major versions. At time of writing that is Nextcloud 30 and 31. Older versions are supported on a best-effort basis. Check the per-app docs at docs.conduction.nl for the exact range for that release.
+  </FAQItem>
+  <FAQItem question="Can I install more than one Conduction app at the same time?">
+    Yes, and most teams do. OpenRegister is the shared data foundation; once it is installed, every other Conduction app you install reads and writes through it without configuration. There is no per-app database, no extra plumbing, and no version-pin matrix between apps.
+  </FAQItem>
+  <FAQItem question="Does install need an internet connection or external services?">
+    The install itself runs entirely inside your Nextcloud instance: download, signature check, schema bootstrap, default-config seeding. Some apps offer optional outbound integrations (AI features, document anonymisation, external mail). Each is opt-in and disabled by default until you configure a connector.
+  </FAQItem>
+  <FAQItem question="How do I uninstall, and what happens to my data?">
+    Uninstall through the Nextcloud apps page. The default behaviour preserves data: registers, objects, and audit trails stay in OpenRegister, so you can reinstall later and pick up where you left off. To wipe data on uninstall, use the per-app cleanup option in the app's admin settings before you uninstall.
+  </FAQItem>
+  <FAQItem question="The app store does not show the Conduction app I want. What now?">
+    Check that you are on a supported Nextcloud version (see above) and that your instance can reach apps.nextcloud.com. If it still does not appear, the app is most likely in pre-release. Pre-release builds are available from the GitHub releases page for that app, or your partner can pre-install them for evaluation.
+  </FAQItem>
+  <FAQItem question="Can I get an SLA, monitoring, or 24x7 support?">
+    Yes, through a Conduction partner. Conduction itself ships the apps free; production support, SLAs, monitoring, and incident response are sold by partners listed on the support page. Public-sector clients can opt for our managed Common Ground tenant at commonground.nu instead.
+  </FAQItem>
+</FAQ>
