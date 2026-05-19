@@ -15,11 +15,11 @@ import React from 'react';
 
 export const SOLUTIONS = [
   {
-    slug: 'woo',
-    href: '/solutions/woo', sector: 'public', sectorLabel: 'Publieke sector',
-    title: 'WOO compliance, by Friday.',
-    shortTitle: 'WOO compliance',
-    outcome: <>Live WOO portal at your hosted <span className="next-blue">Nextcloud</span>. Every law category becomes a register, every register publishes through OpenCatalogi, every connector ingests from your DMS.</>,
+    slug: 'openwoo',
+    href: '/solutions/openwoo', sector: 'public', sectorLabel: 'Publieke sector',
+    title: 'OpenWoo. Wet open overheid, by Friday.',
+    shortTitle: 'OpenWoo',
+    outcome: <>Live OpenWoo-portal at your hosted <span className="next-blue">Nextcloud</span>. Each Wet open overheid-categorie becomes a register, every register publishes through OpenCatalogi, every connector ingests from your DMS.</>,
     builtOn: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'], goals: ['compliance'], status: 'production',
     icon: <svg viewBox="0 0 24 24"><path d="M12 3l9 4v5c0 5-4 8-9 9-5-1-9-4-9-9V7l9-4z"/><path d="M9 12l2 2 4-4"/></svg>,
   },
