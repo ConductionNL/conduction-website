@@ -1,0 +1,230 @@
+---
+title: Quality, certifications & policy statements
+description: Conduction's quality management system. ISO 9001:2015 and ISO 27001:2022 certified, weekly pentest scans, and a GitHub-native quality workflow. Full policy statements and proof on request.
+hide_table_of_contents: true
+---
+
+import {Section, SectionHead, Showcase, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Quality management"
+    title="One system. Four tools that prove it works."
+    align="stack"
+    lede="Conduction operates one integrated quality and information-security management system. ISO 9001:2015 and ISO 27001:2022 anchor the policies, pentest-tools.com runs the continuous scans, and the entire build flow lives in public on GitHub. Together they cover scope, audit trail, and ongoing assurance for every Conduction app."
+  />
+</Section>
+
+<div id="quality-tools" />
+<Showcase
+  eyebrow="Quality tools"
+  title="What we use to keep quality measurable."
+  lede="The four pillars our QMS and ISMS lean on. The two ISO certificates anchor the management system, the commercial pentest platform supplies continuous external assurance, and the GitHub workflow keeps every code change inside the same audit trail."
+  layout="side"
+  defaultOpen="iso-9001"
+  items={[
+    {
+      id: 'iso-9001',
+      title: 'ISO 9001:2015 — Quality management.',
+      summary: "International standard for quality management systems. Confirms that Conduction operates a documented QMS, runs internal audits, and conducts management reviews. Scope: software development, hosting, and advisory work for public-sector and MKB clients in the Netherlands. Annual surveillance audit, three-year recertification cycle. Full policy statement and scope below.",
+      cta: {label: 'Read the quality policy', href: '#iso-certifications'},
+      panel: (
+        <div style={{padding: 24, display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280}}>
+          <img
+            src="/img/certificates/iso-9001-2015.png"
+            alt="ISO 9001:2015 certificate, Conduction B.V."
+            style={{maxWidth: 220, width: '100%', height: 'auto', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', borderRadius: 4}}
+          />
+        </div>
+      ),
+    },
+    {
+      id: 'iso-27001',
+      title: 'ISO 27001:2022 — Information security.',
+      summary: "International standard for information-security management systems. Confirms a documented ISMS aligned with the 2022 control set, with Annex A controls implemented and reviewed. Scope: all Conduction systems, the apps we develop, the managed Common Ground tenant at commonground.nu, and the development and operations processes that surround them. Statement of Applicability on request.",
+      cta: {label: 'Read the information-security policy', href: '#iso-certifications'},
+      panel: (
+        <div style={{padding: 24, display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280}}>
+          <img
+            src="/img/certificates/iso-27001-2022.png"
+            alt="ISO 27001:2022 certificate, Conduction B.V."
+            style={{maxWidth: 220, width: '100%', height: 'auto', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', borderRadius: 4}}
+          />
+        </div>
+      ),
+    },
+    {
+      id: 'pentest',
+      title: 'Pentest-tools.com — Continuous external scans.',
+      summary: "Conduction uses the commercial pentest-tools.com SaaS platform to run external penetration tests against our public surfaces and the managed Common Ground tenant. Scheduled scans cover the OWASP Top 10, common CVEs, TLS hygiene, and web-application vulnerabilities. Findings flow into our standard incident-management process, with critical and high CVEs patched within 30 days per ISO 27001:2022 Annex A.8.8.",
+      cta: {label: 'See how we scan', href: '#pentest-tools'},
+      panel: (
+        <div style={{padding: 20, background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, color: 'var(--c-cobalt-900)'}}>
+          <div style={{fontWeight: 700, marginBottom: 12, color: 'var(--c-cobalt-700)'}}>pentest-tools.com — last scan</div>
+          {[
+            {label: 'Website scanner (OWASP Top 10)', state: 'clean'},
+            {label: 'TLS configuration audit', state: 'clean'},
+            {label: 'Network vulnerability scan', state: 'clean'},
+            {label: 'Subdomain enumeration', state: 'clean'},
+            {label: 'CVE check on running stack', state: 'clean'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderTop: i > 0 ? '1px solid var(--c-cobalt-100)' : 'none'}}>
+              <span>{row.label}</span>
+              <span style={{background: 'var(--c-mint-300)', color: 'var(--c-cobalt-900)', padding: '2px 8px', borderRadius: 3, fontWeight: 700, fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5}}>{row.state}</span>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: 'github-workflow',
+      title: 'GitHub-native quality workflow.',
+      summary: "Every Conduction app lives on GitHub under the ConductionNL organisation. Three org-wide branch-protection rulesets force every change through pull requests with mandatory review. Code-review and security-review are triggered by labels on the PR, audited by Hydra automation, and recorded against the canonical spec. The trail from feature request to merged code is reviewable end-to-end, in public.",
+      cta: {label: 'See the workflow', href: '#github-workflow'},
+      panel: (
+        <div style={{padding: 20, background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, color: 'var(--c-cobalt-900)'}}>
+          <div style={{fontWeight: 700, marginBottom: 12, color: 'var(--c-cobalt-700)'}}>Pull request #482 — feat: openregister/audit-log</div>
+          {[
+            {step: 'Branch protection', tag: 'enforced'},
+            {step: 'Automated CI gate (PHPCS, Psalm, PHPStan)', tag: 'passed'},
+            {step: 'Code review (label: code-review:queued)', tag: 'approved'},
+            {step: 'Security review (label: security-review:queued)', tag: 'approved'},
+            {step: 'ADR + OpenSpec change linked', tag: 'tracked'},
+            {step: 'Merged to development', tag: 'audited'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderTop: i > 0 ? '1px solid var(--c-cobalt-100)' : 'none'}}>
+              <span>{row.step}</span>
+              <span style={{background: 'var(--c-mint-300)', color: 'var(--c-cobalt-900)', padding: '2px 8px', borderRadius: 3, fontWeight: 700, fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5}}>{row.tag}</span>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<div id="iso-certifications" />
+<Section spacing="default" background="tinted">
+
+## ISO certifications
+
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '32px', alignItems: 'start', marginTop: '8px', marginBottom: '32px'}}>
+  <figure style={{margin: 0, textAlign: 'center'}}>
+    <a href="/img/certificates/iso-9001-2015.png" target="_blank" rel="noopener">
+      <img
+        src="/img/certificates/iso-9001-2015.png"
+        alt="ISO 9001:2015 certificate, Conduction B.V., quality management system"
+        style={{maxWidth: 280, width: '100%', height: 'auto', boxShadow: '0 6px 24px rgba(0,0,0,0.12)', borderRadius: 4}}
+      />
+    </a>
+    <figcaption style={{marginTop: 12, fontWeight: 600}}>ISO 9001:2015 — Quality management</figcaption>
+  </figure>
+  <figure style={{margin: 0, textAlign: 'center'}}>
+    <a href="/img/certificates/iso-27001-2022.png" target="_blank" rel="noopener">
+      <img
+        src="/img/certificates/iso-27001-2022.png"
+        alt="ISO 27001:2022 certificate, Conduction B.V., information security management system"
+        style={{maxWidth: 280, width: '100%', height: 'auto', boxShadow: '0 6px 24px rgba(0,0,0,0.12)', borderRadius: 4}}
+      />
+    </a>
+    <figcaption style={{marginTop: 12, fontWeight: 600}}>ISO 27001:2022 — Information security</figcaption>
+  </figure>
+</div>
+
+### Quality policy statement
+
+_ISO 9001:2015 §5.2 — Quality Policy. Certificates first issued 24 July 2025. Last policy review: April 2026. Next review: annual management review cycle, February 2027._
+
+Conduction is committed to delivering high-quality open-source software and services for digital government infrastructure. Our Quality Management System (QMS) is designed to consistently meet customer requirements and applicable regulatory requirements, and to enhance customer satisfaction.
+
+**Scope.** The design, development, implementation, and support of open-source software solutions for digital government infrastructure, delivered from the Netherlands by Conduction B.V. employees and contractors — including remote workers. Excluded: hardware manufacturing, physical product distribution.
+
+**Quality objectives.** Support tickets acknowledged within one business day. Every pull request passes the automated quality gates before merge. At least two process improvements implemented per quarter. Every employee reviewed annually against the competence matrix.
+
+**Commitment.** Conduction's management commits to (1) providing the resources necessary to establish, implement, maintain, and continually improve the QMS, (2) communicating the importance of effective quality management and conforming to QMS requirements, (3) ensuring this policy is understood, implemented, and maintained at all levels of the organisation, and (4) reviewing this policy at least annually as part of the management review cycle.
+
+### Information-security policy statement
+
+_ISO 27001:2022 §5.2 — Information Security Policy; Annex A.5.1. Last review: April 2026. Next review: annual management review cycle, February 2027._
+
+Conduction protects the confidentiality, integrity, and availability of the information it handles — including customer data, internal systems, and the open-source software it develops and operates. This policy establishes the framework for Conduction's Information Security Management System (ISMS) in accordance with ISO 27001:2022.
+
+**Scope.** All information assets related to the design, development, implementation, and support of our open-source software for digital government infrastructure, including source code and repositories on GitHub, customer data processed via Conduction's software and hosting, internal systems (Google Workspace, Jira, Passwork, development environments), and employee devices (BYOD) used for company work.
+
+**Security objectives.** Zero unauthorised access incidents per year. Critical systems ≥ 99.5% uptime ([status.commonground.nu](https://status.commonground.nu)). Security incidents acknowledged within four business hours. Critical and high CVEs patched within 30 days. Every employee completes the annual security awareness session.
+
+**Key Annex A controls.** Access control (A.5.15) is role-based and granted on a need-to-know basis. Cryptography (A.8.24) protects sensitive data in transit and at rest. Supplier relationships (A.5.19) are assessed and contractually bound. Incident management (A.6.8) covers all suspected incidents. Business continuity (A.5.29) is documented for every critical service. The privacy side of the ISMS is described in the [privacy policy](/privacy).
+
+</Section>
+
+<div id="pentest-tools" />
+<Section spacing="default">
+
+## Pentest tools
+
+Continuous external assurance is the third leg of the management system. Conduction subscribes to the commercial **[pentest-tools.com](https://app.pentest-tools.com/)** SaaS scanning platform and runs scheduled tests against the production surfaces of our apps, the managed Common Ground tenant at commonground.nu, and the marketing surfaces under conduction.nl.
+
+The platform combines a website vulnerability scanner, a network scanner, a CVE checker against the running stack, TLS configuration auditing, and subdomain enumeration. Coverage maps to the OWASP Top 10 and the controls in ISO 27001:2022 Annex A.8 (technological controls).
+
+**How it fits the ISMS.** Findings flow into the same incident-management process described in the security policy. Critical and high CVEs trigger the 30-day patch SLA in Annex A.8.8. Every scan run is recorded; the last-scan summary is reviewed at the monthly MT quality meeting. The full pentest reports are available to clients under NDA — write to [info@conduction.nl](mailto:info@conduction.nl) with your contract or tender reference.
+
+</Section>
+
+<div id="github-workflow" />
+<Section spacing="default" background="tinted">
+
+## Quality workflow on GitHub
+
+Every Conduction app lives in public on GitHub under the [ConductionNL](https://github.com/ConductionNL) organisation. The development workflow is the operational layer of the QMS — it is how the documented procedures from §7.5 and §8 actually run, with the trail from feature request through merged code visible end-to-end.
+
+**Branch protection.** Three org-wide rulesets enforce the same rules everywhere: at least one approving review to merge into the `development` branch, at least two reviews to merge into `main`. Direct pushes to protected branches are blocked. Every change moves through a pull request.
+
+**Two-track review.** Pull requests pick up the right reviewer through labels. The `code-review:queued` label triggers a code review against the project's coding standards (PHPCS, PHPMD, Psalm, PHPStan for PHP apps; ruff + mypy for Python ExApps; ESLint + Vue rules for frontends). The `security-review:queued` label triggers an information-security review against the relevant ISO 27001:2022 Annex A controls.
+
+**Hydra automation.** Routine review work runs through Hydra, our internal coordination layer — it watches PR labels, dispatches review jobs to specialised agents, and writes the findings back as PR comments. The trail of who reviewed what, with which feedback, lives in the PR history. Human reviewers approve before merge.
+
+**Spec-driven changes.** Larger changes carry an OpenSpec change folder and an ADR. The spec lives next to the code, the ADR records the architectural decision and its rationale, and the PR cites both. That gives the documentation trail required by ISO 9001:2015 §7.5 (control of documented information) without a parallel quality-handbook to keep in sync.
+
+**Automated CI gates.** Every PR runs the language-appropriate linters, static analysers, unit tests, and dependency-vulnerability scans before a human reviewer is asked to look. PRs that fail a gate are blocked until fixed. The CI configuration is in the repository, so the gates are visible to anyone reading the code.
+
+</Section>
+
+<Section spacing="default">
+
+## Related compliance signals
+
+Beyond the two ISO certifications, pentest scans, and the GitHub workflow, the procurement-relevant compliance picture for Conduction is:
+
+- **ISAE 3402** — managed hosting at commonground.nu runs on infrastructure operated by [Cyso](https://www.cyso.nl/) under ISAE 3402 Type II. Their attestation is available on request.
+- **BIO** — Baseline Informatiebeveiliging Overheid alignment is in progress. Status updates land here when complete.
+- **DigiD** — out of scope for our current portfolio. We integrate with DigiD-using systems but do not hold a DigiD assessment ourselves.
+
+## Asking for the proof
+
+If your procurement file needs the actual certificates, the Statement of Applicability, a recent pentest report, or a copy of an internal audit, write to [info@conduction.nl](mailto:info@conduction.nl) with the contract or tender reference. We send the documents directly.
+
+</Section>
+
+<FAQ title="Compliance FAQ.">
+  <FAQItem question="What is the difference between ISO 9001 and ISO 27001?" defaultOpen>
+    ISO 9001:2015 covers quality management: how we plan, build, deliver, and improve our work. ISO 27001:2022 covers information security: how we identify, mitigate, and audit risks to data we hold. Most procurement files want both. We are certified against both, by the same external auditor, on the same annual cycle.
+  </FAQItem>
+  <FAQItem question="Does Conduction's ISO 27001 certification cover my data when I self-host the app?">
+    No. Self-hosted means your Nextcloud instance, your infrastructure, your data. Our ISO 27001 covers Conduction's own systems and the apps we develop. The security of the data you store in OpenRegister on your own server is your responsibility. If you want our certification to cover hosting too, use our managed Common Ground tenant at commonground.nu.
+  </FAQItem>
+  <FAQItem question="How often do you run the pentests?">
+    The pentest-tools.com scans run on a continuous schedule against the production surfaces. The full multi-vector scan runs at least monthly; the targeted scans (TLS, CVE, OWASP Top 10) run weekly. Findings above the medium threshold are triaged within the same week, and critical or high CVEs trigger the 30-day patch SLA in ISO 27001:2022 Annex A.8.8.
+  </FAQItem>
+  <FAQItem question="Is Conduction BIO compliant?">
+    BIO (Baseline Informatiebeveiliging Overheid) alignment is in progress. We use the BIO control set as the gap analysis against our existing ISO 27001 controls, and we publish a status update on this page once the alignment is complete. ISO 27001:2022 covers the majority of BIO requirements already, which is why most government clients consider Conduction procurement-ready today.
+  </FAQItem>
+  <FAQItem question="Do you hold a DigiD assessment?">
+    No, DigiD is out of scope for our current portfolio. We build apps that integrate with DigiD-using systems (through OpenConnector), but we do not act as a DigiD service provider ourselves. If your tender requires a DigiD assessment, the assessment falls on the hosting party or the system that exposes the DigiD login.
+  </FAQItem>
+  <FAQItem question="What does the ISO 27001 certification cover at commonground.nu?">
+    The managed Common Ground tenant runs on infrastructure operated by Cyso under ISAE 3402 Type II. Conduction's ISO 27001 covers the application layer (the Conduction apps, the development pipeline, the operations workflows), Cyso's ISAE covers the hosting layer (data centres, network, hypervisor). Together they cover the full stack a public-sector client buys at commonground.nu.
+  </FAQItem>
+  <FAQItem question="Can I get a copy of the certificate, the Statement of Applicability, or a pentest report?">
+    Yes. Write to info@conduction.nl with your contract or tender reference. We send the current certificates, the SoA, the most recent internal-audit report, and the relevant pentest summary directly. We do not publish these on the public site by default because we want a record of who is requesting them.
+  </FAQItem>
+</FAQ>
