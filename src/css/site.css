@@ -119,18 +119,20 @@
   }
 }
 
-/* Default blockquote treatment, brand-aligned. Infima's default leaves
-   quotes in neutral gray-800 with a 2px gray border, which reads
-   washed-out next to the cobalt-700 body. Bring the quote into the
+/* Blockquote treatment, brand-aligned. Scoped to `.markdown` so it only
+   applies to article-body content (academy posts, blog, docs) — marketing
+   pages render their own components and stay untouched. Infima's default
+   leaves quotes in neutral gray-800 with a 2px gray border, which reads
+   washed-out next to the cobalt-700 body; we bring the quote into the
    cobalt palette so it carries the brand and stands out as a callout. */
-:root {
+.markdown {
   --ifm-blockquote-color: var(--c-cobalt-900);
   --ifm-blockquote-border-color: var(--c-blue-cobalt);
   --ifm-blockquote-border-left-width: 4px;
   --ifm-blockquote-padding-vertical: var(--space-3);
   --ifm-blockquote-padding-horizontal: var(--space-5);
 }
-blockquote {
+.markdown blockquote {
   background: var(--c-cobalt-50);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
   font-size: 1.05em;
