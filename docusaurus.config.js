@@ -202,5 +202,28 @@ module.exports = createConfig({
     //     locales: ['en', 'nl'],
     //   },
     // ],
+    /* Reclaim SEO equity from URLs Google has in its index from the
+       pre-Docusaurus / pre-subdomain layout. The plugin emits one
+       static HTML page per `from` with a <meta http-equiv="refresh">
+       and a `<link rel="canonical">` to the `to` target, which Google
+       treats as a 301 signal. Only the URLs in this list have current
+       equivalents worth redirecting; the rest (componenten catalogue,
+       WP placeholders, retired training pages) are let to 404 naturally. */
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          /* Old Dutch "about us" slug. The English /about/ route is
+             the canonical replacement; NL translation pass will land
+             /nl/about/ later. */
+          {from: '/over-ons', to: '/about/'},
+          /* The OpenConnector page used to live on the apex; everything
+             moved to its own subdomain in the 2026-02 split. Send the
+             two indexed entry points to the canonical app site. */
+          {from: '/openconnector', to: 'https://openconnector.conduction.nl/'},
+          {from: '/openconnector/support', to: 'https://openconnector.conduction.nl/support/'},
+        ],
+      },
+    ],
   ],
 });
