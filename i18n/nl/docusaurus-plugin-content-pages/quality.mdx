@@ -6,6 +6,122 @@ hide_table_of_contents: true
 
 import {DetailHero, Section, SectionHead, Showcase, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
 
+export const WORKFLOW_FILE = 'https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml';
+
+export function QualityPipelineFlow() {
+  const card = {background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 8, padding: '14px 14px 16px', boxShadow: '0 1px 3px rgba(33, 70, 139, 0.04)'};
+  const cardTitle = {fontSize: 12, fontWeight: 700, color: 'var(--c-cobalt-900)', marginBottom: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6};
+  const cardSubtitle = {fontSize: 10, fontFamily: 'var(--conduction-typography-font-family-code)', color: 'var(--c-cobalt-500, #6f7da3)', marginBottom: 10, letterSpacing: '0.04em'};
+  const stageWrap = {background: 'var(--c-cobalt-50)', border: '1px solid var(--c-cobalt-100)', borderRadius: 12, padding: '18px 18px 22px'};
+  const stageHead = {display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14, gap: 12, flexWrap: 'wrap'};
+  const stageLabel = {fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-orange-knvb)', fontFamily: 'var(--conduction-typography-font-family-code)'};
+  const stageTitle = {fontSize: 16, fontWeight: 700, color: 'var(--c-cobalt-900)'};
+  const stageNote = {fontSize: 12, color: 'var(--c-cobalt-700)'};
+  const arrowRow = {height: 24, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--c-cobalt-300)', fontSize: 20, fontWeight: 700};
+  const hex = (color) => ({width: 10, height: 12, clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)', background: color, flexShrink: 0});
+  const list = (items, color) => (
+    <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 5}}>
+      {items.map((it, i) => (
+        <li key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+          <span style={hex(color)} />
+          <code style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'var(--c-cobalt-900)'}}>{it}</code>
+        </li>
+      ))}
+    </ul>
+  );
+  return (
+    <div style={{display: 'flex', flexDirection: 'column', gap: 0, margin: '32px 0 24px', maxWidth: 960}}>
+      <div style={stageWrap}>
+        <div style={stageHead}>
+          <div><div style={stageLabel}>Fase 1 · parallel</div><div style={stageTitle}>Kwaliteitsgates</div></div>
+          <span style={stageNote}>Vier matrix-jobs, fail-fast uit, bij elke PR.</span>
+        </div>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 12}}>
+          <div style={card}>
+            <div style={cardTitle}><span>PHP Quality</span><span style={cardSubtitle}>matrix</span></div>
+            <div style={cardSubtitle}>composer scripts</div>
+            {list(['lint', 'phpcs', 'phpmd', 'psalm', 'phpstan', 'phpmetrics'], 'var(--c-cobalt-700)')}
+          </div>
+          <div style={card}>
+            <div style={cardTitle}><span>Vue Quality</span><span style={cardSubtitle}>matrix</span></div>
+            <div style={cardSubtitle}>npm scripts</div>
+            {list(['eslint', 'stylelint'], 'var(--c-blue-cobalt)')}
+          </div>
+          <div style={card}>
+            <div style={cardTitle}><span>Security</span><span style={cardSubtitle}>matrix</span></div>
+            <div style={cardSubtitle}>audit</div>
+            {list(['composer audit', 'npm audit'], 'var(--c-orange-knvb)')}
+          </div>
+          <div style={card}>
+            <div style={cardTitle}><span>License</span><span style={cardSubtitle}>matrix</span></div>
+            <div style={cardSubtitle}>SPDX-allowlist</div>
+            {list(['composer', 'npm'], 'var(--c-mint-500)')}
+          </div>
+        </div>
+      </div>
+
+      <div style={arrowRow}>↓</div>
+
+      <div style={stageWrap}>
+        <div style={stageHead}>
+          <div><div style={stageLabel}>Fase 2 · gated</div><div style={stageTitle}>Tests</div></div>
+          <span style={stageNote}>Pas zodra PHP Quality + Security groen zijn.</span>
+        </div>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12}}>
+          <div style={card}>
+            <div style={cardTitle}><span>PHPUnit</span><span style={cardSubtitle}>matrix</span></div>
+            <div style={cardSubtitle}>PHP × Nextcloud</div>
+            {list(['php 8.3 / 8.4', 'nc stable31 / 32', 'pgsql 16 service'], 'var(--c-lavender-300)')}
+          </div>
+          <div style={card}>
+            <div style={cardTitle}><span>Integratie</span><span style={cardSubtitle}>newman</span></div>
+            <div style={cardSubtitle}>Postman-collections</div>
+            {list(['newman run *.postman_collection.json'], 'var(--c-lavender-300)')}
+          </div>
+          <div style={card}>
+            <div style={cardTitle}><span>E2E</span><span style={cardSubtitle}>playwright</span></div>
+            <div style={cardSubtitle}>Chromium + V8-coverage</div>
+            {list(['npx playwright test', 'spec-to-test ≥ 75%'], 'var(--c-lavender-300)')}
+          </div>
+        </div>
+      </div>
+
+      <div style={arrowRow}>↓</div>
+
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16}}>
+        <div style={stageWrap}>
+          <div style={stageHead}>
+            <div><div style={stageLabel}>Fase 3 · altijd</div><div style={stageTitle}>Rapportage</div></div>
+          </div>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 10}}>
+            <div style={card}>
+              <div style={cardTitle}><span>Kwaliteitsrapport</span></div>
+              <div style={cardSubtitle}>PDF + PR-comment + step summary</div>
+              {list(['aggregeert result-* artifacts', 'pandoc → wkhtmltopdf', '90 dagen bewaard'], 'var(--c-mint-500)')}
+            </div>
+            <div style={card}>
+              <div style={cardTitle}><span>Coverage-baseline</span></div>
+              <div style={cardSubtitle}>guard + auto-update</div>
+              {list(['PR: handmatige edits geblokt', 'main / development: bijwerken als beter'], 'var(--c-mint-500)')}
+            </div>
+          </div>
+        </div>
+
+        <div style={stageWrap}>
+          <div style={stageHead}>
+            <div><div style={stageLabel}>Fase 4 · beschermde branches</div><div style={stageTitle}>Bill of Materials</div></div>
+          </div>
+          <div style={card}>
+            <div style={cardTitle}><span>SBOM</span><span style={cardSubtitle}>CycloneDX</span></div>
+            <div style={cardSubtitle}>composer + npm, samengevoegd</div>
+            {list(['composer CycloneDX:make-sbom', 'cyclonedx-npm', 'Grype CVE-scan (fail op critical)', 'publiceer: artifact + release-asset'], 'var(--c-forest-300)')}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export const QualityIcon = (
   <svg viewBox="0 0 24 24">
     <path d="M12 2 4 6v6c0 4.4 3.4 8.5 8 10 4.6-1.5 8-5.6 8-10V6l-8-4z" />
@@ -306,17 +422,38 @@ Het platform combineert een website-vulnerabilityscanner, een netwerkscanner, ee
 
 ## Kwaliteitsworkflow op GitHub
 
-Elke Conduction-app staat publiek op GitHub onder de [ConductionNL](https://github.com/ConductionNL)-organisatie. De ontwikkelworkflow is de operationele laag van het KMS — het is de manier waarop de gedocumenteerde procedures uit §7.5 en §8 in de praktijk lopen, met het spoor van feature request tot gemergde code end-to-end zichtbaar.
+Elke Conduction-app staat publiek op GitHub onder de [ConductionNL](https://github.com/ConductionNL)-organisatie. De herbruikbare [`Quality`-workflow](https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml) — één keer gedefinieerd in de `.github`-repo en aangeroepen door elke app — draait dezelfde gate-stack op elke pull request: vier parallelle kwaliteitsmatrices, daarna een gated test-fase, daarna rapportage + een Software Bill of Materials op beschermde branches.
 
-**Branch protection.** Drie organisatie-brede rulesets dwingen overal dezelfde regels af: ten minste één goedkeurende review om naar `development` te mergen, ten minste twee reviews om naar `main` te mergen. Directe pushes naar beschermde branches zijn geblokkeerd. Elke wijziging loopt via een pull request.
+<QualityPipelineFlow />
 
-**Tweesporen-review.** Pull requests krijgen de juiste reviewer via labels. Het label `code-review:queued` start een code-review tegen de coding standards van het project (PHPCS, PHPMD, Psalm en PHPStan voor PHP-apps; ruff en mypy voor Python ExApps; ESLint en Vue-regels voor frontends). Het label `security-review:queued` start een informatiebeveiligingsreview tegen de relevante ISO 27001:2022 Annex A-controls.
+<div style={{display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 32}}>
+  <a href={WORKFLOW_FILE} target="_blank" rel="noopener noreferrer" style={{padding: '10px 18px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Bekijk quality.yml op GitHub →
+  </a>
+  <a href="https://github.com/ConductionNL/openregister/actions/runs/26099018560" target="_blank" rel="noopener noreferrer" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Bekijk een live run →
+  </a>
+</div>
 
-**Hydra-automatisering.** Routinematig review-werk loopt via Hydra, onze interne coördinatielaag — die kijkt naar PR-labels, stuurt review-jobs naar gespecialiseerde agents en schrijft de bevindingen terug als PR-comments. Het spoor van wie wat reviewde met welke feedback staat in de PR-historie. Een menselijke reviewer keurt goed voor de merge.
+### Fase voor fase
 
-**Spec-gedreven wijzigingen.** Grotere wijzigingen dragen een OpenSpec change-folder en een ADR mee. De spec staat naast de code, de ADR legt de architecturale beslissing en het waarom vast, en de PR verwijst naar beide. Dat levert de documentatiesporen die ISO 9001:2015 §7.5 (beheersing van gedocumenteerde informatie) vraagt — zonder een parallel kwaliteitshandboek bij te houden.
+**[Fase 1 — Kwaliteitsgates](https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml#L141)** _(parallel)_. Vier matrix-jobs draaien naast elkaar. `php-quality` dekt `lint`, `phpcs`, `phpmd`, `psalm`, `phpstan` en `phpmetrics`. `vue-quality` dekt `eslint` en `stylelint`. `security` draait `composer audit` en `npm audit`. `license` toetst dependencies in beide ecosystemen tegen een EUPL-1.2 / AGPL-3.0-compatibele SPDX-allowlist en uploadt een rapport per ecosysteem. Elke tool is een aparte matrix-entry, dus een enkele failure wijst naar de exacte gate.
 
-**Geautomatiseerde CI-gates.** Elke PR draait de relevante linters, statische analyzers, unit-tests en dependency-vulnerability-scans voor er een menselijke reviewer wordt gevraagd. PRs die een gate niet halen worden geblokkeerd tot ze gerepareerd zijn. De CI-configuratie staat in de repository, dus de gates zijn zichtbaar voor iedereen die de code leest.
+**[Fase 2 — Tests](https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml#L639)** _(gated)_. Loopt pas als de `php-quality`- en `security`-jobs uit Fase 1 groen zijn. `phpunit` spant de PHP × Nextcloud-matrix (PHP 8.3/8.4 tegen `stable31`/`stable32`) met een echte Postgres 16-service. `newman` start de Nextcloud built-in server en draait de Postman-integratiecollections. `playwright` draait de E2E-specs tegen Chromium met V8-coverage en een spec-to-test-coverage gate van 75%.
+
+**[Fase 3 — Rapportage](https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml#L1249)** _(altijd)_. De `report`-job downloadt elke `result-*`-artifact, de license-rapporten en de coverage-clover, rendert een compacte Markdown-tabel per categorie (PHP / Vue / Security / License / Tests), zet die om naar PDF via `pandoc` + `wkhtmltopdf`, schrijft hem naar de GitHub-stepsummary, post hem als PR-comment en bewaart de artifact 90 dagen. Op `main`- / `development`-pushes tilt de `update-baseline`-job de coverage-baseline op als die verbetert; op PRs blokkeert de `baseline-protection`-job handmatige edits aan `.coverage-baseline`.
+
+**[Fase 4 — Software Bill of Materials](https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml#L1522)** _(beschermde branches)_. Nadat `security` slaagt, genereert de `sbom`-job een CycloneDX-SBOM uit composer (`CycloneDX:make-sbom`) en npm (`@cyclonedx/cyclonedx-npm`), voegt ze samen, draait Grype om te falen op kritieke CVE's en publiceert de SBOM als een 90-dagen-artifact plus als release-asset bij elke tag.
+
+### Om de pipeline heen
+
+**Branch protection.** Drie organisatie-brede rulesets dwingen overal dezelfde regels af: ten minste één goedkeurende review om naar `development` te mergen, ten minste twee reviews om naar `main` te mergen. Directe pushes naar beschermde branches zijn geblokkeerd.
+
+**Tweesporen-review.** Pull requests krijgen de juiste reviewer via labels — `code-review:queued` start de code-review tegen PHPCS / PHPMD / Psalm / PHPStan (of `ruff`/`mypy`/ESLint per stack); `security-review:queued` start een informatiebeveiligingsreview tegen de relevante ISO 27001:2022 Annex A-controls.
+
+**Hydra-automatisering.** Routinematig review-werk loopt via Hydra — kijkt naar PR-labels, stuurt review-jobs naar gespecialiseerde agents en schrijft bevindingen terug als PR-comments. Een menselijke reviewer keurt goed voor de merge.
+
+**Spec-gedreven wijzigingen.** Grotere wijzigingen dragen een OpenSpec change-folder en een ADR. Spec naast de code, ADR voor de architecturale beslissing, PR verwijst naar beide. Dat levert de documentatiesporen die ISO 9001:2015 §7.5 vraagt — zonder een parallel kwaliteitshandboek bij te houden.
 
 </Section>
 
