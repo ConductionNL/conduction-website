@@ -34,7 +34,7 @@ export const QualityHeroIllustration = (
       textTransform: 'uppercase',
       color: 'rgba(255,255,255,0.65)',
     }}>
-      <span>Certificates · scans · workflow</span>
+      <span>Certificates · handbook · scans · workflow</span>
       <span style={{color: 'var(--c-mint-300)'}}>● live</span>
     </div>
     <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12}}>
@@ -48,6 +48,10 @@ export const QualityHeroIllustration = (
       </div>
     </div>
     <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'rgba(255,255,255,0.85)'}}>
+        <span>docs.conduction.nl · operating handbook</span>
+        <span style={{background: 'var(--c-mint-500)', color: 'var(--c-cobalt-900)', padding: '2px 8px', borderRadius: 3, fontWeight: 700, fontSize: 9, letterSpacing: '0.05em'}}>LIVE</span>
+      </div>
       <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'rgba(255,255,255,0.85)'}}>
         <span>pentest-tools.com · weekly scan</span>
         <span style={{background: 'var(--c-mint-500)', color: 'var(--c-cobalt-900)', padding: '2px 8px', borderRadius: 3, fontWeight: 700, fontSize: 9, letterSpacing: '0.05em'}}>CLEAN</span>
@@ -65,7 +69,7 @@ export const QualityHeroIllustration = (
   crumb={[{label: 'About', href: '/about'}, 'Quality']}
   locales="ISO 9001:2015 · ISO 27001:2022"
   title={<>Quality,<br/>with a Q.</>}
-  tagline={<>One integrated quality and information-security management system. ISO 9001:2015 and ISO 27001:2022 anchor the policies, pentest-tools.com runs the continuous scans, and the entire build flow lives in public on GitHub. Together they cover scope, audit trail, and ongoing assurance for every Conduction app.</>}
+  tagline={<>One management system, five tools that prove it works. ISO 9001:2015 and ISO 27001:2022 set how Conduction should run and what we measure. The <strong>How We Work</strong> handbook at docs.conduction.nl translates that into operations. pentest-tools.com and the GitHub-native quality workflow test the outcome. Every line of code, every service we deliver — the same predictable quality.</>}
   primaryCta={{label: 'Read the policy', href: '#iso-certifications', tone: 'orange'}}
   secondaryCta={{label: 'Compliance FAQ', href: '#compliance-faq'}}
   iconColor="var(--c-orange-knvb)"
@@ -76,8 +80,8 @@ export const QualityHeroIllustration = (
 <div id="quality-tools" />
 <Showcase
   eyebrow="Quality tools"
-  title="What we use to keep quality measurable."
-  lede="The four pillars our QMS and ISMS lean on. The two ISO certificates anchor the management system, the commercial pentest platform supplies continuous external assurance, and the GitHub workflow keeps every code change inside the same audit trail."
+  title="What we use to keep quality predictable."
+  lede="Five tools, layered. ISO 9001 and 27001 define what good looks like and how we measure it. The How We Work handbook turns that into day-to-day operations. pentest-tools.com and the GitHub workflow test the outcome — externally and internally — every release."
   layout="side"
   defaultOpen="iso-9001"
   items={[
@@ -108,6 +112,32 @@ export const QualityHeroIllustration = (
             alt="ISO 27001:2022 certificate, Conduction B.V."
             style={{maxWidth: 220, width: '100%', height: 'auto', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', borderRadius: 4}}
           />
+        </div>
+      ),
+    },
+    {
+      id: 'how-we-work',
+      title: 'How We Work — operating handbook.',
+      summary: "docs.conduction.nl is the operational layer of the management system. It translates the ISO policies into the day-to-day procedures every (digital) employee follows: onboarding, roles, building software, customer support, the Hydra pipeline, and clause-by-clause ISO mapping. Public, version-controlled, and the same source every reviewer and auditor reads.",
+      cta: {label: 'Open the handbook', href: 'https://docs.conduction.nl/'},
+      panel: (
+        <div style={{padding: 20, background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'var(--c-cobalt-900)'}}>
+          <div style={{fontWeight: 700, marginBottom: 12, color: 'var(--c-cobalt-700)'}}>docs.conduction.nl — handbook sections</div>
+          <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8}}>
+            {[
+              {hex: 'var(--c-blue-cobalt)', label: 'Identity'},
+              {hex: 'var(--c-orange-knvb)', label: 'Way of Work'},
+              {hex: 'var(--c-mint-500)', label: 'Hydra pipeline'},
+              {hex: 'var(--c-lavender-300)', label: 'Claude workflow'},
+              {hex: 'var(--c-cobalt-700)', label: 'ISO compliance'},
+              {hex: 'var(--c-forest-300)', label: 'Roadmap'},
+            ].map((s, i) => (
+              <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, background: 'white', padding: '8px 10px', borderRadius: 4, border: '1px solid var(--c-cobalt-100)'}}>
+                <span style={{width: 14, height: 16, clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)', background: s.hex, flexShrink: 0}} />
+                <span style={{fontWeight: 600}}>{s.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       ),
     },
@@ -306,12 +336,25 @@ The privacy side of the ISMS is described in the [privacy policy](/privacy).
 
 </Section>
 
-<div id="pentest-tools" />
+<div id="how-we-work" />
 <Section spacing="default">
+
+## How We Work — operating handbook
+
+The ISO policies say what Conduction is committed to. The handbook at **[docs.conduction.nl](https://docs.conduction.nl/)** translates those commitments into the procedures every (digital) employee actually follows day to day — how we onboard, how we build software, how we run customer support, how the Hydra pipeline operates, how the Claude workflow gates change. It is the operational layer that makes the management system real.
+
+**Sections.** _Way of Work_ (the handbook itself), _Hydra_ (our spec-driven CI/CD pipeline), _Claude workflow_ (the conventions and skills that drive day-to-day development), _ISO compliance_ (clause-by-clause mapping from the standards to our engineering pipeline), _Identity_ (brand and visual rules), and the public _Roadmap_.
+
+**How it fits the management system.** Every operating procedure is in version control on GitHub and follows the same PR + review process described under [Quality workflow on GitHub](#github-workflow) below. Auditors read the same source every employee does — there is no parallel handbook to keep in sync.
+
+</Section>
+
+<div id="pentest-tools" />
+<Section spacing="default" background="tinted">
 
 ## Pentest tools
 
-Continuous external assurance is the third leg of the management system. Conduction subscribes to the commercial **[pentest-tools.com](https://app.pentest-tools.com/)** SaaS scanning platform and runs scheduled tests against the production surfaces of our apps, the managed Common Ground tenant at commonground.nu, and the marketing surfaces under conduction.nl.
+Continuous external assurance. Conduction subscribes to the commercial **[pentest-tools.com](https://app.pentest-tools.com/)** SaaS scanning platform and runs scheduled tests against the production surfaces of our apps, the managed Common Ground tenant at commonground.nu, and the marketing surfaces under conduction.nl.
 
 The platform combines a website vulnerability scanner, a network scanner, a CVE checker against the running stack, TLS configuration auditing, and subdomain enumeration. Coverage maps to the OWASP Top 10 and the controls in ISO 27001:2022 Annex A.8 (technological controls).
 
@@ -320,7 +363,7 @@ The platform combines a website vulnerability scanner, a network scanner, a CVE 
 </Section>
 
 <div id="github-workflow" />
-<Section spacing="default" background="tinted">
+<Section spacing="default">
 
 ## Quality workflow on GitHub
 
@@ -342,7 +385,7 @@ Every Conduction app lives in public on GitHub under the [ConductionNL](https://
 
 ## Related compliance signals
 
-Beyond the two ISO certifications, pentest scans, and the GitHub workflow, the procurement-relevant compliance picture for Conduction is:
+Beyond the two ISO certifications, the operating handbook, the pentest scans, and the GitHub workflow, the procurement-relevant compliance picture for Conduction is:
 
 - **ISAE 3402** — managed hosting at commonground.nu runs on infrastructure operated by [Cyso](https://www.cyso.nl/) under ISAE 3402 Type II. Their attestation is available on request.
 - **BIO** — Baseline Informatiebeveiliging Overheid alignment is in progress. Status updates land here when complete.
