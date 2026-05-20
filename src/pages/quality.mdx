@@ -21,12 +21,15 @@ export function QualityPipelineFlow() {
   const hex = (color) => ({width: 10, height: 12, clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)', background: color, flexShrink: 0});
   const list = (items, color) => (
     <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 5}}>
-      {items.map((it, i) => (
-        <li key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
-          <span style={hex(color)} />
-          <code style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'var(--c-cobalt-900)'}}>{it}</code>
-        </li>
-      ))}
+      {items.map((it, i) => {
+        const [label, tip] = Array.isArray(it) ? it : [it, null];
+        return (
+          <li key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+            <span style={hex(color)} />
+            <code title={tip || undefined} style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'var(--c-cobalt-900)', cursor: tip ? 'help' : 'default', borderBottom: tip ? '1px dotted var(--c-cobalt-300)' : 'none'}}>{label}</code>
+          </li>
+        );
+      })}
     </ul>
   );
   return (
@@ -40,22 +43,38 @@ export function QualityPipelineFlow() {
           <div style={card}>
             <div style={cardTitle}><span>PHP Quality</span><span style={cardSubtitle}>matrix</span></div>
             <div style={cardSubtitle}>composer scripts</div>
-            {list(['lint', 'phpcs', 'phpmd', 'psalm', 'phpstan', 'phpmetrics'], 'var(--c-cobalt-700)')}
+            {list([
+              ['lint', 'PHP -l syntax lint via `composer lint`. Validates that every PHP file parses without errors before any heavier static analysis runs.'],
+              ['phpcs', 'squizlabs/php_codesniffer. Enforces the coding standard configured in phpcs.xml (typically a PSR-12 baseline plus the Nextcloud ruleset).'],
+              ['phpmd', 'phpmd/phpmd. Mess Detector. Finds problematic code patterns: long methods, excessive complexity, unused locals, naming-rule violations.'],
+              ['psalm', 'vimeo/psalm. Static type checker. Catches type mismatches, null dereferences, dead code, missing return types.'],
+              ['phpstan', 'phpstan/phpstan. Static analyser. Finds type errors, undefined methods, unreachable branches; level configured per app in phpstan.neon.'],
+              ['phpmetrics', 'phpmetrics/phpmetrics. Generates a code metrics report (maintainability index, cyclomatic complexity, lines of code). Output uploaded as an artifact.'],
+            ], 'var(--c-cobalt-700)')}
           </div>
           <div style={card}>
             <div style={cardTitle}><span>Vue Quality</span><span style={cardSubtitle}>matrix</span></div>
             <div style={cardSubtitle}>npm scripts</div>
-            {list(['eslint', 'stylelint'], 'var(--c-blue-cobalt)')}
+            {list([
+              ['eslint', 'eslint. JavaScript/TypeScript/Vue linter. Project rules in eslint.config.js (flat config) or .eslintrc.'],
+              ['stylelint', 'stylelint. CSS/SCSS linter. Project rules in stylelint.config.js. Enforces token usage and disallows hardcoded brand colours.'],
+            ], 'var(--c-blue-cobalt)')}
           </div>
           <div style={card}>
             <div style={cardTitle}><span>Security</span><span style={cardSubtitle}>matrix</span></div>
             <div style={cardSubtitle}>audit</div>
-            {list(['composer audit', 'npm audit'], 'var(--c-orange-knvb)')}
+            {list([
+              ['composer audit', 'composer audit --format=plain --abandoned=report. Checks installed packages against the FriendsOfPHP/security-advisories database.'],
+              ['npm audit', 'npm audit --audit-level=critical --omit=dev. Checks production deps against the GitHub Advisory Database; fails the gate on critical CVEs.'],
+            ], 'var(--c-orange-knvb)')}
           </div>
           <div style={card}>
             <div style={cardTitle}><span>License</span><span style={cardSubtitle}>matrix</span></div>
             <div style={cardSubtitle}>SPDX allowlist</div>
-            {list(['composer', 'npm'], 'var(--c-mint-500)')}
+            {list([
+              ['composer', 'composer licenses --format=json piped through an SPDX allowlist (EUPL-1.2 / AGPL-3.0 compatible). Per-package exceptions via .license-overrides.json. Emits a markdown + JSON report.'],
+              ['npm', 'license-checker npm package. Same SPDX allowlist + .license-overrides.json model as the composer side. Emits a markdown + JSON report uploaded as an artifact.'],
+            ], 'var(--c-mint-500)')}
           </div>
         </div>
       </div>
@@ -71,17 +90,26 @@ export function QualityPipelineFlow() {
           <div style={card}>
             <div style={cardTitle}><span>PHPUnit</span><span style={cardSubtitle}>matrix</span></div>
             <div style={cardSubtitle}>PHP × Nextcloud</div>
-            {list(['php 8.3 / 8.4', 'nc stable31 / 32', 'pgsql 16 service'], 'var(--c-lavender-300)')}
+            {list([
+              ['php 8.3 / 8.4', 'Two PHP versions in the test matrix, set up via shivammathur/setup-php@v2. Both versions must pass for the matrix job to be green.'],
+              ['nc stable31 / 32', 'Two Nextcloud server branches (stable31 + stable32) checked out from nextcloud/server. PHPUnit runs against each, both must pass.'],
+              ['pgsql 16 service', 'A real Postgres 16 container as a GitHub Actions service (postgres:16 image, health-checked with pg_isready before tests run).'],
+            ], 'var(--c-lavender-300)')}
           </div>
           <div style={card}>
             <div style={cardTitle}><span>Integration</span><span style={cardSubtitle}>newman</span></div>
             <div style={cardSubtitle}>Postman collections</div>
-            {list(['newman run *.postman_collection.json'], 'var(--c-lavender-300)')}
+            {list([
+              ['newman run *.postman_collection.json', 'Newman 6 (postmanlabs/newman) — the Postman CLI test runner. Runs every *.postman_collection.json under tests/integration against the Nextcloud built-in server on :8080.'],
+            ], 'var(--c-lavender-300)')}
           </div>
           <div style={card}>
             <div style={cardTitle}><span>E2E</span><span style={cardSubtitle}>playwright</span></div>
             <div style={cardSubtitle}>Chromium + V8 coverage</div>
-            {list(['npx playwright test', 'spec-to-test ≥ 75%'], 'var(--c-lavender-300)')}
+            {list([
+              ['npx playwright test', '@playwright/test driving headless Chromium. Runs the *.spec.ts files under tests/e2e against the running Nextcloud at http://localhost:8080.'],
+              ['spec-to-test ≥ 75%', 'Custom coverage gate. Walks openspec/specs + openspec/changes, counts scenarios (S1, S2, REQ-…) and matches them against test() calls in the Playwright suites. Warns when coverage drops below 75%.'],
+            ], 'var(--c-lavender-300)')}
           </div>
         </div>
       </div>
@@ -97,12 +125,19 @@ export function QualityPipelineFlow() {
             <div style={card}>
               <div style={cardTitle}><span>Quality Report</span></div>
               <div style={cardSubtitle}>PDF + PR comment + step summary</div>
-              {list(['aggregates result-* artifacts', 'pandoc → wkhtmltopdf', '90-day retention'], 'var(--c-mint-500)')}
+              {list([
+                ['aggregates result-* artifacts', 'Uses actions/download-artifact@v4 with pattern result-*. Every matrix job uploads its job.status to one of those artifacts at the end of its run.'],
+                ['pandoc → wkhtmltopdf', 'pandoc converts the generated quality-report.md to PDF via the wkhtmltopdf engine (installed on the runner with apt-get).'],
+                ['90-day retention', 'actions/upload-artifact@v4 with retention-days: 90. The PDF + Markdown stay downloadable from the workflow run for three months.'],
+              ], 'var(--c-mint-500)')}
             </div>
             <div style={card}>
               <div style={cardTitle}><span>Coverage baseline</span></div>
               <div style={cardSubtitle}>guard + auto-update</div>
-              {list(['PR: block manual baseline edits', 'main / development: bump if improved'], 'var(--c-mint-500)')}
+              {list([
+                ['PR: block manual baseline edits', 'baseline-protection job: diffs the PR against the base branch and fails if .coverage-baseline appears in the changed files. Stops anyone from quietly lowering the bar.'],
+                ['main / development: bump if improved', 'update-baseline job: runs php scripts/coverage-guard.php --update-baseline after PHPUnit; commits the new baseline only when coverage actually improved.'],
+              ], 'var(--c-mint-500)')}
             </div>
           </div>
         </div>
@@ -114,7 +149,12 @@ export function QualityPipelineFlow() {
           <div style={card}>
             <div style={cardTitle}><span>SBOM</span><span style={cardSubtitle}>CycloneDX</span></div>
             <div style={cardSubtitle}>composer + npm, merged</div>
-            {list(['composer CycloneDX:make-sbom', 'cyclonedx-npm', 'Grype CVE scan (fail on critical)', 'publish: artifact + release asset'], 'var(--c-forest-300)')}
+            {list([
+              ['composer CycloneDX:make-sbom', 'cyclonedx/cyclonedx-php-composer plugin. Emits a CycloneDX 1.5 JSON SBOM from composer.lock (--omit=dev, --omit=plugin).'],
+              ['cyclonedx-npm', '@cyclonedx/cyclonedx-npm. Emits a CycloneDX 1.5 JSON SBOM from package-lock.json (--package-lock-only, --omit dev). PHP + npm SBOMs are merged with jq.'],
+              ['Grype CVE scan (fail on critical)', 'anchore/grype, installed via anchore/scan-action/download-grype@v5. Scans the merged SBOM against the Grype vulnerability database; fails the job on severity critical.'],
+              ['publish: artifact + release asset', 'Uploaded as an actions/upload-artifact@v4 (90-day retention) on every protected-branch push, and attached to the GitHub Release via softprops/action-gh-release@v2 on every tag push.'],
+            ], 'var(--c-forest-300)')}
           </div>
         </div>
       </div>
@@ -495,16 +535,6 @@ Every Conduction app lives in public on GitHub under the [ConductionNL](https://
     See a live run →
   </a>
 </div>
-
-### Stage-by-stage
-
-**[Stage 1 — Quality gates](https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml#L141)** _(parallel)_. Four matrix jobs run side by side. `php-quality` covers `lint`, `phpcs`, `phpmd`, `psalm`, `phpstan`, and `phpmetrics`. `vue-quality` covers `eslint` and `stylelint`. `security` runs `composer audit` and `npm audit`. `license` checks both ecosystems' dependencies against an EUPL-1.2 / AGPL-3.0-compatible SPDX allowlist and uploads a per-ecosystem report. Each tool is its own matrix entry so a single failure points at the exact gate.
-
-**[Stage 2 — Tests](https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml#L639)** _(gated)_. Only runs when Stage 1's `php-quality` and `security` jobs are green. `phpunit` spans the PHP × Nextcloud matrix (PHP 8.3/8.4 against `stable31`/`stable32`) with a real Postgres 16 service. `newman` boots the Nextcloud built-in server and drives the Postman integration collections. `playwright` runs the E2E specs against Chromium with V8 coverage collection and a 75% spec-to-test coverage gate.
-
-**[Stage 3 — Reporting](https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml#L1249)** _(always)_. The `report` job downloads every `result-*` artifact, the license reports, and the coverage clover, renders a compact Markdown table per category (PHP / Vue / Security / License / Tests), converts it to PDF with `pandoc` + `wkhtmltopdf`, writes it to the GitHub step summary, posts it as a PR comment, and keeps the artifact for 90 days. On `main` / `development` pushes the `update-baseline` job lifts the coverage baseline when it improves; on PRs the `baseline-protection` job blocks manual edits to `.coverage-baseline`.
-
-**[Stage 4 — Software Bill of Materials](https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml#L1522)** _(protected branches)_. After `security` passes, the `sbom` job emits a CycloneDX SBOM from composer (`CycloneDX:make-sbom`) and npm (`@cyclonedx/cyclonedx-npm`), merges them, runs Grype to fail on critical CVEs, and publishes the SBOM as a 90-day workflow artifact plus a release asset on every tag.
 
 ### Around the pipeline
 
