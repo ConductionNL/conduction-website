@@ -477,13 +477,10 @@ Elke Conduction-app staat publiek op GitHub onder de [ConductionNL](https://gith
 
 ### Om de pipeline heen
 
-**Branch protection.** Drie organisatie-brede rulesets dwingen overal dezelfde regels af: ten minste één goedkeurende review om naar `development` te mergen, ten minste twee reviews om naar `main` te mergen. Directe pushes naar beschermde branches zijn geblokkeerd.
-
-**Tweesporen-review.** Pull requests krijgen de juiste reviewer via labels — `code-review:queued` start de code-review tegen PHPCS / PHPMD / Psalm / PHPStan (of `ruff`/`mypy`/ESLint per stack); `security-review:queued` start een informatiebeveiligingsreview tegen de relevante ISO 27001:2022 Annex A-controls.
-
-**Hydra-automatisering.** Routinematig review-werk loopt via Hydra — kijkt naar PR-labels, stuurt review-jobs naar gespecialiseerde agents en schrijft bevindingen terug als PR-comments. Een menselijke reviewer keurt goed voor de merge.
-
-**Spec-gedreven wijzigingen.** Grotere wijzigingen dragen een OpenSpec change-folder en een ADR. Spec naast de code, ADR voor de architecturale beslissing, PR verwijst naar beide. Dat levert de documentatiesporen die ISO 9001:2015 §7.5 vraagt — zonder een parallel kwaliteitshandboek bij te houden.
+- **Branch protection** — drie organisatie-brede rulesets dwingen overal dezelfde regels af: ten minste één goedkeurende review om naar `development` te mergen, ten minste twee reviews om naar `main` te mergen. Directe pushes naar beschermde branches zijn geblokkeerd.
+- **Tweesporen-review** — pull requests krijgen de juiste reviewer via labels: `code-review:queued` start de code-review tegen PHPCS / PHPMD / Psalm / PHPStan (of `ruff` / `mypy` / ESLint per stack); `security-review:queued` start een informatiebeveiligingsreview tegen de relevante ISO 27001:2022 Annex A-controls.
+- **Hydra-automatisering** — routinematig review-werk loopt via Hydra, die naar PR-labels kijkt, review-jobs naar gespecialiseerde agents stuurt en bevindingen terugschrijft als PR-comments. Een menselijke reviewer keurt goed voor de merge.
+- **Spec-gedreven wijzigingen** — grotere wijzigingen dragen een OpenSpec change-folder en een ADR mee. Spec naast de code, ADR voor de architecturale beslissing, PR verwijst naar beide — de documentatiesporen die ISO 9001:2015 §7.5 vraagt, zonder een parallel kwaliteitshandboek bij te houden.
 
 </Section>
 
