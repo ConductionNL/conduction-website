@@ -5,7 +5,32 @@ hide_table_of_contents: true
 ---
 
 import {Section, SectionHead, HowSteps, HowStep, Card, Pill, HexBullet, HexNetwork, FeatureList, FeatureItem, PairRow, PairCard, Button, PartnerGrid, PartnerCard, BecomePartner, PartnerDirectory, ManagedCommonGround, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
-import {PARTNERS, BECOME_PARTNER} from '@site/src/data/partners-catalog';
+import {usePartners, useBecomePartner} from '@site/src/data/partners-catalog';
+
+export function PartnerLogoNetwork() {
+  const partners = usePartners();
+  return (
+    <HexNetwork
+      layout="3-3-3-3"
+      scroll="down"
+      scrollSpeed={70}
+      visibleRows={4}
+      fade={false}
+      cells={partners.map(p => ({name: p.name, logo: p.logo, href: p.href}))}
+    />
+  );
+}
+
+export function PartnerDirectoryBlock() {
+  const partners = usePartners();
+  const becomePartner = useBecomePartner();
+  return (
+    <PartnerDirectory
+      partners={partners}
+      becomePartner={{...becomePartner, href: '#become-a-partner', ctaLabel: 'Apply below'}}
+    />
+  );
+}
 
 export const TIER_PILL = {
   host:      {background: 'var(--c-cobalt-50)', color: 'var(--c-cobalt-700)'},
@@ -38,14 +63,7 @@ export const TIER_PILL_BASE = {
       <h1 style={{fontSize: 56, fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1.05, color: 'var(--c-cobalt-900)', margin: '0 0 var(--space-5)'}}>Support runs through partners.<br/>The apps stay free.</h1>
       <p style={{fontSize: 18, lineHeight: 1.5, color: 'var(--c-cobalt-700)', margin: 0, maxWidth: '52ch'}}>Conduction builds and maintains the apps. Every one of them is open-source on GitHub and free from the <span className="next-blue">Nextcloud</span> app store. Day-to-day support, implementation hours, and SLA contracts sit with our partners. Pick the partner that matches your sector and your scale.</p>
     </div>
-    <HexNetwork
-      layout="3-3-3-3"
-      scroll="down"
-      scrollSpeed={70}
-      visibleRows={4}
-      fade={false}
-      cells={PARTNERS.map(p => ({name: p.name, logo: p.logo, href: p.href}))}
-    />
+    <PartnerLogoNetwork />
   </div>
 </Section>
 
@@ -120,10 +138,7 @@ export const TIER_PILL_BASE = {
     align="stack"
     lede="Implementation, hosting, and integration partners. Filter by tier and by the apps you want to deploy. Apply through the form below to be added."
   />
-  <PartnerDirectory
-    partners={PARTNERS}
-    becomePartner={{...BECOME_PARTNER, href: '#become-a-partner', ctaLabel: 'Apply below'}}
-  />
+  <PartnerDirectoryBlock />
 </Section>
 
 <ManagedCommonGround

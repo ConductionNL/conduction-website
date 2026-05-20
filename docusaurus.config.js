@@ -159,7 +159,6 @@ module.exports = createConfig({
         title: 'Solutions',
         items: [
           {label: 'OpenWoo',         to: '/solutions/openwoo'},
-          {label: 'Software catalog',to: '/solutions/software-catalog'},
           {label: 'Support',         to: '/support'},
           {label: 'ConNext',         to: '/connext'},
           {label: 'Common Ground',   to: '/commonground'},
@@ -193,6 +192,14 @@ module.exports = createConfig({
 
   /* OpenCatalogi content plugin slot, wired in via env once it exists. */
   plugins: [
+    /* academy-modules: scans academy/*\/index.mdx frontmatter and emits
+       module → ordered parts global data. Consumed by BlogListPage
+       (composite ModuleCards + module pill row) and per-module MDX
+       index pages at /academy/modules/{slug}. */
+    [
+      require.resolve('./plugins/academy-modules'),
+      {contentDir: 'academy', routeBasePath: '/academy'},
+    ],
     // [
     //   '@conduction/docusaurus-plugin-opencatalogi',
     //   {
