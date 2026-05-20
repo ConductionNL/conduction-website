@@ -70,7 +70,7 @@ const PRESENTATION = {
   },
   zaakafhandelapp: {
     name: 'ZaakAfhandelApp',
-    tagline: 'Citizen-facing case-status portal. ZGW APIs, archief koppelvlakken, audit trail.',
+    tagline: 'Citizen-facing case-status portal. ZGW APIs, archive interfaces, audit trail.',
     href: '/apps/zaakafhandelapp',
     categories: ['Processes'],
     icon: <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>,
@@ -112,7 +112,7 @@ const PRESENTATION = {
   },
   scholiq: {
     name: 'Scholiq',
-    tagline: 'Learning record + LMS. Cursussen, inschrijvingen, certificaten, compliance-training.',
+    tagline: 'Learning record + LMS. Courses, enrolments, certificates, compliance training.',
     href: '/apps/scholiq',
     categories: ['Processes'],
     icon: <svg viewBox="0 0 24 24"><path d="M3 9l9-5 9 5-9 5z"/><path d="M7 11v5c0 1 2.2 2 5 2s5-1 5-2v-5"/><path d="M21 9v6"/></svg>,

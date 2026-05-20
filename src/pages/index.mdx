@@ -6,7 +6,18 @@ hide_table_of_contents: true
 
 import {Hero, StatsStrip, AppsPreview, CtaBanner, PairRow, PairCard, Section, SectionHead, Clients, DEFAULT_CLIENTS, PartnerDirectory, CommonGroundPlus, HexRain} from '@conduction/docusaurus-preset/components';
 import {totalDownloads, formatDownloads} from '@conduction/docusaurus-preset/data';
-import {PARTNERS, BECOME_PARTNER, totalPartners} from '@site/src/data/partners-catalog';
+import {usePartners, useBecomePartner, totalPartners} from '@site/src/data/partners-catalog';
+
+export function HomePartnerDirectory() {
+  const partners = usePartners();
+  const becomePartner = useBecomePartner();
+  return (
+    <PartnerDirectory
+      partners={partners}
+      becomePartner={{...becomePartner, href: '/support#become-a-partner', ctaLabel: 'Apply on /support'}}
+    />
+  );
+}
 import {APP_COUNT} from '@site/src/data/apps-catalog';
 
 {/* Conduction main landing. Public Tech framing: tech to serve people.
@@ -102,10 +113,7 @@ import {APP_COUNT} from '@site/src/data/apps-catalog';
     align="stack"
     lede="Implementation, hosting, and integration partners that ship Conduction apps to clients. Apply through /support to be listed."
   />
-  <PartnerDirectory
-    partners={PARTNERS}
-    becomePartner={{...BECOME_PARTNER, href: '/support#become-a-partner', ctaLabel: 'Apply on /support'}}
-  />
+  <HomePartnerDirectory />
 </Section>
 
 <Clients

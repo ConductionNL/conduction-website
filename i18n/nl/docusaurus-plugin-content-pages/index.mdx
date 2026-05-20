@@ -6,7 +6,18 @@ hide_table_of_contents: true
 
 import {Hero, StatsStrip, AppsPreview, CtaBanner, PairRow, PairCard, Section, SectionHead, Clients, DEFAULT_CLIENTS, PartnerDirectory, CommonGroundPlus, HexRain} from '@conduction/docusaurus-preset/components';
 import {totalDownloads, formatDownloads} from '@conduction/docusaurus-preset/data';
-import {PARTNERS, totalPartners} from '@site/src/data/partners-catalog';
+import {usePartners, useBecomePartner, totalPartners} from '@site/src/data/partners-catalog';
+
+export function HomePartnerDirectory() {
+  const partners = usePartners();
+  const becomePartner = useBecomePartner();
+  return (
+    <PartnerDirectory
+      partners={partners}
+      becomePartner={{...becomePartner, ctaLabel: 'Aanmelden via /support'}}
+    />
+  );
+}
 
 {/* Conduction main landing. Public Tech framing: tech to serve people.
     Three doors out: install an app yourself, get it as managed SaaS, or
@@ -101,16 +112,7 @@ import {PARTNERS, totalPartners} from '@site/src/data/partners-catalog';
     align="stack"
     lede="Implementatie-, hosting- en integratiepartners die Conduction-apps bij klanten uitrollen. Vraag aan via /support om opgenomen te worden."
   />
-  <PartnerDirectory
-    partners={PARTNERS}
-    becomePartner={{
-      href: '/support#become-a-partner',
-      eyebrow: 'Word partner',
-      title: 'Lever Conduction aan jouw klanten.',
-      body: 'Word Partner, Certified of Strategic. Conduction traint je team, jij doet de uitrol. De apps blijven open source, de relatie blijft direct.',
-      ctaLabel: 'Aanmelden via /support',
-    }}
-  />
+  <HomePartnerDirectory />
 </Section>
 
 <Clients
