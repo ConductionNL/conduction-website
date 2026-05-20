@@ -4,7 +4,7 @@ description: Het kwaliteitsmanagementsysteem van Conduction. ISO 9001:2015 en IS
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, Showcase, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, Showcase, WidgetShelf, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
 
 export const WORKFLOW_FILE = 'https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml';
 
@@ -168,6 +168,41 @@ export const QualityIcon = (
     <path d="m9 12 2 2 4-4" />
   </svg>
 );
+
+export function HandbookPanel({iconPath, title, lines, accent}) {
+  return (
+    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, padding: '24px 16px 8px', minHeight: 150}}>
+      <span aria-hidden="true" style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 56, height: 62,
+        background: accent || 'var(--c-blue-cobalt)',
+        color: 'white',
+        clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+      }}>
+        <svg viewBox="0 0 24 24" width={26} height={26} fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          {iconPath}
+        </svg>
+      </span>
+      <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)'}}>{title}</div>
+      <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center'}}>
+        {lines.map((l, i) => (
+          <li key={i} style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'var(--c-cobalt-700)'}}>{l}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export const HANDBOOK_ICONS = {
+  identity: <><circle cx="12" cy="9" r="3.2"/><path d="M5.5 19c1.2-3 3.7-4.5 6.5-4.5s5.3 1.5 6.5 4.5"/><path d="M4 4h3M17 4h3M4 20h3M17 20h3M4 4v3M20 4v3M4 17v3M20 17v3"/></>,
+  wayOfWork: <><path d="M5 4h11l3 3v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M8 9h8M8 13h8M8 17h5"/></>,
+  hydra: <><circle cx="5" cy="12" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 12h4l4-6h2M11 12h4l4 6h2"/></>,
+  claude: <><path d="M4 6h16M4 12h10M4 18h16"/><circle cx="18" cy="12" r="2" fill="currentColor"/></>,
+  iso: <><path d="M12 2l9 4v6c0 5-4 9-9 10-5-1-9-5-9-10V6z"/><path d="M9 12l2 2 4-4"/></>,
+  roadmap: <><path d="M4 7l5-2 6 2 5-2v12l-5 2-6-2-5 2z"/><path d="M9 5v14M15 7v14"/></>,
+};
 
 export const QualityHeroIllustration = (
   <div style={{
@@ -438,9 +473,56 @@ Voor meer informatie over ons kwaliteits- en informatieveiligheidssysteem kunt u
 
 Het ISO-beleid zegt waartoe Conduction zich verbindt. Het handboek op **[docs.conduction.nl](https://docs.conduction.nl/)** vertaalt die toezeggingen naar de procedures die elke (digitale) medewerker dagelijks volgt — hoe we onboarden, hoe we software bouwen, hoe we customer support draaien, hoe de Hydra-pipeline loopt, hoe de Claude-workflow elke wijziging beoordeelt. Het is de operationele laag die het managementsysteem in praktijk brengt.
 
-**Onderdelen.** _Way of Work_ (het handboek zelf), _Hydra_ (onze spec-gedreven CI/CD-pipeline), _Claude-workflow_ (de conventies en skills die de dagelijkse ontwikkeling sturen), _ISO-compliance_ (clause-by-clause-mapping van de normen naar onze engineering-pipeline), _Identity_ (brand en visuele regels) en de publieke _Roadmap_.
+</Section>
 
-**Hoe past het in het managementsysteem.** Elke operationele procedure staat in versiebeheer op GitHub en loopt door hetzelfde PR-+-reviewproces dat hieronder onder [Kwaliteitsworkflow op GitHub](#github-workflow) beschreven staat. Auditors lezen dezelfde bron als elke medewerker — geen parallel handboek om bij te houden.
+<WidgetShelf
+  eyebrow="docs.conduction.nl"
+  title="Zes onderdelen, één bron."
+  lede="Elke procedure staat in versiebeheer op GitHub en loopt door hetzelfde PR-+-reviewproces dat hieronder onder Kwaliteitsworkflow op GitHub staat. Auditors lezen dezelfde bron als elke medewerker — geen parallel handboek om bij te houden."
+  widgets={[
+    {
+      title: 'Identity',
+      desc: 'Wie Conduction is. Merk, stem en visuele identiteit voor zowel onze cultuur als ons ontwerp.',
+      panel: <HandbookPanel iconPath={HANDBOOK_ICONS.identity} title="Brand & voice" lines={['logo · kleur · type', 'stem & toon', 'visuele diagrammen']} />,
+    },
+    {
+      title: 'Way of Work',
+      desc: 'Hoe Conduction dagelijks werkt — onboarding, rollen, software bouwen en klantondersteuning. Het handboek dat elke (digitale) medewerker volgt.',
+      panel: <HandbookPanel iconPath={HANDBOOK_ICONS.wayOfWork} title="Procedures" lines={['onboarding', 'rollen · verantwoordelijkheid', 'support & sla']} />,
+    },
+    {
+      title: 'Hydra',
+      desc: 'De spec-gedreven CI/CD-pipeline van Conduction. Van OpenSpec-wijziging tot gereviewde PR — Builder, parallelle code- + security-review, met een mens in de loop.',
+      panel: <HandbookPanel iconPath={HANDBOOK_ICONS.hydra} title="Pipeline" lines={['spec → builder', 'code- + security-review', 'mens approves → merge']} />,
+    },
+    {
+      title: 'Claude-workflow',
+      desc: 'Spec-gedreven ontwikkeling met OpenSpec, GitHub Issues en Claude Code. Skills, commands, conventies, parallelle agents.',
+      panel: <HandbookPanel iconPath={HANDBOOK_ICONS.claude} title="Conventies" lines={['skills · commands', 'parallelle agents', 'spec-gedreven']} />,
+    },
+    {
+      title: 'ISO-compliance',
+      desc: 'Engineering-pipeline gemapt op ISO/IEC 9001:2015 en 27001:2022 clause-by-clause, met gaten als first-class output.',
+      panel: <HandbookPanel iconPath={HANDBOOK_ICONS.iso} title="Clause-map" lines={['9001 §4–§10', '27001 §4–§10', 'annex a controls']} accent="var(--c-orange-knvb)" />,
+    },
+    {
+      title: 'Roadmap',
+      desc: 'Waar het Conduction-app-ecosysteem heen gaat — live op GitHub Projects. Wat volgt, wat loopt, wat is opgeleverd.',
+      panel: <HandbookPanel iconPath={HANDBOOK_ICONS.roadmap} title="GitHub Projects" lines={['volgende · loopt', 'opgeleverd', 'issues per spec']} />,
+    },
+  ]}
+/>
+
+<Section spacing="default">
+
+<div style={{display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 16}}>
+  <a href="https://docs.conduction.nl/" target="_blank" rel="noopener noreferrer" style={{padding: '10px 18px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Open het handboek →
+  </a>
+  <a href="https://docs.conduction.nl/WayOfWork/way-of-work/" target="_blank" rel="noopener noreferrer" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Start bij Way of Work →
+  </a>
+</div>
 
 </Section>
 
