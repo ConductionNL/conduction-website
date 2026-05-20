@@ -538,13 +538,10 @@ Every Conduction app lives in public on GitHub under the [ConductionNL](https://
 
 ### Around the pipeline
 
-**Branch protection.** Three org-wide rulesets enforce the same rules everywhere: at least one approving review to merge into `development`, at least two reviews to merge into `main`. Direct pushes to protected branches are blocked.
-
-**Two-track review.** Pull requests pick up the right reviewer through labels — `code-review:queued` triggers the code-quality review against PHPCS / PHPMD / Psalm / PHPStan (or `ruff`/`mypy`/ESLint per stack); `security-review:queued` triggers an information-security review against the relevant ISO 27001:2022 Annex A controls.
-
-**Hydra automation.** Routine review runs through Hydra — it watches PR labels, dispatches review jobs to specialised agents, and writes findings back as PR comments. Human reviewers approve before merge.
-
-**Spec-driven changes.** Larger changes carry an OpenSpec change folder and an ADR. Spec next to the code, ADR for the architectural decision, PR cites both. That gives the documentation trail required by ISO 9001:2015 §7.5 without a parallel quality-handbook to keep in sync.
+- **Branch protection** — three org-wide rulesets enforce the same rules everywhere: at least one approving review to merge into `development`, at least two reviews to merge into `main`. Direct pushes to protected branches are blocked.
+- **Two-track review** — pull requests pick up the right reviewer through labels: `code-review:queued` triggers the code-quality review against PHPCS / PHPMD / Psalm / PHPStan (or `ruff` / `mypy` / ESLint per stack); `security-review:queued` triggers an information-security review against the relevant ISO 27001:2022 Annex A controls.
+- **Hydra automation** — routine review runs through Hydra, which watches PR labels, dispatches review jobs to specialised agents, and writes findings back as PR comments. Human reviewers approve before merge.
+- **Spec-driven changes** — larger changes carry an OpenSpec change folder and an ADR. Spec next to the code, ADR for the architectural decision, PR cites both — the documentation trail required by ISO 9001:2015 §7.5 without a parallel quality handbook to keep in sync.
 
 </Section>
 
