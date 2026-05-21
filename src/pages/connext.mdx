@@ -4,7 +4,7 @@ description: Open-source apps that plug into Nextcloud. Catalogs, registers, int
 hide_table_of_contents: true
 ---
 
-import {Hero, StatsStrip, PlatformOverview, PlatformDiagram, HexRain, AppsPreview, CtaBanner, Showcase, AppMock, AgentTrace, ExternalAppShelf, Section, SectionHead, PairRow, PairCard} from '@conduction/docusaurus-preset/components';
+import {Hero, StatsStrip, PlatformOverview, PlatformDiagram, HexRain, AppsPreview, CtaBanner, Showcase, AppMock, AgentTrace, ExternalAppShelf, Section, SectionHead, PairRow, PairCard, DownloadPanel} from '@conduction/docusaurus-preset/components';
 import {totalDownloads, formatDownloads} from '@conduction/docusaurus-preset/data';
 import {totalPartners} from '@site/src/data/partners-catalog';
 import {APP_COUNT, ECOSYSTEM_COUNT} from '@site/src/data/apps-catalog';
@@ -103,16 +103,44 @@ import {APP_COUNT, ECOSYSTEM_COUNT} from '@site/src/data/apps-catalog';
   />
 </PlatformOverview>
 
+<DownloadPanel
+  title={<>This is not a suite.<br/>It is <span className="next-blue">Nextcloud</span> as a platform.</>}
+  lede={<>A suite bundles mail, files, and office apps. A workspace adds an integrated ecosystem on top: the apps governments already need, and the building blocks developers can extend. That's what makes <span className="next-blue">Nextcloud</span> a platform.</>}
+  meta="Blog · 7 min read · By Ruben van der Linde, CTO"
+  card={{
+    title: 'Want the full blog?',
+    body: 'The blog on Nextcloud as a platform, the citizen-developer wave, and the sovereignty calculus on AI.',
+    cta: {label: 'Read the blog', href: '/academy/the-platform-moment'},
+  }}
+/>
+
 <Section spacing="default">
   <SectionHead
-    eyebrow="The bigger picture"
-    title={<>This is not an app shelf.<br/>It is <span className="next-blue">Nextcloud</span> as a platform.</>}
+    eyebrow="Conduction Academy"
+    title={<>Learn to build on the platform.</>}
     align="stack"
-    lede={<>The sovereign-workplace bundles are the start, not the finish. Microsoft has spent five years training a generation of citizen developers on Power Platform; Europe has eighteen to thirty-six months to ship a credible architectural answer. Our CTO wrote down why we think the shape of that answer is already sitting in front of us.</>}
+    lede={<>The <a href="/academy">Conduction Academy</a> is where you learn to develop on the stack. Free, hands-on, self-paced. Three tutorials take you from a clean local <span className="next-blue">Nextcloud</span>, to a working app on the Conduction stack, to wiring it into the tools you already run. No prior platform knowledge required.</>}
   />
-  <p style={{textAlign: 'center', marginTop: 'var(--space-6)', marginBottom: 0}}>
-    <a href="/academy/the-platform-moment" style={{fontSize: 17, fontWeight: 600, color: 'var(--c-cobalt-700)', textDecoration: 'underline', textUnderlineOffset: '6px', textDecorationThickness: '2px'}}>Read the thinkpiece</a>
-  </p>
+  <PairRow columns={3}>
+    <PairCard
+      href="/academy/nextcloud-lokaal-draaien"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 4v5M16 4v5"/><path d="M8 14h3M8 17h6"/></svg>}
+      name="Tutorial 1 · Run Nextcloud locally"
+      why="Three commands, fifteen minutes. Spin up a clean Nextcloud on localhost, ready to develop against."
+    />
+    <PairCard
+      href="/academy/deskdesk-tutorial-1-scaffold"
+      icon={<svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 1 0-5.4 5.4l-7 7v3h3l7-7a4 4 0 0 0 5.4-5.4z"/><path d="M5 19l3-3"/></svg>}
+      name="Tutorial 2 · Build your first app"
+      why="A four-part walk-through from a blank template to a shipped DeskDesk app on the full Conduction stack."
+    />
+    <PairCard
+      href="/academy/integrations"
+      icon={<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>}
+      name="Tutorial 3 · Integrate with your stack"
+      why="Wire your app into the tools you already run. REST, MCP, webhooks, all through OpenConnector. (in progress)"
+    />
+  </PairRow>
 </Section>
 
 <Showcase
