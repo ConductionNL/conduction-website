@@ -359,7 +359,7 @@ Save. The endpoint URL is `http://localhost:8080/apps/openconnector/api/endpoint
 
 xWiki ships a Webhook application. Install it once from `/xwiki/bin/view/XWiki/AddOnsManagerActions` (Extension Manager → search "Webhook"). Once installed, go to the `DeskDeskMaintenance` space, **Administer Space → Webhooks → Add**:
 
-```
+```text
 Name:    deskdesk-resolved
 URL:     http://nextcloud:80/apps/openconnector/api/endpoint/xwiki-maintenance-resolved
          (container-to-container; from xWiki's container, nextcloud:80 reaches Nextcloud)
@@ -367,8 +367,8 @@ Trigger: Page updated
 Filter:  Only pages in DeskDeskMaintenance
 Auth:    Bearer <the secret you set on the OpenConnector endpoint>
 Payload: {
-  "page":       "${doc.documentReference.name}",
-  "properties": ${object.properties.json}
+  "page":       "$!{doc.documentReference.name}",
+  "properties": $!{object.properties.json}
 }
 ```
 
@@ -407,7 +407,7 @@ The DeskDesk tutorial ends here. The app is shipped, in the store, integrated wi
 </HexCard>
 
 <HexCard title="xWiki webhook reaches OpenConnector but the payload is empty">
-  xWiki's <code>${object.properties.json}</code> template is only filled when the page has an XClass attached. Add a small <code>MaintenanceClass</code> with a <code>resolved</code> boolean to the <code>DeskDeskMaintenance</code> space and reference it from the body template Part 3a generates. The webhook starts including the properties block on the next save.
+  xWiki's <code>{'${object.properties.json}'}</code> template is only filled when the page has an XClass attached. Add a small <code>MaintenanceClass</code> with a <code>resolved</code> boolean to the <code>DeskDeskMaintenance</code> space and reference it from the body template Part 3a generates. The webhook starts including the properties block on the next save.
 </HexCard>
 
 ## Where to next
