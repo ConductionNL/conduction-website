@@ -19,9 +19,13 @@
   color: var(--c-cobalt-700);
 }
 
-/* Heading rhythm. Tighter top-margin on the first heading after the
-   hero (the lede paragraph), wider gaps on subsequent ones. */
-.body h2 {
+/* Heading rhythm. Direct-child selectors so the cascade does not
+   bleed into nested preset components (DownloadPanel, PairCard,
+   HexCard, etc.), which carry their own typography. Without the
+   direct-child scope, .body h3 overrides white-on-dark titles
+   inside cobalt panels because it has higher specificity than
+   the preset's single-class .title rule. */
+.body > h2 {
   font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -29,21 +33,21 @@
   margin: var(--space-10) 0 var(--space-3);
   line-height: 1.2;
 }
-.body h3 {
+.body > h3 {
   font-size: 21px;
   font-weight: 700;
   color: var(--c-cobalt-900);
   margin: var(--space-7) 0 var(--space-2);
   line-height: 1.3;
 }
-.body h2 + p,
-.body h3 + p,
-.body h2 + ul,
-.body h3 + ul,
-.body h2 + ol,
-.body h3 + ol { margin-top: 0; }
+.body > h2 + p,
+.body > h3 + p,
+.body > h2 + ul,
+.body > h3 + ul,
+.body > h2 + ol,
+.body > h3 + ol { margin-top: 0; }
 
-.body p { margin: var(--space-3) 0; }
+.body > p { margin: var(--space-3) 0; }
 
 /* Images: respect natural size, never stretch. Centre with breathing
    room; cap at column width. */

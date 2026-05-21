@@ -301,6 +301,27 @@
   color: var(--c-cobalt-700);
 }
 
+/* ============================================================
+   .blog-download-cta · DownloadPanel inside an academy post body
+   ============================================================
+   Strips the preset DownloadPanel's outer tinted band (cobalt-50
+   fill + hairline borders + -200px negative margin) which is
+   calibrated for marketing pages where it sits below a structural
+   spacer. Inside a blog body, the band reads as a section break
+   that doesn't relate to anything around it.
+   Tracked as design-system#26 for a proper opt-out prop on the
+   preset; this is the inline fallback. */
+.blog-download-cta { margin-top: var(--space-8); }
+.blog-download-cta > section {
+  background: transparent !important;
+  border: none !important;
+  margin-top: 0 !important;
+}
+.blog-download-cta > section > div {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
 /* "Test jezelf" sections at the end of academy tutorials: each question
    sits in a card with collapsible Hint and Antwoord <details> blocks. */
 .tutorial-quiz {
