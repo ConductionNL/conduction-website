@@ -144,3 +144,141 @@
   color: var(--c-cobalt-700);
 }
 
+/* ============================================================
+   .pull-quote
+   ============================================================
+   Mirrors the <PullQuote/> component shipping in
+   @conduction/docusaurus-preset >= 3.18.0. Inline fallback so
+   the blog can use the visual now while the preset publish
+   propagates. Swap to <PullQuote/> imports once the bump lands
+   in package-lock.json.
+   ============================================================ */
+.pull-quote {
+  border-left: 4px solid var(--c-orange-knvb);
+  background: var(--c-cobalt-50);
+  padding: var(--space-5) var(--space-6);
+  margin: var(--space-7) 0;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--c-blue-cobalt);
+  line-height: 1.4;
+  font-style: italic;
+}
+.pull-quote p { margin: 0; }
+.pull-quote p + p { margin-top: var(--space-3); }
+.pull-quote cite {
+  display: block;
+  margin-top: var(--space-4);
+  font-family: var(--conduction-typography-font-family-code);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--c-cobalt-700);
+}
+.pull-quote cite .cite-name { color: var(--c-cobalt-900); }
+
+.pull-quote.hero {
+  font-size: 28px;
+  font-style: normal;
+  padding: var(--space-7) var(--space-8);
+}
+.pull-quote.hero .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--conduction-typography-font-family-code);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--c-cobalt-700);
+  margin-bottom: var(--space-4);
+}
+.pull-quote.hero .eyebrow .h {
+  width: 10px;
+  height: 12px;
+  clip-path: var(--hex-pointy-top);
+  background: var(--c-orange-knvb);
+}
+
+/* ============================================================
+   .setup-steps · vertical numbered-step pattern
+   ============================================================
+   Mirrors the <SetupSteps/>/<SetupStep/> component shipping in
+   @conduction/docusaurus-preset >= 3.19.0. Inline fallback so the
+   blog can use the visual now while the preset publish propagates.
+   Swap to <SetupSteps/> imports once the bump lands.
+   ============================================================ */
+.setup-steps { margin: var(--space-7) 0; }
+.setup-steps .step-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin: var(--space-4) 0;
+}
+.setup-steps .step-row .num {
+  width: 36px;
+  height: 42px;
+  clip-path: var(--hex-pointy-top);
+  background: var(--c-orange-knvb);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.setup-steps .step-row .body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--c-cobalt-700);
+}
+.setup-steps .step-row .body strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--c-cobalt-900);
+  font-size: 17px;
+  font-weight: 600;
+}
+.setup-steps .step-row .body p { margin: 0; }
+
+/* Editorial component table: rows with a left "tier" cell and a
+   right "what" cell. Lighter than .adr-table, denser than a card
+   grid. Used in the platform-moment post component overview. */
+.editorial-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-7) 0;
+  font-size: 15px;
+}
+.editorial-table th,
+.editorial-table td {
+  text-align: left;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--c-cobalt-100);
+  vertical-align: top;
+  line-height: 1.5;
+}
+.editorial-table thead th {
+  font-family: var(--conduction-typography-font-family-code);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-cobalt-400);
+  font-weight: 500;
+  background: var(--c-cobalt-50);
+}
+.editorial-table tbody td:first-child {
+  font-weight: 600;
+  color: var(--c-cobalt-900);
+  width: 32%;
+}
+.editorial-table tbody td:nth-child(2) {
+  color: var(--c-cobalt-700);
+}
+
