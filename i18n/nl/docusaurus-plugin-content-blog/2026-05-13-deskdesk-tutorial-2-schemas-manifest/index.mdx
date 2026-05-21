@@ -1,0 +1,303 @@
+---
+slug: deskdesk-tutorial-2-schemas-manifest
+title: "Bouw een Nextcloud-app op de Conduction-stack — Deel 2: Schema's + manifest"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-13
+summary: Definieer de desk-, booking- en floor-schema's in OpenRegister, declareer ze in een manifest.json, en zie hoe CnAppRoot ongeveer 200 regels handgeschreven Vue vervangt door drie regels config.
+tags: [App development, OpenRegister, Schemas, Manifest, nextcloud-vue]
+apps: [openregister]
+durationMinutes: 25
+series: deskdesk-tutorial
+partNumber: 2
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+} from '@conduction/docusaurus-preset/components';
+
+Dit is **Deel 2 van de vierdelige DeskDesk-tutorial**. Deel 1 liet je achter met een leeg app-skelet: een chassis zonder data. Deel 2 vult dat chassis: drie schema's, een manifest, en dezelfde vijf Cn*-pagina's sturen elke lijst, elke detailweergave en elk dashboard met het schema als enige bron van waarheid.
+
+De vorm waar we steeds van zeggen "dit scheelt je code" krijgt eindelijk getallen: ongeveer 200 regels handgeschreven Vue krimpen tot drie.
+
+{/* truncate */}
+
+<Outcomes title="Wat je hebt aan het eind van Deel 2">
+  <Outcome>Drie OpenRegister-schema's — <code>floor</code>, <code>desk</code>, <code>booking</code> — geïnstalleerd en bij de eerste boot gevuld met realistische demo-data.</Outcome>
+  <Outcome>Een <code>src/manifest.json</code> die de navigatie, de routes en de configuratie voor elke pagina declareert. CnAppRoot leest hem; CnPageRenderer dispatcht.</Outcome>
+  <Outcome>Een <code>App.vue</code> van ongeveer 10 regels en een <code>router/index.js</code> die routes genereert vanuit het manifest. <strong>navigation/MainMenu.vue is weg</strong>. Net als <code>views/Dashboard.vue</code>, <code>views/items/*</code> en de user-settings-shells. De manifest-renderer vervangt ze.</Outcome>
+  <Outcome>Index-pagina's, detail-pagina's en CRUD-dialogen die het schema genereert: sorteerbaar, filterbaar, doorzoekbaar, zonder dat je een kolomdefinitie schrijft.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Waar je moet staan">
+  <PrerequisiteItem>Deel 1 af: DeskDesk geïnstalleerd, het chassis rendert op <code>http://localhost:8080/apps/deskdesk/</code>.</PrerequisiteItem>
+  <PrerequisiteItem>OpenRegister geïnstalleerd, ingeschakeld, op versie 0.2.10 of nieuwer (de <code>importFromFilePath</code>-methode in ConfigurationService is verplicht).</PrerequisiteItem>
+  <PrerequisiteItem>Een lokale clone van <a href="https://github.com/ConductionNL/deskdesk">ConductionNL/deskdesk</a> op je schijf en een werkende <code>npm run build</code>.</PrerequisiteItem>
+</Prerequisites>
+
+## Stap 1: Definieer de drie schema's
+
+Open `lib/Settings/deskdesk_register.json` en vervang het placeholder `article`-schema door de echte drie. Elk schema is een JSON Schema met een paar OpenRegister-extensies: `slug` voor de URL-identifier, `icon` voor de MDI-glyph die de UI gebruikt, en `x-openregister-relations` voor getypeerde kruisverwijzingen tussen schema's.
+
+```json title="lib/Settings/deskdesk_register.json (excerpt)"
+"floor": {
+  "slug": "floor",
+  "title": "Floor",
+  "description": "A physical floor in a building.",
+  "type": "object",
+  "required": ["label"],
+  "properties": {
+    "label":     { "type": "string", "example": "Floor 3" },
+    "building":  { "type": "string", "example": "Amsterdam HQ" },
+    "planImage": { "type": "string", "format": "uri" }
+  }
+}
+```
+
+Het `desk`-schema voegt de getypeerde relatie naar floor toe:
+
+```json title="lib/Settings/deskdesk_register.json (excerpt)"
+"desk": {
+  "slug": "desk",
+  "title": "Desk",
+  "type": "object",
+  "required": ["label", "floor", "zone"],
+  "properties": {
+    "label": { "type": "string", "example": "3-East-12" },
+    "floor": {
+      "type": "string",
+      "x-openregister-relations": {
+        "schema": "floor",
+        "cardinality": "many-to-one"
+      }
+    },
+    "zone": {
+      "type": "string",
+      "enum": ["north", "south", "east", "west", "central"]
+    },
+    "equipment": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["dual-monitor", "standing", "phonebooth-adjacent", "wired-network", "extra-power"] }
+    },
+    "capacity":      { "type": "integer", "minimum": 1, "default": 1 },
+    "accessibility": { "type": "boolean", "default": false },
+    "photo":         { "type": "string", "format": "uri" },
+    "notes":         { "type": "string" }
+  }
+}
+```
+
+Booking heeft dezelfde vorm: een relatie, een paar datetimes, een enum-status en een optionele RRULE voor terugkerende boekingen.
+
+Het volledige bestand staat in [de deskdesk repo](https://github.com/ConductionNL/deskdesk/blob/main/lib/Settings/deskdesk_register.json), met vijf seed-desks, twee floors en drie bookings. Zo is de app meteen te doorbladeren na de eerste install.
+
+## Stap 2: Declareer het register zelf
+
+OpenRegister's importhandler maakt schema's gretig aan, maar maakt alleen een **register** als de JSON er expliciet één declareert. Voeg een `components.registers`-blok toe boven je schema's:
+
+```json title="lib/Settings/deskdesk_register.json"
+"components": {
+  "registers": {
+    "deskdesk": {
+      "slug": "deskdesk",
+      "title": "DeskDesk",
+      "description": "Floors, desks, and bookings for the DeskDesk app.",
+      "version": "0.2.0",
+      "schemas": ["floor", "desk", "booking"]
+    }
+  },
+  "schemas": { /* ... */ },
+  "objects": { /* ... */ }
+}
+```
+
+De `schemas`-array vertelt OpenRegister welke schema's uit hetzelfde bestand bij dit register horen. De `slug` wordt de stabiele identifier van het register.
+
+## Stap 3: Trigger de import
+
+Twee manieren. Of trigger het via de SettingsController (de app stelt `POST /api/settings/load` beschikbaar):
+
+```bash title="From your shell, via curl, with a logged-in cookie jar"
+curl -X POST -b cookies.txt \
+  -H "requesttoken: $REQUESTTOKEN" \
+  http://localhost:8080/index.php/apps/deskdesk/api/settings/load
+```
+
+Of, schoner tijdens lokale ontwikkeling, schakel de app uit en weer in. Dat vuurt de `<install>`-repair-stap uit `appinfo/info.xml`:
+
+```bash
+docker exec nextcloud php occ app:disable deskdesk
+docker exec nextcloud php occ app:enable deskdesk
+```
+
+Hoe dan ook, je ziet in de registerlijst van OpenRegister:
+
+```
+slug: deskdesk    title: DeskDesk    application: deskdesk    schemas: floor, desk, booking
+```
+
+Het pad dat de SettingsService neemt is **importFromFilePath** met een pad dat relatief aan `\OC::$SERVERROOT` wordt opgelost (dat is `/var/www/html` in een standaardinstall). De boot-time bug die ik raakte tijdens deze tutorial — `Configuration file not found: html/custom_apps/deskdesk/...` — was een relatief-pad-fout; de fix staat in [de diff](https://github.com/ConductionNL/deskdesk/pull/2/files#diff-lib-Service-SettingsService.php).
+
+## Stap 4: Het manifest
+
+`src/manifest.json` is de enige declaratieve beschrijving van de app-shell. Drie top-level keys: `dependencies`, `menu`, `pages`.
+
+```json title="src/manifest.json"
+{
+  "$schema": "https://raw.githubusercontent.com/ConductionNL/nextcloud-vue/main/src/schemas/app-manifest.schema.json",
+  "version": "1.0.0",
+  "id": "deskdesk",
+  "title": "DeskDesk",
+  "dependencies": ["openregister"],
+  "menu": [
+    {"id": "desks-index",    "label": "deskdesk.menu.desks",    "icon": "icon-category-organization", "route": "desks-index",    "order": 10},
+    {"id": "bookings-index", "label": "deskdesk.menu.bookings", "icon": "icon-calendar",              "route": "bookings-index", "order": 20},
+    {"id": "floors-index",   "label": "deskdesk.menu.floors",   "icon": "icon-category-monitoring",   "route": "floors-index",   "order": 30}
+  ],
+  "pages": [
+    {"id": "desks-index",  "route": "/",          "type": "index",  "title": "deskdesk.desks.indexTitle",
+     "config": {"register": "deskdesk", "schema": "desk", "columns": ["label","floor","zone","equipment","capacity","accessibility"], "filters": ["floor","zone","equipment","accessibility"], "defaultSort": {"key": "label", "order": "asc"}}},
+    {"id": "desks-detail", "route": "/desks/:id", "type": "detail", "title": "deskdesk.desks.detailTitle",
+     "config": {"register": "deskdesk", "schema": "desk"}}
+    /* bookings + floors pages follow the same pattern */
+  ]
+}
+```
+
+Een paar regels om te onthouden:
+
+- **`page.id` is de naam van de vue-router-route.** CnPageRenderer matcht `$route.name === page.id` om de juiste pagina te kiezen.
+- **`page.type` is gesloten.** `index | detail | dashboard | custom`. Gebruik `custom` met een `component`-registry-entry voor eenmalige pagina's.
+- **`page.config` gaat als props door.** `register`, `schema`, `columns`, `filters`, `defaultSort` mappen één-op-één op de props van CnIndexPage.
+
+## Stap 5: Vervang App.vue en de router
+
+Nu het bevredigende deel. Open `src/App.vue` (de 175-regelige shell uit Deel 1) en vervang hem hierdoor:
+
+```vue title="src/App.vue"
+<template>
+  <CnAppRoot :app-id="appId" :manifest="manifest" />
+</template>
+
+<script>
+import { CnAppRoot } from '@conduction/nextcloud-vue'
+import manifest from './manifest.json'
+
+export default {
+  name: 'App',
+  components: { CnAppRoot },
+  data: () => ({ appId: 'deskdesk', manifest }),
+}
+</script>
+```
+
+Dat is alles. De `<NcContent>`, de dependency-check empty-state, de loading-spinner, het menu, de sidebars, de user-settings-dialog: CnAppRoot levert ze allemaal en zet ze achter de `dependencies`-array uit het manifest.
+
+Dan wordt `src/router/index.js` een mapping van manifest naar routes:
+
+```js title="src/router/index.js"
+import Vue from 'vue'
+import Router from 'vue-router'
+import { generateUrl } from '@nextcloud/router'
+import { CnPageRenderer } from '@conduction/nextcloud-vue'
+import manifest from '../manifest.json'
+
+Vue.use(Router)
+
+const routes = manifest.pages.map((page) => ({
+  name: page.id,
+  path: page.route,
+  component: CnPageRenderer,
+}))
+
+routes.push({ path: '*', redirect: '/' })
+
+export default new Router({
+  mode: 'history',
+  base: generateUrl('/apps/deskdesk'),
+  routes,
+})
+```
+
+Elke pagina in het manifest krijgt een route. Elke route rendert CnPageRenderer. CnPageRenderer leest het manifest, vindt de matchende pagina-entry op routenaam, en dispatcht op `page.type`:
+
+- `type: "index"` → CnIndexPage met de kolommen en filters van het schema
+- `type: "detail"` → CnDetailPage met de properties van het schema
+- `type: "dashboard"` → CnDashboardPage met de layout
+- `type: "custom"` → je geregistreerde component
+
+## Stap 6: Verwijder de oude views
+
+Het hele punt van Deel 2 is dat het framework de views voor je schrijft. Verwijder:
+
+- `src/navigation/MainMenu.vue` — vervangen door CnAppNav (auto-mounted door CnAppRoot)
+- `src/views/Dashboard.vue` — placeholder; komt later terug in een rijkere vorm wanneer de dashboardpagina dat nodig heeft
+- `src/views/items/ItemList.vue`, `src/views/items/ItemDetail.vue` — vervangen door CnIndexPage + CnDetailPage
+- `src/views/settings/UserSettings.vue`, `src/views/settings/Settings.vue` — instellingen leven op de admin-pagina (`AdminRoot.vue`) en de in-app-dialog komt mee met CnAppRoot
+
+Het voor-en-na op schijf:
+
+```
+before: 12 .vue files in src/, ~600 lines of hand-rolled component code
+after:   3 .vue files (App.vue, AdminRoot.vue, that's it), ~30 lines
+```
+
+## Stap 7: Bouw, herlaad, blader
+
+```bash
+npm run build
+docker cp ./js nextcloud:/var/www/html/custom_apps/deskdesk/
+docker exec nextcloud apache2ctl graceful
+```
+
+Open `/apps/deskdesk/`. De linker rail leest nu **Desks · Bookings · Floors** (de vertaalkeys zien er nog uit als `deskdesk.menu.desks` totdat je `l10n/`-entries toevoegt; dat is een follow-up). De hoofdkolom toont CnIndexPage met de kolommen uit het schema. Klik een rij aan, je belandt op CnDetailPage voor die desk. De hele CRUD-flow krijg je cadeau.
+
+## Waarom dit belangrijk is
+
+Je schreef drie JSON-bestanden. Het framework leest ze en rendert de app. Er is geen `DesksList.vue`, geen `DeskForm.vue`, geen `useDesks.js`. Als je een `priority`-veld toevoegt aan het booking-schema, pikt elke plek waar een booking verschijnt — tabelkolom, detailrij, filter-sidebar, formulierdialoog — het nieuwe veld automatisch op.
+
+Dit is de schema-gedreven discipline waarover [nextcloud-vue.conduction.nl](https://nextcloud-vue.conduction.nl/docs/architecture/schemas-and-registers/) praat. Deel 3 zet het op een manier in die mensen de eerste keer verrast: één JSON-blok op het booking-schema laat elke booking in de Nextcloud-agenda van de gebruiker verschijnen. Geen controller, geen event, geen listener.
+
+## Troubleshooting
+
+<HexCard title="Configuration file not found: html/custom_apps/...">
+  Het relatieve pad dat ConfigurationService::importFromFilePath gebruikt wordt berekend tegen <code>/var/www/html</code> (de <code>SERVERROOT</code> van Nextcloud). Als je SettingsService het verkeerde prefix afsnijdt krijg je deze fout. Gebruik <code>\OC::$SERVERROOT</code> als anker bij het strippen.
+</HexCard>
+
+<HexCard title="Schemas importeren maar het register verschijnt niet">
+  Voeg een <code>components.registers.YOURAPP</code>-blok toe aan de JSON. Zonder dat maakt de importhandler de schema's als wezen aan. Het blok heeft <code>slug</code>, <code>title</code>, <code>version</code> en <code>schemas[]</code> nodig.
+</HexCard>
+
+<HexCard title="Index-pagina's renderen maar zeggen 'No items found'">
+  De store van CnIndexPage wil het numerieke register-id, terwijl <code>/api/settings</code> meestal de register-slug teruggeeft. Bouw een slug → id-resolutie in je settings-store, of geef het numerieke id rechtstreeks vanuit de SettingsService door. Staat als follow-up in de Deel 2-PR.
+</HexCard>
+
+<HexCard title="Vertaalkeys renderen letterlijk">
+  De keys (bijvoorbeeld <code>deskdesk.menu.desks</code>) hebben entries in <code>l10n/en.json</code> en <code>l10n/nl.json</code> nodig. De library rendert de key wanneer er geen vertaling is. Voeg ze toe wanneer je er klaar voor bent; de app werkt sowieso.
+</HexCard>
+
+## Wat is het volgende
+
+<NextSteps>
+  <NextStep
+    title="Deel 3 — Schema-gedreven integraties (NC Agenda)"
+    href="/academy/deskdesk-tutorial-3-calendar"
+    description="Eén calendarProvider-blok op het booking-schema. Bookings verschijnen in de Nextcloud-agenda van de gebruiker. Geen controller, geen listener, geen lijmcode."
+  />
+  <NextStep
+    title="Schemas and registers reference"
+    href="https://nextcloud-vue.conduction.nl/docs/architecture/schemas-and-registers/"
+    description="Het architectuurverhaal achter waarom schema's zowel de OpenRegister-backend als de @conduction/nextcloud-vue-frontend sturen."
+  />
+  <NextStep
+    title="App manifest reference"
+    href="https://nextcloud-vue.conduction.nl/docs/architecture/manifest/"
+    description="Volledige manifest-spec — pagina-types, slot-configuratie, custom components, sidebar-gating."
+  />
+</NextSteps>

@@ -1,0 +1,161 @@
+---
+slug: deskdesk-tutorial-0-three-paths
+title: "Build a Nextcloud app on the Conduction stack — Part 0: Three paths, one curriculum"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-05
+summary: Before you write a line of code, decide which of the three Conduction app-building paths fits the app you have in mind. Traditional Nextcloud, OpenRegister + nextcloud-vue, or full manifest — each one builds on what the previous gives you, and the rest of the DeskDesk series teaches the manifest path because that is where the curve becomes steep in our favour.
+tags: [App development, Architecture, OpenRegister, nextcloud-vue, Manifest, Tutorial series]
+apps: [openregister]
+durationMinutes: 15
+series: deskdesk-tutorial
+partNumber: 0
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+} from '@conduction/docusaurus-preset/components';
+
+This is **Part 0** of the four-part DeskDesk tutorial — the orientation lap. Before scaffolds, schemas, or manifests, the most useful thing we can hand a new developer is an honest map of the three ways Conduction apps actually get built, what each one costs, and what each one gives back. The rest of the series picks one path and shows the receipts. Part 0 explains why.
+
+A second thing matters from minute one: **the manifest system and the `@conduction/nextcloud-vue` component library are two different surfaces**. The manifest is the *declarative what* — a single `manifest.json` that describes navigation, pages, configuration. `nextcloud-vue` is the *rendering how* — the `Cn*` components the manifest dispatches to (`CnAppRoot`, `CnPageRenderer`, `CnIndexPage`, `CnDetailPage`, `CnDashboardPage`, and the rest). They are technically separable. They are also so intertwined in practice that the rest of this series teaches them together, and every lesson names which surface it is touching.
+
+{/* truncate */}
+
+<Outcomes title="What you'll have at the end of Part 0">
+  <Outcome>A clear picture of the <strong>three Conduction app-building paths</strong> — traditional Nextcloud, OpenRegister + nextcloud-vue, and full manifest — with honest trade-offs for each.</Outcome>
+  <Outcome>A mental model for <strong>which path to choose</strong> based on app scope, team size, and how much of your behaviour is genuinely bespoke.</Outcome>
+  <Outcome>An understanding that <strong>OpenRegister alone</strong> already gives you RBAC, audit logging, GraphQL, and cross-app integrations — even if you write no manifest at all.</Outcome>
+  <Outcome>A clear sense of how the <strong>manifest and nextcloud-vue</strong> relate as two surfaces of the same curriculum.</Outcome>
+</Outcomes>
+
+## The three paths at a glance
+
+The same DeskDesk feature — a list of desks with a detail page, a booking dialog, and a sidebar showing audit history — can be built three ways. Pick the table cell that sounds like your team.
+
+| | **Path 1: Traditional Nextcloud** | **Path 2: OpenRegister + nextcloud-vue** | **Path 3: Manifest + nextcloud-vue** |
+|---|---|---|---|
+| **What you write** | PHP controllers, Doctrine entities + migrations, hand-rolled Vue views, custom routes, your own CRUD endpoints | Schemas in JSON, register configuration, hand-rolled Vue views built from `Cn*` components, your own `App.vue` + router | Schemas in JSON, **one `manifest.json`** describing pages + config, only the genuinely bespoke views as `type: 'custom'` |
+| **Per-app code for the DeskDesk feature above** | ~1500 LOC | ~600 LOC | ~30 LOC + the manifest |
+| **Where the data lives** | App-private database tables you defined | A shared OpenRegister register — every other app on the same Nextcloud can read/write it through the registry | Same as Path 2 |
+| **RBAC, audit log, GraphQL, cross-app references, file attachments, calendar/contacts integrations** | Build each one yourself | **Free** — OpenRegister ships them. See "What OpenRegister gives you regardless" below | **Free** — same as Path 2 |
+| **Listing pages, detail pages, filter sidebars, mass-action dialogs** | Build each one yourself | Reuse `CnIndexPage`, `CnDetailPage`, `CnDashboardPage` — schema drives the columns and forms | Reuse the same components, dispatched declaratively by `CnPageRenderer` from your `manifest.json` |
+| **Adding a `priority` field to bookings** | New migration, new controller code, new Vue field, new validation | Add field to schema → forms and tables pick it up automatically | Same as Path 2 — schema-driven all the way through |
+| **Adding a kanban board (genuinely bespoke)** | Build it | Build it as a Vue component, mount it in your router | Build it as a Vue component, declare `{type:'custom', component:'PipelineBoard'}` in the manifest |
+| **Maintenance burden across 10 similar apps** | Each app drifts. 10 list pages, 10 detail pages, all slightly different. | The Vue surface still drifts — every app's `App.vue` and router are hand-written. Schema migrations stay clean. | One manifest shape across the fleet. A lib bump fixes every app at once. |
+| **Learning curve to first working page** | Lowest if you already know Nextcloud app dev. The patterns are documented. | Medium — schemas + `Cn*` components are new but well-trodden. | Steepest *initially* — you have to grok manifest dispatch first. After Part 2 the curve inverts. |
+| **Ceiling** | Whatever you can build in PHP + Vue. No ceiling but no leverage either. | Schema-driven CRUD scales beautifully. Bespoke flows are still hand-coded Vue. | Same as Path 2 plus: every Conduction app upgrades together when the manifest schema or `nextcloud-vue` evolves. |
+
+### When each path is the right pick
+
+**Path 1 — Traditional Nextcloud** is the right pick when:
+- You're shipping a Nextcloud-native feature with no use of cross-app shared data (e.g. a Talk command extension, an OAuth provider, a calendar provider plugin).
+- You need behaviour that lives below the data layer — file storage hooks, dav endpoints, sharing extensions.
+- You're maintaining a legacy app whose patterns predate OpenRegister and a rewrite isn't justified.
+- You explicitly need the freedom to depart from the Conduction stack — bring-your-own-database, bring-your-own-frontend-framework, anything where the constraints would slow you down.
+
+**Path 2 — OpenRegister + nextcloud-vue** is the right pick when:
+- Your data is fundamentally CRUD against a small set of schemas, but you want to keep the *page composition* hand-written for now — maybe because the existing app already has a custom `App.vue`, or because you want to migrate incrementally.
+- You're prototyping and you want to feel out a few hand-rolled views before committing to a manifest-driven shape.
+- The team has not yet learned the manifest mechanics and you have a deadline.
+
+**Path 3 — Manifest + nextcloud-vue** is the right pick when:
+- The app is mostly a set of register-backed CRUD surfaces with a few bespoke flows on top — which describes the overwhelming majority of Conduction apps.
+- You want the app to stay on the upgrade train: lib bumps, schema enhancements, accessibility improvements all flow in without per-app work.
+- You're starting fresh. The total time to a working app on Path 3 is *less* than on Path 2 once you've done it once, even though the first hour is steeper.
+- You want to be able to redesign the navigation, swap a list for a dashboard, or add a wiki section by editing JSON instead of rewriting Vue.
+
+The DeskDesk tutorial series teaches **Path 3**. Part 1 lays the chassis. Part 2 introduces the manifest. Part 3 shows how a single schema annotation makes bookings appear in Nextcloud Calendar with no glue code. Part 4 adds a knowledge sidebar fed from xWiki and ships the app.
+
+## What OpenRegister gives you regardless of path
+
+This part surprises people. OpenRegister is not just "a register with CRUD endpoints" — it's a data platform that ships several Nextcloud-native superpowers the moment you put a schema in it. Whether you build on Path 2 or Path 3, you inherit all of these without writing them:
+
+<HexCard title="RBAC by schema + property">
+  Schemas declare per-property read/write permissions, group restrictions, and ownership rules. The OpenRegister API enforces them; <code>CnIndexPage</code> and <code>CnDetailPage</code> respect them; <code>CnFormDialog</code> hides fields the current user cannot write. Add a property to a schema, mark it <code>readOnly: true</code> for the <code>users</code> group, and every surface in every app respects that rule.
+</HexCard>
+
+<HexCard title="Audit log for every change">
+  Every create, update, and delete writes an audit entry. The audit trail is visible in the standard <code>CnObjectSidebar</code> tab on every detail page. Querying the audit trail is a normal OR API call — your manifest can compose audit views without writing logging code.
+</HexCard>
+
+<HexCard title="GraphQL endpoint, automatically">
+  Each register exposes a GraphQL schema generated from the JSON Schema. Cross-app queries (<em>"give me every booking where the desk is on floor 2 and the booker is in the engineering group"</em>) are one query, not a controller. The endpoint is enabled at the register level.
+</HexCard>
+
+<HexCard title="Cross-app references (schema relations)">
+  A booking schema can reference a desk schema in a different app's register. The reference is a typed UUID relation that OR resolves on read. <code>CnDetailGrid</code> renders the related object's title as a link to the other app's detail page. No HTTP roundtrip in your code.
+</HexCard>
+
+<HexCard title="Files attached to objects">
+  Every register-backed object can have files attached, stored in the user's Nextcloud Files. <code>CnObjectSidebar</code>'s built-in Files tab handles upload, preview, and download. Your schema declares the attachment property; you write zero file-handling code.
+</HexCard>
+
+<HexCard title="Calendar / Contacts / Talk integrations">
+  Annotate a schema property as <code>format: "calendar"</code> and bookings appear in the user's Nextcloud Calendar. Tag a person reference with <code>format: "contact"</code> and the linked vCard becomes a click-through. Pluggable integration registry (ADR-019) lets you add Talk threads, signed documents, or any other Nextcloud surface to a register without touching the apps that consume the register.
+</HexCard>
+
+<HexCard title="Multi-tenant defaults">
+  OR's register lifecycle handles tenant isolation at the register level. Object visibility, user scoping, and group-based read filters are configuration, not code. Apps inherit the tenant model from their register.
+</HexCard>
+
+Paths 2 and 3 both build on this foundation. Path 1 does not — every one of the bullets above is a separate engineering project if you start from raw Nextcloud.
+
+## Two surfaces, one curriculum
+
+A common confusion when reading the rest of this series: **the manifest is not the same thing as the component library**, even though we teach them together.
+
+- The **manifest** is `src/manifest.json`. It is a JSON document validated by a schema (`https://raw.githubusercontent.com/ConductionNL/nextcloud-vue/main/src/schemas/app-manifest-v2.schema.json`, currently version 2.7.0). It describes navigation entries, routes, and what each page renders. It has no runtime behaviour on its own.
+- The **component library** is `@conduction/nextcloud-vue`. It is a set of Vue 2 components prefixed `Cn*` — `CnAppRoot` mounts the app shell, `CnPageRenderer` reads the manifest and dispatches the right page component, `CnIndexPage`/`CnDetailPage`/`CnDashboardPage` render the actual page surfaces.
+
+You can use the library without the manifest. Path 2 in the table above does exactly that — a hand-rolled `App.vue` mounts `Cn*` components directly in a hand-written router. You write more Vue, but you keep the schema-driven listing/detail/form behaviour and you keep all the OpenRegister perks.
+
+You cannot use the manifest without the library. The manifest is meaningless until something reads it — `CnPageRenderer` is that something. So the manifest path is always a *manifest + library* curriculum.
+
+The implication for how to read this series:
+
+| Lesson | Manifest surface | Library surface |
+|---|---|---|
+| **Part 1: Scaffold** | none yet | `CnAppRoot` chassis |
+| **Part 2: Schemas + manifest** | introduce `manifest.json`, page types, `config` props | `CnPageRenderer` dispatch, `CnIndexPage` + `CnDetailPage` props |
+| **Part 3: Schema-driven integrations** | unchanged | calendar provider annotation flows through `CnDetailGrid` |
+| **Part 4: Knowledge tab + ship** | sidebar tabs in `config.sidebar`, `type: 'custom'` for the wiki view | host-app SFC registered as a custom component, `CnObjectSidebar` consumes manifest tabs |
+
+If you only remember one thing about the relationship: **the manifest answers "what should this app render"; the library answers "how does that get rendered". The library makes the manifest live.**
+
+## A note on choosing once vs choosing later
+
+You do not have to pick a path forever. Apps move between Path 2 and Path 3 routinely — a few of the Conduction apps started life on Path 2 and moved to Path 3 once the team learned the manifest. The migration is usually 1–2 days for an app with 5–10 schemas, because the schemas don't change at all; only `App.vue` + the router are replaced by `CnAppRoot` + a manifest.
+
+Moving from Path 1 to Path 2 or Path 3 is harder because you have to migrate the data layer to a register. Plan that as a real project, not as a refactor between sprints.
+
+## Where to go from here
+
+<NextSteps>
+  <NextStep
+    title="Part 1 — Scaffold the app"
+    href="/academy/deskdesk-tutorial-1-scaffold"
+    description="Clone the Conduction app template, rename it to DeskDesk, build, enable, see the canonical chassis. No data yet — just the bones."
+  />
+  <NextStep
+    title="Part 2 — Schemas + manifest"
+    href="/academy/deskdesk-tutorial-2-schemas-manifest"
+    description="Three JSON files become a CRUD app. Where Path 3 starts paying back the steeper initial curve."
+  />
+  <NextStep
+    title="OpenRegister documentation"
+    href="https://openregister.conduction.nl"
+    description="The data platform that powers Paths 2 and 3. Read the RBAC, audit, and GraphQL sections to see why those bullets are real."
+  />
+  <NextStep
+    title="App manifest reference"
+    href="https://nextcloud-vue.conduction.nl/docs/architecture/manifest/"
+    description="Full manifest spec — page types, slots, sidebar config, route-param sentinels, and the typed shapes introduced in schema 2.7.0."
+  />
+</NextSteps>

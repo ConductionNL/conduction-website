@@ -1,0 +1,320 @@
+---
+slug: claude-skills-tutorial-1-wat-zijn-claude-skills
+title: "Claude Skills leerlijn — Deel 1: Wat zijn Claude Skills?"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-15
+summary: Wat is een Claude Skill, wanneer schrijf je er een (en wanneer juist een prompt of command), welke velden staan in de frontmatter en hoe weet Claude wanneer hij hem moet triggeren. Eerste van vier korte modules.
+tags: [Claude, Claude Code, Skills, AI, Tutorial series]
+apps: []
+durationMinutes: 12
+series: claude-skills-tutorial
+partNumber: 1
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+Claude Skills zijn het mechanisme waarmee je Claude Code uitbreidt met herbruikbare, gespecialiseerde gedragingen. Denk aan Conductions eigen `/review-pr`, `/opsx-new` of de hele `hydra-gate-*` familie: stuk voor stuk skills. Dit eerste deel legt in tien minuten uit wát een skill is, hoe hij geactiveerd wordt, en wanneer je beter géén skill maakt. Het is deel 1 van een leerlijn van vier; aan het eind sta je klaar om er in deel 2 zelf een te schrijven — en in deel 3 introduceren we het **7-level maturity-framework** waarmee je een skill van "voelt goed" naar "gemeten goed" brengt (deel 4 gaat door op L6 en L7).
+
+{/* truncate */}
+
+<Outcomes title="Wat je leert in dit deel">
+  <Outcome>Wat een Claude Skill is — een mapje met een <code>SKILL.md</code> dat Claude on-demand laadt.</Outcome>
+  <Outcome>De twee manieren waarop een skill geactiveerd kan worden: handmatig via <code>/</code> en automatisch door Claude zelf.</Outcome>
+  <Outcome>Welke velden de frontmatter heeft, en waarom de <code>description</code> verreweg het belangrijkste veld is.</Outcome>
+  <Outcome>Wanneer een skill de juiste keuze is — en wanneer een gewone prompt, een command of een agent beter past.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Een werkende installatie van <a href="https://docs.claude.com/en/docs/claude-code/overview">Claude Code</a> op je laptop. Zo niet, doe eerst de <a href="https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md">Workstation Setup</a>.</PrerequisiteItem>
+  <PrerequisiteItem>Basiskennis Git en GitHub — een skill is uiteindelijk gewoon een bestand dat je commit.</PrerequisiteItem>
+  <PrerequisiteItem>Een paar uur ervaring met Claude Code in de praktijk. Je hoeft geen power-user te zijn, maar je moet wel weten wat <code>/help</code> doet en hoe je een prompt naar Claude stuurt.</PrerequisiteItem>
+</Prerequisites>
+
+## In één zin
+
+Een **Claude Skill** is een mapje onder `.claude/skills/<naam>/` met daarin een `SKILL.md` (en optioneel scripts, voorbeelden, referentiebestanden). De frontmatter van die `SKILL.md` vertelt Claude wanneer de skill relevant is; de inhoud is de instructie die Claude volgt zodra de skill geladen wordt.
+
+Praktisch: een skill is een **bundel-eenheid van gedrag**. In plaats van duizend regels prompt-tekst in `CLAUDE.md` te plakken, of telkens dezelfde instructies opnieuw te typen, schrijf je het één keer als skill. Hergebruikbaar, testbaar, en deelbaar met je team.
+
+```
+.claude/skills/
+└── review-pr/
+    ├── SKILL.md          ← verplicht: de skill-logica
+    ├── templates/        ← optioneel: bestanden met placeholders
+    ├── references/       ← optioneel: standaarden en achtergrond
+    ├── examples/         ← optioneel: voorbeelden van gewenste output
+    └── scripts/          ← optioneel: shell- of Python-scripts
+```
+
+## Hoe een skill wordt aangeroepen
+
+Eén skill kan op **twee manieren** in actie komen:
+
+1. **Handmatig** — je typt `/review-pr` in een Claude-sessie. Direct, voorspelbaar, en de skill draait precies wanneer jij dat wilt.
+2. **Automatisch** — Claude leest de `description` van alle beschikbare skills mee en kiest er zelf eentje wanneer de huidige situatie matcht. Vraag bijvoorbeeld "kun je deze PR reviewen?" en Claude triggert vanzelf `review-pr` als die voorhanden is.
+
+Welke mode is toegestaan, regel je in de frontmatter van de skill zelf:
+
+- `disable-model-invocation: true` — alleen jij kunt 'm aanroepen via `/<naam>`. Gebruik dit voor skills met side-effects (`/opsx-apply` past code aan, `/create-pr` opent een PR). Claude mag dit niet zomaar uit zichzelf doen.
+- `user-invocable: false` — alleen Claude zelf mag 'm laden. Gebruik dit voor achtergrondkennis die niet als actie zinvol is (bijvoorbeeld een `legacy-system-context` die alleen informeert).
+- Geen van beide gezet → beide mogen. Default voor de meeste skills.
+
+In een Hydra-pipeline draaien skills meestal **automatisch**: containers hebben geen toetsenbord en leunen op auto-activatie. Achter je eigen toetsenbord typ je vaker expliciet `/` voor controle.
+
+## De frontmatter, veld voor veld
+
+Een minimale `SKILL.md` ziet er zo uit:
+
+```markdown
+---
+name: review-pr
+description: Review a Pull Request — runs local checks, summarises the diff, and posts inline comments
+metadata:
+  category: Workflow
+  tags: [github, review]
+---
+
+# Review PR
+
+Korte uitleg van wat de skill doet.
+
+**Input**: hoe je de skill aanroept en welke argumenten hij accepteert.
+
+**Steps**
+
+1. **Stap-naam**
+   Instructies...
+
+2. **Stap-naam**
+   Instructies...
+
+**Guardrails**
+- Wat de skill nooit mag doen
+- Wat hij moet checken voor destructieve acties
+```
+
+Drie velden vragen extra aandacht:
+
+| Veld | Functie |
+|---|---|
+| `name` | Moet **exact gelijk** zijn aan de mapnaam. Folder heet `review-pr` → `name: review-pr`. Wijkt het af, dan kun je de skill niet via `/<naam>` triggeren. |
+| `description` | Het belangrijkste veld van de hele skill. Hierop beslist Claude of de skill relevant is. Action-oriented, derde persoon, met concrete trigger-woorden. |
+| `metadata.tags` / `metadata.category` | Vrij in te vullen, handig voor filteren en groeperen — geen invloed op triggering. |
+
+### Waarom de description zoveel belangrijker is dan je denkt
+
+Claude laadt skills in drie lagen:
+
+| Laag | Wat | Wanneer geladen |
+|---|---|---|
+| **Metadata** | `name` + `description` | **Altijd** — zit standaard in de system prompt |
+| **SKILL.md body** | Steps, guardrails, instructies | Pas wanneer de skill triggert |
+| **Reference files** | `references/`, `templates/`, `examples/` | On-demand tijdens uitvoering |
+
+Dat betekent: alleen je `description` staat altijd "aan". Is hij vaag, dan vuurt je skill nooit automatisch. Schrijf 'm in derde persoon, start met een werkwoord, en plak de meest specifieke trigger-woorden vooraan (alleen de eerste ~250 tekens zijn zichtbaar in skill-listings).
+
+```
+# Slecht — vaag, passief, geen trigger-woorden
+description: A skill that helps with various document-related tasks
+
+# Goed — specifiek, derde persoon, action-werkwoord vooraan
+description: Create a Pull Request from the current branch — runs local checks, picks target branch, and opens the PR on GitHub
+```
+
+### Verdiepende frontmatter-velden
+
+Naast `name`, `description` en `metadata` zijn er een paar optionele velden die het gedrag van een skill subtiel sturen. Je hebt ze niet altijd nodig, maar weten dát ze bestaan helpt later:
+
+| Veld | Functie | Wanneer gebruiken |
+|---|---|---|
+| `allowed-tools` | Beperkt welke tools de skill mag aanroepen | Read-only audit-skills die nooit mogen schrijven |
+| `context: fork` | Runt de skill in een geïsoleerde sub-context | Zware skills die je hoofdgesprek niet willen vervuilen |
+| `paths` | Auto-trigger alleen bij werk in deze paden | Skills die alleen relevant zijn in bv. `openspec/**` |
+| `disable-model-invocation` | Schakelt auto-trigger volledig uit | Skills met side-effects die strikt slash-only moeten zijn |
+| `user-invocable: false` | Schakelt handmatige `/`-invocatie uit | Pure achtergrondkennis voor Claude zelf |
+
+Begin met de drie verplichte/basis-velden. Voeg de bovenstaande pas toe als je een concrete reden hebt — anders maak je je skill stiller of strikter dan nodig.
+
+### Naming convention: `namespace-action`
+
+Skills heten standaard `<namespace>-<action>` met alleen kleine letters, cijfers en koppeltekens. Conduction gebruikt onder meer:
+
+| Namespace | Dekt |
+|---|---|
+| `opsx-` | OpenSpec-workflow (`opsx-new`, `opsx-apply`, `opsx-archive`) |
+| `app-` | Nextcloud app-lifecycle (`app-design`, `app-create`) |
+| `test-` | Testen (`test-counsel`, `test-persona-henk`) |
+| `team-` | Scrum team-rollen (`team-backend`, `team-qa`) |
+| `hydra-gate-` | Quality- en security-gates binnen Hydra |
+
+De mapnaam, het `name`-veld én de manier waarop je 'm typt (`/<naam>`) moeten allemaal exact gelijk zijn.
+
+## Skill vs. prompt vs. agent
+
+Een veelgehoorde vraag: wanneer is een skill de juiste keuze, en wanneer iets anders? Drie categorieën, kort:
+
+<HexCard title="Gewone prompt">
+  Eenmalig, of iets wat je sneller schrijft dan op te zoeken. Geen herhaalbaar patroon. Voorbeeld: <em>"refactor deze functie naar early-return-stijl"</em>.
+</HexCard>
+
+<HexCard title="Skill">
+  Herhaalbaar gedrag, mechanisch te beschrijven, met side-effects of een vast stappenplan. Voorbeelden: <code>/review-pr</code>, <code>/opsx-new</code>, <code>/create-pr</code>.
+</HexCard>
+
+<HexCard title="Subagent">
+  Een aparte uitvoeringscontext met eigen tools en eigen tokenbudget. Gebruik je wanneer je werk wilt isoleren (zware exploratie, parallelle reviews). Een skill kan een subagent oproepen, maar is er niet hetzelfde als.
+</HexCard>
+
+De pragmatische test: schrijf een skill als…
+
+1. **Het gedrag is herhaalbaar** — meer dan eens nodig, op meer dan één plek.
+2. **Het is mechanisch beschrijfbaar** — je kunt het in 1-3 alinea's instrueren, zonder dat het ontaardt in "het hangt van de context af".
+3. **Je teamgenoot zou hetzelfde willen doen** — anders is het een persoonlijke macro, geen team-skill.
+
+Voor één-keer-werk: gewoon prompten. Voor herhaalbaar werk: skill. Voor zware isolatie van een sub-werkstroom: subagent.
+
+## Waar skills "wonen"
+
+Skills kunnen op drie niveaus liggen:
+
+| Niveau | Pad | Wie zie ze |
+|---|---|---|
+| **Globaal** | `~/.claude/skills/<naam>/` | Jij, in elke Claude-sessie op deze laptop |
+| **Per project** | `<repo>/.claude/skills/<naam>/` | Iedereen die in deze repo werkt — gecommit in Git |
+| **Vendored** | `<repo>/vendor/skills/<naam>/` | Idem, maar afkomstig van een externe partij (bv. Anthropic of Trail of Bits) |
+
+In Conduction-repo's leeft het overgrote deel als **project-skills** in `<repo>/.claude/skills/`. Dat zorgt dat het hele team — en Hydra's Docker-personas — exact dezelfde skills hebben.
+
+## Test jezelf
+
+Vier korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
+
+<div className="tutorial-quiz">
+
+**1. Wanneer kies je voor een skill, en wanneer voor een gewone prompt of een subagent?**
+
+<Details summary="Hint">
+
+Denk aan herhaalbaarheid, mechanische beschrijfbaarheid, en isolatie. Bij welke combinaties valt de keuze welke kant op?
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **Gewone prompt** — eenmalig, of iets wat je sneller schrijft dan op te zoeken. Geen herhaalbaar patroon. Bijvoorbeeld: *"refactor deze functie naar early-return-stijl"*.
+- **Skill** — herhaalbaar gedrag, mechanisch te beschrijven, met side-effects of een vast stappenplan. Voorbeelden: `/review-pr`, `/opsx-new`, `/create-pr`. Je teamgenoot zou ook willen dat dit consistent gebeurt.
+- **Subagent** — een aparte uitvoeringscontext met eigen tools en tokenbudget. Voor isolatie: zware exploratie, parallelle reviews. Een skill kan een subagent oproepen, maar is niet hetzelfde.
+
+Vuistregel: één-keer-werk → prompt. Herhaalbaar werk → skill. Zware isolatie van een sub-werkstroom → subagent.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Welke velden zijn verplicht in de frontmatter van een skill, en wat doen ze?**
+
+<Details summary="Hint">
+
+Twee velden zijn écht verplicht. Eén ervan beslist over de mapnaam, de ander beslist of Claude de skill ooit oppikt.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Verplicht zijn:
+
+- **`name`** — moet exact gelijk zijn aan de mapnaam (folder `review-pr` → `name: review-pr`). Wijkt het af, dan kun je de skill niet via `/<naam>` triggeren.
+- **`description`** — wat Claude leest om te beslissen of de skill relevant is. Action-oriented, derde persoon, concrete trigger-woorden vooraan.
+
+Optioneel, maar veel gebruikt:
+
+- **`metadata.category`** / **`metadata.tags`** — voor filteren/groeperen.
+- **`disable-model-invocation: true`** — alleen handmatig oproepbaar.
+- **`user-invocable: false`** — alleen automatisch laadbaar door Claude.
+- **`allowed-tools`** — beperkt welke tools de skill mag gebruiken.
+
+Verreweg het belangrijkste veld is de `description`: alleen díe staat altijd in de system prompt geladen. De rest van de `SKILL.md` wordt pas gelezen wanneer de skill triggert.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Hoe weet Claude wanneer hij een skill moet triggeren — wat staat er in de `description`?**
+
+<Details summary="Hint">
+
+Claude leest een korte tekst en moet vervolgens op basis daarvan beslissen. Wat zou jij willen lezen om die beslissing snel en zeker te kunnen nemen?
+
+</Details>
+
+<Details summary="Antwoord">
+
+Claude vergelijkt de huidige conversatie tegen de `description` van elke beschikbare skill. Een goede description:
+
+1. **Begint met een action-werkwoord** (`Create`, `Review`, `Archive`, `Test`, …) — geen passieve constructies.
+2. **Front-loadt de kern in de eerste ~250 tekens** — daarna kapt het skill-listing af.
+3. **Bevat concrete trigger-woorden** — zelfstandige naamwoorden en werkwoorden die een gebruiker zou typen. ("Pull Request", "review", "GitHub branch" voor `review-pr`).
+4. **Is geschreven in derde persoon** — hij wordt letterlijk in de system prompt geïnjecteerd.
+
+Vermijd vage formuleringen ("helpt met allerlei dingen"), de eerste persoon ("ik help je…"), en marketing-taal ("een handige tool voor…"). Concreet en specifiek wint altijd.
+
+Praktische realiteit: meerdere bronnen rapporteren ~50% auto-activatie zelfs voor goede skills, doordat Claude een vast contextbudget heeft voor skill-descriptions. Bij grote skill-libraries is expliciet `/skill-naam` typen altijd betrouwbaarder dan vertrouwen op auto-trigger.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Wanneer is het beter om een gewone prompt te schrijven dan een skill?**
+
+<Details summary="Hint">
+
+Vraag jezelf: ga ik dit nog een keer doen? En zou een collega dit ook willen?
+
+</Details>
+
+<Details summary="Antwoord">
+
+Schrijf een gewone prompt als…
+
+- Het werk is **eenmalig**: een specifieke refactor, een onderzoeksvraag, een ad-hoc analyse.
+- Het is **persoonlijk**: alleen jij hebt het ooit nodig, niemand anders in het team — dan blijft het een eigen macro/snippet, geen team-skill.
+- Het is **moeilijk mechanisch beschrijfbaar**: "het hangt sterk van de context af", veel uitzonderingen, veel oordeel. Skills zijn voor herhaalbare patronen, niet voor situatie-specifieke beslissingen.
+- Je hebt **nog geen 3 keer hetzelfde gedaan**. Schrijf een skill pas wanneer je het patroon écht ziet — anders bouw je een abstractie op één voorbeeld.
+
+Vuistregel ("rule of three"): één keer is toeval, twee keer ook nog, drie keer is een patroon dat een skill verdient.
+
+</Details>
+
+</div>
+
+<NextSteps title="Volgende stap" lede="Nu je weet wat een skill is, gaan we er in deel 2 zelf eentje schrijven — met /skill-creator als startpunt.">
+  <NextStep
+    title="Deel 2 — Je eerste skill schrijven"
+    href="/academy/claude-skills-tutorial-2-je-eerste-skill"
+    description="Van mapje naar werkende skill: scaffolden met /skill-creator, een goede description schrijven, lokaal testen, en opnemen in de skill-registry."
+  />
+  <NextStep
+    title="Anthropic — Skill authoring best practices"
+    href="https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices"
+    description="De officiële Anthropic-documentatie over skill-structuur, descriptions en progressive disclosure. Goed als achtergrondlectuur."
+  />
+  <NextStep
+    title="Agent Skills Open Standard"
+    href="https://agentskills.io/specification"
+    description="De open standaard voor het SKILL.md-formaat, geadopteerd door 20+ tools (OpenAI Codex, Gemini CLI, Cursor, GitHub Copilot)."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Vragen over Claude Skills?"
+  body="Stuur ons gerust een mail of stel je vraag via GitHub Discussions op de .github-repo. We helpen je graag op weg."
+  cta={{ label: "Mail Conduction", href: "mailto:info@conduction.nl?subject=Claude%20Skills%20leerlijn%20deel%201" }}
+/>
