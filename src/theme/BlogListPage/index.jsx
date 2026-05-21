@@ -19,6 +19,7 @@
 
 import React, {useEffect, useMemo, useState} from 'react';
 import clsx from 'clsx';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import {
   HtmlClassNameProvider,
   ThemeClassNames,
@@ -66,12 +67,18 @@ function readQuery(search, knownModules, knownSeries) {
 const SERIES_LABEL_OVERRIDES = {
   'hydra-tutorial':         'Hydra',
   'openspec-tutorial':      'OpenSpec',
-  'deskdesk-tutorial':      'DeskDesk',
   'claude-skills-tutorial': 'Claude Skills',
   'woo-tutorial':           'Woo',
 };
 
 function seriesLabelFor(slug) {
+  if (slug === 'deskdesk-tutorial') {
+    return translate({
+      id: 'theme.academy.seriesLabel.deskdesk',
+      message: 'Build a Nextcloud app',
+      description: 'Series chip label for the DeskDesk tutorial series on the academy landing page',
+    });
+  }
   if (SERIES_LABEL_OVERRIDES[slug]) return SERIES_LABEL_OVERRIDES[slug];
   return slug
     .replace(/-tutorial$/, '')
@@ -230,6 +237,8 @@ function countsBySeries(posts) {
 }
 
 function AcademyLandingInner({items}) {
+  const academyHref = useBaseUrl('/academy/');
+
   /* Module groupings from the academy-modules Docusaurus plugin.
      Empty object when the plugin is missing so the page still renders
      individual cards rather than throwing. */
@@ -340,9 +349,10 @@ function AcademyLandingInner({items}) {
      with a single ModuleCard. We collapse only on the unfiltered (no
      module) view because picking a type/app may already narrow a
      module to 1 visible part — collapsing that into a composite reads
-     as misleading. */
+     as misleading. Skip collapsing entirely in series-focus mode: the
+     reader picked a specific series and wants every part shown. */
   const composedItems = useMemo(() => {
-    if (active.module) return filtered;
+    if (active.module || active.series) return filtered;
 
     const seenModules = new Set();
     const result = [];
@@ -402,12 +412,24 @@ function AcademyLandingInner({items}) {
   };
 
   /* Featured slot picks the most-recent non-module post from the
-     composed list. When the user is in module-focus mode (active.module)
-     we don't surface a Featured tile — the parts list is the focus. */
-  const featured = !active.module && composedItems.length > 0 && !composedItems[0].__module
+     composed list. When the user is in module-focus or series-focus
+     mode we don't surface a Featured tile — the parts list is the
+     focus, and consuming the first item into a featured slot would
+     "hide" one part from the grid. */
+  const featured = !active.module && !active.series && composedItems.length > 0 && !composedItems[0].__module
     ? composedItems[0]
     : null;
-  const restItems = featured ? composedItems.slice(1) : composedItems;
+  /* In series-focus mode, sort parts by partNumber ascending so the
+     reader sees Part 0/1 → N in natural order rather than the default
+     date-descending order. */
+  const orderedItems = active.series
+    ? [...composedItems].sort((a, b) => {
+        const ap = a.content?.metadata?.frontMatter?.partNumber ?? 0;
+        const bp = b.content?.metadata?.frontMatter?.partNumber ?? 0;
+        return ap - bp;
+      })
+    : composedItems;
+  const restItems = featured ? orderedItems.slice(1) : orderedItems;
 
   return (
     <>
@@ -439,7 +461,10 @@ function AcademyLandingInner({items}) {
         </>
       )}
 
-      {visibleSeriesSlugs.length > 0 && (
+      {/* Series row only makes sense for tutorials. Show it on the
+          unfiltered ("Everything") view and on the explicit Tutorials
+          view; hide it for blog/guide/case-study/webinar/opinion. */}
+      {(active.type === null || active.type === 'tutorial') && visibleSeriesSlugs.length > 0 && (
         <>
           <div style={{height: 12}} />
           <ContentTypeFilter
@@ -482,7 +507,7 @@ function AcademyLandingInner({items}) {
             id="theme.academy.emptyState"
             description="Empty-state message shown when filters return no posts. {viewAll} is a link to the unfiltered academy index."
             values={{
-              viewAll: <a href="/academy/"><Translate id="theme.academy.viewAll" description="Link text inside the empty-state message">View everything</Translate></a>,
+              viewAll: <a href={academyHref}><Translate id="theme.academy.viewAll" description="Link text inside the empty-state message">View everything</Translate></a>,
             }}>
             {'Nothing yet for this combination. {viewAll}'}
           </Translate>
