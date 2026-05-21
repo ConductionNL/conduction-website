@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkconduction_website=globalThis.webpackChunkconduction_website||[]).push([[6400],{3045(e){e.exports=JSON.parse('{"metadata":{"permalink":"/academy","page":1,"postsPerPage":18,"totalPages":1,"totalCount":18,"blogDescription":"Blogs, guides, case studies, webinars, tutorials. One feed, all open-source.","blogTitle":"Conduction Academy"}}')}}]);
