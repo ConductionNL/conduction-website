@@ -221,8 +221,8 @@ check('/support has FAQPage JSON-LD with >= 5 questions', () =>
 check('/install has FAQPage JSON-LD with >= 5 questions', () =>
   checkFaqPage('install', '/install', 5));
 
-check('/iso has FAQPage JSON-LD with >= 5 questions', () =>
-  checkFaqPage('iso', '/iso', 5));
+check('/quality has FAQPage JSON-LD with >= 5 questions', () =>
+  checkFaqPage('quality', '/quality', 5));
 
 /* Per-app SoftwareApplication regression marker */
 check('/apps/openregister has SoftwareApplication JSON-LD', () => {

@@ -7,7 +7,8 @@
     "docusaurus": "docusaurus",
     "postinstall": "node scripts/sync-app-downloads.js",
     "prestart": "node scripts/sync-app-downloads.js",
-    "start": "docusaurus start",
+    "start": "docusaurus start --locale en",
+    "start:nl": "docusaurus start --locale nl",
     "prebuild": "python3 .github/scripts/app_downloads.py && node scripts/sync-app-downloads.js",
     "build": "docusaurus build",
     "postbuild": "node scripts/validate-ai-baseline.mjs",
@@ -21,7 +22,7 @@
     "ci": "npm ci --legacy-peer-deps && npm run build"
   },
   "dependencies": {
-    "@conduction/docusaurus-preset": "^3.6.0",
+    "@conduction/docusaurus-preset": "^3.17.0",
     "@docusaurus/core": "^3.5.0",
     "@docusaurus/plugin-client-redirects": "^3.5.0",
     "@docusaurus/preset-classic": "^3.5.0",

@@ -271,7 +271,11 @@ The desk-detail page already mounts CnObjectSidebar. To add a **Knowledge tab** 
 }
 ```
 
-The `data` and `metadata` tabs use built-in widget types. The `knowledge` tab points at a custom component `knowledge-tab`, which the App registers via the `customComponents` map.
+A few things going on in that one config block:
+
+- **`config.sidebar` is in object form**, not the `sidebar: true` shorthand Part 2 used. The shorthand is the equivalent of `sidebar: {enabled: true}` — it gives you the lib's default tabs (Files / Notes / Tags / Tasks / Audit Trail). The object form lets you replace that default set with your own `tabs[]`. Use the shorthand whenever the defaults are enough; reach for the object form when you need a custom tab like `knowledge` here, or when you want to hide specific defaults with `hiddenTabs: ['files']`.
+- **`tabs[].widgets[]` vs `tabs[].component`** is the decision per-tab: declare a list of *built-in widget types* (`{type: 'data'}`, `{type: 'metadata'}`, `{type: 'audit-trail'}` — the lib renders them for you), or declare *one custom component* (`component: 'knowledge-tab'` — looked up in your app's `customComponents` map). A tab uses one or the other, never both. Built-ins are the cheap path; a custom component is the escape hatch when no built-in fits.
+- **The knowledge tab is the escape hatch.** xWiki articles aren't a generic widget the lib could ship — they're a per-app integration. So we register a Vue component and point the tab at it.
 
 Create the tab component itself at `src/views/KnowledgeTab.vue`:
 

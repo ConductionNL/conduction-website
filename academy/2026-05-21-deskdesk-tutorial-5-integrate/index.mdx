@@ -1,0 +1,431 @@
+---
+slug: deskdesk-tutorial-5-integrate
+title: "Build a Nextcloud app on the Conduction stack — Part 5: Integrate"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-21
+summary: Connect your shipped DeskDesk app to the rest of the workspace. Read objects from a second OpenRegister register, deepen the xWiki source from Part 4 into a per-booking knowledge tab, then close the loop with a two-way booking ↔ xWiki maintenance sync over an OpenConnector webhook.
+tags: [App development, OpenConnector, OpenRegister, Integration, xWiki, Webhook]
+apps: [openconnector, openregister]
+durationMinutes: 45
+series: deskdesk-tutorial
+partNumber: 5
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+} from '@conduction/docusaurus-preset/components';
+
+The fifth and final part of the DeskDesk tutorial. Part 4 packaged the app and put it on the Conduction store. Part 5 makes it talk to the rest of the workspace — three integration patterns layered from least to most invasive. By the end your bookings know who their customer is, every booking shows the right help articles from xWiki, and a `needs_repair` booking automatically opens a maintenance page in xWiki that flips the booking back to `available` when the page is marked resolved.
+
+The point isn't the specific integrations — it's the pattern. Cross-register reads are how Conduction apps share data without coupling. The OpenConnector source-and-synchronisation pattern is how you absorb data from anywhere into your own register. The webhook endpoint pattern is how external systems push state back. Once you've wired all three, you've covered the integration vocabulary the rest of the catalogue uses.
+
+{/* truncate */}
+
+<Outcomes title="What you'll have at the end of Part 5">
+  <Outcome>A second OpenRegister register called <code>crm</code>, with a <code>customer</code> schema, queried from inside DeskDesk without DeskDesk ever depending on a CRM app.</Outcome>
+  <Outcome>Each booking carries a <code>customerId</code>, and the booking detail page resolves it into name, email, and phone via a cross-register read.</Outcome>
+  <Outcome>The xWiki OpenConnector source from Part 4 extended with a <code>category</code> tag, so each booking surfaces the help articles that match its booking type.</Outcome>
+  <Outcome>An OR event listener that fires an outbound OpenConnector synchronisation whenever a booking flips to <code>status: needs_repair</code>, posting a maintenance page into xWiki under <code>DeskDeskMaintenance.&lt;bookingId&gt;</code>.</Outcome>
+  <Outcome>A declarative OpenConnector inbound endpoint that takes an xWiki webhook payload, reads <code>resolved: true</code>, and walks the booking back to <code>available</code> — closing the loop without leaving the workspace.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Where you should be">
+  <PrerequisiteItem>Parts 1–4 done: a shipped DeskDesk app with floor / desk / booking / knowledge_article schemas, the calendar integration, and the xWiki knowledge source from Part 4 already syncing.</PrerequisiteItem>
+  <PrerequisiteItem>The reference stack from <a href="/academy/nextcloud-lokaal-draaien">Nextcloud lokaal draaien met Docker</a>, including the xWiki service started in Part 4. We reuse the same container, the same admin user, the same Postgres.</PrerequisiteItem>
+  <PrerequisiteItem><strong>OpenConnector</strong> already installed and enabled (you set this up in Part 4 for the knowledge sync).</PrerequisiteItem>
+</Prerequisites>
+
+## Step 1: A second register, queried from DeskDesk
+
+The first integration you'll write doesn't touch a single external system. It's a cross-register read inside OpenRegister — the smallest integration the platform supports, and the one that unlocks every other Conduction app.
+
+The premise: DeskDesk's bookings have a `customerName` string today. That's fine for a demo, but in production the customer record lives in your CRM. If you put it in a second OpenRegister register instead of inside DeskDesk, every Conduction app on the stack can read and write it without going through DeskDesk's API. That's the platform play: shared schemas, one source of truth.
+
+### Create the `crm` register
+
+You don't need a separate app to host the register — `crm` is just another register OpenRegister manages. From `/apps/openregister/registers` click **New register** and fill in:
+
+```
+Slug:        crm
+Title:       CRM
+Description: Customer records shared across apps.
+Version:     0.1.0
+```
+
+Add a `customer` schema with the obvious fields:
+
+```json title="customer schema"
+{
+  "slug": "customer",
+  "title": "Customer",
+  "type": "object",
+  "required": ["name"],
+  "properties": {
+    "name":  { "type": "string" },
+    "email": { "type": "string", "format": "email" },
+    "phone": { "type": "string" },
+    "notes": { "type": "string" }
+  }
+}
+```
+
+Add three records by hand from the OR admin UI:
+
+```
+Anna de Vries   anna@example.org    +31 6 1234 5678
+Bram Janssen    bram@example.org    +31 6 9876 5432
+Café Bohème     ops@cafeboheme.nl   +31 20 555 0142
+```
+
+OpenRegister assigns each an `id` (a UUID). Note them — you'll reference them from booking records.
+
+### Extend `booking` with a `customerId`
+
+Open `lib/Settings/deskdesk_register.json` and add a property to the existing `booking` schema:
+
+```json title="lib/Settings/deskdesk_register.json (booking properties)"
+"customerId": {
+  "type": "string",
+  "format": "uuid",
+  "description": "UUID of a record in the crm.customer schema. Cross-register reference."
+}
+```
+
+Bump the register's `info.version` to `0.5.0` so the import handler picks the change up, then reload settings:
+
+```bash
+docker exec nextcloud apache2ctl graceful
+# from the deskdesk admin page click Reload, or POST /apps/deskdesk/api/settings/load
+```
+
+Update one of your existing booking seeds to point at a customer UUID (replace `<anna-uuid>` with the real one):
+
+```json title="components.objects (excerpt)"
+"booking-3east-tuesday": {
+  "@self": { "register": "deskdesk", "schema": "booking", "slug": "booking-3east-tuesday" },
+  "deskId": "<3-east-uuid>",
+  "customerId": "<anna-uuid>",
+  "status": "confirmed",
+  "start": "2026-05-26T09:00:00Z",
+  "end":   "2026-05-26T17:00:00Z"
+}
+```
+
+### Read the customer from BookingDetail
+
+The frontend already uses `useObjectStore` from `@conduction/nextcloud-vue` (Part 2 introduced it). The store's `fetchObject(schema, id)` and `fetchCollection(schema, params)` calls take **any** schema slug — they don't care which register owns it, because the OR REST endpoint is `/api/objects/{register}/{schema}` and the store passes the register through.
+
+Add a small composable that fetches the customer for the current booking:
+
+```vue title="src/views/BookingDetail.vue (script excerpt)"
+<script>
+import { useObjectStore } from '@conduction/nextcloud-vue'
+
+export default {
+  name: 'BookingDetail',
+  props: { objectId: { type: String, required: true } },
+  setup() { return { objectStore: useObjectStore() } },
+  data() { return { booking: null, customer: null, loading: true } },
+  watch: {
+    objectId: {
+      immediate: true,
+      async handler(id) {
+        this.loading = true
+        try {
+          this.booking = await this.objectStore.fetchObject('booking', id)
+          if (this.booking?.customerId) {
+            this.customer = await this.objectStore.fetchObject(
+              'customer',
+              this.booking.customerId,
+              { register: 'crm' },   // <-- the only cross-register hint
+            )
+          }
+        } finally { this.loading = false }
+      },
+    },
+  },
+}
+</script>
+```
+
+The `register: 'crm'` option in `fetchObject` is the only line that differs from a same-register read. Everything else is the store you already had.
+
+Render the customer above the rest of the detail body:
+
+```vue title="src/views/BookingDetail.vue (template excerpt)"
+<section v-if="customer" class="booking-detail__customer">
+  <h2>{{ customer.name }}</h2>
+  <p>
+    <a :href="`mailto:${customer.email}`">{{ customer.email }}</a>
+    · {{ customer.phone }}
+  </p>
+</section>
+```
+
+Build, reload, open a booking. The customer block renders at the top. Then change the `customerId` on the booking to a different UUID from the OR admin UI; reload the booking; the block updates. You've integrated with the CRM register without DeskDesk knowing what app owns it — and tomorrow, when PipelinQ ships and starts writing into the same `crm.customer` schema, DeskDesk picks up its rows for free.
+
+## Step 2: Per-booking knowledge from the existing xWiki source
+
+Part 4 built an xWiki source, a `knowledge_article` schema, and a Knowledge tab on the desk detail page that filters articles by zone. We're going to widen that source so the same articles also surface on a per-booking Help tab — filtered by the booking's _type_ (cabling-issue, av-issue, cleaning-followup), not by zone.
+
+### Add a `category` property to `knowledge_article`
+
+Open the schema you added in Part 4 and add one property:
+
+```json title="lib/Settings/deskdesk_register.json (knowledge_article excerpt)"
+"category": {
+  "type": "string",
+  "enum": ["zone", "cabling", "av", "cleaning", "policy"],
+  "default": "zone",
+  "description": "Maps the article to a booking category. zone=desk-scoped article from Part 4; the rest are booking-scoped."
+}
+```
+
+Bump `info.version` to `0.5.1` and reload. Existing seeds (the three zone articles from Part 4) keep their default `category: zone` — backwards-compatible.
+
+### Author the booking-scoped articles in xWiki
+
+The same `put` helper from Part 4. New subspace `DeskDeskKnowledge.Categories` so the source can iterate over it independently of zones:
+
+```bash
+put() {
+  curl -s -u admin:admin1234 -X PUT \
+    -H "Content-Type: application/xml" \
+    -d "<page xmlns=\"http://www.xwiki.org\"><title>$3</title><syntax>xwiki/2.1</syntax><content>$4</content></page>" \
+    "http://localhost:8086/rest/wikis/xwiki/spaces/DeskDeskKnowledge/spaces/Categories/spaces/$1/pages/$2" \
+    -o /dev/null -w "%{http_code} Categories/$1/$2\n"
+}
+put Cabling  USB-C-cable-missing  "USB-C cable missing" \
+    "Spare USB-C 100W cables are in cabinet B-04 (next to the printer on floor 3). Sign for them in the back, return by EOD."
+put Av       Camera-not-working   "Camera not working" \
+    "The ceiling camera is wired to in-room Jitsi. Power-cycle the unit using the wall switch labelled CAM. If still dead, file a ticket with status needs_repair."
+put Cleaning Coffee-spill         "Coffee spill protocol" \
+    "Notify the host immediately. Wipe the surface with the microfibre kit in the cabinet under the central desk. If on a fabric surface, mark the desk needs_repair and book another."
+```
+
+### Widen the OpenConnector synchronisation
+
+In Part 4 the source iterated over `['East', 'Central', 'West']`. We add a second pass for categories. From `/apps/openconnector/synchronisations` open your **xWiki articles → OpenRegister** sync and add a second source endpoint and a second mapping:
+
+```
+Source endpoints:
+  /wikis/xwiki/spaces/DeskDeskKnowledge/spaces/{zone}/pages       (existing, zone iteration)
+  /wikis/xwiki/spaces/DeskDeskKnowledge/spaces/Categories/spaces/{cat}/pages
+                                                                  (new, cat iteration over Cabling, Av, Cleaning)
+
+Mapping (new fields):
+  spaces.last           → category   (lowercased)
+  (constant 'zone')     → category   for the existing zone endpoint, override per-endpoint
+```
+
+Save and run. You should see six `knowledge_article` rows: three with `category: zone` (the originals), three with `category: cabling/av/cleaning`.
+
+### Add a Help tab to BookingDetail
+
+In `src/manifest.json` the booking detail already has a sidebar declaration from earlier parts. Add a Help tab:
+
+```json title="src/manifest.json (booking detail sidebar)"
+"sidebar": {
+  "tabs": [
+    { "id": "data",     "label": "deskdesk.sidebar.data",     "widgets": [{ "type": "data" }] },
+    { "id": "help",     "label": "deskdesk.sidebar.help",     "component": "help-tab" },
+    { "id": "metadata", "label": "deskdesk.sidebar.metadata", "widgets": [{ "type": "metadata" }] }
+  ]
+}
+```
+
+The `help-tab` component is a copy of `KnowledgeTab` from Part 4, with `zone` swapped for `category` and the booking's category used as the filter. Add a `category` property to the booking schema if you don't already have it (or derive it from the booking's type), then:
+
+```vue title="src/views/HelpTab.vue (script excerpt)"
+const booking = await this.objectStore.fetchObject('booking', this.objectId)
+const cat = booking?.category || 'policy'
+await this.objectStore.fetchCollection('knowledge_article', { category: cat, _limit: 25 })
+this.articles = this.objectStore.collections.knowledge_article || []
+```
+
+Register the component the same way Part 4 registered `knowledge-tab` (the `customComponents` map in `App.vue`). Build, reload, open a booking whose category is `cabling`. The Help tab shows the "USB-C cable missing" article. Change the category to `av` from the OR admin UI; the same tab on the same booking now shows "Camera not working".
+
+Two integrations, one source. That's the OpenConnector return on investment — the cost of adding the second one was an extra mapping row, not a new pipeline.
+
+## Step 3: Two-way sync between bookings and xWiki maintenance
+
+The integrations so far are read-only from DeskDesk's side. Step 3 closes the loop. When a booking flips to `status: needs_repair`, DeskDesk creates a maintenance page in xWiki at `DeskDeskMaintenance.<bookingId>` with the booking details. The facilities team works the page in xWiki — adds notes, photos, vendor receipts — and when they tick a `resolved` property, an xWiki webhook fires that lands back in DeskDesk and flips the booking to `status: available`.
+
+Two halves: outbound (DeskDesk → xWiki) and inbound (xWiki → DeskDesk). Outbound needs ~25 lines of PHP in DeskDesk to bridge `ObjectUpdatedEvent` to an OpenConnector synchronisation call. Inbound is pure configuration — an OpenConnector endpoint with a mapping.
+
+### 3a: An OpenConnector synchronisation that *writes* to xWiki
+
+So far OpenConnector synchronisations have read from xWiki and written into OR. Synchronisations are bidirectional — the same surface can also POST to a source. Create a second sync:
+
+```
+Name:             Booking maintenance → xWiki
+Direction:        push
+Source:           xWiki Knowledge  (same one as Part 4)
+Source endpoint:  /wikis/xwiki/spaces/DeskDeskMaintenance/pages/{bookingId}
+                  method: PUT
+                  body template (xwiki/2.1):
+                    Booking {{bookingId}} requires maintenance.
+                    Desk: {{deskId}}, reported {{updatedAt}}.
+                    {{notes}}
+                    Set property `resolved: true` and save when fixed.
+Target register:  deskdesk
+Target schema:    booking
+Trigger:          manual (we'll fire it from PHP, not on a schedule)
+```
+
+Save and grab the synchronisation's numeric id from the URL (`/apps/openconnector/synchronisations/<id>`). You'll reference it from the listener below.
+
+### 3b: A tiny DeskDesk listener that fires the sync on status change
+
+This is the first PHP file in the series that isn't a wrapper, a settings helper, or a route. About twenty-five lines. Add `lib/Listener/BookingMaintenanceListener.php`:
+
+```php title="lib/Listener/BookingMaintenanceListener.php"
+<?php
+
+declare(strict_types=1);
+
+namespace OCA\DeskDesk\Listener;
+
+use OCA\OpenRegister\Event\ObjectUpdatedEvent;
+use OCA\OpenConnector\Service\SynchronizationService;
+use OCP\EventDispatcher\Event;
+use OCP\EventDispatcher\IEventListener;
+
+/** @template-implements IEventListener<ObjectUpdatedEvent> */
+class BookingMaintenanceListener implements IEventListener {
+
+    private const SYNC_ID = 7;   // the "Booking maintenance → xWiki" sync id
+
+    public function __construct(private SynchronizationService $sync) {}
+
+    public function handle(Event $event): void {
+        if (!$event instanceof ObjectUpdatedEvent) { return; }
+
+        $obj = $event->getObject();
+        if ($obj->getSchema() !== 'booking') { return; }
+
+        $before = $event->getOldObject()?->getObjectArray() ?? [];
+        $after  = $obj->getObjectArray();
+        if (($before['status'] ?? null) === 'needs_repair') { return; }   // no transition
+        if (($after['status']  ?? null) !== 'needs_repair') { return; }
+
+        $this->sync->runForObject(self::SYNC_ID, $obj);
+    }
+}
+```
+
+Wire it up in `lib/AppInfo/Application.php`:
+
+```php title="lib/AppInfo/Application.php (boot excerpt)"
+use OCA\DeskDesk\Listener\BookingMaintenanceListener;
+use OCA\OpenRegister\Event\ObjectUpdatedEvent;
+
+public function register(IRegistrationContext $context): void {
+    $context->registerEventListener(ObjectUpdatedEvent::class, BookingMaintenanceListener::class);
+}
+```
+
+`composer install` to refresh the autoloader, then graceful-reload Nextcloud (`apache2ctl graceful`). Flip a booking's status to `needs_repair` from the OR admin UI. Reload xWiki and navigate to `DeskDeskMaintenance` — there's a page named after the booking id, with the body template filled in. The outbound half is done.
+
+### 3c: An OpenConnector inbound endpoint that catches xWiki's webhook
+
+For the return path you don't write PHP — OpenConnector has a built-in endpoint receiver at `POST /apps/openconnector/api/endpoint/{path}` that maps an incoming payload onto an OR object.
+
+From `/apps/openconnector/endpoints` create:
+
+```
+Name:        xwiki-maintenance-resolved
+Path:        xwiki-maintenance-resolved
+Method:      POST
+Auth:        Bearer  (paste a secret string; you'll reuse it on the xWiki side)
+Mapping:
+  $.page                  → context.bookingId   (xWiki page name == booking id)
+  $.properties.resolved   → context.resolved
+Action:
+  When context.resolved == true:
+    UPDATE booking WHERE id = context.bookingId  SET status = 'available'
+```
+
+Save. The endpoint URL is `http://localhost:8080/apps/openconnector/api/endpoint/xwiki-maintenance-resolved`.
+
+### 3d: Configure the xWiki webhook
+
+xWiki ships a Webhook application. Install it once from `/xwiki/bin/view/XWiki/AddOnsManagerActions` (Extension Manager → search "Webhook"). Once installed, go to the `DeskDeskMaintenance` space, **Administer Space → Webhooks → Add**:
+
+```text
+Name:    deskdesk-resolved
+URL:     http://nextcloud:80/apps/openconnector/api/endpoint/xwiki-maintenance-resolved
+         (container-to-container; from xWiki's container, nextcloud:80 reaches Nextcloud)
+Trigger: Page updated
+Filter:  Only pages in DeskDeskMaintenance
+Auth:    Bearer <the secret you set on the OpenConnector endpoint>
+Payload: {
+  "page":       "$!{doc.documentReference.name}",
+  "properties": $!{object.properties.json}
+}
+```
+
+Save. Walk through the loop end to end:
+
+1. Flip a booking to `status: needs_repair` in OR. → A page appears in xWiki under `DeskDeskMaintenance.<bookingId>`.
+2. Edit the page in xWiki, set its `resolved` property to `true`, save. → The webhook fires, OpenConnector matches the path, the mapping pulls the booking id and `resolved`, the action flips the booking back to `available`.
+
+Reload the booking detail in DeskDesk. Status: available. The platform did the round-trip, and DeskDesk has one twenty-five-line PHP file to show for it. The other half of the integration is JSON and a webhook config.
+
+## What you've built
+
+In Parts 1–4 the only PHP in the app was infrastructure — settings, routes, a path-resolution fix. Part 5 introduces the first PHP file that actually does business logic: one event listener, twenty-five lines, gated on a status transition. Everything else is configuration:
+
+- A second register, queried cross-register from a one-line `register: 'crm'` hint on `fetchObject`.
+- Two integrations on a single OpenConnector source, separated by a `category` mapping.
+- An outbound synchronisation triggered by an OR event listener.
+- An inbound endpoint that maps an xWiki webhook payload onto an OR update, declaratively, with no PHP.
+
+Three patterns. They scale. Cross-register reads are how MyDash composes dashboards out of every Conduction app's data without coupling. The source-and-synchronisation pattern is how every app in the catalogue absorbs data from elsewhere — xWiki today, SharePoint or Notion tomorrow, the same wiring. The webhook endpoint pattern is how external systems hand state back to the workspace.
+
+The DeskDesk tutorial ends here. The app is shipped, in the store, integrated with the workspace and an external knowledge system, and it round-trips state with a third party. Five parts, a couple of hundred lines of JSON, three small Vue files, and a single PHP listener. That's the cost of an integrated, governable Nextcloud app on the Conduction stack.
+
+## Troubleshooting
+
+<HexCard title="Cross-register read returns 404">
+  The <code>register</code> parameter is case-sensitive and must match the slug exactly. <code>crm</code> not <code>CRM</code>. Inspect the network panel: the URL should be <code>/apps/openregister/api/objects/crm/customer/&lt;id&gt;</code>. If it's <code>/api/objects/deskdesk/customer/...</code> you forgot the <code>register</code> hint and the store defaulted to DeskDesk's own register.
+</HexCard>
+
+<HexCard title="OpenConnector sync writes nothing on PUT">
+  Push-direction syncs need the target endpoint to be reachable from the OpenConnector container, not from your host. <code>http://localhost:8086</code> works from the host, <code>http://openregister-xwiki:8080</code> works from inside the Nextcloud container. Use the container hostname.
+</HexCard>
+
+<HexCard title="Event listener fires but the sync doesn't run">
+  Check that <code>SynchronizationService</code> is properly autowired and the sync id constant matches what the URL shows. A wrong id silently logs and returns. Tail <code>data/nextcloud.log</code> while you flip a booking.
+</HexCard>
+
+<HexCard title="xWiki webhook reaches OpenConnector but the payload is empty">
+  xWiki's <code>{'${object.properties.json}'}</code> template is only filled when the page has an XClass attached. Add a small <code>MaintenanceClass</code> with a <code>resolved</code> boolean to the <code>DeskDeskMaintenance</code> space and reference it from the body template Part 3a generates. The webhook starts including the properties block on the next save.
+</HexCard>
+
+## Where to next
+
+<NextSteps>
+  <NextStep
+    title="Browse the integration catalogue"
+    href="/connext"
+    description="See every workspace integration the platform ships — Mail, Files, Deck, OpenProject, the LLM adapters. The patterns from this tutorial are how all of them are wired."
+  />
+  <NextStep
+    title="ADR-019: the integration registry"
+    href="https://github.com/ConductionNL/hydra/blob/main/openspec/adr-019-pluggable-integration-registry.md"
+    description="The architecture document behind the source / synchronisation / endpoint pattern, including the long-term direction (declarative no-code event-to-sync mapping)."
+  />
+  <NextStep
+    title="Fork DeskDesk into your own use case"
+    href="https://github.com/ConductionNL/deskdesk"
+    description="The reference app is a snapshot. Yours is the journey — change the schemas, rename the menu, swap the external system. The five-part scaffolding stays the same."
+  />
+</NextSteps>

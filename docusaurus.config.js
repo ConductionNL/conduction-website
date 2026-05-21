@@ -110,7 +110,7 @@ module.exports = createConfig({
   legalLinks: {
     privacy: '/privacy',
     terms: '/terms',
-    iso: '/iso',
+    iso: '/quality',
   },
 
   /* Search Console / Bing Webmaster / etc. verification tokens are
@@ -159,7 +159,6 @@ module.exports = createConfig({
         title: 'Solutions',
         items: [
           {label: 'OpenWoo',         to: '/solutions/openwoo'},
-          {label: 'Software catalog',to: '/solutions/software-catalog'},
           {label: 'Support',         to: '/support'},
           {label: 'ConNext',         to: '/connext'},
           {label: 'Common Ground',   to: '/commonground'},
@@ -183,7 +182,7 @@ module.exports = createConfig({
           {label: 'Open source',    to: '/about#opensource'},
           {label: 'Team',           to: '/about#team'},
           {label: 'Case studies',   to: '/academy?type=case-study'},
-          {label: 'ISO',            to: '/iso'},
+          {label: 'Quality',        to: '/quality'},
           {label: 'Identity',       href: 'https://identity.conduction.nl/'},
         ],
       },
@@ -193,6 +192,14 @@ module.exports = createConfig({
 
   /* OpenCatalogi content plugin slot, wired in via env once it exists. */
   plugins: [
+    /* academy-modules: scans academy/*\/index.mdx frontmatter and emits
+       module → ordered parts global data. Consumed by BlogListPage
+       (composite ModuleCards + module pill row) and per-module MDX
+       index pages at /academy/modules/{slug}. */
+    [
+      require.resolve('./plugins/academy-modules'),
+      {contentDir: 'academy', routeBasePath: '/academy'},
+    ],
     // [
     //   '@conduction/docusaurus-plugin-opencatalogi',
     //   {
@@ -231,6 +238,14 @@ module.exports = createConfig({
              so /nl/solutions/openwoo doesn't exist as a target — same
              pattern as the /over-ons → /about/ entry above. */
           {from: '/solutions/woo', to: '/solutions/openwoo'},
+          /* /iso renamed to /quality (2026-05-19): the page was about
+             ISO 9001 + 27001 only, but we now treat ISO as one tool inside
+             a broader quality story (pentest-tools.com, GitHub workflow,
+             policy statements). The NL page lives at /nl/quality (same
+             slug as EN; the page title is localised to "Kwaliteit").
+             Only the EN /iso redirect is emitted here — /nl/iso 404s
+             gracefully because there are no inbound links to it. */
+          {from: '/iso', to: '/quality'},
         ],
       },
     ],

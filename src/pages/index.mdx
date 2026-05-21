@@ -1,12 +1,23 @@
 ---
 title: Public Tech for Nextcloud
-description: Open-source apps that plug into the Nextcloud workspace. Install yourself, get managed support, or bring a partner. EUPL-1.2, ISO 27001, Amsterdam.
+description: ConNext is open-source apps on Nextcloud, bundled as one workspace stack. Catalogs, registers, document handling, integrations. EUPL-1.2, ISO 27001, Amsterdam.
 hide_table_of_contents: true
 ---
 
 import {Hero, StatsStrip, AppsPreview, CtaBanner, PairRow, PairCard, Section, SectionHead, Clients, DEFAULT_CLIENTS, PartnerDirectory, CommonGroundPlus, HexRain} from '@conduction/docusaurus-preset/components';
 import {totalDownloads, formatDownloads} from '@conduction/docusaurus-preset/data';
-import {PARTNERS, BECOME_PARTNER, totalPartners} from '@site/src/data/partners-catalog';
+import {usePartners, useBecomePartner, totalPartners} from '@site/src/data/partners-catalog';
+
+export function HomePartnerDirectory() {
+  const partners = usePartners();
+  const becomePartner = useBecomePartner();
+  return (
+    <PartnerDirectory
+      partners={partners}
+      becomePartner={{...becomePartner, href: '/support#become-a-partner', ctaLabel: 'Apply on /support'}}
+    />
+  );
+}
 import {APP_COUNT} from '@site/src/data/apps-catalog';
 
 {/* Conduction main landing. Public Tech framing: tech to serve people.
@@ -18,10 +29,10 @@ import {APP_COUNT} from '@site/src/data/apps-catalog';
 
 <Hero
   eyebrow={<>Public Tech · open-source apps for <span className="next-blue">Nextcloud</span></>}
-  title={<>Tech to serve people.<br/>One workspace.<br/>{APP_COUNT} apps.</>}
-  lede={<>We are Conduction. We build open-source apps that plug into <span className="next-blue">Nextcloud</span>. Catalogs, registers, document handling, integrations. Install yourself, host with us as SaaS, or bring in a partner. Same code, same licence, no procurement track required.</>}
-  primaryCta={{label: <>Install from <span className="next-blue">Nextcloud</span> app store</>, href: '/apps'}}
-  secondaryCta={{label: 'Run a local demo', href: '/demo'}}
+  title={<>Tech to serve people.</>}
+  lede={<>We are Conduction. We build open-source apps that plug into <span className="next-blue">Nextcloud</span> — catalogs, registers, document handling, integrations. <span className="next-blue">ConNext</span> bundles them into one workspace stack you can roll out in days. Same code, no licence, support when you need it.</>}
+  primaryCta={{label: 'Explore ConNext', href: '/connext'}}
+  secondaryCta={{label: 'Get support', href: '/support'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL'}}
 >
   <HexRain />
@@ -102,10 +113,7 @@ import {APP_COUNT} from '@site/src/data/apps-catalog';
     align="stack"
     lede="Implementation, hosting, and integration partners that ship Conduction apps to clients. Apply through /support to be listed."
   />
-  <PartnerDirectory
-    partners={PARTNERS}
-    becomePartner={{...BECOME_PARTNER, href: '/support#become-a-partner', ctaLabel: 'Apply on /support'}}
-  />
+  <HomePartnerDirectory />
 </Section>
 
 <Clients
