@@ -1,15 +1,15 @@
 ---
-slug: deskdesk-tutorial-5-integrate
-title: "Bouw een Nextcloud-app op de Conduction-stack — Deel 5: Integreren"
+slug: deskdesk-tutorial-6-integrate
+title: "Bouw een Nextcloud-app op de Conduction-stack — Deel 6: Integreren"
 contentType: tutorial
 authors: [conduction]
 date: 2026-05-21
 summary: Koppel je uitgeleverde DeskDesk-app aan de rest van de workspace. Lees objecten uit een tweede OpenRegister-register, breid de xWiki-bron uit Deel 4 uit naar een kennis-tab per boeking, en sluit de cirkel met een tweerichtings-sync tussen boekingen en xWiki-onderhoudspagina's via een OpenConnector-webhook.
-tags: [App development, OpenConnector, OpenRegister, Integration, xWiki, Webhook]
+tags: [App development, OpenConnector, OpenRegister, Integration, xWiki, Webhook, Tutorial series]
 apps: [openconnector, openregister]
 durationMinutes: 45
 series: deskdesk-tutorial
-partNumber: 5
+partNumber: 6
 ---
 
 import {
@@ -22,13 +22,17 @@ import {
   HexCard,
 } from '@conduction/docusaurus-preset/components';
 
-Het vijfde en laatste deel van de DeskDesk-tutorial. Deel 4 packagede de app en zette hem in de Conduction-store. Deel 5 laat hem praten met de rest van de workspace — drie integratiepatronen, gelaagd van minst naar meest ingrijpend. Aan het einde weten je boekingen wie hun klant is, toont elke boeking de juiste help-artikelen uit xWiki, en opent een boeking met status `needs_repair` automatisch een onderhoudspagina in xWiki die de boeking weer op `available` zet zodra de pagina als opgelost is gemarkeerd.
+Het zesde en laatste deel van de DeskDesk-tutorial. Deel 4 packagede de app en zette hem in de Conduction-store; dit deel laat hem praten met de rest van de workspace — drie integratiepatronen, gelaagd van minst naar meest ingrijpend.
+
+:::tip Deel 5 en 6 staan naast elkaar
+Beide bouwen rechtstreeks voort op de uitgeleverde app uit Deel 4. [Deel 5 — Geavanceerde manifest-features](/academy/deskdesk-tutorial-5-advanced-manifest) gaat dieper op het *manifest*-vlak (actionToggles, fieldWidgets, public-mode pagina's). Deel 6 verbreedt naar *andere systemen*. Pak ze in willekeurige volgorde, of kies degene die je volgende app het eerst nodig heeft — geen van beide verwijst naar de ander voor inhoud.
+::: Aan het einde weten je boekingen wie hun klant is, toont elke boeking de juiste help-artikelen uit xWiki, en opent een boeking met status `needs_repair` automatisch een onderhoudspagina in xWiki die de boeking weer op `available` zet zodra de pagina als opgelost is gemarkeerd.
 
 Het gaat niet om de specifieke integraties — het gaat om het patroon. Cross-register-lezen is hoe Conduction-apps data delen zonder aan elkaar te koppelen. Het OpenConnector source-en-synchronisatie-patroon is hoe je data van buiten in je eigen register opneemt. Het webhook-endpoint-patroon is hoe externe systemen state terugduwen. Als je deze drie hebt aangelegd, ken je het integratie-vocabulaire dat de rest van de catalogus gebruikt.
 
 {/* truncate */}
 
-<Outcomes title="Wat je hebt aan het eind van Deel 5">
+<Outcomes title="Wat je hebt aan het eind van Deel 6">
   <Outcome>Een tweede OpenRegister-register <code>crm</code>, met een <code>customer</code>-schema, gelezen vanuit DeskDesk zonder dat DeskDesk ooit afhankelijk is van een CRM-app.</Outcome>
   <Outcome>Elke boeking draagt een <code>customerId</code>, en de detailpagina van de boeking resolved deze naar naam, e-mail en telefoon via een cross-register read.</Outcome>
   <Outcome>De xWiki OpenConnector-bron uit Deel 4 uitgebreid met een <code>category</code>-tag, zodat elke boeking de help-artikelen toont die bij zijn boekingstype horen.</Outcome>
@@ -381,7 +385,7 @@ Herlaad de boeking-detail in DeskDesk. Status: available. Het platform deed de r
 
 ## Wat je hebt gebouwd
 
-In Deel 1–4 was de enige PHP in de app infrastructureel — settings, routes, een path-resolve-fix. Deel 5 introduceert het eerste PHP-bestand dat daadwerkelijk businesslogica draait: één event-listener, vijfentwintig regels, gated op een status-transitie. Alles daaromheen is configuratie:
+In elk eerder deel was de enige PHP in de app infrastructureel — settings, routes, een path-resolve-fix. Deel 6 introduceert het eerste PHP-bestand dat daadwerkelijk businesslogica draait: één event-listener, vijfentwintig regels, gated op een status-transitie. Alles daaromheen is configuratie:
 
 - Een tweede register, cross-register gelezen via een eenregelige `register: 'crm'`-hint op `fetchObject`.
 - Twee integraties op één OpenConnector-bron, gescheiden door een `category`-mapping.
@@ -390,7 +394,7 @@ In Deel 1–4 was de enige PHP in de app infrastructureel — settings, routes, 
 
 Drie patronen. Ze schalen. Cross-register-lezen is hoe MyDash dashboards bouwt uit de data van elke Conduction-app zonder koppeling. Het source-en-synchronisatie-patroon is hoe elke app in de catalogus data van elders absorbeert — xWiki vandaag, SharePoint of Notion morgen, dezelfde bedrading. Het webhook-endpoint-patroon is hoe externe systemen state teruggeven aan de workspace.
 
-De DeskDesk-tutorial eindigt hier. De app is uitgeleverd, staat in de store, is geïntegreerd met de workspace en een externe kennisbron, en doet round-trip-state met een derde partij. Vijf delen, een paar honderd regels JSON, drie kleine Vue-bestanden, en één PHP-listener. Dat is de prijs van een geïntegreerde, beheersbare Nextcloud-app op de Conduction-stack.
+De DeskDesk-tutorial eindigt hier. De app is uitgeleverd, staat in de store, is geïntegreerd met de workspace en een externe kennisbron, en doet round-trip-state met een derde partij. Zes delen, een paar honderd regels JSON, drie kleine Vue-bestanden, en één PHP-listener. Dat is de prijs van een geïntegreerde, beheersbare Nextcloud-app op de Conduction-stack.
 
 ## Troubleshooting
 
@@ -426,6 +430,6 @@ De DeskDesk-tutorial eindigt hier. De app is uitgeleverd, staat in de store, is 
   <NextStep
     title="Fork DeskDesk naar je eigen use case"
     href="https://github.com/ConductionNL/deskdesk"
-    description="De referentie-app is een snapshot. Die van jou is de reis — verander de schemas, hernoem het menu, vervang het externe systeem. De vijfdelige scaffolding blijft hetzelfde."
+    description="De referentie-app is een snapshot. Die van jou is de reis — verander de schemas, hernoem het menu, vervang het externe systeem. De zesdelige scaffolding blijft hetzelfde."
   />
 </NextSteps>

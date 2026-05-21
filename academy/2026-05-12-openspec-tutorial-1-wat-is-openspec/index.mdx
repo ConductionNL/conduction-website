@@ -42,7 +42,7 @@ Geen Confluence-pagina die uit sync raakt met de code. Geen Jira-ticket dat alle
 
 In de praktijk gaat code schrijven sneller dan een spec bedenken. Dus waarom eerst die extra stap?
 
-1. **Aannames vooraf opdrogen.** Wat lijkt op één feature blijkt vaak vier features tegelijk. Door eerst de scenario's op te schrijven, ontdek je gaten en tegenstrijdigheden vóór de code geschreven is — niet erna in een PR-review.
+1. **Aannames vroeg blootleggen.** Wat lijkt op één feature blijkt vaak vier features tegelijk. Door eerst de scenario's op te schrijven, ontdek je gaten en tegenstrijdigheden vóór de code geschreven is — niet erna in een PR-review.
 2. **AI-agenten productief maken.** Onze [Hydra-pipeline](/academy/hydra-tutorial-1-wat-is-hydra) bouwt code uit specs. Hoe scherper de spec, hoe minder bijsturen achteraf. Dezelfde wet geldt voor je menselijke teamleden in een handover.
 3. **Een audit-trail die niet jokt.** Elke change zit in een eigen mapje met een proposal, een spec-delta, een design en een takenlijst. Een halfjaar later weet je nog precies wat er besloten is en waarom.
 4. **Reviewers één bron.** Reviewer ziet de spec-delta en de code naast elkaar. Klopt de code met de spec? Niet "wat had de ontwikkelaar bedoeld", maar "wat staat er".
@@ -107,9 +107,9 @@ Drie dingen om te zien:
 - Het **scenario** is concreet genoeg om een test uit te schrijven. Iemand anders zou hetzelfde gedrag moeten kunnen bouwen zonder met je te overleggen.
 - **Implementatie-vrij.** Geen klassennamen, geen controllers, geen tabelnamen. Die horen in `design.md`, niet hier. De spec beschrijft *gedrag*, niet *implementatie*.
 
-## Spec versus README versus Jira
+## Spec versus README versus issue
 
-Een veel gestelde vraag bij nieuwe mensen: "wat schrijf ik dan nog in de README, en wat in Jira?" Eenvoudige vuistregel:
+Een veel gestelde vraag bij nieuwe mensen: "wat schrijf ik dan nog in de README, en wat in een issue?" Eenvoudige vuistregel:
 
 | Document | Bevat | Lezer | Updatefrequentie |
 | --- | --- | --- | --- |
@@ -125,7 +125,7 @@ De gulden regel: **gedrag van de app hoort in de spec**. Als je merkt dat je het
 Spec-first is geen religie. Twee situaties waarin we het overslaan:
 
 - **Een eenmalige tweak** — typo's, één rij toevoegen aan een vertaalbestand, een dependency bumpen. Spec-overhead is hier groter dan de tweak zelf.
-- **Een exploratief prototype** — als je nog niet weet of het idee überhaupt werkt. Schrijf eerst een vieze proof-of-concept om aannames te toetsen, sloop hem weg, en schrijf daarna pas de spec voor de versie die wél in productie gaat.
+- **Een exploratief prototype** — als je nog niet weet of het idee überhaupt werkt. Toets je aannames eerst met een wegwerp-prototype; schrijf pas daarna de spec voor de versie die wél in productie gaat.
 
 Voor alles daartussen — een nieuwe feature, een breaking change, een refactor met gevolgen voor consumers — loont OpenSpec zich.
 
@@ -136,19 +136,88 @@ Onze projecten hebben allemaal dezelfde OpenSpec-mappenstructuur. Eén keer kijk
 - `openspec/specs/` — de capabilities van deze app, één map per domein
 - `openspec/changes/` — de in-flight changes (vaak één per open PR)
 - `openspec/changes/archive/` — afgeronde changes, met datum vooraan, voor de geschiedenis
-- `openspec/architecture/` — repo-specifieke ADR's (architecturele besluiten)
-- `openspec/project.md` — high-level overzicht, bedoeld als instap
+- `openspec/architecture/` — **app-specifieke** ADR's (architecturele besluiten die alleen voor deze app gelden)
+- `openspec/config.yaml` — project-config (verwijst naar het gedeelde Conduction-schema)
+- `project.md` — high-level beschrijving van de app, in de **root** van de repo (niet in `openspec/`)
 
-Bedrijfsbrede ADR's leven niet in elke app, maar in [hydra/openspec/architecture](https://github.com/ConductionNL/hydra/tree/main/openspec/architecture). Bouw je in een app van Conduction? Dan gelden die ADR's ook voor jou — onze AI-pipeline trekt ze automatisch in elke build.
+**Bedrijfsbrede** ADR's leven niet in elke app, maar in [hydra/openspec/architecture](https://github.com/ConductionNL/hydra/tree/main/openspec/architecture). Bouw je in een app van Conduction? Dan gelden die ADR's ook voor jou — de Hydra-pipeline laadt ze mee in elke build. Vuistregel: alleen iets wat écht uniek is voor deze app gaat in `openspec/architecture/`; al het andere hoort bedrijfsbreed in `hydra/openspec/architecture/`.
 
 ## Wie schrijft de specs?
 
 Twee patronen, naast elkaar:
 
-1. **Handmatig door een developer of architect** — met behulp van [`/opsx-ff`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md) of [`/opsx-new`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md) in Claude Code. Dat is wat je in deel 2 gaat doen.
+1. **Handmatig door een developer of architect** — met [`/opsx-new`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-new) om de change-map aan te maken, gevolgd door [`/opsx-ff`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-ff) (alles in één run) of [`/opsx-continue`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-continue) (artefact voor artefact) in Claude Code. Dat is wat je in deel 2 gaat doen.
 2. **Retrofit op een bestaande app** — voor legacy-code die er was vóór OpenSpec. Zie [retrofit.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/retrofit.md). Niet je eerste klus.
 
 Welke route ook gebruikt wordt, het eindresultaat ziet er identiek uit: een nette change in `openspec/changes/` met de vier verwachte artefacten.
+
+## De OpenSpec-pipeline in één oogopslag
+
+Een volledige change loopt door vier stages, met een eigen `/opsx-`-commando per stap. Bron: [spec-driven-development.md](https://github.com/ConductionNL/.github/blob/main/docs/WayOfWork/spec-driven-development.md).
+
+| Stage | Commando | Wat doet het |
+| --- | --- | --- |
+| **Obtain** | [`/opsx-explore`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-explore) | Verken een topic of probleem voor je een change start (optioneel) |
+| **Specify** | [`/opsx-new`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-new) | Lege change met metadata aanmaken |
+| | [`/opsx-ff`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-ff) | Fast-forward: proposal + specs + design + tasks in één run |
+| | [`/opsx-continue`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-continue) | Per-artefact opbouwen i.p.v. alles in één keer |
+| | [`/opsx-plan-to-issues`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md) | Tasks → tracking-issue + één GitHub-issue per task |
+| **Build** | [`/opsx-apply`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-apply) | Implementeer de tasks, één voor één, tegen de spec |
+| **Validate** | [`/opsx-verify`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-verify) | Check dat de code de spec ook echt levert |
+| **Done** | [`/opsx-archive`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-archive) | Spec-delta → hoofd-spec; change → `archive/` |
+| | [`/opsx-sync`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-sync) | Alleen de delta in de hoofd-spec mergen (zonder archiveren). `/opsx-archive` doet dit ook — sync apart is voor als je de spec eerder wilt bijwerken dan de change afsluiten. |
+
+**De gulden vuistregel uit de Conduction-docs**: *de meeste changes hebben alleen `/opsx-ff` → `/opsx-apply` → `/opsx-verify` nodig*. De rest is opt-in. Volledig automatisch werken kan ook — zie [`/opsx-apply-loop`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-apply-loop) (één change, containerized) en [`/opsx-pipeline`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-pipeline) (meerdere changes parallel).
+
+### Visueel — de pipeline van begin tot eind
+
+```text
+                ┌─────────────────┐
+                │  /opsx-explore  │   (optioneel — verkennen, geen artefacten)
+                └────────┬────────┘
+                         │
+                         ▼
+                ┌─────────────────┐
+                │  /opsx-new      │   start de change (alleen metadata)
+                └────────┬────────┘
+                         │
+                         ▼
+        ┌────────────────────────────────────┐
+        │  /opsx-ff        OF  /opsx-continue│
+        │  (alles in één)       (per stap)   │   artefacten genereren:
+        │                                    │   proposal → specs → design → tasks
+        └────────────────┬───────────────────┘
+                         │
+                         ▼
+                ┌─────────────────────────┐
+                │ openspec validate       │   spec-syntax check (CLI, geen slash)
+                │   --strict              │
+                └────────────┬────────────┘
+                             │
+                             ▼              ── PR voor de spec (review op specs, niet op code) ──
+                             │
+                             ▼
+                ┌─────────────────────────┐
+                │ /opsx-plan-to-issues    │   tasks → GitHub issues + tracking-epic
+                └────────────┬────────────┘
+                             │
+                             ▼
+                ┌─────────────────────────┐
+                │ /opsx-apply             │   implementeren (per task: backend + UI + tests)
+                └────────────┬────────────┘
+                             │
+                             ▼
+                ┌─────────────────────────┐
+                │ /opsx-verify            │   code-vs-spec check (CRITICAL/WARNING/SUGGESTION)
+                └────────────┬────────────┘
+                             │
+                             ▼
+                ┌─────────────────────────┐
+                │ /opsx-archive           │   sync delta → hoofd-spec, change → archive/
+                └─────────────────────────┘
+```
+
+Deel 2 van deze leerlijn loopt door deze pipeline heen, beginnend bij `/opsx-explore` (optioneel) en eindigend bij `/opsx-archive`.
 
 ## Test jezelf
 
@@ -189,7 +258,7 @@ Denk aan: aannames, AI-agenten, audit-trail, en reviewers. Welke winst pakt elk?
 
 Vier voordelen die in deze module worden genoemd:
 
-- **Aannames vooraf opdrogen.** Wat lijkt op één feature blijkt vaak vier features tegelijk. Scenario's schrijven brengt gaten en tegenstrijdigheden naar boven vóór de code in plaats van erna in een PR-review.
+- **Aannames vroeg blootleggen.** Wat lijkt op één feature blijkt vaak vier features tegelijk. Scenario's schrijven brengt gaten en tegenstrijdigheden naar boven vóór de code in plaats van erna in een PR-review.
 - **AI-agenten productief maken.** Onze Hydra-pipeline bouwt code uit specs — hoe scherper de spec, hoe minder bijsturen achteraf. Dezelfde wet geldt voor menselijke teamleden in een handover.
 - **Audit-trail die niet jokt.** Per change één mapje met proposal, delta, design, tasks. Een halfjaar later weet je nog precies wat besloten is en waarom.
 - **Reviewers één bron.** De reviewer ziet spec-delta en code naast elkaar — "klopt de code met de spec" in plaats van "wat had de ontwikkelaar bedoeld".
@@ -261,7 +330,7 @@ De overhead moet kleiner zijn dan de winst. Bij welke twee situaties is dat duid
 Twee situaties uit de module:
 
 - **Eenmalige tweak** — typo's, één rij toevoegen aan een vertaalbestand, een dependency bumpen. De spec-overhead is groter dan de tweak zelf.
-- **Exploratief prototype** — als je nog niet weet of het idee überhaupt werkt. Eerst een vieze proof-of-concept om aannames te toetsen, sloop hem weg, en schrijf daarna pas de spec voor de versie die écht in productie gaat.
+- **Exploratief prototype** — als je nog niet weet of het idee überhaupt werkt. Toets je aannames eerst met een wegwerp-prototype; schrijf pas daarna de spec voor de versie die wél in productie gaat.
 
 Voor alles daartussen — een nieuwe feature, een breaking change, een refactor met gevolgen voor consumers — loont OpenSpec zich wel.
 
