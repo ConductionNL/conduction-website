@@ -178,16 +178,23 @@ These are not loose projects. They are two sides of the same coin. A workspace w
 
 And the best part: we do not have to do this alone. ZenDiS in Germany works on comparable pieces. La Suite Numérique in France ships components we plug into. Nextcloud GmbH itself keeps building the core. Conduction delivers the Dutch contribution to a European movement, not a Dutch version of something that already exists.
 
-<DownloadPanel
-  title={<>This is what we are building on top of <span className="next-blue">Nextcloud</span>.</>}
-  lede={<>ConNext is the open-source app stack from track one and the platform infrastructure from track two, shipping today. Catalogs, registers, integrations, document handling, the AI substrate. Pick what you need from the Nextcloud app store and you are working today.</>}
-  meta="Open-source · EUPL-1.2 · no lead form, no sales call"
-  card={{
-    title: 'Explore ConNext',
-    body: 'The apps that turn the workspace and the platform argument into something you can install in two minutes.',
-    cta: {label: 'Explore ConNext', href: '/connext'},
-  }}
-/>
+{/* DownloadPanel.module.css:.section sets margin-top:-200px, a hack
+    for /connext where it sits below PlatformOverview's 240px of
+    structural empty space. In the blog there is no such spacer, so
+    the negative margin overlaps the preceding paragraphs. Wrap in a
+    div that cancels it out until the preset exposes an opt-out prop. */}
+<div style={{marginTop: 200}}>
+  <DownloadPanel
+    title={<>This is what we are building on top of <span className="next-blue">Nextcloud</span>.</>}
+    lede={<>ConNext is the open-source app stack from track one and the platform infrastructure from track two, shipping today. Catalogs, registers, integrations, document handling, the AI substrate. Pick what you need from the Nextcloud app store and you are working today.</>}
+    meta="Open-source · EUPL-1.2 · no lead form, no sales call"
+    card={{
+      title: 'Explore ConNext',
+      body: 'The apps that turn the workspace and the platform argument into something you can install in two minutes.',
+      cta: {label: 'Explore ConNext', href: '/connext'},
+    }}
+  />
+</div>
 
 ## Component overview
 
