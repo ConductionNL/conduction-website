@@ -146,11 +146,11 @@ The matching path the SettingsService takes is **importFromFilePath** with a pat
 
 ## Step 4: The manifest
 
-`src/manifest.json` is the single declarative description of the app shell. Three top-level keys: `dependencies`, `menu`, `pages`.
+`src/manifest.json` is the single declarative description of the app shell. Four top-level keys you care about: `$schema`, `dependencies`, `menu`, `pages`.
 
 ```json title="src/manifest.json"
 {
-  "$schema": "https://raw.githubusercontent.com/ConductionNL/nextcloud-vue/main/src/schemas/app-manifest.schema.json",
+  "$schema": "https://raw.githubusercontent.com/ConductionNL/nextcloud-vue/main/src/schemas/app-manifest-v2.schema.json",
   "version": "1.0.0",
   "id": "deskdesk",
   "title": "DeskDesk",
@@ -162,9 +162,12 @@ The matching path the SettingsService takes is **importFromFilePath** with a pat
   ],
   "pages": [
     {"id": "desks-index",  "route": "/",          "type": "index",  "title": "deskdesk.desks.indexTitle",
-     "config": {"register": "deskdesk", "schema": "desk", "columns": ["label","floor","zone","equipment","capacity","accessibility"], "filters": ["floor","zone","equipment","accessibility"], "defaultSort": {"key": "label", "order": "asc"}}},
+     "config": {"register": "deskdesk", "schema": "desk",
+                "columns": ["label","floor","zone","equipment","capacity","accessibility"],
+                "filters": ["floor","zone","equipment","accessibility"],
+                "defaultSort": {"key": "label", "order": "asc"}}},
     {"id": "desks-detail", "route": "/desks/:id", "type": "detail", "title": "deskdesk.desks.detailTitle",
-     "config": {"register": "deskdesk", "schema": "desk"}}
+     "config": {"register": "deskdesk", "schema": "desk", "sidebar": true}}
     /* bookings + floors pages follow the same pattern */
   ]
 }
@@ -172,9 +175,11 @@ The matching path the SettingsService takes is **importFromFilePath** with a pat
 
 A few rules to note:
 
-- **`page.id` is the vue-router route name.** CnPageRenderer matches `$route.name === page.id` to pick the right page.
-- **`page.type` is closed.** `index | detail | dashboard | custom`. Use `custom` with a `component` registry entry for one-off pages.
-- **`page.config` is forwarded as props.** `register`, `schema`, `columns`, `filters`, `defaultSort` map to CnIndexPage props one-to-one.
+- **The `$schema` URL points at `app-manifest-v2.schema.json`.** This is the v2 schema (currently at version 2.7.0). It's the source of truth for what `manifest.json` is allowed to contain — your IDE picks up autocompletion and validation from it the moment the URL is present.
+- **`page.id` is the vue-router route name.** `CnPageRenderer` matches `$route.name === page.id` to pick the right page entry from `pages[]`.
+- **`page.type` is a closed enum.** The 13 supported types: `index | detail | dashboard | logs | settings | chat | files | form | wiki | map | search | roadmap | custom`. Most apps will use `index`, `detail`, `dashboard`, and `custom`; the others are there when you need them. See Part 5 for `form`/`wiki`/`search`/`map` examples.
+- **`page.config` is forwarded as props.** `register`, `schema`, `columns`, `filters`, `defaultSort` map to `CnIndexPage` props one-to-one. The renderer also forwards top-level page fields (`title`, `widgets`, `actions`, `sidebar`, `description`, `icon`) alongside `config`, and bridges `config.schema → objectType` plus `:id → objectId` for `type:'detail'` so the lib's external `CnObjectSidebar` activates automatically.
+- **`config.sidebar: true` on `type:'detail'`** activates the host's mounted `CnObjectSidebar` with its built-in tabs (Files, Notes, Tags, Tasks, Audit Trail) for the current object. Without it the detail page renders without a sidebar — useful for read-only views, but for DeskDesk every detail page wants the standard tabs, so we set it everywhere.
 
 ## Step 5: Replace App.vue and the router
 
@@ -225,12 +230,25 @@ export default new Router({
 })
 ```
 
-Every page in the manifest gets a route. Every route renders CnPageRenderer. CnPageRenderer reads the manifest, finds the matching page entry by route name, and dispatches by `page.type`:
+Every page in the manifest gets a route. Every route renders `CnPageRenderer`. `CnPageRenderer` reads the manifest, finds the matching page entry by route name, and dispatches by `page.type`. The most common dispatches:
 
-- `type: "index"` → CnIndexPage with the schema's columns + filters
-- `type: "detail"` → CnDetailPage with the schema's properties
-- `type: "dashboard"` → CnDashboardPage with the layout
-- `type: "custom"` → your registered component
+- `type: "index"` → `CnIndexPage` with the schema's columns + filters
+- `type: "detail"` → `CnDetailPage` with the schema's properties + the lib's external sidebar
+- `type: "dashboard"` → `CnDashboardPage` with the layout grid
+- `type: "form"` → `CnFormPage` for create/edit flows (supports public-mode token-scoped variant)
+- `type: "wiki"` → `CnWikiPage` for markdown-article surfaces
+- `type: "search"` → faceted cross-schema search
+- `type: "custom"` → your own SFC registered in `customComponents`
+
+Schema 2.7.0 (the current beta) introduces a few v2-only shapes worth flagging — full coverage lives in Part 5, but it's useful to know the names now:
+
+- **`config.actionToggles`** — typed object on `type:'index'` collapsing the nine `show*`/`selectable` flags into one place. `actionToggles: { showAdd: true, showEdit: false, showDelete: false }` reads cleaner than nine sibling booleans.
+- **`config.fieldWidgets[]`** — typed slot on `type:'form'` and `type:'detail'` for mounting a lib `Cn*` component as a single form field. e.g. `fieldWidgets: [{id: 'body', component: 'CnMarkdownEditor'}]`.
+- **`config.mode: 'public'`** — on `type:'form'` and `type:'detail'`, marks an unauthenticated token-scoped page. Pair with a route-param sentinel like `submitEndpoint: "/index.php/apps/myapp/api/public/:token"`.
+- **`config.sidebar: true | {...}`** — boolean or object form. Object form (`{enabled, show, register, schema, hiddenTabs, tabs}`) gives full control; the boolean is the shortcut for the common case.
+- **`_note` on `type:'custom'`** — required when the custom mounts a host-app SFC (no lib `Cn*` analogue); softened in 2.7.0 so that a custom with `component: 'CnSomething'` no longer needs it.
+
+You won't use most of those in Part 2 — three index pages, three detail pages, one dashboard, all schema-driven. They're listed here so when Part 5 reaches for them they're not surprises.
 
 ## Step 6: Delete the old views
 
@@ -289,6 +307,11 @@ This is the schema-driven discipline talked about on [nextcloud-vue.conduction.n
     title="Part 3 — Schema-driven integrations (NC Calendar)"
     href="/academy/deskdesk-tutorial-3-calendar"
     description="A single calendarProvider block on the booking schema. Bookings appear in the user's Nextcloud Calendar. No controller, no listener, no glue code."
+  />
+  <NextStep
+    title="Part 5 — Advanced manifest features"
+    href="/academy/deskdesk-tutorial-5-advanced-manifest"
+    description="actionToggles, fieldWidgets, route-param sentinels, public-mode pages, and the other page types (form, wiki, search, roadmap). The v2.7.0 features Part 2 deliberately skipped."
   />
   <NextStep
     title="Schemas and registers reference"

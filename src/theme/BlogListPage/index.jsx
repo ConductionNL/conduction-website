@@ -25,14 +25,17 @@ import {
 } from '@docusaurus/theme-common';
 import Layout from '@theme/Layout';
 import BrowserOnly from '@docusaurus/BrowserOnly';
+import {usePluginData} from '@docusaurus/useGlobalData';
+import Translate, {translate} from '@docusaurus/Translate';
 import {
   FeaturedCard,
-  ContentCard,
-  ContentCardGrid,
   ContentTypeFilter,
   CONTENT_TYPES,
   NewsletterCta,
   Section,
+  ContentCard,
+  ContentCardGrid,
+  ModuleCard,
 } from '@conduction/docusaurus-preset/components';
 import {
   APPS_REGISTRY,
@@ -42,17 +45,19 @@ import {
 const TYPE_SET = new Set(CONTENT_TYPES);
 const APP_SET = new Set(Object.keys(APPS_REGISTRY));
 
-function readQuery(search) {
+function readQuery(search, knownModules) {
   try {
     const params = new URLSearchParams(search);
     const t = params.get('type');
     const a = params.get('app');
+    const m = params.get('module');
     return {
-      type: t && TYPE_SET.has(t) ? t : null,
-      app:  a && APP_SET.has(a)  ? a : null,
+      type:   t && TYPE_SET.has(t)              ? t : null,
+      app:    a && APP_SET.has(a)               ? a : null,
+      module: m && knownModules && knownModules.has(m) ? m : null,
     };
   } catch (_) {
-    return {type: null, app: null};
+    return {type: null, app: null, module: null};
   }
 }
 
@@ -111,7 +116,7 @@ function panelToneFor(contentType) {
   }
 }
 
-function postToCardProps(post) {
+function postToCardProps(post, moduleSize) {
   const meta = post.content.metadata;
   const fm = meta.frontMatter || {};
   const author = meta.authors && meta.authors[0];
@@ -127,21 +132,45 @@ function postToCardProps(post) {
       icon: defaultIconFor(fm.contentType),
       panelTone: panelToneFor(fm.contentType),
     },
+    durationMinutes:  fm.durationMinutes,
+    audience:         fm.audience || [],
+    module:           fm.module,
+    modulePosition:   fm.modulePosition,
+    moduleTotalParts: fm.module && moduleSize ? moduleSize : undefined,
+    moduleTitle:      fm.moduleTitle,
   };
 }
 
-function postToFeaturedProps(post) {
-  const card = postToCardProps(post);
+function postToFeaturedProps(post, moduleSize) {
+  const card = postToCardProps(post, moduleSize);
   const fm = post.content.metadata.frontMatter || {};
   return {
     href: card.href,
-    eyebrow: 'Featured ' + (fm.contentType || 'post'),
+    eyebrow: translate(
+      {
+        id: 'theme.academy.featuredEyebrow',
+        message: 'Featured {type}',
+        description: 'Eyebrow on the featured academy card. {type} is the content type slug (blog, guide, case-study, webinar, tutorial)',
+      },
+      {type: fm.contentType || 'post'},
+    ),
     title: card.title,
     lede: card.summary,
-    ctaLabel: 'Read more',
+    ctaLabel: translate({
+      id: 'theme.academy.featuredCta',
+      message: 'Read more',
+      description: 'CTA label on the featured academy card',
+    }),
     author: card.author,
     date: card.date,
     thumbnail: {icon: defaultIconFor(fm.contentType)},
+    contentType:      fm.contentType,
+    durationMinutes:  fm.durationMinutes,
+    audience:         fm.audience || [],
+    module:           fm.module,
+    modulePosition:   fm.modulePosition,
+    moduleTotalParts: fm.module && moduleSize ? moduleSize : undefined,
+    moduleTitle:      fm.moduleTitle,
   };
 }
 
@@ -169,15 +198,23 @@ function countsByApp(posts) {
 }
 
 function AcademyLandingInner({items}) {
+  /* Module groupings from the academy-modules Docusaurus plugin.
+     Empty object when the plugin is missing so the page still renders
+     individual cards rather than throwing. */
+  const moduleData = usePluginData('academy-modules') || {};
+  const modules    = moduleData.modules || {};
+  const moduleSlugs = useMemo(() => Object.keys(modules), [modules]);
+  const knownModules = useMemo(() => new Set(moduleSlugs), [moduleSlugs]);
+
   const [active, setActive] = useState(() =>
-    readQuery(typeof window !== 'undefined' ? window.location.search : '')
+    readQuery(typeof window !== 'undefined' ? window.location.search : '', knownModules)
   );
 
   useEffect(() => {
-    const onPop = () => setActive(readQuery(window.location.search));
+    const onPop = () => setActive(readQuery(window.location.search, knownModules));
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
-  }, []);
+  }, [knownModules]);
 
   /* Type counts always reflect the full feed (so the user sees how many
      blogs vs guides exist regardless of the active app filter). App
@@ -200,9 +237,65 @@ function AcademyLandingInner({items}) {
     [appCounts],
   );
 
-  const filtered = active.app
+  const itemsAfterApp = active.app
     ? itemsAfterType.filter((p) => postApps(p).includes(active.app))
     : itemsAfterType;
+
+  /* Apply the module filter last so the type/app filters always
+     narrow the universe first. If the user picks a specific module,
+     we drop into the "module focus" view: only that module's parts
+     show, no composite collapsing. */
+  const filtered = active.module
+    ? itemsAfterApp.filter((p) => p.content.metadata.frontMatter?.module === active.module)
+    : itemsAfterApp;
+
+  /* Module pill row counts: how many member posts each module
+     contributes to the type/app-filtered universe. Hide modules with
+     0 members so the row shortens as the user filters. */
+  const moduleCounts = useMemo(() => {
+    const counts = {};
+    for (const post of itemsAfterApp) {
+      const slug = post.content.metadata.frontMatter?.module;
+      if (slug && knownModules.has(slug)) counts[slug] = (counts[slug] || 0) + 1;
+    }
+    return counts;
+  }, [itemsAfterApp, knownModules]);
+
+  const visibleModuleSlugs = useMemo(
+    () => moduleSlugs.filter((s) => moduleCounts[s] > 0),
+    [moduleSlugs, moduleCounts],
+  );
+
+  const moduleLabels = useMemo(() => {
+    const labels = {};
+    for (const slug of moduleSlugs) labels[slug] = modules[slug]?.title || slug;
+    return labels;
+  }, [moduleSlugs, modules]);
+
+  /* Composite collapsing: when no module-related filter is active and
+     a module has 2+ parts in the current universe, replace those parts
+     with a single ModuleCard. We collapse only on the unfiltered (no
+     module) view because picking a type/app may already narrow a
+     module to 1 visible part — collapsing that into a composite reads
+     as misleading. */
+  const composedItems = useMemo(() => {
+    if (active.module) return filtered;
+
+    const seenModules = new Set();
+    const result = [];
+    for (const post of filtered) {
+      const slug = post.content.metadata.frontMatter?.module;
+      const partsInUniverse = slug ? moduleCounts[slug] : 0;
+      if (slug && partsInUniverse >= 2 && knownModules.has(slug)) {
+        if (seenModules.has(slug)) continue;
+        seenModules.add(slug);
+        result.push({__module: slug});
+      } else {
+        result.push(post);
+      }
+    }
+    return result;
+  }, [filtered, moduleCounts, knownModules, active.module]);
 
   const setQueryParam = (key, value) => {
     const url = new URL(window.location.href);
@@ -232,11 +325,24 @@ function AcademyLandingInner({items}) {
     setActive((prev) => ({...prev, app: next}));
   };
 
-  const [featured, ...rest] = filtered;
+  const handleModuleChange = (next) => {
+    setQueryParam('module', next);
+    setActive((prev) => ({...prev, module: next}));
+  };
+
+  /* Featured slot picks the most-recent non-module post from the
+     composed list. When the user is in module-focus mode (active.module)
+     we don't surface a Featured tile — the parts list is the focus. */
+  const featured = !active.module && composedItems.length > 0 && !composedItems[0].__module
+    ? composedItems[0]
+    : null;
+  const restItems = featured ? composedItems.slice(1) : composedItems;
 
   return (
     <>
-      {featured && <FeaturedCard {...postToFeaturedProps(featured)} />}
+      {featured && (
+        <FeaturedCard {...postToFeaturedProps(featured, featured.content.metadata.frontMatter?.module && moduleCounts[featured.content.metadata.frontMatter.module])} />
+      )}
 
       <div style={{height: 64}} />
 
@@ -262,6 +368,21 @@ function AcademyLandingInner({items}) {
         </>
       )}
 
+      {visibleModuleSlugs.length > 0 && (
+        <>
+          <div style={{height: 12}} />
+          <ContentTypeFilter
+            value={active.module}
+            onChange={handleModuleChange}
+            types={visibleModuleSlugs}
+            labels={moduleLabels}
+            counts={moduleCounts}
+            allLabel="All modules"
+            allCount={itemsAfterApp.length}
+          />
+        </>
+      )}
+
       <div style={{height: 32}} />
 
       {filtered.length === 0 ? (
@@ -271,13 +392,45 @@ function AcademyLandingInner({items}) {
           color: 'var(--c-cobalt-400)',
           fontSize: 16,
         }}>
-          Nothing yet for this combination. <a href="/academy/">View everything</a>
+          <Translate
+            id="theme.academy.emptyState"
+            description="Empty-state message shown when filters return no posts. {viewAll} is a link to the unfiltered academy index."
+            values={{
+              viewAll: <a href="/academy/"><Translate id="theme.academy.viewAll" description="Link text inside the empty-state message">View everything</Translate></a>,
+            }}>
+            {'Nothing yet for this combination. {viewAll}'}
+          </Translate>
         </div>
-      ) : rest.length > 0 ? (
+      ) : restItems.length > 0 ? (
         <ContentCardGrid columns={2}>
-          {rest.map((post, i) => (
-            <ContentCard key={post.content.metadata.permalink || i} {...postToCardProps(post)} />
-          ))}
+          {restItems.map((item, i) => {
+            if (item.__module) {
+              const mod = modules[item.__module];
+              if (!mod) return null;
+              return (
+                <ModuleCard
+                  key={`mod-${item.__module}`}
+                  href={mod.permalink}
+                  title={mod.title}
+                  lede={mod.lede}
+                  parts={mod.parts.length}
+                  totalMinutes={mod.totalMinutes}
+                  latestDate={mod.latestDate}
+                  curator={mod.curator}
+                  audience={mod.audience}
+                  contentTypes={mod.contentTypes}
+                />
+              );
+            }
+            const slug = item.content.metadata.frontMatter?.module;
+            const moduleSize = slug && moduleCounts[slug];
+            return (
+              <ContentCard
+                key={item.content.metadata.permalink || i}
+                {...postToCardProps(item, moduleSize)}
+              />
+            );
+          })}
         </ContentCardGrid>
       ) : null}
     </>
@@ -334,11 +487,31 @@ export default function BlogListPage(props) {
               <div style={{height: 96}} />
 
               <NewsletterCta
-                title="New posts in your inbox, monthly."
-                lede="One mail a month. New guides, case studies, and webinars. Geen spam, je kunt je altijd uitschrijven."
-                placeholder="jij@bedrijf.nl"
-                submitLabel="Subscribe"
-                fineprint="We mail vanuit info@conduction.nl. Geen lijstverkoop."
+                title={translate({
+                  id: 'theme.academy.newsletter.title',
+                  message: 'New posts in your inbox, monthly.',
+                  description: 'Newsletter section title at the bottom of the academy landing page',
+                })}
+                lede={translate({
+                  id: 'theme.academy.newsletter.lede',
+                  message: 'One mail a month. New guides, case studies, and webinars. No spam, unsubscribe any time.',
+                  description: 'Newsletter section lede paragraph',
+                })}
+                placeholder={translate({
+                  id: 'theme.academy.newsletter.placeholder',
+                  message: 'you@company.com',
+                  description: 'Placeholder text inside the newsletter email input',
+                })}
+                submitLabel={translate({
+                  id: 'theme.academy.newsletter.submit',
+                  message: 'Subscribe',
+                  description: 'Submit button label on the newsletter form',
+                })}
+                fineprint={translate({
+                  id: 'theme.academy.newsletter.fineprint',
+                  message: 'We mail from info@conduction.nl. No list reselling.',
+                  description: 'Small-print line below the newsletter form',
+                })}
               />
             </Section>
           </article>

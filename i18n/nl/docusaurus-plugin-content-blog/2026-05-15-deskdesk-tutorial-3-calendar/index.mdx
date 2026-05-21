@@ -1,0 +1,184 @@
+---
+slug: deskdesk-tutorial-3-calendar
+title: "Bouw een Nextcloud-app op de Conduction-stack, Deel 3: Schema-gedreven integraties"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-15
+summary: Eén calendarProvider-blok op het booking-schema. Boekingen verschijnen in NC Calendar zonder controller, zonder event listener, zonder per-app lijmcode.
+tags: [App development, OpenRegister, NC Calendar, CalDAV, Schema integrations]
+apps: [openregister]
+durationMinutes: 15
+series: deskdesk-tutorial
+partNumber: 3
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+} from '@conduction/docusaurus-preset/components';
+
+Dit is **Deel 3 van de vierdelige DeskDesk-tutorial**. Deel 2 bedraadde de desk- en booking-schema's. Deel 3 zorgt dat die boekingen verschijnen in de Nextcloud Calendar van elke gebruiker, *zonder dat je een controller, een event listener of per-app calendar-lijmcode schrijft*.
+
+De truc: OpenRegister levert al een `ICalendarProvider` (`RegisterCalendarProvider`) die elk schema met een `calendarProvider`-blok blootstelt als een virtuele kalender. Jij declareert het blok op het booking-schema. NC Calendar toont de events. Dat is het hele verhaal.
+
+{/* truncate */}
+
+<Outcomes title="Wat je hebt aan het eind van Deel 3">
+  <Outcome>Elk <code>booking</code>-object in DeskDesk verschijnt als een alleen-lezen event in de Nextcloud Calendar-app, met het bureau-label + de gebruiker in de titel en de cobalt-merkkleur.</Outcome>
+  <Outcome>Een werkend begrip van OpenRegister's <strong>schema-gedreven integration providers</strong>: dezelfde aanpak ontsluit Activity, Mail Smart Picker, Contacts-matching en File actions, allemaal zonder per-app code.</Outcome>
+  <Outcome>Een patroon dat je hergebruikt op elk toekomstig schema. Voeg een datumveld + een <code>calendarProvider</code>-blok toe. Klaar.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Waar je moet staan">
+  <PrerequisiteItem>Deel 2 afgerond: <code>floor</code>-, <code>desk</code>- en <code>booking</code>-schema's draaien in OpenRegister en de app toont bureaus op <code>/apps/deskdesk/</code>.</PrerequisiteItem>
+  <PrerequisiteItem>NC Calendar geactiveerd (Apps → zoek "Calendar" → Download). Out of the box pikt het nieuwe ICalendarProviders automatisch op, geen extra bedrading aan jouw kant.</PrerequisiteItem>
+</Prerequisites>
+
+## Waarom geen OpenConnector of een eigen listener?
+
+Als je voor het eerst "synchroniseer DeskDesk-boekingen naar Nextcloud Calendar" hoort, is je instinct waarschijnlijk een van:
+
+1. **Schrijf een OpenConnector-flow** die luistert naar `BookingCreatedEvent` en POSTet naar het CalDAV-endpoint
+2. **Maak een subclass van `IEventListener<BookingCreatedEvent>`** in PHP en bouw een CalDAV-event met de hand
+3. **Laat de frontend `POST /remote.php/dav/...`** als de gebruiker op Opslaan klikt
+
+Alle drie werken. Alle drie zijn fout voor deze case, omdat ze NC Calendar behandelen als een *bestemming* waar je naartoe pusht. OpenRegister stelt elk schema al beschikbaar als kalender, je pusht nergens naartoe; je declareert dat het booking-schema *een* kalenderbron *is*.
+
+Hetzelfde patroon geldt voor:
+
+| Integratie | Schema-annotatie | Wat je krijgt |
+|---|---|---|
+| **NC Calendar** | `calendarProvider`-blok | Alleen-lezen virtuele kalender per schema |
+| **NC Activity** | (automatisch, gratis) | CRUD-events in de activity-stream + dashboard-widget + e-maildigest |
+| **NC Mail Smart Picker** | `linkedTypes: ["email"]` | Plak een bureau-URL in NC Mail en krijg een rich preview |
+| **NC Contacts** | `linkedTypes: ["contact"]` | `/api/contacts/match` retourneert matchende bureaugebruikers |
+
+Anti-pattern: handgecodeerde `<App>CalendarSync.vue`, `<App>NotesService`, `<App>MailSidebar.vue`. Gebruik de providers.
+
+## Stap 1: Voeg het calendarProvider-blok toe
+
+Open `lib/Settings/deskdesk_register.json` en voeg een `configuration`-blok toe aan het `booking`-schema:
+
+```json title="lib/Settings/deskdesk_register.json (excerpt) — booking schema"
+"booking": {
+  "slug": "booking",
+  "title": "Booking",
+  /* ... existing properties ... */
+
+  "configuration": {
+    "calendarProvider": {
+      "enabled": true,
+      "dtstart": "start",
+      "dtend": "end",
+      "titleTemplate": "Desk {desk} · {user}",
+      "color": "#003a8c"
+    }
+  }
+}
+```
+
+De vijf velden:
+
+- `enabled`, `true` stelt het schema beschikbaar als virtuele kalender.
+- `dtstart`, naam van de property die het event-start bevat. We gebruiken de `start`-property die al op elke booking staat.
+- `dtend`, hetzelfde, maar voor het einde. Optioneel, bij ontbreken valt OpenRegister terug op een zinnige default (volgend uur voor date-time, einde-dag voor date-only).
+- `titleTemplate`, string-template voor de event-summary. Tokens in `{braces}` worden opgelost tegen de properties van het object. We gebruiken `Desk {desk} · {user}`. Om relaties op te lossen (de `desk`-property is een uuid die wijst naar een `desk`-object), neem `_extend=relations` op als de calendar provider ophaalt, zie de OpenRegister-kant.
+- `color`, hex-kleur van de kalender. We gebruiken cobalt-blauw (`--c-blue-cobalt`).
+
+Dat is de hele wijziging. Geen ander bestand hoeft aangeraakt te worden.
+
+## Stap 2: Herimporteer de configuratie
+
+Schema's in OpenRegister hebben een versie. De schema-versie ophogen + de import opnieuw draaien is de canonieke manier om ze in place bij te werken. Hoog de `info.version` van het bestand op (`0.2.0` → `0.3.0`) en de `version` van het booking-schema:
+
+```json
+"info":  { "version": "0.3.0" },
+"booking": { "version": "0.3.0", /* ... */ }
+```
+
+Trigger daarna de import op dezelfde manier als in Deel 2:
+
+```bash
+docker exec nextcloud php occ app:disable deskdesk
+docker exec nextcloud php occ app:enable deskdesk
+```
+
+(Of doe een `POST /api/settings/load` als je admin-settings al bedraad hebt.)
+
+## Stap 3: Verifieer in NC Calendar
+
+Open `/apps/calendar/`. Je zou een nieuwe entry in de kalenderlijst moeten zien:
+
+- **Booking**, cobalt-blauwe kleur, alleen-lezen badge, in bezit van je gebruiker
+
+Klik erop. De seed-boekingen uit Deel 2 (de maandag focus-werk-sessie, de dinsdag sprint-planning-meeting, de tentatieve rustige ochtend) verschijnen als events. Klik op één. De popover toont het bureau + gebruiker-titel + de start/eind-tijden.
+
+Als je de kalender niet ziet:
+
+- Bevestig dat OpenRegister zijn provider heeft geregistreerd: `docker exec nextcloud php occ config:list | grep openregister`
+- Zorg dat je `booking`-schema `configuration.calendarProvider.enabled: true` heeft na de herimport
+- Check `nextcloud.log` op `RegisterCalendarProvider`-meldingen
+
+## Hoe het werkt onder de motorkap
+
+OpenRegister's `RegisterCalendarProvider` implementeert Nextcloud's `ICalendarProvider`-interface. Bij elke Calendar API-request:
+
+1. Lijst elk schema op met `configuration.calendarProvider.enabled === true`
+2. Voor elk, retourneer een `RegisterCalendar` (een lichte `ICalendar`-implementatie)
+3. Als de gebruiker die kalender opent, query OpenRegister naar objecten waarvan `dtstart` in het gevraagde bereik valt
+4. Transformeer elk object naar een iCalendar VEVENT via `CalendarEventTransformer`, met toepassing van de `titleTemplate`
+
+Per-object ACL's bewaken event-inhoud. De provider omzeilt multi-tenancy bij het oplijsten van schema's (zodat cross-tenant-kalenders werken), maar elk individueel event blijft gegateerd door RBAC.
+
+Hetzelfde patroon wordt gevolgd door [de spec](https://github.com/ConductionNL/openregister/blob/main/openspec/specs/calendar-provider/spec.md).
+
+## Wat je hiermee gekocht hebt
+
+Activity (`NC Activity`) is al bedraad. Blader naar `/apps/activity/` en je ziet je booking-creates / -updates. De dashboard-activity-widget + e-maildigest tonen beide DeskDesk-events. Nul code aan jouw kant.
+
+Mail Smart Picker ook: plak in NC Mail een bureau-URL (`/apps/deskdesk/desks/desk-3-east-12`) en de picker resolvet hem naar een rich-preview-kaart met het bureau-label + zone + uitrusting.
+
+Je hebt DeskDesk effectief geïntegreerd in vier Nextcloud-apps met één JSON-blok. Dat is de schema-gedreven discipline die zich uitbetaalt.
+
+## Troubleshooting
+
+<HexCard title="De Booking-kalender verschijnt niet">
+  Bevestig dat het booking-schema na de herimport <code>configuration.calendarProvider.enabled</code> op <code>true</code> heeft staan. Open <code>/index.php/apps/openregister/api/schemas/booking</code> en zoek het configuration-blok in de response. Ontbreekt het, dan heeft de herimport de wijziging niet opgepikt, hoog de versie op en probeer opnieuw.
+</HexCard>
+
+<HexCard title="Events verschijnen maar de titel is het ruwe uuid, niet het bureau-label">
+  De titleTemplate lost standaard geen relaties op. Voeg een <code>_extend=relations</code> toe via de calendarProvider-extras van het schema, of gebruik de slug van het bureau in plaats van zijn uuid in de template (<code>"titleTemplate": "Desk &lbrace;deskSlug&rbrace;"</code> als je de slug als property hebt opgeslagen).
+</HexCard>
+
+<HexCard title="Events verschijnen op de verkeerde tijd">
+  Check de tijdzone op de <code>start</code> / <code>end</code>-waarden van de booking. Ze moeten ISO 8601 zijn met timezone-info (bijv. <code>2026-05-12T09:00:00+02:00</code>). Naïeve datetimes worden als UTC geïnterpreteerd en kunnen verschoven renderen.
+</HexCard>
+
+<HexCard title="`Call to undefined method ...registerCalendarProvider()`">
+  De provider heeft OpenRegister 0.2.x of nieuwer nodig. Oudere versies leveren geen RegisterCalendarProvider. Upgrade OpenRegister via de app-store.
+</HexCard>
+
+## Wat volgt
+
+<NextSteps>
+  <NextStep
+    title="Deel 4: Externe kennis + ship"
+    href="/academy/deskdesk-tutorial-4-knowledge-and-ship"
+    description="Schrijf de desk-zone-kennisartikelen in xWiki, bedraad OpenConnector om ze per bureau te tonen in CnObjectSidebar, package de app, publiceer naar apps.conduction.nl."
+  />
+  <NextStep
+    title="OpenRegister platform-capabilities"
+    href="https://openregister.conduction.nl/docs/platform-capabilities/"
+    description="De volledige integratie-matrix: Activity, Calendar, Contacts, Mail Smart Picker, File actions, Profile actions, en welke geïmplementeerd zijn vs uitgesteld."
+  />
+  <NextStep
+    title="Schema-annotaties referentie"
+    href="https://openregister.conduction.nl/docs/schema-annotations/"
+    description="Elke x-openregister-* extensie die op het schema leeft: relations, lifecycle, aggregations, calculations, calendar."
+  />
+</NextSteps>
