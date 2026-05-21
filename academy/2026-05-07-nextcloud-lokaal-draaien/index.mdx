@@ -9,7 +9,7 @@ tags: [Nextcloud, Docker, Setup, Demo, Local]
 durationMinutes: 15
 ---
 
-import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, ContactCta} from '@conduction/docusaurus-preset/components';
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
 
 Every other tutorial in this academy needs a working Nextcloud. This is the fastest route: three commands and you run the official Nextcloud image locally, identical to production. No sales call, no demo environment that can go offline, no custom Dockerfile. After that you install the Conduction apps from the Nextcloud app store, the same path as production.
 
@@ -213,13 +213,23 @@ After `down -v`, your laptop is clean again. Two minutes later, you can start ov
 
 **`notify_push` keeps restarting after `docker compose up -d`:** check the logs (`docker compose logs notify_push`) for `× No redis server is configured`. That means Nextcloud's `memcache.distributed` config is not on Redis yet. Run the first three `occ config:system:set` commands from step 5, then restart with `docker compose up -d notify_push`.
 
-## Next step
-
-A working Nextcloud is the entry point for the other tutorials in this series:
-
-- [Set up a Woo register](/academy/woo-register-opzetten): import the canonical Woo register into OpenRegister
-- [Upload files to a Woo publication](/academy/woo-bestanden-uploaden): four upload modes for documents
-- [Build your first Conduction app](/academy/build-an-app): ends with an installed app on this stack
+<NextSteps title="Next step" lede="A working Nextcloud is the entry point for the other tutorials in this series.">
+  <NextStep
+    title="Set up a Woo register"
+    href="/academy/woo-register-opzetten"
+    description="Import the canonical Woo register into OpenRegister."
+  />
+  <NextStep
+    title="Upload files to a Woo publication"
+    href="/academy/woo-bestanden-uploaden"
+    description="Four upload modes for documents."
+  />
+  <NextStep
+    title="Build your first Conduction app"
+    href="/academy/build-an-app"
+    description="Ends with an installed app on this stack."
+  />
+</NextSteps>
 
 Send the `docker-compose.yml` to a colleague if you want to see this work together.
 
