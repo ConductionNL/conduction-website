@@ -1,0 +1,208 @@
+---
+slug: spec-driven-development
+title: "Build apps with spec-driven development"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-22
+summary: Configuration, not code, is what a Conduction app is made of. Two JSON files — a schema and a manifest — and the library renders the rest. This tutorial walks you through the workflow, explains why it makes apps safe for AI and citizen developers to author, and points at the next step (OpenBuilt) when you're done editing JSON by hand.
+tags: [App development, Spec-driven, OpenRegister, Manifest, nextcloud-vue, OpenBuilt, AI]
+apps: [openregister]
+durationMinutes: 20
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+} from '@conduction/docusaurus-preset/components';
+
+A Conduction app isn't a Vue project that happens to read some JSON. It's the other way around: it's a pair of JSON files — a **schema** and a **manifest** — that happen to be rendered by Vue. The Vue is shipped, vendored, frozen behind a contract. The JSON is yours.
+
+This tutorial teaches the workflow that contract enables. Schemas first. Manifest next. No `App.vue`, no `router/index.js`, no `MainMenu.vue`, no hand-rolled CRUD dialogs. By the time you finish, you'll have a working app whose entire source is two files an editor can lint, an LLM can generate, and a visual builder (we'll get there) can round-trip.
+
+{/* truncate */}
+
+<Outcomes title="What you'll have at the end">
+  <Outcome>A working understanding of the <strong>schema → manifest → renderer</strong> contract, and why it's the same contract whether a human, an AI agent, or a visual builder produces the files.</Outcome>
+  <Outcome>Two real JSON files for a tiny app — a schema in OpenRegister, a manifest read by <code>CnAppRoot</code> — and a screen you can click through in Nextcloud.</Outcome>
+  <Outcome>An honest map of the <em>three</em> authoring surfaces (hand-written JSON, AI-generated JSON, OpenBuilt visual editor) and when each one is the right tool.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Where you should be">
+  <PrerequisiteItem>A working Nextcloud install with <strong>OpenRegister</strong> enabled. (Local Docker setup: see <a href="/academy/nextcloud-lokaal-draaien">Nextcloud lokaal draaien</a>.)</PrerequisiteItem>
+  <PrerequisiteItem>A working <strong>app scaffold</strong> on the manifest pattern. The fastest way is <code>npx @conduction/nextcloud-app-template</code>; the long way is <a href="/academy/deskdesk-tutorial-1-scaffold">DeskDesk Tutorial 1</a>.</PrerequisiteItem>
+  <PrerequisiteItem>Comfortable editing JSON. That's the whole skill list.</PrerequisiteItem>
+</Prerequisites>
+
+## What "spec-driven" actually means
+
+Most stacks let you do whatever. Spec-driven development takes that freedom and trades it for safety: **the spec is the source of truth, and the runtime is the property of the library**.
+
+In practice this means three things:
+
+1. **You describe the app, not its rendering.** You write JSON that says *what kind of records exist, what fields they have, what pages show them, who can see those pages*. You don't write the table, the form, the filter bar, the dialog, the menu item, or the route.
+2. **The library renders.** `@conduction/nextcloud-vue` takes the JSON, picks a stacked view per page, generates columns from the schema, wires up CRUD, mounts the right sidebar, applies permissions. The Vue runtime is shipped once and frozen behind a contract.
+3. **The contract is the only thing that crosses the boundary.** You cannot add a `<script>` tag, an extra HTTP call, a custom router hook, or a new component class without going *into* the library. Anything you add to the app is **data the contract knows how to render** — never behaviour that runs unchecked.
+
+Three points fall out of this:
+
+- A typo is a validation error, not a crash.
+- A bad page hides one screen, not the whole workspace.
+- A change is reversible because it's diffable text.
+
+That's the property that makes the surface safe for AI agents and non-engineers to author. Not "AI is smart enough" — *"the contract is narrow enough that smart isn't required"*.
+
+## The two files
+
+### 1. The schema
+
+A JSON Schema that describes one record type. OpenRegister stores it and uses it to validate every write. `nextcloud-vue` reads the same schema to generate columns, filters, and forms.
+
+```json title="lib/Settings/decidesk_register.json (excerpt)"
+{
+  "decision": {
+    "slug": "decision",
+    "title": "Decision",
+    "description": "A formally recorded organisational decision.",
+    "type": "object",
+    "required": ["title", "status"],
+    "properties": {
+      "title":       { "type": "string", "example": "Adopt new procurement policy" },
+      "status":      { "type": "string", "enum": ["draft", "open", "decided", "archived"] },
+      "rationale":   { "type": "string", "widget": "richtext" },
+      "decidedAt":   { "type": "string", "format": "date-time" },
+      "decidedBy":   {
+        "type": "string",
+        "x-openregister-relations": { "schema": "person", "cardinality": "many-to-one" }
+      }
+    }
+  }
+}
+```
+
+What you didn't write: a form. A table. A validator. A type definition. A relation resolver. A column renderer. The schema is the source for all six.
+
+### 2. The manifest
+
+A JSON file that says which schemas appear, on which pages, in which order. Same role as a router + a menu file + a permission map, collapsed into one declarative spec.
+
+```json title="src/manifest.json"
+{
+  "$schema": "https://nextcloud-vue.conduction.nl/schemas/app-manifest.schema.json",
+  "version": "1.2",
+  "id": "decidesk",
+  "name": "Decidesk",
+  "icon": "ScaleBalance",
+  "menu": [
+    { "id": "dashboard", "label": "Dashboard", "icon": "ViewDashboardOutline", "order": 1 },
+    { "id": "decisions", "label": "Decisions", "icon": "ScaleBalance",         "order": 2 },
+    { "id": "settings",  "label": "Settings",  "icon": "Cog",                  "order": 99, "permission": "admin" }
+  ],
+  "pages": [
+    { "id": "dashboard", "type": "dashboard", "config": { "widgets": [/* … */] } },
+    { "id": "decisions", "type": "index",     "config": { "register": "decidesk", "schema": "decision" } },
+    { "id": "decision",  "type": "detail",    "config": { "register": "decidesk", "schema": "decision" } },
+    { "id": "settings",  "type": "settings",  "config": { "sections": [/* … */] } }
+  ],
+  "dependencies": ["openregister"]
+}
+```
+
+What you didn't write: a `router/index.js`. A `MainMenu.vue`. A permission middleware. A title bar. A breadcrumb. A "not authorised" screen.
+
+Everything you'd usually write across thirty files lives in those two.
+
+## The workflow
+
+The order matters. Spec-driven means **the spec leads**, and changes propagate downward through the renderer. Don't fight the order.
+
+### Step 1: Pick the records, write the schemas
+
+Sit with a domain expert (or, if you're the domain expert, sit with a notepad) and answer one question: **what kinds of records does this app deal with?** A decision-management app has decisions. A help-desk app has tickets. A registry app has the registered things. Each one is a schema.
+
+For each record type, write a JSON Schema. The OpenRegister extensions you'll use most:
+
+- `slug` — the URL identifier.
+- `title`, `description` — the human label and one-line summary.
+- `required` — the fields without which the record is incomplete.
+- `properties[].widget` — a hint to the renderer (`richtext`, `json`, `code`, `select` are the common ones).
+- `properties[].x-openregister-relations` — typed cross-schema links.
+
+If you can't write the schema in a sitting, the app isn't ready to build yet. That's a feature: the schema is the contract every later step rests on.
+
+### Step 2: Decide the pages, write the manifest
+
+For each schema you wrote in step 1, decide which **page types** show it. The library ships six:
+
+- `index` — the list of *all* records of a type. Sortable, filterable, searchable, CRUD-able. Use it for every "show me all X" surface.
+- `detail` — one record in depth. Stats, cards, files, audit trail, sidebar.
+- `dashboard` — KPIs, charts, tiles. No single record; a high-level overview.
+- `settings` — admin / config screen for the app itself.
+- `chat`, `files`, `logs` — specialised surfaces that wire to existing Nextcloud / OpenRegister capabilities.
+- `custom` — escape hatch when nothing else fits. Use it sparingly.
+
+Most apps end up with a dashboard, an index page per schema, a detail page per schema, and a settings page. That's it. The manifest is short on purpose.
+
+### Step 3: Validate
+
+Before you launch the dev server: validate the manifest. The library ships a validator that runs the same JSON Schema check that production runs at boot:
+
+```js
+import { validateManifest } from '@conduction/nextcloud-vue'
+import manifest from './src/manifest.json'
+
+const { valid, errors } = validateManifest(manifest)
+if (!valid) {
+  console.error(errors)
+  process.exit(1)
+}
+```
+
+A typo here is a build-time error with a clear path (`pages[2].config.register: required`). Compared to a runtime crash 200 lines deep in a Vue component, this is night and day.
+
+### Step 4: Render
+
+There's no step 4. `CnAppRoot` reads the manifest, mounts the right stacked view for each route, generates everything from the schema. Your `App.vue` is the [eight-line example](/docs/architecture/manifest) on the docs site.
+
+You write zero new Vue. That's the deal.
+
+## Why this matters for AI
+
+A spec-driven app is **the smallest target an LLM can hit and still produce a working application**. Given the manifest's `$schema` URL and a list of available schemas, a modern model generates a valid `manifest.json` first try, in seconds. The output is JSON, not code, so the worst failure mode is a clear validation error — never a runtime crash, never an XSS injection, never a privilege escalation. The model has nothing to compromise because there is no runtime to write to.
+
+The same holds for **non-engineers**. The friction of "set up Vue, learn the router, hand-write the dialog" doesn't exist. The friction is "fill in this form". A spec-driven app is editable by a domain expert who has never opened a code editor.
+
+The endpoint of this trajectory is **OpenBuilt** — Conduction's visual app builder. OpenBuilt's authoring surface is a UI; its **output** is the same manifest + schema pair this tutorial just taught you to hand-write. You can author by hand, you can author with an LLM, you can author in OpenBuilt — the artifact is identical, the contract is identical, the runtime is identical. The choice of authoring surface is a UX preference, not an architectural one.
+
+→ [OpenBuilt](https://conduction.nl/apps/openbuilt) — when you're ready to stop hand-editing JSON.
+
+## The three authoring surfaces, honestly
+
+There's a real trade-off between the three ways to produce the same JSON. Pick the one that matches the task in front of you:
+
+- **Hand-written JSON** — best for *learning* the contract, for tight control on production apps, for code-review-able diffs. The cost is friction: every change is a JSON edit, every typo is your own to spot.
+- **LLM-generated JSON** — best for greenfield apps, prototypes, bulk-creating similar pages, and any task that's tedious for a human but mechanical to specify. The cost is review: an LLM can hallucinate a register slug that doesn't exist. Run `validateManifest()` and `composer test` on the output every time.
+- **OpenBuilt** — best for non-engineers, for domain experts iterating on their own app, for "what does this look like if I move that column" exploration. The cost is *one less degree of freedom*: OpenBuilt opinions about the layout it offers, which is a feature for citizen developers and a constraint for power users.
+
+All three round-trip. A manifest hand-written in this tutorial opens unmodified in OpenBuilt. A manifest generated by an LLM opens unmodified in OpenBuilt. A manifest produced by OpenBuilt opens unmodified in your editor. **There is no lock-in because there is only one format.**
+
+## Where to next
+
+<NextSteps>
+  <NextStep title="Read the manifest reference" href="https://nextcloud-vue.conduction.nl/docs/architecture/manifest/">
+    The full schema, all eight page types, the slot system, the v1 → v2 migration. The page on configuration over code lives next door.
+  </NextStep>
+  <NextStep title="Read the schemas-and-registers reference" href="https://nextcloud-vue.conduction.nl/docs/architecture/schemas-and-registers/">
+    The data side of the contract. How one JSON Schema becomes a table, a filter bar, a form, a validator, and a typed relation.
+  </NextStep>
+  <NextStep title="Stop hand-editing JSON" href="https://conduction.nl/apps/openbuilt">
+    OpenBuilt — the visual app builder. Same contract, no JSON editor.
+  </NextStep>
+  <NextStep title="Do the full DeskDesk tutorial" href="/academy/deskdesk-tutorial-0-three-paths">
+    A four-part series that builds a real desk-booking app end-to-end on the manifest pattern. Spec-driven development applied, not explained.
+  </NextStep>
+</NextSteps>
