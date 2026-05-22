@@ -1,0 +1,306 @@
+---
+slug: spec-driven-development
+title: "Spec-gedreven ontwikkeling met OpenSpec — laat de AI de code schrijven, jij schrijft de context"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-22
+summary: Met OpenSpec stop je met het zelf schrijven van code en begin je met het schrijven van context. Markdown-specs beschrijven wat een feature moet doen. ADR's op organisatie- en app-niveau bepalen hoe features samenhangen. Een AI-agent (Hydra) leest de spec, past die toe, en een sequentiële kwaliteits- en review-harness valideert het resultaat. Deze tutorial loopt door de workflow, benoemt de skills, en legt uit waarom "configuratie boven code" het natuurlijke eindpunt is.
+tags: [App-ontwikkeling, Spec-gedreven, OpenSpec, Hydra, ADR, AI, n8n, Windmill, OpenBuilt]
+apps: [openregister]
+durationMinutes: 25
+---
+
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  SetupSteps,
+  SetupStep,
+  NextSteps,
+  NextStep,
+  HexCard,
+} from '@conduction/docusaurus-preset/components';
+
+Spec-gedreven ontwikkeling draait de gebruikelijke volgorde om. Je schetst niet eerst de feature, schrijft de code, en documenteert daarna misschien wat je hebt gebouwd. Je **schrijft eerst de specificatie** — in Markdown, met RFC 2119-sleutelwoorden en GIVEN/WHEN/THEN-scenario's — en een AI-agent (Hydra) implementeert code die daaraan voldoet. De rol van de mens schuift een niveau omhoog: jij ontwikkelt **context**, geen code.
+
+Dat klinkt idealistisch totdat je het in de praktijk ziet werken. De apps van Conduction worden vandaag in productie op deze manier gebouwd. Deze tutorial loopt door de workflow: wat OpenSpec daadwerkelijk is, hoe ADR's op organisatie- en app-niveau features samenhangend houden, wat de **explore**- en **apply**-skills doen, en hoe de kwaliteits- en gatekeeping-harness het resultaat valideert voordat er ook maar iets in `main` landt.
+
+{/* truncate */}
+
+<Outcomes title="Wat je aan het eind hebt">
+  <Outcome>Een eerlijk mentaal model van hoe OpenSpec werkt in de Hydra-pipeline — proposals, delta's, levende specs, ADR-hiërarchie — en hoe de skills (<code>/opsx-explore</code>, <code>/opsx-ff</code>, <code>/opsx-apply</code>, <code>/opsx-verify</code>) samen een complete workflow vormen.</Outcome>
+  <Outcome>Concreet inzicht in waarom "configuratie boven code" het natuurlijke eindpunt is: declaratieve <code>{'x-openregister-*'}</code> register-patches verzorgen de business logic, <code>n8n</code> en <code>Windmill</code> verzorgen integratie-workflows, en handgeschreven code is de terugvaloptie wanneer declaratieve mogelijkheden tekortschieten.</Outcome>
+  <Outcome>Een helder beeld van de kwaliteits- en gatekeeping-harness die productie beschermt: 13 mechanische gates plus oordeelsreviews door <code>team-reviewer</code> en <code>team-security</code>, sequentieel, label-gestuurd, zonder loops.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Waar je moet staan">
+  <PrerequisiteItem>Goede kennis van <a href="https://nextcloud-vue.conduction.nl/docs/architecture/app-design-principles/">hoe wij Nextcloud-apps ontwerpen</a> — het chassis, de vijf atomen, de gestapelde views.</PrerequisiteItem>
+  <PrerequisiteItem>Basiskennis van het <a href="https://nextcloud-vue.conduction.nl/docs/architecture/manifest/">app-manifest</a> en <a href="https://nextcloud-vue.conduction.nl/docs/architecture/schemas-and-registers/">schemas en registers</a> — de twee declaratieve oppervlakken waarop een spec landt.</PrerequisiteItem>
+  <PrerequisiteItem>Claude, Mistral, Codex, of een andere LLM-tool die je vanuit je editor of terminal kunt aanspreken. De workflow is model-agnostisch; je brengt je eigen agent mee.</PrerequisiteItem>
+  <PrerequisiteItem>De OpenSpec-skills geïnstalleerd — de <code>{'opsx-*'}</code>-familie zit in de <a href="https://github.com/ConductionNL/hydra">ConductionNL/hydra</a>-repository. Clone die (of kopieer de <code>.claude/skills/</code> naar je project) zodat de <code>{'/opsx-*'}</code>-commando's beschikbaar zijn.</PrerequisiteItem>
+</Prerequisites>
+
+## Wat "spec-gedreven" echt betekent
+
+De meeste teams behandelen de specificatie als een oplevering die op de code volgt. Spec-gedreven ontwikkeling behandelt het als **het enige dat mensen schrijven**. De flow draait om:
+
+1. Een mens (jij) beschrijft in een Markdown-spec wat een feature moet doen. RFC 2119-sleutelwoorden (`MUST`, `SHOULD`, `MAY`) voor normatieve uitspraken, GIVEN/WHEN/THEN-scenario's voor gedragsmatige.
+2. Een mens (jij) legt de architectonische randvoorwaarden vooraf vast in een Architecture Decision Record. Per-app voor repo-specifieke keuzes; org-breed voor regels die voor de hele fleet gelden.
+3. Een **AI-agent** (Hydra) leest de spec + de ADR's en schrijft de code. Het implementeert wat gespecificeerd is en is gebonden aan wat besloten is.
+4. Een **kwaliteits- en gatekeeping-harness** valideert dat de code overeenkomt met de spec, voldoet aan elke ADR, en de mechanische- en oordeelsreviews passeert.
+
+De mens schrijft de context. De AI schrijft de code. De harness schrijft het oordeel.
+
+Dit is niet "AI als autocomplete". Het is "AI als implementator, aan een lijn van specs en ADR's." Alles wat goed en fout is aan het resultaat is terug te voeren op of de context helder was. Vage spec → vage code. Ontbrekende ADR → drift over de fleet. Scherpe spec, complete set ADR's → werkende feature op `main`.
+
+## OpenSpec: de mappenstructuur die het laat werken
+
+OpenSpec is de conventie die elke Conduction-repo volgt voor het opslaan van deze context. Het is een directory, een Markdown-dialect, en een kleine CLI in één. De structuur is in elke repo hetzelfde:
+
+```
+openspec/
+├── config.yaml                 # declareert het schema (spec-driven)
+├── project.md                  # canonieke projectcontext, randvoorwaarden, stack
+├── AGENTS.md                   # beheerd instructieblok voor AI-assistenten
+├── architecture/               # ADR's die deze repo binden (adr-NNN-<onderwerp>.md)
+├── specs/<capability>/spec.md  # de LEVENDE spec — wat vandaag waar is
+├── changes/<change-name>/      # actieve delta's onderweg
+│   ├── proposal.md             # waarom + scope + frontmatter (kind, depends_on)
+│   ├── design.md               # hoe — technische aanpak, seed-data, declaratief-vs-imperatief
+│   ├── specs/<cap>/spec.md     # DELTA: ## ADDED / MODIFIED / REMOVED / RENAMED Requirements
+│   └── tasks.md                # hiërarchische checklist gedreven door de apply-skill
+├── changes/archive/            # gemergde delta's, bewaard voor de historie
+└── schemas/conduction/         # het YAML-schema waar de openspec CLI tegen valideert
+```
+
+Een **capability** is één ding dat de app doet — bijv. "beslis-lifecycle," "audit-trail export," "tenant onboarding." Elke capability krijgt precies **één levende spec** in `openspec/specs/<capability>/spec.md`. Wijzigingen op die spec komen binnen als **delta's** in `openspec/changes/<change-name>/specs/<capability>/spec.md`. Wanneer de wijziging gepubliceerd is, voegt `/opsx-archive` de delta samen in de levende spec en verplaatst de change-map naar `changes/archive/`.
+
+Deze scheiding is belangrijk: de levende spec is de *huidige waarheid*. De delta is een *voorstel onderweg*. De twee raken nooit verward, zelfs niet met een dozijn changes tegelijk open.
+
+## ADR's op twee niveaus: organisatie en applicatie
+
+Een specificatie zegt wat *één feature* moet doen. **Architecture Decision Records** zeggen wat *elke feature* moet respecteren. Ze vormen de staande context die een AI-agent leest voordat hij een regel schrijft — het verschil tussen een agent die code produceert volgens jullie conventies en een die ze bij elke wijziging opnieuw uitvindt. Spec-gedreven ontwikkeling heeft beide nodig: specs voor de feature, ADR's voor de samenhang tussen features.
+
+ADR's zitten op twee niveaus, met een schone eigenaarschapssplitsing. Het patroon is algemeen — elke organisatie met meerdere apps kan het overnemen:
+
+- **Organisatie-niveau ADR's** zijn de regels die elke app erft of het nu wil of niet: de datalaag, de beveiligingshouding, het i18n-vereiste, de licentie, de manifest-conventie, de "business logic is declaratief"-regel. Ze leven op één plek, centraal beheerd. App-repo's houden **geen** kopieën — verouderde lokale kopieën drijven af van de bron en zorgen ervoor dat reviewers debatteren tegen een regel die al maanden achterhaald is. Eén canoniek thuis, runtime gekopieerd in build- en review-tooling.
+- **Applicatie-niveau ADR's** leggen de beslissingen vast die alleen één app binden: het domeinmodel, de opslagkeuzes, de UX-patronen. De rest van de fleet is vrij om anders te kiezen.
+
+Wanneer een spec iets voorstelt dat conflicteert met één van beide niveaus, weigert de apply-skill en de reviewer signaleert het. Zo houden de twee lagen tientallen onafhankelijk gebouwde features samenhangend.
+
+In het geval van Conduction zijn de organisatie-niveau ADR's de fleet-brede set die elke Conduction-app erft (datalaag, frontend, beveiliging, i18n, testen, licentie, de app-manifest-conventie, schema-declaratieve business logic, spec-sizing). Voor een concreet, browsebaar voorbeeld van **applicatie-niveau** ADR's vormen die van OpenConnector goede leesvoer — 16 stuks, van [`adr-001-domain-pinia-stores-app-local`](https://github.com/ConductionNL/openconnector/tree/main/openspec/architecture) tot het ontwerp van de encryption-service, elk een echte lokale beslissing die de rest van de fleet niet bindt.
+
+## Eén feature, één spec
+
+De werkeenheid in OpenSpec is een **change** die één capability toevoegt, wijzigt of verwijdert. Elke change leeft in zijn eigen map onder `openspec/changes/<change-name>/` en bevat vier bestanden:
+
+- **`proposal.md`** — waarom deze wijziging, wie erom vroeg, wat in scope is. YAML-frontmatter declareert `kind: config | code | mixed` (per ADR-032; `mixed` is een anti-patroon) en `depends_on: [...]` voor geketende specs.
+- **`design.md`** — hoe de wijziging technisch werkt. De vorm van de seed-data, de schemas die geraakt worden, de declaratief-vs-imperatief afweging die gemaakt is.
+- **`specs/<capability>/spec.md`** — de delta zelf, met sectie-prefixen: `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, `## RENAMED Requirements`. Elke requirement is RFC 2119 met een of meer GIVEN/WHEN/THEN-scenario's.
+- **`tasks.md`** — een hiërarchische checklist (`- [ ]` / `- [x]`) waar de apply-skill doorheen werkt.
+
+Een change volgt één feature. Twee features betekent twee changes. Dit wordt afgedwongen door ADR-032 en door de supervisor — die blokkeert dat afhankelijke specs gebouwd worden voordat hun voorgangers gemerged zijn.
+
+## De workflow, fase voor fase
+
+Elke change doorloopt dezelfde `opsx-*`-fases. Jij stuurt de eerste; de AI-agent stuurt de middelste; de harness stuurt de laatste.
+
+<SetupSteps title={null}>
+  <SetupStep title="Explore — denk het probleem door">
+    <code>/opsx-explore</code>. Een denkende houding, niet een code-schrijvende. Breng een vaag idee mee; de agent onderzoekt de codebase en de ADR's, daagt aannames uit, en brengt risico's aan de oppervlakte. Legt optioneel het resultaat vast als een proposal.
+  </SetupStep>
+  <SetupStep title="Scaffold — maak de change en zijn artifacten aan">
+    <code>/opsx-new</code> (één artefact tegelijk) of <code>/opsx-ff</code> (fast-forward door alle in één keer): proposal, design, delta-specs, en tasks.
+  </SetupStep>
+  <SetupStep title="Plan — zet tasks om in een traceerbare issue">
+    <code>/opsx-plan-to-issues</code>. Zet <code>tasks.md</code> om in een <code>plan.json</code> en een GitHub-issue zodat voortgang zichtbaar is.
+  </SetupStep>
+  <SetupStep title="Apply — implementeer naar de spec">
+    <code>/opsx-apply</code>. De enige fase die code schrijft. Loopt door de takenlijst, landt declaratieve wijzigingen eerst, vinkt elke taak af zodra die klaar is.
+  </SetupStep>
+  <SetupStep title="Verify — controleer of code overeenkomt met de artifacten">
+    <code>/opsx-verify</code>. Bevestigt dat de implementatie aan elke requirement in de spec voldoet voordat er iets gearchiveerd wordt.
+  </SetupStep>
+  <SetupStep title="Archive — voeg de delta in de levende spec">
+    <code>/opsx-archive</code>. De delta vouwt zich in <code>specs/&lt;capability&gt;/spec.md</code> en de change verhuist naar <code>changes/archive/</code>. De levende spec is weer waar.
+  </SetupStep>
+</SetupSteps>
+
+De twee ADR-lagen voeden *elke* fase — explore leest ze om je idee uit te dagen, apply gehoorzaamt ze tijdens het implementeren, verify toetst er tegen. En de fases komen alle samen op dezelfde twee outputs uit: een **manifest**-wijziging en een **schema**-wijziging. Code en workflows zijn de optionele staart, die alleen bereikt wordt wanneer de declaratieve oppervlakken het gedrag niet kunnen uitdrukken.
+
+<BrowserOnly>
+{() => {
+  require('@conduction/docusaurus-preset/diagrams');
+  return (
+  <div style={{ background: 'var(--c-cobalt-50)', borderRadius: '12px', padding: '0.5rem 0', margin: '1.5rem 0' }}>
+    <cn-domain-tree>
+      <cn-hex slot="apex" size="xl">Org + app ADR's</cn-hex>
+      <cn-hex size="md" variant="outline">Explore</cn-hex>
+      <cn-hex size="md" variant="outline">Scaffold</cn-hex>
+      <cn-hex size="md" variant="outline">Apply</cn-hex>
+      <cn-hex size="md" variant="outline">Verify</cn-hex>
+    </cn-domain-tree>
+    <cn-domain-tree compact>
+      <cn-hex slot="apex" size="xl" color="orange">opsx apply</cn-hex>
+      <cn-hex size="md" color="orange">Manifest-wijziging</cn-hex>
+      <cn-hex size="md" color="orange">Schema-wijziging</cn-hex>
+      <cn-hex size="md" color="forest" variant="outline">Code (optioneel)</cn-hex>
+      <cn-hex size="md" color="forest" variant="outline">Workflows (optioneel)</cn-hex>
+
+      <span slot="legend">ADR's (boven) sturen elke opsx-fase</span>
+      <span slot="legend">Apply (oranje) levert eerst configuratie</span>
+      <span slot="legend">Code / workflows (groen) alleen wanneer nodig</span>
+    </cn-domain-tree>
+  </div>
+  );
+}}
+</BrowserOnly>
+
+Of die optionele staart überhaupt bereikbaar is, hangt af van *wie er bouwt*. Een developer die in code werkt kan terugvallen op PHP of een workflow wanneer het declaratieve pad uitgeput raakt. Een citizen developer in de **app builder** ziet die staart helemaal niet — voor hem is manifest + schema + een aangewezen workflow het hele oppervlak.
+
+## De explore-skill: een houding, geen workflow
+
+Voordat je een proposal schrijft, moet je meestal eerst **nadenken**. Daar is `/opsx-explore` voor. Roep het aan met een vaag idee, een halfbakken probleem, een architectuurvergelijking, of helemaal geen onderwerp:
+
+```
+/opsx-explore Moeten we onze bestaande notificatieservice hergebruiken voor de
+              nieuwe SLA-overschrijdingsmeldingen, of iets specifieks bouwen?
+```
+
+`/opsx-explore` is een **houding**, geen workflow — de eigen SKILL.md opent met dat onderscheid. De agent gaat in een denkmodus: laadt stilletjes de projectcontext, de relevante ADR's, de architectuurdocumenten, en eventuele aangrenzende specs; tekent ASCII-diagrammen om de topologie te verhelderen; daagt je aannames uit; brengt risico's aan de oppervlakte; en volgt het gesprek waar het maar heen gaat. Het is expliciet verboden om tijdens verkenning code te schrijven of features te implementeren. Het **mag** OpenSpec-artifacten creëren (een proposal, een design, een spec) wanneer je vraagt om vast te leggen wat jullie samen hebben uitgewerkt.
+
+Wanneer het denken kristalliseert tot "OK, dit is de feature die we moeten bouwen," groeit de explore-houding door naar een van twee volgende skills: `/opsx-ff` fast-forwardt door elk artefact in één pas (proposal + delta-specs + design + tasks), of `/opsx-new` loopt er samen met jou stap voor stap door. Hoe dan ook is de overgang van "denken" naar "scaffolden" expliciet.
+
+Gebruik `/opsx-explore` wanneer de vraag groter is dan het antwoord. Pak het op voordat je een `proposal.md` opent, niet erna. Het uur dat je hier investeert verdient zich tienvoudig terug wanneer de apply-fase niet hoeft over te doen omdat de spec verkeerd was.
+
+## De apply-skill: implementeer naar de spec
+
+Zodra een change een proposal, een design, delta-specs, en een tasks-lijst heeft, doet `/opsx-apply <change-name>` de implementatie:
+
+```
+/opsx-apply add-sla-breach-alerts
+```
+
+De skill laadt de change, loopt `tasks.md` van boven naar beneden door, schrijft code op een feature-branch, vinkt elke taak `[ ] → [x]` af onderweg, houdt de checkboxes in het GitHub-tracking issue gesynchroniseerd, draait aan het eind `composer check:strict` (of `make check-strict` voor Python ExApps), en plaatst een voortgangscommentaar op de issue. Het is de **enige** skill in de familie die code mag schrijven; alles anders is read-only of scaffoldt Markdown.
+
+`/opsx-apply` draait in twee modi die dezelfde SKILL.md delen: interactief vanuit je CLI, of headless binnen Hydra's CI-builder-container. Het headless-modus-contract garandeert identiek gedrag in beide gevallen — wat je lokaal kunt testen is wat productie draait.
+
+### Code alleen wanneer het moet — de ADR-031-hefboom
+
+De "code alleen wanneer het moet"-framing wordt **gecodificeerd door ADR-031**, niet door het app-manifest. Twee oppervlakken regelen verschillende dingen, en beide zijn declaratief:
+
+- **`src/manifest.json`** (ADR-024) declareert de **navigatie, routing, en paginacompositie** van de app — left-nav-items, route-naar-pagina-mappings, per-pagina slot-overrides. CnAppRoot leest het en mount de juiste gestapelde view per route. Voeg een scherm toe door JSON aan te passen.
+- **`lib/Settings/{app}_register.json`** (ADR-031) declareert de **business logic** van de app als `x-openregister-*`-extensies op elk schema: `x-openregister-lifecycle` voor state machines, `x-openregister-aggregations` voor berekende velden, `x-openregister-calculations` voor afgeleide waarden, `x-openregister-notifications` voor uitgaande berichten, `x-openregister-relations` voor cross-schema links, `x-openregister-widgets` voor dashboard-tegels. De apply-skill is verplicht om lifecycle, aggregations, calculations, notifications, declaratieve relaties, en dashboard-widgets uit te drukken als register-patches **in plaats van als nieuwe `lib/Service/*Service.php`-klassen**.
+
+Imperatieve PHP/Vue-code is de terugval wanneer het declaratieve pad het gedrag echt niet kan uitdrukken: integratie met externe API's, documentgeneratie, NLP, lifecycle-guards met niet-triviale preconditions. ADR-031 somt de uitzonderingen op; alles daarbuiten MOET declaratief zijn. De apply-skill dwingt dit af, de reviewer-skill controleert het dubbel, en de harness weigert om overtredingen te mergen.
+
+### Windmill en n8n: het code-loze pad voor business logic
+
+De interessantste consequentie van ADR-031 is dat **niet-triviale business logic helemaal geen PHP hoeft te zijn**. Voor workflows — opeenvolgingen van stappen, conditionele vertakkingen, externe calls, asynchrone overdrachten — exposed OpenRegister een `WorkflowEngineInterface` met adapters voor **n8n** en **Windmill**. Schemas declareren workflow-hooks:
+
+```json
+"x-openregister-hooks": {
+  "afterCreate": {
+    "engine": "n8n",
+    "workflowId": "melding-notificatie",
+    "params": { "channel": "email" }
+  }
+}
+```
+
+Wanneer een object van dat schema wordt aangemaakt, emit OpenRegisters `HookExecutor` een CloudEvent, de `n8n`-adapter ontvangt die, de visuele workflow-editor van n8n verzorgt de orkestratie, en het resultaat rijdt terug in OR. Hetzelfde patroon werkt met Windmill (TypeScript / Python / Go-scripts op een visueel canvas) voor zwaarder rekenwerk.
+
+De spec voor dit fleet-brede consumption-patroon leeft in Hydra in `openspec/changes/consume-or-workflow-engine-fleet-wide/`. De regel die hij codificeert: **apps mogen NIET rechtstreeks n8n, Windmill, of welke andere workflow-engine dan ook aanroepen via HTTP vanuit PHP service-klassen**. Alle workflow-executie MOET getriggerd worden via schema-hooks die gekoppeld zijn aan OpenRegisters `WorkflowEngineInterface`. Apps die workflow-logica nodig hebben voegen een hook-declaratie toe aan het schema-register; ze schrijven nooit `curl`-code tegen n8n.
+
+Dit is wat **OpenBuilt** — Conductions visuele app-builder — mogelijk maakt. Een citizen developer sleept schemas op een canvas, wijst workflow-hooks naar n8n-workflows aan, en levert een werkende app op **zonder ook maar één regel code te schrijven**. De "code alleen wanneer het moet"-belofte wordt letterlijk: er is geen code in de app om te schrijven, omdat het schema-register + de n8n-workflow + het manifest al alles afdekken wat een LLM (of een mens, of OpenBuilt) nodig heeft om een complete app te produceren.
+
+→ [OpenBuilt](https://conduction.nl/apps/openbuilt) — de visuele app-builder. Hetzelfde OpenSpec-contract, hetzelfde schema-register, dezelfde workflow-engine-adapters; alleen geen JSON-editor.
+
+## De kwaliteits- en gatekeeping-harness
+
+Een spec-gedreven workflow zonder handhaving is gewoon een chique manier om je eigen regels te negeren. Hydra's kwaliteits- en gatekeeping-harness maakt de discipline echt. Hij draait in twee lagen, sequentieel, met een hard **no-loop beleid** (ADR-013): elke transitie is one-shot, geen automatische retries, fouten escaleren naar mensen.
+
+### Laag A — mechanische gates
+
+Dertien benoemde gates, gedraaid via één gedeeld script. Elk is klein, snel, deterministisch, en draait tegen de PR-diff (per ADR-020, tenzij een full-repo-scope wordt gevraagd):
+
+1. **`spdx`** — elk PHP-bestand onder `lib/` draagt `SPDX-License-Identifier: EUPL-1.2` + `@copyright`.
+2. **`forbidden-patterns`** — geen `var_dump`, `die`, `error_log`, `print_r`, `dd`, `dump` in productiecode.
+3. **`stub-scan`** — geen "In a complete implementation"-commentaren, geen lege `run()`-bodies, geen hardgecodeerde fetch-stubs.
+4. **`composer-audit`** — `composer audit` rapporteert nul bekende CVE's in `composer.lock`.
+5. **`route-auth`** — elke gerouteerde controller-methode declareert zijn auth-houding (`#[PublicPage]`, `#[NoAdminRequired]`, `#[NoCSRFRequired]`, `#[AuthorizedAdminSetting]`). Zonder de annotatie wordt het endpoint stilletjes onbereikbaar; geobserveerd op decidesk#47.
+6. **`orphan-auth`** — auth/validatie-service-methodes gedefinieerd maar nooit aangeroepen. Equivalent met helemaal geen check (OWASP A01:2021).
+7. **`no-admin-idor`** — `#[NoAdminRequired]`-controllers MOETEN een per-object-guard dragen.
+8. **`unsafe-auth-resolver`** — `catch (\Throwable) { return null; }` op auth-resolvers is verboden (silent-fail-open / CWE-863).
+9. **`semantic-auth`** — de auth-annotatie komt overeen met wat de method-body daadwerkelijk vereist, niet zomaar *een* annotatie.
+10. **`initial-state`** — server-data stroomt via `IInitialState::provideInitialState()` + `loadState()`, nooit via DOM `data-*`-reads.
+11. **`admin-router`** — admin Vue-componenten MOGEN NIET geregistreerd worden in `src/router/index.js`.
+12. **`nc-input-labels`** — elke `<NcSelect>` heeft `inputLabel` / `ariaLabelCombobox` (WCAG 2.1 AA 1.3.1 + 4.1.2).
+13. **`modal-isolation`** — `<NcModal>` leeft in `src/modals/`, `<NcDialog>` in `src/dialogs/`, nooit inline (ADR-004 harde regel).
+
+Plus de per-taal strikte suites: PHP draait `composer check:strict` (PHPCS PSR-12, PHPMD ≥80%, Psalm errorLevel 4, PHPStan level 5, PHPUnit). Frontend draait `npm run lint` + `npm run stylelint`. Python ExApps draaien `make check-strict`. Deze draaien **binnen** de apply-skill aan het einde van de implementatie, en draaien **opnieuw** in de orchestrator als `quality-recheck` *nadat* de reviewers klaar zijn. De recheck bestaat omdat reviewers gezien zijn die gates oversloegen wanneer hun aandacht zich richtte op het diff-narratief — de orchestrator vangt het gat op.
+
+### Laag B — oordeelsreviews
+
+De mechanische gates zijn noodzakelijk maar niet voldoende. Een diff kan elke statische check doorstaan en toch fout zijn. Drie oordeelsslagen volgen, elk een container-persona:
+
+1. **`code-review:queued` → `team-reviewer`** (persona: Juan Claude van Damme, Claude Sonnet). Draait de PHP- en JS-pipelines opnieuw, scoort composite quality (≥90% om te slagen), loopt vervolgens een handmatige checklist van 30+ items af: constructor DI, named-argument-hygiëne, controller-dikte, Pinia boven Vuex, native `fetch` boven axios, EUPL-1.2-headers, NLGov REST-regels, WCAG 2.1 AA, AVG/GDPR, OWASP ASVS Level 2, BIO2 / ISO 27002:2022. Heeft begrensde fix-autoriteit (ADR-021): kan fixes rechtstreeks naar de PR-branch pushen, gescoped op de vorm van de change.
+2. **`security-review:queued` → `team-security`** (persona: Clyde Barcode, Sonnet, fallback Opus). Dezelfde begrensde fix-autoriteit, gescoped op security-findings: threat-model, secret-handling, input-validatie, encryption-at-rest, sessie-hygiëne.
+3. **`applier:queued` → applier-persona** (Axel Pliér, Sonnet, fallback Opus, **geen Write/Edit-tools**). Leest de post-fix-diff en geeft een binair `{pass, blocking[]}`-oordeel. De applier kan geen code schrijven; zijn enige taak is beoordelen of de fixes van de twee voorgaande reviewers daadwerkelijk gelandd zijn.
+
+De label-state-machine is de enkele bron van waarheid voor welke fase een PR in zit: `build:queued → build:running → build:pass → code-review:queued → … → security-review:pass → applier:queued → applier:pass → done`. Als een van beide reviewers faalt, wordt de applier overgeslagen en gaat de PR naar `needs-input` — mensen nemen het over in plaats van dat het systeem in een loop terechtkomt.
+
+### Waarom dit een complete loop is
+
+De mechanische gates vangen de dingen die een reviewer kan missen. De oordeelsreviewers vangen de dingen die een statische check niet kan zien. De applier vangt het geval waarin een reviewer iets signaleerde maar de fix niet daadwerkelijk landde. Quality-recheck vangt het geval waarin een reviewer een gate oversloeg. De label-machine voorkomt dat het geheel stilletjes in een loop draait wanneer er iets misgaat.
+
+Wanneer dit werkt — en het werkt op elke PR die Conduction levert — is de rol van de mens precies die waarmee deze tutorial opende: **schrijf de spec, zet de ADR's, laat de AI implementeren**. De harness doet de rest.
+
+## Van feature-aanvraag tot opgeleverde functionaliteit
+
+Samengevoegd is de hele reis één pipeline. Een feature-aanvraag komt binnen; een explore-sessie zet die om in een spec onder de staande ADR's; apply implementeert het als manifest- + schema-wijzigingen (met code of een workflow alleen wanneer nodig); de kwaliteits- en gatekeeping-harness valideert het; en werkende functionaliteit gaat live. De mens schreef de context aan het begin. Alles na de spec was de agent en de harness.
+
+<BrowserOnly>
+{() => {
+  require('@conduction/docusaurus-preset/diagrams');
+  return (
+  <div style={{ background: 'var(--c-cobalt-50)', borderRadius: '12px', padding: '1rem', margin: '1.5rem 0', overflowX: 'auto' }}>
+    <cn-pipeline>
+      <cn-hex color="lavender">Feature-aanvraag</cn-hex>
+      <cn-hex color="cobalt">Explore → spec</cn-hex>
+      <cn-hex color="cobalt">Apply → manifest + schema</cn-hex>
+      <cn-hex color="forest">Kwaliteit + gatekeeping-harness</cn-hex>
+      <cn-hex color="mint">Functionaliteit opgeleverd</cn-hex>
+      <span slot="caption">ADR's sturen elke fase; code en workflows vormen het optionele midden, alleen bereikt wanneer configuratie het gedrag niet kan uitdrukken.</span>
+    </cn-pipeline>
+  </div>
+  );
+}}
+</BrowserOnly>
+
+## Het eindpunt: configuratie boven code
+
+Spec-gedreven ontwikkeling klapt in de limiet ineen tot een vraag over *waar de context leeft*. Je kunt het manifest met de hand schrijven. Je kunt een LLM vragen om het voor je te schrijven. Je kunt schemas op OpenBuilts canvas slepen. Drie verschillende oppervlakken, één identiek artefact: een schema-register, een app-manifest, en een map met OpenSpec-specs + ADR's. Alle drie zijn ze round-trip; geen van drieën sluit je op.
+
+Dat is wat de bijbehorende architectuurpagina op [nextcloud-vue.conduction.nl/docs/architecture/configuration-over-code](https://nextcloud-vue.conduction.nl/docs/architecture/configuration-over-code/) "de runtime blijft van de library, de sandbox blijft van het platform" noemt. Spec-gedreven ontwikkeling is de **methode**. Configuratie boven code is het **gevolg**. OpenBuilt is het **oppervlak** dat het toegankelijk maakt voor zowel niet-engineers als AI-agents.
+
+De reden dat dit nu telt: een LLM met een schoon manifest-schema, een complete set ADR's, en de apply-skill kan in één keer een werkende Conduction-app produceren. Niet "een startpunt." Een werkende app. Hoe smaller we het contract maken, hoe breder we het auteursoppervlak maken.
+
+## Waar nu naartoe
+
+<NextSteps>
+  <NextStep title="Lees configuration-over-code" href="https://nextcloud-vue.conduction.nl/docs/architecture/configuration-over-code/">
+    De bijbehorende architectuurpagina op nextcloud-vue.conduction.nl. Laat zien hoe de OpenSpec-workflow landt in het manifest- + schema-register-contract op de app-laag.
+  </NextStep>
+  <NextStep title="Open OpenBuilt" href="https://conduction.nl/apps/openbuilt">
+    De visuele app-builder. Dezelfde OpenSpec-artifacten, geen JSON-editor. Ontworpen voor citizen developers en AI-gedreven generatie.
+  </NextStep>
+  <NextStep title="Loop een echte OpenSpec-change door" href="https://github.com/ConductionNL/hydra/tree/main/openspec/changes">
+    De "consume OR workflow engine fleet-wide"-change is een compleet, echt voorbeeld: proposal, design, delta-specs, tasks. Gebruik die als template de volgende keer dat je er een schrijft.
+  </NextStep>
+  <NextStep title="Probeer /opsx-explore in je eigen repo" href="https://github.com/ConductionNL/hydra/blob/main/.claude/skills/opsx-explore/SKILL.md">
+    Lees de skill-prompt, en roep die aan in Claude Code tegen je eigen app. De houding is het makkelijkste deel van de workflow om je eigen te maken.
+  </NextStep>
+</NextSteps>
