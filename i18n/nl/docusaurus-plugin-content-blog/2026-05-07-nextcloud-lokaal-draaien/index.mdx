@@ -15,8 +15,13 @@ import TabItem from '@theme/TabItem';
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, ContactCta, Troubleshooting, TroubleshootingItem, NextSteps, NextStep} from '@conduction/docusaurus-preset/components';
 
 export function OSTabs({children}) {
-  const [osKey, setOsKey] = useState('ssr');
-  const [os, setOs] = useState('windows');
+  const [os, setOs] = useState(() => {
+    if (typeof window === 'undefined') return 'windows';
+    const stored = localStorage.getItem('docusaurus.tab.os');
+    if (stored) { try { return JSON.parse(stored); } catch (e) {} }
+    const ua = navigator.userAgent;
+    return /Mac/.test(ua) ? 'mac' : /Linux/.test(ua) ? 'linux' : 'windows';
+  });
   useEffect(() => {
     const ua = navigator.userAgent;
     const detected = /Mac/.test(ua) ? 'mac' : /Linux/.test(ua) ? 'linux' : 'windows';
@@ -24,10 +29,9 @@ export function OSTabs({children}) {
       localStorage.setItem('docusaurus.tab.os', JSON.stringify(detected));
     }
     setOs(detected);
-    setOsKey(detected);
   }, []);
   return (
-    <Tabs key={osKey} groupId="os" defaultValue={os}>
+    <Tabs groupId="os" defaultValue={os}>
       {children}
     </Tabs>
   );
@@ -62,7 +66,7 @@ Loop je ergens vast? De sectie [Probleemoplossing](#probleemoplossing) onderaan 
 
 ### Wat is Docker?
 
-Docker is een gratis programma waarmee je andere programma's — zoals Nextcloud — in een afgeschermde omgeving op je laptop kunt draaien. Denk aan virtuale dozen: Nextcloud, de database en de cache draaien elk in hun eigen doos en beïnvloeden niets buiten die doos. Als je klaar bent, gooi je de dozen weg en is je laptop weer schoon.
+Docker is een gratis programma waarmee je andere programma's — zoals Nextcloud — in een afgeschermde omgeving op je laptop kunt draaien. Denk aan virtuele dozen: Nextcloud, de database en de cache draaien elk in hun eigen doos en beïnvloeden niets buiten die doos. Als je klaar bent, gooi je de dozen weg en is je laptop weer schoon.
 
 ### Docker installeren
 
@@ -354,7 +358,7 @@ Kopieer de onderstaande commando's één voor één, plak ze in de terminal en d
 <OSTabs>
 <TabItem value="windows" label="Windows">
 
-Klik met de **rechtermuisknop** in het terminalvenster om te plakken. Ctrl+V werkt soms ook op Windows 10 en 11, maar rechtermuisknop is betrouwbaarder.
+Klik met de **rechtermuisknop** in het terminalvenster om te plakken. **Ctrl+V** werkt soms ook op Windows 10 en 11, maar rechtermuisknop is betrouwbaarder.
 
 </TabItem>
 <TabItem value="mac" label="Mac">

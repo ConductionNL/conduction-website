@@ -15,8 +15,13 @@ import TabItem from '@theme/TabItem';
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, ContactCta, Troubleshooting, TroubleshootingItem, NextSteps, NextStep} from '@conduction/docusaurus-preset/components';
 
 export function OSTabs({children}) {
-  const [osKey, setOsKey] = useState('ssr');
-  const [os, setOs] = useState('windows');
+  const [os, setOs] = useState(() => {
+    if (typeof window === 'undefined') return 'windows';
+    const stored = localStorage.getItem('docusaurus.tab.os');
+    if (stored) { try { return JSON.parse(stored); } catch (e) {} }
+    const ua = navigator.userAgent;
+    return /Mac/.test(ua) ? 'mac' : /Linux/.test(ua) ? 'linux' : 'windows';
+  });
   useEffect(() => {
     const ua = navigator.userAgent;
     const detected = /Mac/.test(ua) ? 'mac' : /Linux/.test(ua) ? 'linux' : 'windows';
@@ -24,10 +29,9 @@ export function OSTabs({children}) {
       localStorage.setItem('docusaurus.tab.os', JSON.stringify(detected));
     }
     setOs(detected);
-    setOsKey(detected);
   }, []);
   return (
-    <Tabs key={osKey} groupId="os" defaultValue={os}>
+    <Tabs groupId="os" defaultValue={os}>
       {children}
     </Tabs>
   );
@@ -162,7 +166,7 @@ Open a text editor from the terminal so the filename and folder are set automati
 
 Type in the terminal:
 
-```
+```bash
 notepad docker-compose.yml
 ```
 
@@ -246,7 +250,7 @@ volumes:
   nextcloud:
 ```
 
-The file describes four services: Nextcloud itself, a database (Postgres), a cache (Redis), and a live-update system (notify_push). All official, free images — Docker downloads them automatically in the next step.
+The file describes four services: Nextcloud itself, a database (Postgres), a cache (Redis), and a live-update system (notify_push — also known as **Client Push** in the Nextcloud app store). All official, free images — Docker downloads them automatically in the next step.
 
 Close the editor and go back to the terminal that is still open.
 
@@ -354,7 +358,7 @@ Copy the commands below one line at a time, paste them into the terminal, and pr
 <OSTabs>
 <TabItem value="windows" label="Windows">
 
-**Right-click** inside the terminal window to paste. Ctrl+V may also work on Windows 10 and 11, but right-click is more reliable.
+**Right-click** inside the terminal window to paste. **Ctrl+V** may also work on Windows 10 and 11, but right-click is more reliable.
 
 </TabItem>
 <TabItem value="mac" label="Mac">
