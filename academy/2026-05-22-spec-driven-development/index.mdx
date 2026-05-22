@@ -22,7 +22,6 @@ import {
   NextStep,
   HexCard,
 } from '@conduction/docusaurus-preset/components';
-import '@conduction/docusaurus-preset/diagrams';
 
 Spec-driven development inverts the usual order. You don't sketch the feature, write the code, then maybe document what you built. You **write the specification first** — in Markdown, with RFC 2119 keywords and GIVEN/WHEN/THEN scenarios — and an AI agent (Hydra) implements code that satisfies it. The human's job moves up a level: you develop **context**, not code.
 
@@ -132,7 +131,9 @@ Every change moves through the same `opsx-*` phases. You drive the early ones; t
 The two ADR tiers feed *every* phase — explore reads them to challenge your idea, apply obeys them while implementing, verify checks against them. And the phases all converge on the same two outputs: a **manifest** change and a **schema** change. Code and workflows are the optional tail, reached only when the declarative surfaces can't express the behaviour.
 
 <BrowserOnly>
-{() => (
+{() => {
+  require('@conduction/docusaurus-preset/diagrams');
+  return (
   <div style={{ background: 'var(--c-cobalt-50)', borderRadius: '12px', padding: '0.5rem 0', margin: '1.5rem 0' }}>
     <cn-domain-tree>
       <cn-hex slot="apex" size="xl">Org + app ADRs</cn-hex>
@@ -153,7 +154,8 @@ The two ADR tiers feed *every* phase — explore reads them to challenge your id
       <span slot="legend">Code / workflows (green) only when needed</span>
     </cn-domain-tree>
   </div>
-)}
+  );
+}}
 </BrowserOnly>
 
 Whether the optional tail is even reachable depends on *who's building*. A developer working in code can drop to PHP or a workflow when the declarative path runs out. A citizen developer in the **app builder** never sees that tail at all — for them, manifest + schema + a pointed-at workflow is the whole surface.
@@ -261,7 +263,9 @@ When this works — and it works on every PR Conduction ships — the human's ro
 Pulled together, the whole journey is one pipeline. A feature request comes in; an explore session turns it into a spec under the standing ADRs; apply implements it as manifest + schema changes (with code or a workflow only if needed); the quality and gatekeeping harness validates it; and working functionality ships. The human wrote the context at the front. Everything after the spec was the agent and the harness.
 
 <BrowserOnly>
-{() => (
+{() => {
+  require('@conduction/docusaurus-preset/diagrams');
+  return (
   <div style={{ background: 'var(--c-cobalt-50)', borderRadius: '12px', padding: '1rem', margin: '1.5rem 0', overflowX: 'auto' }}>
     <cn-pipeline>
       <cn-hex color="lavender">Feature request</cn-hex>
@@ -272,7 +276,8 @@ Pulled together, the whole journey is one pipeline. A feature request comes in; 
       <span slot="caption">ADRs govern every stage; code and workflows are the optional middle, reached only when configuration can't express the behaviour.</span>
     </cn-pipeline>
   </div>
-)}
+  );
+}}
 </BrowserOnly>
 
 ## The endpoint: configuration over code
