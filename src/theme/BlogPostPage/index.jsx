@@ -18,6 +18,7 @@
 
 import React from 'react';
 import clsx from 'clsx';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import {HtmlClassNameProvider, ThemeClassNames} from '@docusaurus/theme-common';
 import {
   BlogPostProvider,
@@ -118,12 +119,17 @@ function BlogPostPageContent({children}) {
   const {metadata} = useBlogPost();
   const {frontMatter, nextItem, prevItem} = metadata;
 
+  const academyHref = useBaseUrl('/academy/');
+  const academyTypeHref = useBaseUrl(
+    '/academy/' + (frontMatter.contentType ? '?type=' + frontMatter.contentType : ''),
+  );
+
   const author = metadata.authors && metadata.authors[0];
   const heroProps = {
     crumb: [
-      {label: 'Academy', href: '/academy/'},
+      {label: 'Academy', href: academyHref},
       frontMatter.contentType
-        ? {label: frontMatter.contentType, href: '/academy/?type=' + frontMatter.contentType}
+        ? {label: frontMatter.contentType, href: academyTypeHref}
         : null,
       metadata.title,
     ].filter(Boolean),
@@ -170,7 +176,7 @@ function BlogPostPageContent({children}) {
         <div style={{marginTop: 96}}>
           <RelatedPosts
             title="Keep learning…"
-            viewAllHref="/academy/"
+            viewAllHref={academyHref}
             viewAllLabel="View all"
             columns={2}
           >

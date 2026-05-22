@@ -5,7 +5,7 @@ contentType: tutorial
 authors: [conduction]
 date: 2026-05-17
 summary: Spin up xWiki locally, author zone-specific knowledge articles, surface them per-desk via an OpenRegister knowledge_article schema, package the app, publish to the Conduction app store.
-tags: [App development, OpenConnector, xWiki, Knowledge management, Release]
+tags: [App development, OpenConnector, xWiki, Knowledge management, Release, Tutorial series]
 apps: [openconnector, openregister]
 durationMinutes: 35
 series: deskdesk-tutorial
@@ -22,7 +22,7 @@ import {
   HexCard,
 } from '@conduction/docusaurus-preset/components';
 
-The final part of the four-part DeskDesk tutorial. Part 3 made bookings appear in NC Calendar with one schema annotation. Part 4 brings external knowledge — zone-specific etiquette, equipment notes, troubleshooting — from xWiki into the desk detail sidebar via a `knowledge_article` OpenRegister schema. Then we package the app and ship it.
+Part 4 of the six-part DeskDesk tutorial. Part 3 made bookings appear in NC Calendar with one schema annotation. Part 4 brings external knowledge — zone-specific etiquette, equipment notes, troubleshooting — from xWiki into the desk detail sidebar via a `knowledge_article` OpenRegister schema. Then we package the app and ship it.
 
 External knowledge integration is the canonical case for OpenConnector: pull data from a system you don't own (xWiki here, but the same applies to Confluence, Notion, SharePoint, Decos, Mendix), surface it inside Nextcloud-native UI without making the user context-switch.
 
@@ -428,7 +428,17 @@ That ratio — JSON describing what you want, framework rendering it — is the 
 
 ## Where to next
 
-<NextSteps>
+<NextSteps lede="Parts 5 and 6 are parallel extensions of the shipped app — take them in either order, or pick whichever your next app actually needs first. Part 5 deepens the manifest surface; Part 6 widens to other systems. Neither references the other for content.">
+  <NextStep
+    title="Part 5 — Advanced manifest features"
+    href="/academy/deskdesk-tutorial-5-advanced-manifest"
+    description="Past the schema-driven CRUD basics: actionToggles, fieldWidgets, public-mode pages, and seven extra page types. The v2.7.0 manifest features Parts 1–4 deliberately skipped."
+  />
+  <NextStep
+    title="Part 6 — Integrate"
+    href="/academy/deskdesk-tutorial-6-integrate"
+    description="Connect your shipped app to the rest of the workspace. Cross-register reads, OpenConnector sources, and a two-way webhook sync — three integration patterns layered from least to most invasive."
+  />
   <NextStep
     title="The component reference"
     href="https://nextcloud-vue.conduction.nl/docs/components/"
@@ -438,10 +448,5 @@ That ratio — JSON describing what you want, framework rendering it — is the 
     title="Conduction app catalogue"
     href="https://www.conduction.nl/apps"
     description="See how Procest, OpenCatalogi, MyDash, and the rest compose the same patterns. DeskDesk now joins them."
-  />
-  <NextStep
-    title="Build something else"
-    href="/academy/build-an-app"
-    description="The 30-minute end-to-end overview tutorial. Or fork DeskDesk into your own use case — the template is a snapshot, your app is the journey."
   />
 </NextSteps>
