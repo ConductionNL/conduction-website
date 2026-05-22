@@ -9,7 +9,29 @@ tags: [Nextcloud, Docker, Setup, Demo, Local]
 durationMinutes: 30
 ---
 
+import {useState, useEffect} from 'react';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, ContactCta, Troubleshooting, TroubleshootingItem, NextSteps, NextStep} from '@conduction/docusaurus-preset/components';
+
+export function OSTabs({children}) {
+  const [osKey, setOsKey] = useState('ssr');
+  const [os, setOs] = useState('windows');
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    const detected = /Mac/.test(ua) ? 'mac' : /Linux/.test(ua) ? 'linux' : 'windows';
+    if (!localStorage.getItem('docusaurus.tab.os')) {
+      localStorage.setItem('docusaurus.tab.os', JSON.stringify(detected));
+    }
+    setOs(detected);
+    setOsKey(detected);
+  }, []);
+  return (
+    <Tabs key={osKey} groupId="os" defaultValue={os}>
+      {children}
+    </Tabs>
+  );
+}
 
 Every other tutorial in this academy needs a working Nextcloud. This is the fastest route: a few commands and you run the official Nextcloud locally on your laptop, identical to production. **You do not need to be a programmer** — if you can install an app and copy and paste text, you will get through this. After that you install the Conduction apps from the Nextcloud app store, the same path as production.
 
@@ -27,7 +49,7 @@ After this you can move on to [Set up a Woo register](/academy/woo-register-opze
 <Prerequisites title="What you need">
   <PrerequisiteItem>A laptop with at least 4 GB of free memory.</PrerequisiteItem>
   <PrerequisiteItem>Docker Desktop — a free program you install in step 0.</PrerequisiteItem>
-  <PrerequisiteItem>A text editor: Notepad (Windows) or TextEdit (Mac) is enough.</PrerequisiteItem>
+  <PrerequisiteItem>A text editor: Notepad (Windows), TextEdit (Mac), or nano (Linux) is enough.</PrerequisiteItem>
 </Prerequisites>
 
 > **This is a local development environment.** It runs the same software as a real Nextcloud installation and behaves the same way, so everything you learn here applies directly to a production deployment. However, data you store here is not backed up, is not shared with anyone, and can be wiped at any time — for example, running `docker compose down -v` permanently deletes everything. Use this environment to explore, experiment, and learn. Do not store real, sensitive, or production data here.
@@ -44,15 +66,8 @@ Docker is a free program that lets you run other programs — like Nextcloud —
 
 ### Install Docker
 
-**Mac**
-
-1. Go to the <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener noreferrer">Docker Desktop download page</a>.
-2. You will see two download buttons — **Apple Silicon** (for M1, M2, M3, and M4 chips) and **Intel** (for older Macs). Not sure which you have? Click the **Apple logo (🍎)** in the top-left corner of your screen and choose **About This Mac**. If it says "Apple M1", "Apple M2", or similar, click **Apple Silicon**. If it says "Intel Core", click **Intel**.
-3. Open the downloaded `.dmg` file. Drag the Docker icon into the **Applications** folder when prompted.
-4. Open Docker from your Applications folder. macOS may ask if you are sure you want to open it — click **Open**.
-5. Wait until the whale icon in the menu bar stops moving. Docker is ready.
-
-**Windows**
+<OSTabs>
+<TabItem value="windows" label="Windows">
 
 Windows needs WSL 2 installed before Docker Desktop — skip this and the most common Docker error appears. It only takes a minute.
 
@@ -68,26 +83,48 @@ Windows needs WSL 2 installed before Docker Desktop — skip this and the most c
 7. Open **Docker Desktop** from the Start menu.
 8. Wait until the whale icon in the taskbar stops moving. Docker is ready.
 
-**Linux**
+</TabItem>
+<TabItem value="mac" label="Mac">
+
+1. Go to the <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener noreferrer">Docker Desktop download page</a>.
+2. You will see two download buttons — **Apple Silicon** (for M1, M2, M3, and M4 chips) and **Intel** (for older Macs). Not sure which you have? Click the **Apple logo (🍎)** in the top-left corner of your screen and choose **About This Mac**. If it says "Apple M1", "Apple M2", or similar, click **Apple Silicon**. If it says "Intel Core", click **Intel**.
+3. Open the downloaded `.dmg` file. Drag the Docker icon into the **Applications** folder when prompted.
+4. Open Docker from your Applications folder. macOS may ask if you are sure you want to open it — click **Open**.
+5. Wait until the whale icon in the menu bar stops moving. Docker is ready.
+
+</TabItem>
+<TabItem value="linux" label="Linux">
 
 Follow the <a href="https://docs.docker.com/engine/install/" target="_blank" rel="noopener noreferrer">Docker Engine installation instructions</a> for your distribution.
+
+</TabItem>
+</OSTabs>
 
 ### Open a terminal
 
 A **terminal** (also called a command prompt or console) is a text window where you type commands. You type a command, press **Enter**, and the computer runs it. You do not need to know the terminal beforehand — every command in this tutorial can be copied and pasted.
 
-**Windows:**
+<OSTabs>
+<TabItem value="windows" label="Windows">
+
 1. Press the **Windows key** and type `cmd`.
 2. Click **Command Prompt** in the results, or press **Enter**.
 3. A black window opens — that is your Command Prompt (terminal).
 
-**Mac:**
+</TabItem>
+<TabItem value="mac" label="Mac">
+
 1. Press **Cmd + Space** to open Spotlight.
 2. Type `Terminal` and press **Enter**.
 3. A window with a blinking cursor opens — that is your terminal.
 
-**Linux:**
+</TabItem>
+<TabItem value="linux" label="Linux">
+
 1. Press **Ctrl + Alt + T**, or search for "Terminal" in your application menu.
+
+</TabItem>
+</OSTabs>
 
 ### Check that Docker works
 
@@ -118,21 +155,45 @@ cd conduction-demo
 
 The compose file tells Docker which programs to start and how they talk to each other. You create it once and never need to touch it again.
 
-Open Notepad from the terminal so the filename and folder are set automatically — no manual navigation needed when saving:
+Open a text editor from the terminal so the filename and folder are set automatically — no manual navigation needed when saving:
 
-**Windows:** type in the terminal:
+<OSTabs>
+<TabItem value="windows" label="Windows">
+
+Type in the terminal:
+
 ```
 notepad docker-compose.yml
 ```
-Windows asks whether to create the file — click **Yes**. Notepad opens.
 
-**Mac:** type in the terminal:
+Windows asks whether to create the file — click **Yes**. Notepad opens. Paste the content below, then press **Ctrl+S** to save.
+
+</TabItem>
+<TabItem value="mac" label="Mac">
+
+Type in the terminal:
+
 ```bash
 touch docker-compose.yml && open -e docker-compose.yml
 ```
-TextEdit opens with the file already created.
 
-Copy the full text below and paste it into the editor. Then press **Ctrl+S** (Windows) or **Cmd+S** (Mac) to save. The correct filename (`docker-compose.yml`) and folder are already set — you do not need to change anything.
+TextEdit opens with the file already created. Paste the content below, then press **Cmd+S** to save.
+
+</TabItem>
+<TabItem value="linux" label="Linux">
+
+Type in the terminal:
+
+```bash
+nano docker-compose.yml
+```
+
+The nano text editor opens. Paste the content below, then press **Ctrl+X**, then **Y**, then **Enter** to save.
+
+</TabItem>
+</OSTabs>
+
+Copy the full text below and paste it into the editor. The correct filename (`docker-compose.yml`) and folder are already set — you do not need to change anything.
 
 ```yaml title="docker-compose.yml"
 services:
@@ -187,7 +248,7 @@ volumes:
 
 The file describes four services: Nextcloud itself, a database (Postgres), a cache (Redis), and a live-update system (notify_push). All official, free images — Docker downloads them automatically in the next step.
 
-Close Notepad (or TextEdit) and go back to the terminal that is still open.
+Close the editor and go back to the terminal that is still open.
 
 ## Step 2: Start the stack
 
@@ -290,9 +351,23 @@ This is the only step that requires a bit more terminal work. Go back to the ter
 
 Copy the commands below one line at a time, paste them into the terminal, and press **Enter** after each one. How to paste depends on your system:
 
-- **Windows (Command Prompt):** right-click inside the terminal window to paste. Ctrl+V may also work on Windows 10 and 11, but right-click is more reliable.
-- **Mac (Terminal):** press **Cmd+V**.
-- **Linux (Terminal):** press **Ctrl+Shift+V**, or right-click and choose **Paste**.
+<OSTabs>
+<TabItem value="windows" label="Windows">
+
+**Right-click** inside the terminal window to paste. Ctrl+V may also work on Windows 10 and 11, but right-click is more reliable.
+
+</TabItem>
+<TabItem value="mac" label="Mac">
+
+Press **Cmd+V** to paste.
+
+</TabItem>
+<TabItem value="linux" label="Linux">
+
+Press **Ctrl+Shift+V** to paste, or right-click and choose **Paste**.
+
+</TabItem>
+</OSTabs>
 
 Run each command below one at a time — copy it, paste it into the terminal, and press **Enter**. Wait for the terminal to return a new prompt before pasting the next one.
 
@@ -424,7 +499,7 @@ Open Command Prompt as administrator and run `wsl --update`, then restart Docker
 
 <TroubleshootingItem symptom="`http://localhost:8080` does not open in the browser">
 
-The port may already be in use by another program. Open `docker-compose.yml` in Notepad, change `"8080:80"` to `"8081:80"`, save, and try `http://localhost:8081` instead.
+The port may already be in use by another program. Open `docker-compose.yml` in your text editor, change `"8080:80"` to `"8081:80"`, save, and try `http://localhost:8081` instead.
 
 </TroubleshootingItem>
 

@@ -9,7 +9,29 @@ tags: [Nextcloud, Docker, Setup, Demo, Lokaal]
 durationMinutes: 30
 ---
 
+import {useState, useEffect} from 'react';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, ContactCta, Troubleshooting, TroubleshootingItem, NextSteps, NextStep} from '@conduction/docusaurus-preset/components';
+
+export function OSTabs({children}) {
+  const [osKey, setOsKey] = useState('ssr');
+  const [os, setOs] = useState('windows');
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    const detected = /Mac/.test(ua) ? 'mac' : /Linux/.test(ua) ? 'linux' : 'windows';
+    if (!localStorage.getItem('docusaurus.tab.os')) {
+      localStorage.setItem('docusaurus.tab.os', JSON.stringify(detected));
+    }
+    setOs(detected);
+    setOsKey(detected);
+  }, []);
+  return (
+    <Tabs key={osKey} groupId="os" defaultValue={os}>
+      {children}
+    </Tabs>
+  );
+}
 
 Voor elke andere tutorial in deze academy heb je een werkende Nextcloud nodig. Dit is de snelste route: een paar commando's en je draait de officiële Nextcloud lokaal op je laptop, identiek aan productie. **Je hoeft geen programmeur te zijn** — als je een app kunt installeren en tekst kunt kopiëren, kom je er doorheen. Daarna installeer je de Conduction-apps via de Nextcloud app store, hetzelfde pad als productie.
 
@@ -27,7 +49,7 @@ Daarna kun je verder met [Een Woo-register opzetten](/academy/woo-register-opzet
 <Prerequisites title="Wat je nodig hebt">
   <PrerequisiteItem>Een laptop met minimaal 4 GB vrij geheugen.</PrerequisiteItem>
   <PrerequisiteItem>Docker Desktop — een gratis programma dat je in stap 0 installeert.</PrerequisiteItem>
-  <PrerequisiteItem>Een teksteditor: Kladblok (Windows) of TextEdit (Mac) is genoeg.</PrerequisiteItem>
+  <PrerequisiteItem>Een teksteditor: Kladblok (Windows), TextEdit (Mac) of nano (Linux) is genoeg.</PrerequisiteItem>
 </Prerequisites>
 
 > **Dit is een lokale ontwikkelomgeving.** Er draait dezelfde software als een echte Nextcloud-installatie en het gedraagt zich op dezelfde manier, dus alles wat je hier leert is direct toepasbaar op een productieomgeving. Data die je hier opslaat wordt echter niet bewaard, wordt niet gedeeld met anderen en kan op elk moment worden gewist — zo verwijdert `docker compose down -v` alles permanent. Gebruik deze omgeving om te verkennen, te experimenteren en te leren. Sla geen echte, gevoelige of productiedata op in deze omgeving.
@@ -44,15 +66,8 @@ Docker is een gratis programma waarmee je andere programma's — zoals Nextcloud
 
 ### Docker installeren
 
-**Mac**
-
-1. Ga naar de <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener noreferrer">Docker Desktop downloadpagina</a>.
-2. Je ziet twee downloadknoppen — **Apple Silicon** (voor M1, M2, M3 en M4-chips) en **Intel** (voor oudere Macs). Weet je niet welke jij hebt? Klik op het **Apple-logo (🍎)** linksboven in je scherm en kies **Over deze Mac**. Staat er "Apple M1", "Apple M2" of vergelijkbaar, klik dan op **Apple Silicon**. Staat er "Intel Core", klik dan op **Intel**.
-3. Open het gedownloade `.dmg`-bestand. Sleep het Docker-icoontje naar de map **Programma's** (Applications) wanneer dat gevraagd wordt.
-4. Open Docker vanuit je map Programma's. macOS vraagt mogelijk of je het zeker weet — klik op **Open**.
-5. Wacht tot het walvisicoontje in de menubalk stil staat. Docker is klaar.
-
-**Windows**
+<OSTabs>
+<TabItem value="windows" label="Windows">
 
 Windows heeft WSL 2 nodig vóórdat Docker Desktop wordt geïnstalleerd — sla je dit over, dan verschijnt de meest voorkomende Docker-fout. Het kost maar een minuutje.
 
@@ -68,26 +83,48 @@ Windows heeft WSL 2 nodig vóórdat Docker Desktop wordt geïnstalleerd — sla 
 7. Open **Docker Desktop** via het Start-menu.
 8. Wacht tot het walvisicoontje in de taakbalk stil staat. Docker is klaar.
 
-**Linux**
+</TabItem>
+<TabItem value="mac" label="Mac">
+
+1. Ga naar de <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener noreferrer">Docker Desktop downloadpagina</a>.
+2. Je ziet twee downloadknoppen — **Apple Silicon** (voor M1, M2, M3 en M4-chips) en **Intel** (voor oudere Macs). Weet je niet welke jij hebt? Klik op het **Apple-logo (🍎)** linksboven in je scherm en kies **Over deze Mac**. Staat er "Apple M1", "Apple M2" of vergelijkbaar, klik dan op **Apple Silicon**. Staat er "Intel Core", klik dan op **Intel**.
+3. Open het gedownloade `.dmg`-bestand. Sleep het Docker-icoontje naar de map **Programma's** (Applications) wanneer dat gevraagd wordt.
+4. Open Docker vanuit je map Programma's. macOS vraagt mogelijk of je het zeker weet — klik op **Open**.
+5. Wacht tot het walvisicoontje in de menubalk stil staat. Docker is klaar.
+
+</TabItem>
+<TabItem value="linux" label="Linux">
 
 Volg de <a href="https://docs.docker.com/engine/install/" target="_blank" rel="noopener noreferrer">installatie-instructies voor Docker Engine</a> voor jouw distributie.
+
+</TabItem>
+</OSTabs>
 
 ### Een terminal openen
 
 Een **terminal** (ook wel 'opdrachtprompt' of 'console' genoemd) is een tekstvenster waarin je opdrachten typt. Je typt een commando, drukt op **Enter**, en de computer voert het uit. Je hoeft de terminal niet al te kennen — alle commando's in deze tutorial kun je gewoon kopiëren en plakken.
 
-**Windows:**
+<OSTabs>
+<TabItem value="windows" label="Windows">
+
 1. Druk op de **Windows-toets** en typ `cmd`.
 2. Klik op **Opdrachtprompt** in de resultaten, of druk op **Enter**.
 3. Er opent een zwart venster — dat is je opdrachtprompt (terminal).
 
-**Mac:**
+</TabItem>
+<TabItem value="mac" label="Mac">
+
 1. Druk op **Cmd + Spatiebalk** om Spotlight te openen.
 2. Typ `Terminal` en druk op **Enter**.
 3. Er opent een venster met een knipperende cursor — dat is je terminal.
 
-**Linux:**
+</TabItem>
+<TabItem value="linux" label="Linux">
+
 1. Druk op **Ctrl + Alt + T**, of zoek "Terminal" in je applicatiemenu.
+
+</TabItem>
+</OSTabs>
 
 ### Controleer of Docker werkt
 
@@ -118,21 +155,45 @@ cd conduction-demo
 
 Het compose-bestand vertelt Docker welke programma's hij moet starten en hoe ze met elkaar praten. Je maakt het één keer aan en hoeft het daarna niet meer aan te raken.
 
-Open Kladblok via de terminal zodat de bestandsnaam en map automatisch goed staan — je hoeft niets handmatig in te vullen bij het opslaan:
+Open een teksteditor via de terminal zodat de bestandsnaam en map automatisch goed staan — je hoeft niets handmatig in te vullen bij het opslaan:
 
-**Windows:** typ in de terminal:
+<OSTabs>
+<TabItem value="windows" label="Windows">
+
+Typ in de terminal:
+
 ```
 notepad docker-compose.yml
 ```
-Windows vraagt of het bestand aangemaakt mag worden — klik op **Ja**. Kladblok opent zich.
 
-**Mac:** typ in de terminal:
+Windows vraagt of het bestand aangemaakt mag worden — klik op **Ja**. Kladblok opent zich. Plak de inhoud hieronder, druk daarna op **Ctrl+S** om op te slaan.
+
+</TabItem>
+<TabItem value="mac" label="Mac">
+
+Typ in de terminal:
+
 ```bash
 touch docker-compose.yml && open -e docker-compose.yml
 ```
-TextEdit opent zich met het bestand al aangemaakt.
 
-Kopieer de volledige tekst hieronder en plak die in de editor. Druk daarna op **Ctrl+S** (Windows) of **Cmd+S** (Mac) om op te slaan. De juiste bestandsnaam (`docker-compose.yml`) en map worden automatisch gebruikt — je hoeft niets te wijzigen.
+TextEdit opent zich met het bestand al aangemaakt. Plak de inhoud hieronder, druk daarna op **Cmd+S** om op te slaan.
+
+</TabItem>
+<TabItem value="linux" label="Linux">
+
+Typ in de terminal:
+
+```bash
+nano docker-compose.yml
+```
+
+De nano-teksteditor opent zich. Plak de inhoud hieronder, druk daarna op **Ctrl+X**, dan **Y**, dan **Enter** om op te slaan.
+
+</TabItem>
+</OSTabs>
+
+Kopieer de volledige tekst hieronder en plak die in de editor. De juiste bestandsnaam (`docker-compose.yml`) en map worden automatisch gebruikt — je hoeft niets te wijzigen.
 
 ```yaml title="docker-compose.yml"
 services:
@@ -187,7 +248,7 @@ volumes:
 
 Het bestand beschrijft vier services: Nextcloud zelf, een database (Postgres), een cache (Redis) en een systeem voor live updates (notify_push). Allemaal officiële, gratis images — Docker downloadt ze automatisch in de volgende stap.
 
-Sluit Kladblok (of TextEdit) nu en ga terug naar de terminal die nog open staat.
+Sluit de editor nu en ga terug naar de terminal die nog open staat.
 
 ## Stap 2: Start de stack
 
@@ -290,9 +351,23 @@ Dit is de enige stap die iets meer terminal-werk vraagt. Ga terug naar de termin
 
 Kopieer de onderstaande commando's één voor één, plak ze in de terminal en druk na elk commando op **Enter**. Hoe je plakt hangt af van je systeem:
 
-- **Windows (opdrachtprompt):** klik met de **rechtermuisknop** in het terminalvenster om te plakken. Ctrl+V werkt soms ook op Windows 10 en 11, maar rechtermuisknop is betrouwbaarder.
-- **Mac (Terminal):** druk op **Cmd+V**.
-- **Linux (Terminal):** druk op **Ctrl+Shift+V**, of klik met de rechtermuisknop en kies **Plakken**.
+<OSTabs>
+<TabItem value="windows" label="Windows">
+
+Klik met de **rechtermuisknop** in het terminalvenster om te plakken. Ctrl+V werkt soms ook op Windows 10 en 11, maar rechtermuisknop is betrouwbaarder.
+
+</TabItem>
+<TabItem value="mac" label="Mac">
+
+Druk op **Cmd+V** om te plakken.
+
+</TabItem>
+<TabItem value="linux" label="Linux">
+
+Druk op **Ctrl+Shift+V** om te plakken, of klik met de rechtermuisknop en kies **Plakken**.
+
+</TabItem>
+</OSTabs>
 
 Voer elk commando hieronder één voor één uit — kopieer het, plak het in de terminal en druk op **Enter**. Wacht tot de terminal een nieuwe regel toont voordat je het volgende commando plakt.
 
@@ -424,7 +499,7 @@ Open de opdrachtprompt als administrator en voer `wsl --update` uit, herstart da
 
 <TroubleshootingItem symptom="`http://localhost:8080` opent niet in de browser">
 
-De poort is waarschijnlijk al in gebruik door een ander programma. Open `docker-compose.yml` in Kladblok, verander `"8080:80"` naar `"8081:80"`, sla op en probeer `http://localhost:8081`.
+De poort is waarschijnlijk al in gebruik door een ander programma. Open `docker-compose.yml` in je teksteditor, verander `"8080:80"` naar `"8081:80"`, sla op en probeer `http://localhost:8081`.
 
 </TroubleshootingItem>
 
