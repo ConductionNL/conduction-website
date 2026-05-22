@@ -51,8 +51,8 @@ Your role as a human: decide which of the four options below is the best fit and
 |---|---|---|---|---|
 | 1 | Development has moved on, PR is stale (new lint rules, ADRs, fixtures on development) | <code>gh pr update-branch &lt;N&gt;</code> (or the cron picks it up) | Free | All build/review/applier work. Just refresh dependencies. |
 | 2 | Review contracts were adjusted and you want reviewers to judge again without a rebuild | Reset reviewer labels: strip stage labels, set <code>code-review:queued</code> again. PR stays. | 2× reviewer + applier | The builder output. Only the review part rewinds. |
-| 3 | Reviewers/applier flagged concrete findings and the builder just needs to polish | Stick <code>retry:queued</code> on the issue | 1× builder + 2× reviewer + applier | Branch + PR stay. Orchestrator builds <code>feedback.md</code> from <code>hydra.json</code> (unfixed + applier blockers + already-fixed) and dispatches builder in <code>HYDRA_MODE=fix</code>. Single shot — no loop. |
-| 4 | Builder output was fundamentally wrong (wrong approach, stub implementation, missed core requirements) | Stick <code>rebuild:queued</code> on the issue | Full cycle | Orchestrator closes the open PR, hard-resets <code>feature/&lt;issue&gt;/*</code> to development, strips all cycle labels, sets <code>build:queued</code>. Next cycle starts from scratch. |
+| 3 | Reviewers/applier flagged concrete findings and the builder just needs to polish | Remove <code>needs-input</code> + fail labels first, then add <code>retry:queued</code> (see below) | 1× builder + 2× reviewer + applier | Branch + PR stay. Orchestrator builds <code>feedback.md</code> from <code>hydra.json</code> (unfixed + applier blockers + already-fixed) and dispatches builder in <code>HYDRA_MODE=fix</code>. Single shot — no loop. |
+| 4 | Builder output was fundamentally wrong (wrong approach, stub implementation, missed core requirements) | Remove <code>needs-input</code> + fail labels first, then add <code>rebuild:queued</code> (see below) | Full cycle | Orchestrator closes the open PR, hard-resets <code>feature/&lt;issue&gt;/*</code> to development, strips all cycle labels, sets <code>build:queued</code>. Next cycle starts from scratch. |
 | 5 | You closed the PR yourself and stale labels are still on the issue | Wait for <code>reconcile.sh</code> (every 10 min) | Next reconcile run | <code>check_stage_without_open_pr</code> sees the inconsistency and automatically sets <code>build:queued</code>. Self-healing. |
 | 6 | Pipeline infra is broken (container crash, all tokens exhausted, image not findable) | Escalate to a human (you or a team lead), fix infra, and only THEN pick one of 1-4 above | Time | — |
 
@@ -60,16 +60,57 @@ Your role as a human: decide which of the four options below is the best fit and
 
 ### `retry:queued` in detail
 
-1. You (or an automated rule) stick `retry:queued` on the issue. With a label prefix that becomes `<prefix>-retry:queued` — `scripts/hydra-label.sh` handles that automatically.
-2. Supervisor picks it up as a regular queue job.
-3. Orchestrator finds the open PR on `feature/<issue>/*`.
-4. Orchestrator clones development, copies `openspec/changes/<slug>/hydra.json` and runs `scripts/lib/build-feedback-brief.py` → writes `feedback.md` with (a) applier blockers, (b) unfixed reviewer findings, (c) already-fixed items, (d) Scope list of all flagged files.
-5. Orchestrator flips `retry:queued` → `retry:running`, dispatches the builder with `HYDRA_MODE=fix` and `feedback.md` mounted at `/workspace/feedback.md`.
-6. Builder reads the brief, fixes **all** findings in one pass, restricts itself to Scope files (plus new files explicitly required by a blocker), commits with `fix (retry):` messages, pushes.
-7. Success: orchestrator strips all review/applier labels + `retry:running` + `needs-input`, sets `code-review:queued`. Reviewers run again against the fixed code.
-8. Failure: `retry:running` → `needs-input`, a comment on the issue explains why and points to `rebuild:queued` as the next lever.
+:::warning Label cleanup is required first
+The supervisor **will not dispatch `retry:queued` while `needs-input` is still on the issue.** You must remove stale labels before applying the trigger — otherwise the issue sits in the queue forever and nothing moves.
+:::
+
+**Before adding `retry:queued`, run these commands** (use `scripts/hydra-label.sh` — it keeps the project board in sync):
+
+```bash
+# Remove stale labels
+./scripts/hydra-label.sh ConductionNL/<app> <issue> remove needs-input
+./scripts/hydra-label.sh ConductionNL/<app> <issue> remove code-review:fail
+./scripts/hydra-label.sh ConductionNL/<app> <issue> remove security-review:fail
+
+# Now apply the trigger
+./scripts/hydra-label.sh ConductionNL/<app> <issue> add retry:queued
+```
+
+If you're running with `HYDRA_LABEL_PREFIX` (e.g. `wilco`), strip the prefixed variants too:
+
+```bash
+./scripts/hydra-label.sh ConductionNL/<app> <issue> remove wilco-needs-input
+./scripts/hydra-label.sh ConductionNL/<app> <issue> remove wilco-code-review:fail
+./scripts/hydra-label.sh ConductionNL/<app> <issue> remove wilco-security-review:fail
+./scripts/hydra-label.sh ConductionNL/<app> <issue> add wilco-retry:queued
+```
+
+See the [retry-and-rebuild operations guide](https://github.com/ConductionNL/hydra/blob/main/docs/operations/retry-and-rebuild.md) for the full checklist and `rebuild:queued` equivalent.
+
+**What happens next:**
+
+1. Supervisor picks up `retry:queued` as a regular queue job.
+2. Orchestrator finds the open PR on `feature/<issue>/*`.
+3. Orchestrator clones development, copies `openspec/changes/<slug>/hydra.json` and runs `scripts/lib/build-feedback-brief.py` → writes `feedback.md` with (a) applier blockers, (b) unfixed reviewer findings, (c) already-fixed items, (d) Scope list of all flagged files.
+4. Orchestrator flips `retry:queued` → `retry:running`, dispatches the builder with `HYDRA_MODE=fix` and `feedback.md` mounted at `/workspace/feedback.md`.
+5. Builder reads the brief, fixes **all** findings in one pass, restricts itself to Scope files (plus new files explicitly required by a blocker), commits with `fix (retry):` messages, pushes.
+6. Success: orchestrator strips all review/applier labels + `retry:running`, sets `code-review:queued`. Reviewers run again against the fixed code.
+7. Failure: `retry:running` → `needs-input`, a comment on the issue explains why and points to `rebuild:queued` as the next lever.
 
 **No loop.** One `retry:queued` = one iteration. If the fix builder pushes and the next review fails again, you can request another `retry:queued` — but that's then a **new** single-shot, not an auto-retry.
+
+### `rebuild:queued` in detail
+
+Same label cleanup requirement as `retry:queued` — the supervisor won't dispatch while `needs-input` is set:
+
+```bash
+./scripts/hydra-label.sh ConductionNL/<app> <issue> remove needs-input
+./scripts/hydra-label.sh ConductionNL/<app> <issue> remove code-review:fail
+./scripts/hydra-label.sh ConductionNL/<app> <issue> remove security-review:fail
+./scripts/hydra-label.sh ConductionNL/<app> <issue> add rebuild:queued
+```
+
+Do **not** close the PR yourself first — the orchestrator closes it as part of the reset sequence. If you already closed it, `reconcile.sh` (runs every 10 min) will detect the inconsistency and auto-set `build:queued`.
 
 ## When is it the gate, and when is it the builder?
 

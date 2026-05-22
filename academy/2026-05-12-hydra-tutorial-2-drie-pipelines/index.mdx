@@ -139,7 +139,7 @@ Two human-triggered recovery labels that reach back into the pipeline. Both **si
 - **`retry:queued`** — the existing PR stays. Hydra builds an ephemeral `feedback.md` (in a `/tmp/hydra-retry-XXXXXX/` working directory, not committed) containing the `unfixed[]` findings + applier blockers, mounts it as `/workspace/feedback.md` in the builder container, and dispatches Al Gorithm in `HYDRA_MODE=fix` scoped to exactly the flagged files. Cheap. Suitable for: "the reviewers were right, builder just needs to touch up a few things".
 - **`rebuild:queued`** — existing PR closes, branch resets to `development`, all cycle labels removed, back to `build:queued`. Expensive. Suitable for: "Al Gorithm's approach was wrong, we're starting over with the same change".
 
-Rule of thumb: always go for the cheapest recovery first. First `gh pr update-branch <N>` (merge development → PR), then `retry:queued`, only then `rebuild:queued`. Part 6 goes into this in more depth.
+Rule of thumb: always go for the cheapest recovery first. First `gh pr update-branch <N>` (merge development → PR), then `retry:queued`, only then `rebuild:queued`. Part 6 goes into this in more depth — including the **label cleanup steps required before applying either trigger** (removing `needs-input` and fail labels first, otherwise the supervisor won't pick up the queue entry).
 
 ## Test yourself
 
