@@ -56,7 +56,11 @@ Daarna kun je verder met [Een Woo-register opzetten](/nl/academy/woo-register-op
   <PrerequisiteItem>Een teksteditor: Kladblok (Windows), TextEdit (Mac) of nano (Linux) is genoeg.</PrerequisiteItem>
 </Prerequisites>
 
-> **Dit is een lokale ontwikkelomgeving.** Er draait dezelfde software als een echte Nextcloud-installatie en het gedraagt zich op dezelfde manier, dus alles wat je hier leert is direct toepasbaar op een productieomgeving. Data die je hier opslaat wordt echter niet bewaard, wordt niet gedeeld met anderen en kan op elk moment worden gewist — zo verwijdert `docker compose down -v` alles permanent. Gebruik deze omgeving om te verkennen, te experimenteren en te leren. Sla geen echte, gevoelige of productiedata op in deze omgeving.
+:::info Dit is een lokale ontwikkelomgeving
+
+Er draait dezelfde software als een echte Nextcloud-installatie en het gedraagt zich op dezelfde manier, dus alles wat je hier leert is direct toepasbaar op een productieomgeving. Data die je hier opslaat wordt echter niet bewaard, wordt niet gedeeld met anderen en kan op elk moment worden gewist — zo verwijdert `docker compose down -v` alles permanent. Gebruik deze omgeving om te verkennen, te experimenteren en te leren. Sla geen echte, gevoelige of productiedata op in deze omgeving.
+
+:::
 
 Geen eerdere ervaring nodig. Op een schone laptop is stap 0 (Docker installeren en de terminal leren kennen) ongeveer tien minuten. Stap 1 t/m 5 samen daarna een halfuur.
 
@@ -288,7 +292,11 @@ Nextcloud waarschuwt je dat het wachtwoord te zwak is — dat klopt, maar deze i
 
 Gebruik je ooit een Nextcloud die anderen kunnen bereiken — via internet of binnen een netwerk — kies dan altijd een sterk, uniek wachtwoord. Een goede vuistregel: minimaal 12 tekens, met hoofdletters, cijfers en een speciaal teken.
 
-> **Let op:** onder het wachtwoordveld zie je een ingeklapt onderdeel **Storage & database**. Je hoeft dit niet open te klikken — de databaseconfiguratie is al geregeld via het `docker-compose.yml`-bestand.
+:::note
+
+Onder het wachtwoordveld zie je een ingeklapt onderdeel **Storage & database**. Je hoeft dit niet open te klikken — de databaseconfiguratie is al geregeld via het `docker-compose.yml`-bestand.
+
+:::
 
 1. Vul `admin` in als **gebruikersnaam** en `admin` als **wachtwoord**. **Druk nog niet op Enter terwijl je de velden invult** — wacht tot beide velden zijn ingevuld voordat je verdergaat.
 2. Klik op **Install** of druk op Enter nadat je het wachtwoord hebt ingevuld. Het scherm verdwijnt direct en Nextcloud begint met installeren.
@@ -307,7 +315,11 @@ Open eerst de Nextcloud app store:
 
 Installeer de Conduction-apps nu één voor één. Begin met **Open Register** — OpenCatalogi en Open Connector zijn daar allebei van afhankelijk.
 
-> **Let op:** als je op **Download en activeren** klikt, kan Nextcloud vragen om je wachtwoord te bevestigen voordat de installatie wordt toegestaan. Vul `admin` in en bevestig.
+:::note
+
+Als je op **Download en activeren** klikt, kan Nextcloud vragen om je wachtwoord te bevestigen voordat de installatie wordt toegestaan. Vul `admin` in en bevestig.
+
+:::
 
 ---
 
@@ -442,7 +454,11 @@ docker compose start
 docker compose down -v
 ```
 
-> ⚠️ **Dit verwijdert alles.** Al je Nextcloud-data, elke geïnstalleerde app, elke instelling en elk bestand dat je hebt geüpload verdwijnt permanent. Er is geen hersteloptie. Voer dit alleen uit als je zeker weet dat je helemaal opnieuw wilt beginnen.
+:::danger Dit verwijdert alles
+
+Al je Nextcloud-data, elke geïnstalleerde app, elke instelling en elk bestand dat je hebt geüpload verdwijnt permanent. Er is geen hersteloptie. Voer dit alleen uit als je zeker weet dat je helemaal opnieuw wilt beginnen.
+
+:::
 
 Na `docker compose down -v` is je laptop weer in de oorspronkelijke staat. Wil je opnieuw beginnen, voer dan `docker compose up -d` uit vanuit de map `conduction-demo` en doorloop de volledige setup opnieuw vanaf stap 3.
 
@@ -460,7 +476,11 @@ Docker Desktop is waarschijnlijk niet actief. Open Docker Desktop en wacht tot h
 
 Virtualisatie is waarschijnlijk uitgeschakeld in de BIOS van je pc. De BIOS is een instellingenscherm dat onder Windows zit en je hardware beheert — het ziet er anders uit dan alles wat je normaal gesproken ziet. Op de meeste moderne laptops (2018+) staat virtualisatie standaard al aan, dus deze fout komt weinig voor.
 
-> **Niet comfortable met BIOS-wijzigingen?** Dat is heel begrijpelijk — vraag iemand met IT-kennis om je te helpen met de onderstaande stappen.
+:::tip Niet comfortabel met BIOS-wijzigingen?
+
+Dat is heel begrijpelijk — vraag iemand met IT-kennis om je te helpen met de onderstaande stappen.
+
+:::
 
 **Stap 1 — toegang tot de BIOS.** De makkelijkste manier op Windows 10 en 11:
 1. Klik op **Start** → **Instellingen** (het tandwiel-icoon) → **Systeem** → **Herstel**.
@@ -489,7 +509,11 @@ Weet je het niet? Kijk goed naar het scherm direct na het opstarten — er staat
 
 **Stap 3 — opslaan en afsluiten.** Druk op **F10** om op te slaan en te sluiten, of zoek een tabblad **Save & Exit** en druk op **Enter** bij **Save Changes and Exit**. Bevestig met **Yes** als daarom gevraagd wordt.
 
-> **Belangrijk:** wijzig alleen de virtualisatie-instelling. Raak niets anders aan.
+:::warning Belangrijk
+
+Wijzig alleen de virtualisatie-instelling. Raak niets anders aan.
+
+:::
 
 Je computer herstart. Open Docker Desktop en het zou nu normaal moeten starten.
 

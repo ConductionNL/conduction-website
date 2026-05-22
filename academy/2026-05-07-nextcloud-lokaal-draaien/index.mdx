@@ -56,7 +56,11 @@ After this you can move on to [Set up a Woo register](/academy/woo-register-opze
   <PrerequisiteItem>A text editor: Notepad (Windows), TextEdit (Mac), or nano (Linux) is enough.</PrerequisiteItem>
 </Prerequisites>
 
-> **This is a local development environment.** It runs the same software as a real Nextcloud installation and behaves the same way, so everything you learn here applies directly to a production deployment. However, data you store here is not backed up, is not shared with anyone, and can be wiped at any time — for example, running `docker compose down -v` permanently deletes everything. Use this environment to explore, experiment, and learn. Do not store real, sensitive, or production data here.
+:::info This is a local development environment
+
+It runs the same software as a real Nextcloud installation and behaves the same way, so everything you learn here applies directly to a production deployment. However, data you store here is not backed up, is not shared with anyone, and can be wiped at any time — for example, running `docker compose down -v` permanently deletes everything. Use this environment to explore, experiment, and learn. Do not store real, sensitive, or production data here.
+
+:::
 
 No prior experience needed. On a clean laptop, step 0 (installing Docker and learning the terminal) takes about ten minutes. Steps 1 through 5 together take half an hour after that.
 
@@ -288,7 +292,11 @@ Nextcloud will warn you that the password is too weak — that warning is correc
 
 If you ever run a Nextcloud that others can reach — over the internet or within a network — always choose a strong, unique password. A good rule of thumb: at least 12 characters, mixing uppercase letters, numbers, and a special character.
 
-> **Note:** below the password field you will see a collapsed section called **Storage & database**. You do not need to open it — the database configuration is already taken care of through the `docker-compose.yml` file.
+:::note
+
+Below the password field you will see a collapsed section called **Storage & database**. You do not need to open it — the database configuration is already taken care of through the `docker-compose.yml` file.
+
+:::
 
 1. Fill in `admin` as the **username** and `admin` as the **password**. **Do not press Enter while filling in the fields** — wait until both fields are filled in before you continue.
 2. Click **Install** or press Enter after filling in the password. The screen disappears immediately and Nextcloud starts installing.
@@ -307,7 +315,11 @@ First open the Nextcloud app store:
 
 Now install the Conduction apps one by one. Start with **Open Register** — OpenCatalogi and Open Connector both depend on it.
 
-> **Note:** when you click **Download and enable**, Nextcloud may ask you to confirm your password before it allows the installation. Enter `admin` and confirm.
+:::note
+
+When you click **Download and enable**, Nextcloud may ask you to confirm your password before it allows the installation. Enter `admin` and confirm.
+
+:::
 
 ---
 
@@ -442,7 +454,11 @@ docker compose start
 docker compose down -v
 ```
 
-> ⚠️ **This deletes everything.** All your Nextcloud data, every installed app, every setting, and every file you uploaded will be permanently gone. There is no undo. Only run this if you are sure you want to start completely fresh.
+:::danger This deletes everything
+
+All your Nextcloud data, every installed app, every setting, and every file you uploaded will be permanently gone. There is no undo. Only run this if you are sure you want to start completely fresh.
+
+:::
 
 After `docker compose down -v` your laptop is back to its original state. To start over, run `docker compose up -d` from the `conduction-demo` folder and go through the full setup again from step 3.
 
@@ -460,7 +476,11 @@ Docker Desktop is probably not running. Open Docker Desktop and wait for the wha
 
 Virtualization is probably disabled in your computer's BIOS. The BIOS is a settings screen that exists below Windows and controls your hardware — it looks different from everything you normally see. On most modern laptops (2018+) virtualization is already on by default, so this error is uncommon.
 
-> **Not comfortable making changes in the BIOS?** That is completely understandable — ask someone with IT knowledge to help you with the steps below.
+:::tip Not comfortable making changes in the BIOS?
+
+That is completely understandable — ask someone with IT knowledge to help you with the steps below.
+
+:::
 
 **Step 1 — get into the BIOS.** The easiest way on Windows 10 and 11:
 1. Click **Start** → **Settings** (the gear icon) → **System** → **Recovery**.
@@ -489,7 +509,11 @@ Not sure? Watch the screen right after startup — it usually shows a message li
 
 **Step 3 — save and exit.** Press **F10** to save and exit, or look for a **Save & Exit** tab and press **Enter** on **Save Changes and Exit**. Confirm with **Yes** when asked.
 
-> **Important:** only change the virtualization setting. Do not touch anything else.
+:::warning Important
+
+Only change the virtualization setting. Do not touch anything else.
+
+:::
 
 Your computer will restart. Open Docker Desktop and it should start normally now.
 
