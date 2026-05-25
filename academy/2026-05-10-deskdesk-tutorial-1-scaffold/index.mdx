@@ -4,7 +4,7 @@ title: "Build a Nextcloud app on the Conduction stack — Part 1: Scaffold"
 contentType: tutorial
 authors: [conduction]
 date: 2026-05-10
-summary: Clone the Conduction app template, rename it to DeskDesk, build, enable, and see the canonical app chassis. The first of four parts that build a working desk-booking app on the full Conduction stack.
+summary: Clone the Conduction app template, rename it to DeskDesk, build, enable, and see the canonical app chassis. The first of six parts that build a working desk-booking app on the full Conduction stack.
 tags: [App development, Nextcloud, OpenRegister, nextcloud-vue, Tutorial series]
 apps: [openregister]
 durationMinutes: 20
@@ -17,13 +17,14 @@ import {
   Outcome,
   Prerequisites,
   PrerequisiteItem,
-  AtomZones,
   NextSteps,
   NextStep,
   HexCard,
 } from '@conduction/docusaurus-preset/components';
 
-This is **Part 1 of a four-part tutorial** that builds **DeskDesk**, a flexible desk-booking app for an open-office environment, on the full Conduction Nextcloud stack. The end product: pick a desk on a floor, book a slot, see your booking in your Nextcloud Calendar, and surface zone-specific knowledge articles from xWiki right next to the booking. Every piece reuses what `@conduction/nextcloud-vue` and OpenRegister already give you for free.
+This is **Part 1 of the DeskDesk tutorial series** — the hands-on chassis lap. If you haven't read [Part 0: Three paths, one curriculum](/academy/deskdesk-tutorial-0-three-paths) yet, that's the orientation that explains *why* we build on this stack rather than raw Nextcloud, and how the manifest and `@conduction/nextcloud-vue` work as two intertwined surfaces. Part 1 picks up after that decision is made.
+
+You'll build **DeskDesk**, a flexible desk-booking app for an open-office environment, on the full Conduction Nextcloud stack. The end product: pick a desk on a floor, book a slot, see your booking in your Nextcloud Calendar, and surface zone-specific knowledge articles from xWiki right next to the booking. Every piece reuses what `@conduction/nextcloud-vue` and OpenRegister already give you for free.
 
 In Part 1 you scaffold the app, rename it, build it, and see the canonical app chassis on screen. No data, no integrations yet. We get the bones right first.
 
@@ -36,14 +37,17 @@ In Part 1 you scaffold the app, rename it, build it, and see the canonical app c
   <Outcome>A clean foundation for Part 2, where the chassis starts holding real data.</Outcome>
 </Outcomes>
 
-## What we're building, across all four parts
+## What we're building, across the series
 
 | Part | Title | Adds |
 |---|---|---|
+| 0 | [Three paths, one curriculum](/academy/deskdesk-tutorial-0-three-paths) | The orientation lap — which path to pick and why |
 | 1 | Scaffold (you're here) | Empty app shell, chassis visible, navigable |
-| 2 | Schemas + manifest | Desk and booking schemas, full CRUD, dashboard |
-| 3 | Schema-driven integrations | Bookings appear in NC Calendar via the OpenRegister calendar provider |
-| 4 | External knowledge + ship | xWiki source via OpenConnector, sidebar tab, package, publish |
+| 2 | [Schemas + manifest](/academy/deskdesk-tutorial-2-schemas-manifest) | Desk and booking schemas, full CRUD, dashboard |
+| 3 | [Schema-driven integrations](/academy/deskdesk-tutorial-3-calendar) | Bookings appear in NC Calendar via the OpenRegister calendar provider |
+| 4 | [External knowledge + ship](/academy/deskdesk-tutorial-4-knowledge-and-ship) | xWiki source via OpenConnector, sidebar tab, package, publish |
+| 5 | [Advanced manifest features](/academy/deskdesk-tutorial-5-advanced-manifest) | actionToggles, fieldWidgets, public-mode pages, the other page types |
+| 6 | [Integrate](/academy/deskdesk-tutorial-6-integrate) | Cross-register reads, OpenConnector source/sync, two-way webhook back into OR |
 
 Same shape, two repos:
 
@@ -171,9 +175,7 @@ Open `http://localhost:8080/apps/deskdesk/` and log in. You see a placeholder da
 
 Every Conduction app — DeskDesk, OpenRegister, OpenCatalogi, Procest, MyDash, the dozen others — looks the same way on first sight. Same five structural pieces, same place, same behaviour. That recognisability is what `@conduction/nextcloud-vue` enforces: a user who learnt one app navigates the next one without docs.
 
-The chassis is **one shape, five atoms**. Each card below focuses on one atom: the focused zone is at full opacity with a KNVB-orange outline, the rest fades to 25% so you see *where* the atom sits.
-
-<AtomZones />
+The chassis is **one shape, five atoms** — the same five structural pieces in the same place, app after app.
 
 In Part 2, you'll learn how `manifest.json` plus a JSON schema fills these atoms with real data. The placeholder `Items` nav entry, the empty dashboard, and the "article" schema you saw on screen will all become **desks**, **bookings**, and a real occupancy dashboard — without you laying out a single atom by hand.
 

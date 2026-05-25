@@ -19,6 +19,7 @@
 
 import React, {useEffect, useMemo, useState} from 'react';
 import clsx from 'clsx';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import {
   HtmlClassNameProvider,
   ThemeClassNames,
@@ -45,20 +46,45 @@ import {
 const TYPE_SET = new Set(CONTENT_TYPES);
 const APP_SET = new Set(Object.keys(APPS_REGISTRY));
 
-function readQuery(search, knownModules) {
+function readQuery(search, knownModules, knownSeries) {
   try {
     const params = new URLSearchParams(search);
     const t = params.get('type');
     const a = params.get('app');
     const m = params.get('module');
+    const s = params.get('series');
     return {
       type:   t && TYPE_SET.has(t)              ? t : null,
       app:    a && APP_SET.has(a)               ? a : null,
       module: m && knownModules && knownModules.has(m) ? m : null,
+      series: s && knownSeries && knownSeries.has(s)   ? s : null,
     };
   } catch (_) {
-    return {type: null, app: null, module: null};
+    return {type: null, app: null, module: null, series: null};
   }
+}
+
+const SERIES_LABEL_OVERRIDES = {
+  'hydra-tutorial':         'Hydra',
+  'openspec-tutorial':      'OpenSpec',
+  'claude-skills-tutorial': 'Claude Skills',
+  'woo-tutorial':           'Woo',
+};
+
+function seriesLabelFor(slug) {
+  if (slug === 'deskdesk-tutorial') {
+    return translate({
+      id: 'theme.academy.seriesLabel.deskdesk',
+      message: 'Build a Nextcloud app',
+      description: 'Series chip label for the DeskDesk tutorial series on the academy landing page',
+    });
+  }
+  if (SERIES_LABEL_OVERRIDES[slug]) return SERIES_LABEL_OVERRIDES[slug];
+  return slug
+    .replace(/-tutorial$/, '')
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
 }
 
 function defaultIconFor(contentType) {
@@ -197,7 +223,22 @@ function countsByApp(posts) {
   return counts;
 }
 
+function postSeries(post) {
+  return post.content.metadata.frontMatter?.series || null;
+}
+
+function countsBySeries(posts) {
+  const counts = {};
+  for (const post of posts) {
+    const series = postSeries(post);
+    if (series) counts[series] = (counts[series] || 0) + 1;
+  }
+  return counts;
+}
+
 function AcademyLandingInner({items}) {
+  const academyHref = useBaseUrl('/academy/');
+
   /* Module groupings from the academy-modules Docusaurus plugin.
      Empty object when the plugin is missing so the page still renders
      individual cards rather than throwing. */
@@ -206,15 +247,26 @@ function AcademyLandingInner({items}) {
   const moduleSlugs = useMemo(() => Object.keys(modules), [modules]);
   const knownModules = useMemo(() => new Set(moduleSlugs), [moduleSlugs]);
 
+  /* All distinct series slugs found in frontmatter — used to validate
+     the ?series= query param so an unknown slug can't get stuck. */
+  const knownSeries = useMemo(() => {
+    const set = new Set();
+    for (const post of items) {
+      const s = postSeries(post);
+      if (s) set.add(s);
+    }
+    return set;
+  }, [items]);
+
   const [active, setActive] = useState(() =>
-    readQuery(typeof window !== 'undefined' ? window.location.search : '', knownModules)
+    readQuery(typeof window !== 'undefined' ? window.location.search : '', knownModules, knownSeries)
   );
 
   useEffect(() => {
-    const onPop = () => setActive(readQuery(window.location.search, knownModules));
+    const onPop = () => setActive(readQuery(window.location.search, knownModules, knownSeries));
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
-  }, [knownModules]);
+  }, [knownModules, knownSeries]);
 
   /* Type counts always reflect the full feed (so the user sees how many
      blogs vs guides exist regardless of the active app filter). App
@@ -241,25 +293,45 @@ function AcademyLandingInner({items}) {
     ? itemsAfterType.filter((p) => postApps(p).includes(active.app))
     : itemsAfterType;
 
-  /* Apply the module filter last so the type/app filters always
+  /* Series row counts: how many posts each series contributes to the
+     type/app-filtered universe. Hide series with 0 members so the row
+     shortens as the user filters. */
+  const seriesCounts = useMemo(() => countsBySeries(itemsAfterApp), [itemsAfterApp]);
+
+  const visibleSeriesSlugs = useMemo(
+    () => [...knownSeries].filter((s) => seriesCounts[s] > 0),
+    [knownSeries, seriesCounts],
+  );
+
+  const seriesLabels = useMemo(() => {
+    const labels = {};
+    for (const slug of knownSeries) labels[slug] = seriesLabelFor(slug);
+    return labels;
+  }, [knownSeries]);
+
+  const itemsAfterSeries = active.series
+    ? itemsAfterApp.filter((p) => postSeries(p) === active.series)
+    : itemsAfterApp;
+
+  /* Apply the module filter last so the type/app/series filters always
      narrow the universe first. If the user picks a specific module,
      we drop into the "module focus" view: only that module's parts
      show, no composite collapsing. */
   const filtered = active.module
-    ? itemsAfterApp.filter((p) => p.content.metadata.frontMatter?.module === active.module)
-    : itemsAfterApp;
+    ? itemsAfterSeries.filter((p) => p.content.metadata.frontMatter?.module === active.module)
+    : itemsAfterSeries;
 
   /* Module pill row counts: how many member posts each module
-     contributes to the type/app-filtered universe. Hide modules with
-     0 members so the row shortens as the user filters. */
+     contributes to the type/app/series-filtered universe. Hide modules
+     with 0 members so the row shortens as the user filters. */
   const moduleCounts = useMemo(() => {
     const counts = {};
-    for (const post of itemsAfterApp) {
+    for (const post of itemsAfterSeries) {
       const slug = post.content.metadata.frontMatter?.module;
       if (slug && knownModules.has(slug)) counts[slug] = (counts[slug] || 0) + 1;
     }
     return counts;
-  }, [itemsAfterApp, knownModules]);
+  }, [itemsAfterSeries, knownModules]);
 
   const visibleModuleSlugs = useMemo(
     () => moduleSlugs.filter((s) => moduleCounts[s] > 0),
@@ -277,9 +349,10 @@ function AcademyLandingInner({items}) {
      with a single ModuleCard. We collapse only on the unfiltered (no
      module) view because picking a type/app may already narrow a
      module to 1 visible part — collapsing that into a composite reads
-     as misleading. */
+     as misleading. Skip collapsing entirely in series-focus mode: the
+     reader picked a specific series and wants every part shown. */
   const composedItems = useMemo(() => {
-    if (active.module) return filtered;
+    if (active.module || active.series) return filtered;
 
     const seenModules = new Set();
     const result = [];
@@ -306,9 +379,9 @@ function AcademyLandingInner({items}) {
 
   const handleTypeChange = (next) => {
     setQueryParam('type', next);
-    /* Clear the app filter when the type changes if the active app no
-       longer has posts in the new type. Keeps the UI honest when a
-       user moves between content types. */
+    /* Clear app and series filters when the type changes if their
+       active values no longer have posts in the new type. Keeps the UI
+       honest when a user moves between content types. */
     setActive((prev) => {
       const newItems = next
         ? items.filter((p) => p.content.metadata.frontMatter?.contentType === next)
@@ -316,7 +389,10 @@ function AcademyLandingInner({items}) {
       const stillHasApp = prev.app && newItems.some((p) => postApps(p).includes(prev.app));
       const nextApp = stillHasApp ? prev.app : null;
       if (!stillHasApp) setQueryParam('app', null);
-      return {type: next, app: nextApp};
+      const stillHasSeries = prev.series && newItems.some((p) => postSeries(p) === prev.series);
+      const nextSeries = stillHasSeries ? prev.series : null;
+      if (!stillHasSeries) setQueryParam('series', null);
+      return {...prev, type: next, app: nextApp, series: nextSeries};
     });
   };
 
@@ -325,18 +401,35 @@ function AcademyLandingInner({items}) {
     setActive((prev) => ({...prev, app: next}));
   };
 
+  const handleSeriesChange = (next) => {
+    setQueryParam('series', next);
+    setActive((prev) => ({...prev, series: next}));
+  };
+
   const handleModuleChange = (next) => {
     setQueryParam('module', next);
     setActive((prev) => ({...prev, module: next}));
   };
 
   /* Featured slot picks the most-recent non-module post from the
-     composed list. When the user is in module-focus mode (active.module)
-     we don't surface a Featured tile — the parts list is the focus. */
-  const featured = !active.module && composedItems.length > 0 && !composedItems[0].__module
+     composed list. When the user is in module-focus or series-focus
+     mode we don't surface a Featured tile — the parts list is the
+     focus, and consuming the first item into a featured slot would
+     "hide" one part from the grid. */
+  const featured = !active.module && !active.series && composedItems.length > 0 && !composedItems[0].__module
     ? composedItems[0]
     : null;
-  const restItems = featured ? composedItems.slice(1) : composedItems;
+  /* In series-focus mode, sort parts by partNumber ascending so the
+     reader sees Part 0/1 → N in natural order rather than the default
+     date-descending order. */
+  const orderedItems = active.series
+    ? [...composedItems].sort((a, b) => {
+        const ap = a.content?.metadata?.frontMatter?.partNumber ?? 0;
+        const bp = b.content?.metadata?.frontMatter?.partNumber ?? 0;
+        return ap - bp;
+      })
+    : composedItems;
+  const restItems = featured ? orderedItems.slice(1) : orderedItems;
 
   return (
     <>
@@ -364,6 +457,24 @@ function AcademyLandingInner({items}) {
             counts={appCounts}
             allLabel="All apps"
             allCount={itemsAfterType.length}
+          />
+        </>
+      )}
+
+      {/* Series row only makes sense for tutorials. Show it on the
+          unfiltered ("Everything") view and on the explicit Tutorials
+          view; hide it for blog/guide/case-study/webinar/opinion. */}
+      {(active.type === null || active.type === 'tutorial') && visibleSeriesSlugs.length > 0 && (
+        <>
+          <div style={{height: 12}} />
+          <ContentTypeFilter
+            value={active.series}
+            onChange={handleSeriesChange}
+            types={visibleSeriesSlugs}
+            labels={seriesLabels}
+            counts={seriesCounts}
+            allLabel="All series"
+            allCount={itemsAfterApp.length}
           />
         </>
       )}
@@ -396,7 +507,7 @@ function AcademyLandingInner({items}) {
             id="theme.academy.emptyState"
             description="Empty-state message shown when filters return no posts. {viewAll} is a link to the unfiltered academy index."
             values={{
-              viewAll: <a href="/academy/"><Translate id="theme.academy.viewAll" description="Link text inside the empty-state message">View everything</Translate></a>,
+              viewAll: <a href={academyHref}><Translate id="theme.academy.viewAll" description="Link text inside the empty-state message">View everything</Translate></a>,
             }}>
             {'Nothing yet for this combination. {viewAll}'}
           </Translate>
