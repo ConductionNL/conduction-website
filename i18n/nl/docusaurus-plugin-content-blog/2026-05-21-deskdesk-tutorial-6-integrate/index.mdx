@@ -1,0 +1,435 @@
+---
+slug: deskdesk-tutorial-6-integrate
+title: "Bouw een Nextcloud-app op de Conduction-stack — Deel 6: Integreren"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-21
+summary: Koppel je uitgeleverde DeskDesk-app aan de rest van de workspace. Lees objecten uit een tweede OpenRegister-register, breid de xWiki-bron uit Deel 4 uit naar een kennis-tab per boeking, en sluit de cirkel met een tweerichtings-sync tussen boekingen en xWiki-onderhoudspagina's via een OpenConnector-webhook.
+tags: [App development, OpenConnector, OpenRegister, Integration, xWiki, Webhook, Tutorial series]
+apps: [openconnector, openregister]
+durationMinutes: 45
+series: deskdesk-tutorial
+partNumber: 6
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+} from '@conduction/docusaurus-preset/components';
+
+Het zesde en laatste deel van de DeskDesk-tutorial. Deel 4 packagede de app en zette hem in de Conduction-store; dit deel laat hem praten met de rest van de workspace — drie integratiepatronen, gelaagd van minst naar meest ingrijpend.
+
+:::tip Deel 5 en 6 staan naast elkaar
+Beide bouwen rechtstreeks voort op de uitgeleverde app uit Deel 4. [Deel 5 — Geavanceerde manifest-features](/academy/deskdesk-tutorial-5-advanced-manifest) gaat dieper op het *manifest*-vlak (actionToggles, fieldWidgets, public-mode pagina's). Deel 6 verbreedt naar *andere systemen*. Pak ze in willekeurige volgorde, of kies degene die je volgende app het eerst nodig heeft — geen van beide verwijst naar de ander voor inhoud.
+::: Aan het einde weten je boekingen wie hun klant is, toont elke boeking de juiste help-artikelen uit xWiki, en opent een boeking met status `needs_repair` automatisch een onderhoudspagina in xWiki die de boeking weer op `available` zet zodra de pagina als opgelost is gemarkeerd.
+
+Het gaat niet om de specifieke integraties — het gaat om het patroon. Cross-register-lezen is hoe Conduction-apps data delen zonder aan elkaar te koppelen. Het OpenConnector source-en-synchronisatie-patroon is hoe je data van buiten in je eigen register opneemt. Het webhook-endpoint-patroon is hoe externe systemen state terugduwen. Als je deze drie hebt aangelegd, ken je het integratie-vocabulaire dat de rest van de catalogus gebruikt.
+
+{/* truncate */}
+
+<Outcomes title="Wat je hebt aan het eind van Deel 6">
+  <Outcome>Een tweede OpenRegister-register <code>crm</code>, met een <code>customer</code>-schema, gelezen vanuit DeskDesk zonder dat DeskDesk ooit afhankelijk is van een CRM-app.</Outcome>
+  <Outcome>Elke boeking draagt een <code>customerId</code>, en de detailpagina van de boeking resolved deze naar naam, e-mail en telefoon via een cross-register read.</Outcome>
+  <Outcome>De xWiki OpenConnector-bron uit Deel 4 uitgebreid met een <code>category</code>-tag, zodat elke boeking de help-artikelen toont die bij zijn boekingstype horen.</Outcome>
+  <Outcome>Een OR-event-listener die een uitgaande OpenConnector-synchronisatie afvuurt zodra een boeking naar <code>status: needs_repair</code> gaat, en een onderhoudspagina post in xWiki onder <code>DeskDeskMaintenance.&lt;bookingId&gt;</code>.</Outcome>
+  <Outcome>Een declaratief OpenConnector-endpoint dat een xWiki-webhook-payload ontvangt, <code>resolved: true</code> uitleest, en de boeking terugzet naar <code>available</code> — de cirkel gesloten zonder de workspace te verlaten.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Waar je moet staan">
+  <PrerequisiteItem>Deel 1–4 afgerond: een uitgeleverde DeskDesk-app met floor/desk/booking/knowledge_article-schemas, de agenda-integratie, en de xWiki-kennisbron uit Deel 4 die al synchroniseert.</PrerequisiteItem>
+  <PrerequisiteItem>De referentie-stack uit <a href="/academy/nextcloud-lokaal-draaien">Nextcloud lokaal draaien met Docker</a>, inclusief de xWiki-service die je in Deel 4 hebt opgezet. We hergebruiken dezelfde container, dezelfde admin, dezelfde Postgres.</PrerequisiteItem>
+  <PrerequisiteItem><strong>OpenConnector</strong> geïnstalleerd en geactiveerd (dat heb je in Deel 4 gedaan voor de kennis-sync).</PrerequisiteItem>
+</Prerequisites>
+
+## Stap 1: Een tweede register, gelezen vanuit DeskDesk
+
+De eerste integratie raakt geen enkel extern systeem. Het is een cross-register-read binnen OpenRegister — de kleinste integratie die het platform ondersteunt, en degene die elke andere Conduction-app ontsluit.
+
+De premise: een boeking heeft vandaag een `customerName`-string. Voor een demo prima, maar in productie woont het klantrecord in je CRM. Zet je het in een tweede OpenRegister-register in plaats van binnen DeskDesk, dan kan elke Conduction-app op de stack het lezen en schrijven zonder via DeskDesk's API te gaan. Dát is het platform-idee: gedeelde schemas, één bron van waarheid.
+
+### Maak het `crm`-register
+
+Je hebt geen aparte app nodig om het register te hosten — `crm` is gewoon nóg een register dat OpenRegister beheert. Klik in `/apps/openregister/registers` op **New register** en vul:
+
+```
+Slug:        crm
+Title:       CRM
+Description: Klantrecords gedeeld over apps heen.
+Version:     0.1.0
+```
+
+Voeg een `customer`-schema toe met de voor de hand liggende velden:
+
+```json title="customer-schema"
+{
+  "slug": "customer",
+  "title": "Customer",
+  "type": "object",
+  "required": ["name"],
+  "properties": {
+    "name":  { "type": "string" },
+    "email": { "type": "string", "format": "email" },
+    "phone": { "type": "string" },
+    "notes": { "type": "string" }
+  }
+}
+```
+
+Voeg drie records met de hand toe vanuit de OR-admin:
+
+```
+Anna de Vries   anna@example.org    +31 6 1234 5678
+Bram Janssen    bram@example.org    +31 6 9876 5432
+Café Bohème     ops@cafeboheme.nl   +31 20 555 0142
+```
+
+OpenRegister kent ieder record een `id` toe (een UUID). Noteer ze — je verwijst er straks vanuit boekingen naar.
+
+### Breid `booking` uit met een `customerId`
+
+Open `lib/Settings/deskdesk_register.json` en voeg een property toe aan het bestaande `booking`-schema:
+
+```json title="lib/Settings/deskdesk_register.json (booking-properties)"
+"customerId": {
+  "type": "string",
+  "format": "uuid",
+  "description": "UUID van een record in het crm.customer-schema. Cross-register-referentie."
+}
+```
+
+Bump `info.version` van het register naar `0.5.0` zodat de import-handler de wijziging oppikt, en herlaad de settings:
+
+```bash
+docker exec nextcloud apache2ctl graceful
+# vanuit de deskdesk admin-pagina op Reload, of POST /apps/deskdesk/api/settings/load
+```
+
+Pas één van je bestaande boekings-seeds aan zodat hij naar een klant-UUID wijst (vervang `<anna-uuid>` door de echte):
+
+```json title="components.objects (fragment)"
+"booking-3east-tuesday": {
+  "@self": { "register": "deskdesk", "schema": "booking", "slug": "booking-3east-tuesday" },
+  "deskId": "<3-east-uuid>",
+  "customerId": "<anna-uuid>",
+  "status": "confirmed",
+  "start": "2026-05-26T09:00:00Z",
+  "end":   "2026-05-26T17:00:00Z"
+}
+```
+
+### Lees de klant in BookingDetail
+
+De frontend gebruikt al `useObjectStore` uit `@conduction/nextcloud-vue` (Deel 2 introduceerde dat). De store's `fetchObject(schema, id)` en `fetchCollection(schema, params)` accepteren **elke** schema-slug — ze weten niet welk register de eigenaar is, want het OR-REST-endpoint is `/api/objects/{register}/{schema}` en de store geeft het register gewoon door.
+
+Voeg een kleine composable toe die de klant van de huidige boeking ophaalt:
+
+```vue title="src/views/BookingDetail.vue (script-fragment)"
+<script>
+import { useObjectStore } from '@conduction/nextcloud-vue'
+
+export default {
+  name: 'BookingDetail',
+  props: { objectId: { type: String, required: true } },
+  setup() { return { objectStore: useObjectStore() } },
+  data() { return { booking: null, customer: null, loading: true } },
+  watch: {
+    objectId: {
+      immediate: true,
+      async handler(id) {
+        this.loading = true
+        try {
+          this.booking = await this.objectStore.fetchObject('booking', id)
+          if (this.booking?.customerId) {
+            this.customer = await this.objectStore.fetchObject(
+              'customer',
+              this.booking.customerId,
+              { register: 'crm' },   // <-- de enige cross-register-hint
+            )
+          }
+        } finally { this.loading = false }
+      },
+    },
+  },
+}
+</script>
+```
+
+De optie `register: 'crm'` in `fetchObject` is de enige regel die afwijkt van een same-register-read. Verder is het de store die je al had.
+
+Render de klant boven de rest van het detail-body:
+
+```vue title="src/views/BookingDetail.vue (template-fragment)"
+<section v-if="customer" class="booking-detail__customer">
+  <h2>{{ customer.name }}</h2>
+  <p>
+    <a :href="`mailto:${customer.email}`">{{ customer.email }}</a>
+    · {{ customer.phone }}
+  </p>
+</section>
+```
+
+Build, herlaad, open een boeking. Het klantblok rendert bovenaan. Pas in de OR-admin de `customerId` op de boeking aan naar een andere UUID; herlaad de boeking; het blok verandert mee. Je hebt geïntegreerd met het CRM-register zonder dat DeskDesk hoeft te weten welke app de eigenaar is — en morgen, als PipelinQ uitkomt en in hetzelfde `crm.customer`-schema gaat schrijven, krijgt DeskDesk die records er gratis bij.
+
+## Stap 2: Per-boeking kennis uit de bestaande xWiki-bron
+
+Deel 4 bouwde een xWiki-bron, een `knowledge_article`-schema en een Knowledge-tab op de detailpagina van een desk die artikelen filtert op zone. We gaan die bron verbreden, zodat dezelfde artikelen ook verschijnen op een Help-tab per boeking — gefilterd op het _type_ van de boeking (cabling-issue, av-issue, cleaning-followup), niet op zone.
+
+### Voeg een `category`-property toe aan `knowledge_article`
+
+Open het schema uit Deel 4 en voeg één property toe:
+
+```json title="lib/Settings/deskdesk_register.json (knowledge_article-fragment)"
+"category": {
+  "type": "string",
+  "enum": ["zone", "cabling", "av", "cleaning", "policy"],
+  "default": "zone",
+  "description": "Koppelt het artikel aan een boekingscategorie. zone=desk-gericht artikel uit Deel 4; de rest is boekings-gericht."
+}
+```
+
+Bump `info.version` naar `0.5.1` en herlaad. Bestaande seeds (de drie zone-artikelen uit Deel 4) houden de default `category: zone` — backwards compatible.
+
+### Schrijf de boekings-gerichte artikelen in xWiki
+
+Dezelfde `put`-helper als in Deel 4. Nieuwe subspace `DeskDeskKnowledge.Categories` zodat de bron daar onafhankelijk van de zones over kan itereren:
+
+```bash
+put() {
+  curl -s -u admin:admin1234 -X PUT \
+    -H "Content-Type: application/xml" \
+    -d "<page xmlns=\"http://www.xwiki.org\"><title>$3</title><syntax>xwiki/2.1</syntax><content>$4</content></page>" \
+    "http://localhost:8086/rest/wikis/xwiki/spaces/DeskDeskKnowledge/spaces/Categories/spaces/$1/pages/$2" \
+    -o /dev/null -w "%{http_code} Categories/$1/$2\n"
+}
+put Cabling  USB-C-cable-missing  "USB-C-kabel ontbreekt" \
+    "Reserve USB-C 100W-kabels liggen in kast B-04 (naast de printer op verdieping 3). Tekenen achterin, voor einde dag terugleggen."
+put Av       Camera-not-working   "Camera werkt niet" \
+    "De plafondcamera hangt aan de Jitsi-instance in de ruimte. Power-cycle via de wandschakelaar CAM. Doet hij het daarna nog niet, maak een ticket aan met status needs_repair."
+put Cleaning Coffee-spill         "Koffievlek-protocol" \
+    "Informeer direct de host. Veeg het oppervlak schoon met de microvezel-kit in de kast onder de centrale desk. Op stof: markeer de desk needs_repair en boek een andere."
+```
+
+### Verbreed de OpenConnector-synchronisatie
+
+In Deel 4 itereerde de bron over `['East', 'Central', 'West']`. We voegen een tweede pass toe voor categorieën. Open in `/apps/openconnector/synchronisations` je **xWiki articles → OpenRegister**-sync en voeg een tweede source-endpoint en een tweede mapping toe:
+
+```
+Source endpoints:
+  /wikis/xwiki/spaces/DeskDeskKnowledge/spaces/{zone}/pages       (bestaand, zone-iteratie)
+  /wikis/xwiki/spaces/DeskDeskKnowledge/spaces/Categories/spaces/{cat}/pages
+                                                                  (nieuw, cat-iteratie over Cabling, Av, Cleaning)
+
+Mapping (nieuwe velden):
+  spaces.last           → category   (lowercased)
+  (constant 'zone')     → category   voor het bestaande zone-endpoint, override per endpoint
+```
+
+Opslaan en draaien. Je ziet zes `knowledge_article`-rijen: drie met `category: zone` (de originelen), drie met `category: cabling/av/cleaning`.
+
+### Voeg een Help-tab toe aan BookingDetail
+
+In `src/manifest.json` heeft de boeking-detail al een sidebar-declaratie uit eerdere delen. Voeg een Help-tab toe:
+
+```json title="src/manifest.json (boeking-detail sidebar)"
+"sidebar": {
+  "tabs": [
+    { "id": "data",     "label": "deskdesk.sidebar.data",     "widgets": [{ "type": "data" }] },
+    { "id": "help",     "label": "deskdesk.sidebar.help",     "component": "help-tab" },
+    { "id": "metadata", "label": "deskdesk.sidebar.metadata", "widgets": [{ "type": "metadata" }] }
+  ]
+}
+```
+
+De `help-tab`-component is een kopie van `KnowledgeTab` uit Deel 4, met `zone` vervangen door `category` en de boekingscategorie als filter. Voeg een `category`-property toe aan het booking-schema als je die nog niet hebt (of leid hem af uit het boekingstype), en dan:
+
+```vue title="src/views/HelpTab.vue (script-fragment)"
+const booking = await this.objectStore.fetchObject('booking', this.objectId)
+const cat = booking?.category || 'policy'
+await this.objectStore.fetchCollection('knowledge_article', { category: cat, _limit: 25 })
+this.articles = this.objectStore.collections.knowledge_article || []
+```
+
+Registreer de component op dezelfde manier als `knowledge-tab` in Deel 4 (de `customComponents`-map in `App.vue`). Build, herlaad, open een boeking met categorie `cabling`. De Help-tab toont "USB-C-kabel ontbreekt". Zet de categorie via de OR-admin op `av`; dezelfde tab op dezelfde boeking toont nu "Camera werkt niet".
+
+Twee integraties, één bron. Dat is het rendement van OpenConnector — de extra integratie kostte een extra mapping-regel, geen nieuwe pijplijn.
+
+## Stap 3: Tweerichtings-sync tussen boekingen en xWiki-onderhoud
+
+De integraties tot dusver zijn read-only vanuit DeskDesk. Stap 3 sluit de cirkel. Zodra een boeking naar `status: needs_repair` gaat, maakt DeskDesk in xWiki een onderhoudspagina aan op `DeskDeskMaintenance.<bookingId>` met de boekingsdetails. Het facilitaire team werkt de pagina uit in xWiki — notities, foto's, leveranciersbonnen — en zodra ze een `resolved`-property aanvinken, vuurt een xWiki-webhook af die in DeskDesk landt en de boeking terugzet naar `status: available`.
+
+Twee helften: uitgaand (DeskDesk → xWiki) en inkomend (xWiki → DeskDesk). Uitgaand vraagt ~25 regels PHP in DeskDesk om `ObjectUpdatedEvent` te bridgen naar een OpenConnector-synchronisatie-call. Inkomend is puur configuratie — een OpenConnector-endpoint met een mapping.
+
+### 3a: Een OpenConnector-synchronisatie die *schrijft* naar xWiki
+
+Synchronisaties hebben tot nu toe uit xWiki gelezen en in OR geschreven. Synchronisaties zijn tweerichtings — dezelfde surface kan ook POSTen naar een bron. Maak een tweede sync:
+
+```
+Naam:             Booking maintenance → xWiki
+Richting:         push
+Source:           xWiki Knowledge  (dezelfde als in Deel 4)
+Source endpoint:  /wikis/xwiki/spaces/DeskDeskMaintenance/pages/{bookingId}
+                  method: PUT
+                  body-template (xwiki/2.1):
+                    Boeking {{bookingId}} vereist onderhoud.
+                    Desk: {{deskId}}, gemeld {{updatedAt}}.
+                    {{notes}}
+                    Zet property `resolved: true` en bewaar zodra opgelost.
+Target register:  deskdesk
+Target schema:    booking
+Trigger:          handmatig (we vuren hem af vanuit PHP, niet op schema)
+```
+
+Opslaan en pak het numerieke id van de synchronisatie uit de URL (`/apps/openconnector/synchronisations/<id>`). Daar verwijst de listener hieronder naar.
+
+### 3b: Een kleine DeskDesk-listener die de sync op status-wijziging afvuurt
+
+Dit is het eerste PHP-bestand in de serie dat geen wrapper, settings-helper of route is. Zo'n vijfentwintig regels. Voeg `lib/Listener/BookingMaintenanceListener.php` toe:
+
+```php title="lib/Listener/BookingMaintenanceListener.php"
+<?php
+
+declare(strict_types=1);
+
+namespace OCA\DeskDesk\Listener;
+
+use OCA\OpenRegister\Event\ObjectUpdatedEvent;
+use OCA\OpenConnector\Service\SynchronizationService;
+use OCP\EventDispatcher\Event;
+use OCP\EventDispatcher\IEventListener;
+
+/** @template-implements IEventListener<ObjectUpdatedEvent> */
+class BookingMaintenanceListener implements IEventListener {
+
+    private const SYNC_ID = 7;   // de id van de "Booking maintenance → xWiki"-sync
+
+    public function __construct(private SynchronizationService $sync) {}
+
+    public function handle(Event $event): void {
+        if (!$event instanceof ObjectUpdatedEvent) { return; }
+
+        $obj = $event->getObject();
+        if ($obj->getSchema() !== 'booking') { return; }
+
+        $before = $event->getOldObject()?->getObjectArray() ?? [];
+        $after  = $obj->getObjectArray();
+        if (($before['status'] ?? null) === 'needs_repair') { return; }   // geen transitie
+        if (($after['status']  ?? null) !== 'needs_repair') { return; }
+
+        $this->sync->runForObject(self::SYNC_ID, $obj);
+    }
+}
+```
+
+Hang hem aan in `lib/AppInfo/Application.php`:
+
+```php title="lib/AppInfo/Application.php (boot-fragment)"
+use OCA\DeskDesk\Listener\BookingMaintenanceListener;
+use OCA\OpenRegister\Event\ObjectUpdatedEvent;
+
+public function register(IRegistrationContext $context): void {
+    $context->registerEventListener(ObjectUpdatedEvent::class, BookingMaintenanceListener::class);
+}
+```
+
+`composer install` om de autoloader te verversen, daarna Nextcloud graceful herladen (`apache2ctl graceful`). Zet vanuit de OR-admin de status van een boeking op `needs_repair`. Herlaad xWiki en navigeer naar `DeskDeskMaintenance` — er staat een pagina vernoemd naar het boekings-id, met de ingevulde body-template. De uitgaande helft staat.
+
+### 3c: Een OpenConnector-endpoint dat de xWiki-webhook opvangt
+
+Voor de terugweg schrijf je geen PHP — OpenConnector heeft een ingebouwde endpoint-receiver op `POST /apps/openconnector/api/endpoint/{path}` die een binnenkomende payload mapt op een OR-object.
+
+Maak in `/apps/openconnector/endpoints` aan:
+
+```
+Name:        xwiki-maintenance-resolved
+Path:        xwiki-maintenance-resolved
+Method:      POST
+Auth:        Bearer  (plak een geheime string; die hergebruik je aan xWiki-kant)
+Mapping:
+  $.page                  → context.bookingId   (xWiki-paginanaam == boekings-id)
+  $.properties.resolved   → context.resolved
+Action:
+  Wanneer context.resolved == true:
+    UPDATE booking WHERE id = context.bookingId  SET status = 'available'
+```
+
+Opslaan. De endpoint-URL is `http://localhost:8080/apps/openconnector/api/endpoint/xwiki-maintenance-resolved`.
+
+### 3d: Configureer de xWiki-webhook
+
+xWiki heeft een Webhook-applicatie. Installeer hem één keer vanuit `/xwiki/bin/view/XWiki/AddOnsManagerActions` (Extension Manager → zoek "Webhook"). Eenmaal geïnstalleerd: ga naar de space `DeskDeskMaintenance`, **Administer Space → Webhooks → Add**:
+
+```text
+Name:    deskdesk-resolved
+URL:     http://nextcloud:80/apps/openconnector/api/endpoint/xwiki-maintenance-resolved
+         (container-naar-container; vanuit de xWiki-container bereikt nextcloud:80 Nextcloud)
+Trigger: Page updated
+Filter:  Alleen pagina's in DeskDeskMaintenance
+Auth:    Bearer <het geheim dat je op het OpenConnector-endpoint hebt gezet>
+Payload: {
+  "page":       "$!{doc.documentReference.name}",
+  "properties": $!{object.properties.json}
+}
+```
+
+Opslaan. Loop de loop end-to-end:
+
+1. Zet vanuit OR een boeking op `status: needs_repair`. → Er verschijnt een pagina in xWiki onder `DeskDeskMaintenance.<bookingId>`.
+2. Bewerk de pagina in xWiki, zet zijn `resolved`-property op `true`, opslaan. → De webhook vuurt, OpenConnector matcht het pad, de mapping trekt boekings-id en `resolved` eruit, de actie zet de boeking terug op `available`.
+
+Herlaad de boeking-detail in DeskDesk. Status: available. Het platform deed de round-trip, en DeskDesk hield daar één PHP-bestand van vijfentwintig regels aan over. De andere helft van de integratie is JSON en webhook-config.
+
+## Wat je hebt gebouwd
+
+In elk eerder deel was de enige PHP in de app infrastructureel — settings, routes, een path-resolve-fix. Deel 6 introduceert het eerste PHP-bestand dat daadwerkelijk businesslogica draait: één event-listener, vijfentwintig regels, gated op een status-transitie. Alles daaromheen is configuratie:
+
+- Een tweede register, cross-register gelezen via een eenregelige `register: 'crm'`-hint op `fetchObject`.
+- Twee integraties op één OpenConnector-bron, gescheiden door een `category`-mapping.
+- Een uitgaande synchronisatie afgevuurd door een OR-event-listener.
+- Een inkomend endpoint dat een xWiki-webhook-payload op een OR-update mapt, declaratief, zonder PHP.
+
+Drie patronen. Ze schalen. Cross-register-lezen is hoe MyDash dashboards bouwt uit de data van elke Conduction-app zonder koppeling. Het source-en-synchronisatie-patroon is hoe elke app in de catalogus data van elders absorbeert — xWiki vandaag, SharePoint of Notion morgen, dezelfde bedrading. Het webhook-endpoint-patroon is hoe externe systemen state teruggeven aan de workspace.
+
+De DeskDesk-tutorial eindigt hier. De app is uitgeleverd, staat in de store, is geïntegreerd met de workspace en een externe kennisbron, en doet round-trip-state met een derde partij. Zes delen, een paar honderd regels JSON, drie kleine Vue-bestanden, en één PHP-listener. Dat is de prijs van een geïntegreerde, beheersbare Nextcloud-app op de Conduction-stack.
+
+## Troubleshooting
+
+<HexCard title="Cross-register-read geeft 404">
+  De <code>register</code>-parameter is hoofdlettergevoelig en moet exact de slug zijn. <code>crm</code>, niet <code>CRM</code>. Inspecteer het netwerkpaneel: de URL hoort <code>/apps/openregister/api/objects/crm/customer/&lt;id&gt;</code> te zijn. Staat er <code>/api/objects/deskdesk/customer/...</code>, dan vergat je de <code>register</code>-hint en viel de store terug op DeskDesks eigen register.
+</HexCard>
+
+<HexCard title="OpenConnector-sync schrijft niets bij PUT">
+  Push-syncs hebben een target-endpoint nodig dat bereikbaar is vanuit de OpenConnector-container, niet vanaf je host. <code>http://localhost:8086</code> werkt vanaf de host, <code>http://openregister-xwiki:8080</code> werkt vanuit de Nextcloud-container. Gebruik de container-hostnaam.
+</HexCard>
+
+<HexCard title="Event-listener vuurt, maar de sync draait niet">
+  Controleer of <code>SynchronizationService</code> netjes autowired is en of de sync-id-constante overeenkomt met wat in de URL staat. Een verkeerd id logt stil en keert terug. Tail <code>data/nextcloud.log</code> terwijl je een boeking omzet.
+</HexCard>
+
+<HexCard title="xWiki-webhook bereikt OpenConnector, maar de payload is leeg">
+  De template <code>{'${object.properties.json}'}</code> van xWiki wordt alleen ingevuld als de pagina een XClass heeft. Voeg een kleine <code>MaintenanceClass</code> met een <code>resolved</code>-boolean toe aan de <code>DeskDeskMaintenance</code>-space, en verwijs er vanaf de body-template uit Stap 3a naar. De webhook gaat het properties-blok bij de volgende save meesturen.
+</HexCard>
+
+## Waar nu naartoe
+
+<NextSteps>
+  <NextStep
+    title="Bekijk de integratie-catalogus"
+    href="/connext"
+    description="Zie elke workspace-integratie die het platform uitlevert — Mail, Files, Deck, OpenProject, de LLM-adapters. De patronen uit deze tutorial zijn hoe ze allemaal bedraad zijn."
+  />
+  <NextStep
+    title="ADR-019: het integratie-register"
+    href="https://github.com/ConductionNL/hydra/blob/main/openspec/adr-019-pluggable-integration-registry.md"
+    description="De architectuurnotitie achter het source-, synchronisatie- en endpoint-patroon, inclusief de richting voor de lange termijn (declaratieve no-code event-naar-sync-mapping)."
+  />
+  <NextStep
+    title="Fork DeskDesk naar je eigen use case"
+    href="https://github.com/ConductionNL/deskdesk"
+    description="De referentie-app is een snapshot. Die van jou is de reis — verander de schemas, hernoem het menu, vervang het externe systeem. De zesdelige scaffolding blijft hetzelfde."
+  />
+</NextSteps>
