@@ -1,0 +1,24 @@
+---
+slug: tame-log-noise
+title: Log-ruis temmen met de drain-processor van OpenTelemetry
+contentType: blog
+authors: [conduction]
+date: 2026-05-04
+summary: Hoe één processor ons trace-volume op de OpenRegister-API met 40 procent verlaagde.
+tags: [OpenTelemetry, Instrumentation]
+apps: [openregister]
+---
+
+Een korte notitie over één OpenTelemetry-collector-processor die voor ons onevenredig veel effect had. Deze post is een placeholder terwijl we de volledige versie schrijven.
+
+{/* truncate */}
+
+## Wat er veranderde
+
+We voegden de `drain`-processor toe aan de collector-pipeline van de OpenRegister-API. Hij clustert bijna-identieke logregels en zendt één getemplate trace uit in plaats van N bijna-duplicaten. Het trace-volume daalde 40 procent, de alert-ruis daalde nog verder, en de dashboards beantwoordden nog steeds elke vraag die we ze stelden.
+
+## Wat er nu komt
+
+- Uitrollen naar OpenConnector en DocuDesk
+- De template-regels documenteren zodat app-auteurs zichzelf kunnen bedienen
+- Een beveiliging tegen over-clustering op zeldzame error-paden toevoegen

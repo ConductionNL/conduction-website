@@ -1,0 +1,48 @@
+---
+title: OpenKlant sidecar, Conduction
+description: Nextcloud sidecar wrapping the OpenKlant citizen-contact register. ZGW-compatible, installed from the app store.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, CtaBanner} from '@conduction/docusaurus-preset/components';
+
+<DetailHero
+  background="cobalt"
+  appId="openklant"
+  crumb={[{label: 'Sidecars', href: '/sidecars'}, 'OpenKlant']}
+  status={{label: 'Sidecar', color: 'var(--c-cobalt-400)'}}
+  version="upstream"
+  locales="NL"
+  title="OpenKlant"
+  tagline={<>A <span className="next-blue">Nextcloud</span> sidecar that wraps OpenKlant. Run the official citizen-contact register next to your workspace, install from the Nextcloud app store, no separate cluster.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/openklant'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/openklant'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>}
+/>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="What it is"
+    title="OpenKlant as a Nextcloud app."
+    align="stack"
+    lede="OpenKlant is the Common Ground citizen-contact register. We package it as a Nextcloud-installable sidecar. You install the app, the upstream container runs alongside Nextcloud, and the ZGW APIs are reachable from OpenConnector. Same upstream, less DevOps."
+  />
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Why a sidecar"
+    title="A sidecar is not a fork."
+    align="stack"
+    lede="We do not fork OpenKlant. The sidecar tracks upstream releases. The wrapper handles install, lifecycle, and the koppelvlak to Nextcloud. Your data stays in the upstream service. Conduction is responsible for the integration, not for upstream OpenKlant."
+  />
+</Section>
+
+<CtaBanner
+  title="Run OpenKlant inside your Nextcloud."
+  lede={<>Install from the Nextcloud app store. Pair with OpenConnector to route ZGW calls. Pair with Procest to drive workflows on citizen-contact events.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+/>

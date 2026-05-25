@@ -4,9 +4,10 @@ description: Decision-support and board management on Nextcloud. Agenda, dossier
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, McpToolShelf, AppCrossLinks} from '@conduction/docusaurus-preset/components';
 
 <DetailHero
+  background="cobalt"
   appId="decidesk"
   crumb={[{label: 'Apps', href: '/apps'}, 'DeciDesk']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
@@ -14,6 +15,7 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
   locales="NL · EN"
   title="DeciDesk"
   tagline={<>Board and council decision-making on your <span className="next-blue">Nextcloud</span>. Agendas, council dossiers, motions, votes, an audit trail that understands the Wet open overheid. For municipal councils, executive boards, supervisory and management boards.</>}
+  intro={<>Decidesk is an open-source decision-making app for the Nextcloud workspace. It runs the full governance cycle in one place: scheduling meetings, building agendas, submitting motions and amendments, voting, publishing minutes, and tracking action items to completion. Workflows are configurable for legislative bodies, associations, corporate boards, management teams, and citizen-participation panels. All meetings, motions, and decisions live as typed OpenRegister objects with an audit trail, and a built-in AI chat companion exposes those records over MCP. Released under EUPL-1.2 and maintained by Conduction since 2019.</>}
   primaryCta={{label: 'Install from app store', href: '/install'}}
   secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/decidesk'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/decidesk'}}
@@ -27,34 +29,34 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="What it does"
-        title="Van agenda tot besluit, in één install."
+        title="From agenda to decision, in one install."
         align="stack"
-        lede="DeciDesk dekt de hele besluitvormings-keten: agendapunten verzamelen, dossiers opbouwen, moties indienen, stemmen registreren, besluiten publiceren. Allemaal op typed registers met een audit trail die het Woo-werk later veel eenvoudiger maakt."
+        lede="DeciDesk covers the full decision-making chain: collect agenda items, build dossiers, submit motions, record votes, publish decisions. All on typed registers with an audit trail that makes Woo compliance much simpler later."
       />
       <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>}
-      title="Agenda's met dossiervorming."
+      title="Agendas with dossier creation."
     >
-      Per vergaderpunt een dossier: ambtelijk advies, raadsstuk, presentaties, beantwoorde vragen. Allemaal versioneed, allemaal in OpenRegister.
+      One dossier per agenda item: official advice, council documents, presentations, answered questions. All versioned, all in OpenRegister.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
-      title="Moties en amendementen."
+      title="Motions and amendments."
     >
-      Indienen, koppelen aan een agendapunt, stemmen registreren. Per-fractie of per-individu, configureerbaar per bestuur.
+      Submit, link to an agenda item, record votes. Per faction or per individual, configurable per board.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg>}
-      title="Stemmingen, getrackt in het audit trail."
+      title="Voting, tracked in the audit trail."
     >
-      Hoofdelijk of bij handopsteken; uitkomst, individuele stemmen, abstaining members. Allemaal in een tamper-evident log.
+      Voice or by show of hands; outcome, individual votes, abstentions. All in a tamper-evident log.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      title="Besluiten als gepubliceerde documenten."
+      title="Decisions as published documents."
     >
-      DocuDesk genereert het formele besluit uit de stemresultaten en raadsbespreking. OpenCatalogi publiceert het op jouwgemeente.nl/besluiten met citation-stable URL.
+      DocuDesk generates the formal decision from vote results and council discussion. OpenCatalogi publishes it on yourmunicipality.nl/decisions with citation-stable URLs.
     </FeatureItem>
   </FeatureList>
     </div>
@@ -91,7 +93,7 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
       tone: 'workspace',
       eyebrow: 'In every queue',
       title: 'Action items land in the assignee\'s MyDash.',
-      summary: 'Every action item from a meeting becomes a row in someone\'s werkvoorraad. No separate task tracker, no email handoff. The next meeting reads its predecessor\'s status from the same registers.',
+      summary: 'Every action item from a meeting becomes a row in someone\'s work queue. No separate task tracker, no email handoff. The next meeting reads its predecessor\'s status from the same registers.',
       cta: {label: 'See MyDash', href: '/apps/mydash'},
       panel: <AppMock app="mydash-widgets" />,
     },
@@ -159,9 +161,9 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
           </div>
           <div style={{display: 'flex', flexDirection: 'column', gap: 5}}>
             {[
-              {accent: true,  date: '14 Mei'},
-              {accent: false, date: '18 Mei'},
-              {accent: false, date: '25 Mei'},
+              {accent: true,  date: '14 May'},
+              {accent: false, date: '18 May'},
+              {accent: false, date: '25 May'},
             ].map((row, i) => (
               <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
                 <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 600, color: row.accent ? 'var(--c-orange-knvb)' : 'var(--c-cobalt-400)', minWidth: 36}}>{row.date}</div>
@@ -206,6 +208,62 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
   ]}
 />
 
+<McpToolShelf
+  eyebrow="AI chat tools"
+  title="What DeciDesk adds to the workspace AI."
+  lede="Install DeciDesk and the workspace chat gets five governance tools. The AI can list your open action items, browse meetings, open a dossier, start a meeting from a calendar event, or capture a follow-up, all under the caller's own role and auth."
+  tools={[
+    {
+      icon: <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="20" cy="18" r="2"/></svg>,
+      name: 'List open action items',
+      id: 'decidesk.listOpenActionItems',
+      description: 'Incomplete action items assigned to the caller, or all visible items. Scope mine / all, capped at 50.',
+      status: 'stable',
+    },
+    {
+      icon: <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg>,
+      name: 'List recent meetings',
+      id: 'decidesk.listRecentMeetings',
+      description: "Recent meetings for the caller, newest first. Optional status filter: scheduled, in-progress, or closed.",
+      status: 'stable',
+    },
+    {
+      icon: <svg viewBox="0 0 24 24"><path d="M5 4h14v6H5zM5 14h14v6H5zM9 4v16"/></svg>,
+      name: 'Get meeting details',
+      id: 'decidesk.getMeetingDetails',
+      description: 'Full dossier for one meeting: agenda, participants, action items, decisions, attached files.',
+      status: 'stable',
+    },
+    {
+      icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4z"/></svg>,
+      name: 'Start meeting',
+      id: 'decidesk.startMeeting',
+      description: 'Move a scheduled meeting into in-progress. Requires chair or admin role; logged in the audit trail.',
+      status: 'stable',
+    },
+    {
+      icon: <svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>,
+      name: 'Add action item',
+      id: 'decidesk.addActionItem',
+      description: 'Create a new action item under a meeting, assigned to a participant, with optional due date.',
+      status: 'stable',
+    },
+  ]}
+  showIds={false}
+  trace={<AgentTrace
+    lines={[
+      {kind: 'tool', text: 'decidesk - listOpenActionItems (MCP)(scope: "mine", limit: 20)'},
+      {kind: 'note', bullet: 'done', text: 'Returned 7 open action items across 4 meetings'},
+      {kind: 'tool', text: 'decidesk - addActionItem (MCP)(meetingId: "m-2026-118",'},
+      {kind: 'continuation', text: 'assignee: "j.devries", title: "Send draft contract", dueDate: "2026-05-24")'},
+      {kind: 'note', bullet: 'done', text: 'Action item created, participant notified'},
+      {kind: 'status', text: 'Synthesising follow-up'},
+    ]}
+    cursor
+    mode="audit log on (every call recorded)"
+  />}
+/>
+
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
@@ -217,19 +275,19 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
       href="/apps/openregister"
       icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
       name="OpenRegister"
-      why="Agendapunten, dossiers, moties, stemmen als typed registers."
+      why="Agenda items, dossiers, motions, votes as typed registers."
     />
     <PairCard
       href="/apps/docudesk"
       icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
       name="DocuDesk"
-      why="Besluiten, raadstukken, beantwoorde vragen uit dossier-velden."
+      why="Decisions, council documents, answered questions from dossier fields."
     />
     <PairCard
       href="/apps/opencatalogi"
       icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
       name="OpenCatalogi"
-      why="Publiceert besluiten en raadstukken aan jouwgemeente.nl/besluiten met federation."
+      why="Publishes decisions and council documents on yourmunicipality.nl/decisions with federation."
     />
   </PairRow>
 </Section>
