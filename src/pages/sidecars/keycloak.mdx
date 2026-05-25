@@ -1,0 +1,48 @@
+---
+title: Keycloak sidecar, Conduction
+description: Nextcloud sidecar wrapping Keycloak for self-hosted identity and SSO.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, CtaBanner} from '@conduction/docusaurus-preset/components';
+
+<DetailHero
+  background="cobalt"
+  appId="keycloak"
+  crumb={[{label: 'Sidecars', href: '/sidecars'}, 'Keycloak']}
+  status={{label: 'Sidecar', color: 'var(--c-cobalt-400)'}}
+  version="upstream"
+  locales="NL · EN"
+  title="Keycloak"
+  tagline={<>A <span className="next-blue">Nextcloud</span> sidecar that wraps Keycloak. Run the open-source identity broker inside your workspace, installed from the app store, SSO across all your apps from day one.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/keycloak'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/keycloak-nextcloud'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><circle cx="9" cy="12" r="4"/><path d="M13 12h8M17 12v4M21 12v3"/></svg>}
+/>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="What it is"
+    title="Keycloak as a Nextcloud app."
+    align="stack"
+    lede="Keycloak is the open-source identity-and-access platform from Red Hat. We package it as a Nextcloud-installable sidecar. You install the app, the upstream container runs alongside Nextcloud, and the SAML, OIDC, and OAuth flows are reachable from every other app in the workspace. Same upstream, less DevOps."
+  />
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Why a sidecar"
+    title="A sidecar is not a fork."
+    align="stack"
+    lede="We do not fork Keycloak. The sidecar tracks upstream releases. The wrapper handles install, lifecycle, and the SSO koppelvlak to Nextcloud. Your identity records stay in the upstream service. Conduction is responsible for the integration, not for upstream Keycloak."
+  />
+</Section>
+
+<CtaBanner
+  title="Run Keycloak inside your Nextcloud."
+  lede={<>Install from the Nextcloud app store. Configure SSO for every Conduction app and every third-party sidecar in one place.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+/>

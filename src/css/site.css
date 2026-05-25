@@ -4,6 +4,11 @@
  * here when this site needs something the brand baseline does not.
  */
 
+/* Keep inline code on the text baseline so it does not drop below surrounding text. */
+:not(pre) > code {
+  vertical-align: baseline;
+}
+
 /* Hero treatment, tied to the cobalt-900 inverse panel */
 .cn-hero {
   background: var(--c-cobalt-900);
@@ -119,6 +124,25 @@
   }
 }
 
+/* Blockquote treatment, brand-aligned. Scoped to `.markdown` so it only
+   applies to article-body content (academy posts, blog, docs) — marketing
+   pages render their own components and stay untouched. Infima's default
+   leaves quotes in neutral gray-800 with a 2px gray border, which reads
+   washed-out next to the cobalt-700 body; we bring the quote into the
+   cobalt palette so it carries the brand and stands out as a callout. */
+.markdown {
+  --ifm-blockquote-color: var(--c-cobalt-900);
+  --ifm-blockquote-border-color: var(--c-blue-cobalt);
+  --ifm-blockquote-border-left-width: 4px;
+  --ifm-blockquote-padding-vertical: var(--space-3);
+  --ifm-blockquote-padding-horizontal: var(--space-5);
+}
+.markdown blockquote {
+  background: var(--c-cobalt-50);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: 1.05em;
+}
+
 /* Pull-quote treatment for editorial sections (used on /commonground). */
 .cg-pullquote {
   border-left: 4px solid var(--c-orange-knvb);
@@ -144,3 +168,278 @@
   color: var(--c-cobalt-700);
 }
 
+/* Default blockquote treatment, brand-aligned. Infima's default leaves
+   quotes in neutral gray-800 with a 2px gray border, which reads
+   washed-out next to the cobalt-700 body. Bring the quote into the
+   cobalt palette so it carries the brand and stands out as a callout. */
+:root {
+  --ifm-blockquote-color: var(--c-cobalt-900);
+  --ifm-blockquote-border-color: var(--c-blue-cobalt);
+  --ifm-blockquote-border-left-width: 4px;
+  --ifm-blockquote-padding-vertical: var(--space-3);
+  --ifm-blockquote-padding-horizontal: var(--space-5);
+}
+blockquote {
+  background: var(--c-cobalt-50);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: 1.05em;
+}
+
+/* ============================================================
+   .pull-quote
+   ============================================================
+   Mirrors the <PullQuote/> component shipping in
+   @conduction/docusaurus-preset >= 3.18.0. Inline fallback so
+   the blog can use the visual now while the preset publish
+   propagates. Swap to <PullQuote/> imports once the bump lands
+   in package-lock.json.
+   ============================================================ */
+.pull-quote {
+  border-left: 4px solid var(--c-orange-knvb);
+  background: var(--c-cobalt-50);
+  padding: var(--space-5) var(--space-6);
+  margin: var(--space-7) 0;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--c-blue-cobalt);
+  line-height: 1.4;
+  font-style: italic;
+}
+.pull-quote p { margin: 0; }
+.pull-quote p + p { margin-top: var(--space-3); }
+.pull-quote cite {
+  display: block;
+  margin-top: var(--space-4);
+  font-family: var(--conduction-typography-font-family-code);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--c-cobalt-700);
+}
+.pull-quote cite .cite-name { color: var(--c-cobalt-900); }
+
+.pull-quote.hero {
+  font-size: 28px;
+  font-style: normal;
+  padding: var(--space-7) var(--space-8);
+}
+.pull-quote.hero .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--conduction-typography-font-family-code);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--c-cobalt-700);
+  margin-bottom: var(--space-4);
+}
+.pull-quote.hero .eyebrow .h {
+  width: 10px;
+  height: 12px;
+  clip-path: var(--hex-pointy-top);
+  background: var(--c-orange-knvb);
+}
+
+/* ============================================================
+   .setup-steps · vertical numbered-step pattern
+   ============================================================
+   Mirrors the <SetupSteps/>/<SetupStep/> component shipping in
+   @conduction/docusaurus-preset >= 3.19.0. Inline fallback so the
+   blog can use the visual now while the preset publish propagates.
+   Swap to <SetupSteps/> imports once the bump lands.
+   ============================================================ */
+.setup-steps { margin: var(--space-7) 0; }
+.setup-steps .step-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin: var(--space-4) 0;
+}
+.setup-steps .step-row .num {
+  width: 36px;
+  height: 42px;
+  clip-path: var(--hex-pointy-top);
+  background: var(--c-orange-knvb);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.setup-steps .step-row .body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--c-cobalt-700);
+}
+.setup-steps .step-row .body strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--c-cobalt-900);
+  font-size: 17px;
+  font-weight: 600;
+}
+.setup-steps .step-row .body p { margin: 0; }
+
+/* Editorial component table: rows with a left "tier" cell and a
+   right "what" cell. Lighter than .adr-table, denser than a card
+   grid. Used in the platform-moment post component overview. */
+.editorial-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-7) 0;
+  font-size: 15px;
+}
+.editorial-table th,
+.editorial-table td {
+  text-align: left;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--c-cobalt-100);
+  vertical-align: top;
+  line-height: 1.5;
+}
+.editorial-table thead th {
+  font-family: var(--conduction-typography-font-family-code);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-cobalt-400);
+  font-weight: 500;
+  background: var(--c-cobalt-50);
+}
+.editorial-table tbody td:first-child {
+  font-weight: 600;
+  color: var(--c-cobalt-900);
+  width: 32%;
+}
+.editorial-table tbody td:nth-child(2) {
+  color: var(--c-cobalt-700);
+}
+
+/* ============================================================
+   .blog-download-cta · DownloadPanel inside an academy post body
+   ============================================================
+   Strips the preset DownloadPanel's outer tinted band (cobalt-50
+   fill + hairline borders + -200px negative margin) which is
+   calibrated for marketing pages where it sits below a structural
+   spacer. Inside a blog body, the band reads as a section break
+   that doesn't relate to anything around it.
+   Tracked as design-system#26 for a proper opt-out prop on the
+   preset; this is the inline fallback. */
+.blog-download-cta { margin-top: var(--space-8); }
+.blog-download-cta > section {
+  background: transparent !important;
+  border: none !important;
+  margin-top: 0 !important;
+}
+.blog-download-cta > section > div {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* "Test jezelf" sections at the end of academy tutorials: each question
+   sits in a card with collapsible Hint and Antwoord <details> blocks. */
+.tutorial-quiz {
+  margin: var(--space-5) 0 var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  background: var(--c-cobalt-50);
+  border-left: 3px solid var(--c-blue-cobalt);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+.tutorial-quiz > p:first-child {
+  margin-top: 0;
+  font-weight: 600;
+  color: var(--c-cobalt-900);
+}
+/* Docusaurus wraps <Details> with .alert.alert--info from Infima. We need
+   to override those vars so the open body keeps readable contrast against
+   our white card background. */
+.tutorial-quiz details,
+.tutorial-quiz details.alert {
+  --ifm-alert-background-color: white;
+  --ifm-alert-background-color-highlight: transparent;
+  --ifm-alert-foreground-color: var(--c-cobalt-900);
+  --ifm-alert-border-color: var(--c-cobalt-100);
+  margin: var(--space-2) 0 0;
+  background: white;
+  color: var(--c-cobalt-900);
+  border: 1px solid var(--c-cobalt-100);
+  border-left: 1px solid var(--c-cobalt-100);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+}
+.tutorial-quiz details[open] {
+  padding-bottom: var(--space-3);
+}
+/* Docusaurus' own Details theme renders an absolutely-positioned
+   CSS-only border-triangle in summary::before (with padding-left: 1rem
+   on the summary to make room). Strip all of that so our inline chevron
+   flows next to the label instead of being positioned outside the box. */
+.tutorial-quiz details > summary {
+  position: static;
+  padding-left: 0;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9em;
+  color: var(--c-blue-cobalt);
+  list-style: none;
+  user-select: none;
+}
+.tutorial-quiz details > summary::-webkit-details-marker {
+  display: none;
+}
+.tutorial-quiz details > summary::before {
+  content: "▸";
+  position: static;
+  display: inline-block;
+  width: auto;
+  margin-right: 0.4em;
+  border: 0;
+  transform: rotate(0deg);
+  transform-origin: 50% 50%;
+  transition: transform 0.15s ease;
+}
+.tutorial-quiz details[open] > summary::before,
+.tutorial-quiz details[data-collapsed='false'] > summary::before {
+  transform: rotate(90deg);
+}
+.tutorial-quiz details > *:not(summary) {
+  margin-top: var(--space-2);
+  margin-bottom: 0;
+  color: var(--c-cobalt-900);
+}
+.tutorial-quiz details a {
+  color: var(--c-blue-cobalt);
+}
+
+
+/* ============================================================
+   Footnote label cleanup
+   ============================================================
+   Docusaurus's GFM footnote handler auto-injects an <h2> with the
+   text "Footnotes" above the generated <ol>. The blog post already
+   prints its own '## Sources' heading above the footnote anchors,
+   so the auto label duplicates that heading. Hide the auto one
+   (visually) but keep it accessible to screen readers via sr-only
+   semantics. */
+.markdown section.footnotes > h2,
+.markdown section[data-footnotes] > h2,
+.content-detail-body section.footnotes > h2,
+.content-detail-body section[data-footnotes] > h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

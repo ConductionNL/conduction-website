@@ -1,66 +1,68 @@
 ---
 slug: woo-register-opzetten
-title: Een Woo-register opzetten in OpenRegister
+title: Set up a Woo register in OpenRegister
 contentType: tutorial
 authors: [conduction]
 date: 2026-05-07
-summary: Importeer het canonieke Woo-register in OpenRegister. Eén API-aanroep, tien TOOI-categorieën, klaar om publicaties op te slaan.
-tags: [Woo, OpenRegister, Publicaties, TOOI, Open data]
+summary: Import the canonical Woo register into OpenRegister. One API call, ten TOOI categories, ready to store publications.
+tags: [Woo, OpenRegister, Publications, TOOI, Open data, Tutorial series]
 apps: [openregister, openwoo]
 durationMinutes: 10
+series: woo-tutorial
+partNumber: 1
 ---
 
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, ContactCta} from '@conduction/docusaurus-preset/components';
 
-De [Wet open overheid (Woo)](https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo) verplicht overheden om documenten openbaar te maken in elf informatiecategorieën. OpenRegister levert het opslagmodel daarvoor. In deze tutorial importeer je het canonieke Woo-register, met alle [TOOI](https://standaarden.overheid.nl/tooi)-categorieën, in een paar minuten.
+The [Dutch Open Government Act (Woo)](https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo) requires government bodies to publish documents in eleven information categories. OpenRegister provides the storage model for that. In this tutorial you import the canonical Woo register, with all [TOOI](https://standaarden.overheid.nl/tooi) categories, in a few minutes.
 
 {/* truncate */}
 
-<Outcomes title="Wat je leert">
-  <Outcome>Eén register met de slug <code>woo</code> in je OpenRegister-installatie aanmaken.</Outcome>
-  <Outcome>Tien schemas importeren, één per TOOI-informatiecategorie.</Outcome>
-  <Outcome>Een werkend startpunt opzetten om publicaties aan te maken en bestanden te koppelen.</Outcome>
+<Outcomes title="What you'll learn">
+  <Outcome>How to create one register with the slug <code>woo</code> in your OpenRegister installation.</Outcome>
+  <Outcome>How to import ten schemas, one per Woo information category.</Outcome>
+  <Outcome>How to set up a working starting point for creating publications and attaching files.</Outcome>
 </Outcomes>
 
-De <a href="/academy/woo-bestanden-uploaden">vervolgtutorial over bestanden uploaden</a> bouwt hierop voort.
+The <a href="/academy/woo-bestanden-uploaden">follow-up tutorial on uploading files</a> builds on this.
 
-<Prerequisites title="Wat je nodig hebt">
-  <PrerequisiteItem>Een draaiende Nextcloud met OpenRegister geïnstalleerd. Heb je dat nog niet, volg dan eerst <a href="/academy/nextcloud-lokaal-draaien">Nextcloud lokaal draaien met Docker</a>.</PrerequisiteItem>
-  <PrerequisiteItem>Een gebruiker met admin-rechten, of een gebruiker die registers mag aanmaken.</PrerequisiteItem>
-  <PrerequisiteItem><code>curl</code> of een vergelijkbare HTTP-client.</PrerequisiteItem>
+<Prerequisites title="What you need">
+  <PrerequisiteItem>A running Nextcloud with OpenRegister installed. If you do not have that yet, first follow <a href="/academy/nextcloud-lokaal-draaien">Run Nextcloud locally with Docker</a>.</PrerequisiteItem>
+  <PrerequisiteItem>A user with admin rights, or a user allowed to create registers.</PrerequisiteItem>
+  <PrerequisiteItem><code>curl</code> or a comparable HTTP client.</PrerequisiteItem>
 </Prerequisites>
 
-In de voorbeelden gebruiken we de lokale dev-omgeving op `http://localhost:8080` met `admin:admin`. Vervang dat door je eigen host en credentials.
+In the examples we use the local dev environment at `http://localhost:8080` with `admin:admin`. Replace those with your own host and credentials.
 
-## De canonieke bron
+## The canonical source
 
-Het Woo-register bestaat al, gepubliceerd door Conduction op GitHub:
+The Woo register already exists, published by Conduction on GitHub:
 
 ```
 https://raw.githubusercontent.com/ConductionNL/woo-website/main/website/static/oas/woo_register.json
 ```
 
-Het is een OpenAPI-bundel van 1.0.1, met één register (`woo`) en tien schemas. Elk schema bevat de [TOOI-metadata](https://standaarden.overheid.nl/diwoo/metadata/doc/0.9.1/diwoo-metadata-lijsten_xsd_Simple_Type_diwoo_scw_woo_informatiecategorieen) van één Woo-informatiecategorie:
+It is an OpenAPI bundle of 1.0.1, with one register (`woo`) and ten schemas. Each schema contains the [TOOI metadata](https://standaarden.overheid.nl/diwoo/metadata/doc/0.9.1/diwoo-metadata-lijsten_xsd_Simple_Type_diwoo_scw_woo_informatiecategorieen) of one Woo information category:
 
-| Slug | Categorie |
+| Slug | Category |
 | --- | --- |
-| `vergaderstukken_decentrale_overheden` | Vergaderstukken decentrale overheden |
-| `subsidieverplichtingen_anders_dan_met_beschikking` | Subsidieverplichtingen zonder beschikking |
-| `overige_besluiten_van_algemene_strekking` | Overige besluiten van algemene strekking |
-| `organisatie_en_werkwijze` | Organisatie en werkwijze |
-| `ontwerpen_van_wet_en_regelgeving_met_adviesaanvraag` | Ontwerpen van wet- en regelgeving |
-| `onderzoeksrapporten` | Onderzoeksrapporten |
-| `klachtoordelen` | Klachtoordelen |
-| `wetten_en_algemeen_verbindende_voorschriften` | Wetten en algemeen verbindende voorschriften |
-| `woo_verzoeken_en_besluiten` | Woo-verzoeken en -besluiten |
-| `convenanten` | Convenanten |
-| `agendas_en_besluitenlijsten_bestuurscolleges` | Agenda's en besluitenlijsten bestuurscolleges |
-| `vergaderstukken_staten_generaal` | Vergaderstukken Staten-Generaal |
-| `adviezen` | Adviezen |
+| `vergaderstukken_decentrale_overheden` | Meeting documents of decentralised authorities |
+| `subsidieverplichtingen_anders_dan_met_beschikking` | Subsidy obligations without a decision |
+| `overige_besluiten_van_algemene_strekking` | Other decisions of general scope |
+| `organisatie_en_werkwijze` | Organisation and working methods |
+| `ontwerpen_van_wet_en_regelgeving_met_adviesaanvraag` | Drafts of laws and regulations |
+| `onderzoeksrapporten` | Research reports |
+| `klachtoordelen` | Complaint rulings |
+| `wetten_en_algemeen_verbindende_voorschriften` | Laws and generally binding regulations |
+| `woo_verzoeken_en_besluiten` | Woo requests and decisions |
+| `convenanten` | Covenants |
+| `agendas_en_besluitenlijsten_bestuurscolleges` | Agendas and decision lists of executive boards |
+| `vergaderstukken_staten_generaal` | Meeting documents of the States General |
+| `adviezen` | Advisory reports |
 
-## Stap 1: Importeer het register
+## Step 1: Import the register
 
-OpenRegister heeft een `import/url`-endpoint dat een OpenAPI-bundel ophaalt en in één transactie omzet naar register, schemas en (optioneel) seed-objecten.
+OpenRegister has an `import/url` endpoint that fetches an OpenAPI bundle and converts it in one transaction into register, schemas, and (optionally) seed objects.
 
 ```bash
 curl -u admin:admin \
@@ -72,7 +74,7 @@ curl -u admin:admin \
   }'
 ```
 
-Als alles goed gaat, krijg je terug:
+If all goes well, you get back:
 
 ```json
 {
@@ -87,11 +89,11 @@ Als alles goed gaat, krijg je terug:
 }
 ```
 
-`registersCount: 1` en `schemasCount: 10` bevestigen dat alles is aangemaakt. De `configurationId` heb je later nodig als je de bron wilt re-syncen.
+`registersCount: 1` and `schemasCount: 10` confirm that everything was created. The `configurationId` is what you need later if you want to re-sync the source.
 
-## Stap 2: Controleer wat is aangemaakt
+## Step 2: Verify what was created
 
-Vraag de lijst van registers op en filter op slug `woo`:
+Request the list of registers and filter on slug `woo`:
 
 ```bash
 curl -u admin:admin \
@@ -99,7 +101,7 @@ curl -u admin:admin \
   -H "OCS-APIRequest: true"
 ```
 
-In de respons vind je een entry zoals:
+In the response you find an entry like:
 
 ```json
 {
@@ -108,42 +110,42 @@ In de respons vind je een entry zoals:
   "slug": "woo",
   "title": "Woo",
   "version": "1.0.1",
-  "description": "Woo-register met TOOI-informatiecategorieën",
+  "description": "Woo register with TOOI information categories",
   "schemas": [1619, 1620, 1621, 1622, 1623, 1624, 1625, 1626, 1627, 1628]
 }
 ```
 
-De `id` is je interne register-id (924 in dit voorbeeld; bij jou kan het verschillen). De slug `woo` is stabiel en gebruik je verder in alle API-aanroepen.
+The `id` is your internal register id (924 in this example, yours may differ). The slug `woo` is stable and you use it in all further API calls.
 
-In de UI vind je het register onder **Apps → OpenRegister → Registers**:
+In the UI you find the register under **Apps -> OpenRegister -> Registers**:
 
-![Het Woo-register in de OpenRegister UI, met de tien TOOI-schemas in de zijkant](./02-or-woo-register-card.png)
+![The Woo register in the OpenRegister UI, with the ten TOOI schemas in the sidebar](./02-or-woo-register-card.png)
 
-Klik op **View Details** in het Actions-menu van de kaart voor een statistiekenpaneel:
+Click **View Details** in the Actions menu of the card for a statistics panel:
 
-![Het detailpaneel met statistieken voor het Woo-register: aantal objecten, logs, files en schemas](./04-or-woo-register-detail.png)
+![The detail panel with statistics for the Woo register: number of objects, logs, files, and schemas](./04-or-woo-register-detail.png)
 
-## Stap 3: Bekijk de schemas
+## Step 3: Look at the schemas
 
-De TOOI-schemas zijn metadata-schemas. Elk schema bevat zeven velden:
+The TOOI schemas are metadata schemas. Each schema contains seven fields:
 
-| Veld | Type | Beschrijving |
+| Field | Type | Description |
 | --- | --- | --- |
-| `tooiCategorieNaam` | string (verplicht) | Naam van de categorie |
-| `tooiCategorieId` | string | TOOI-id, bijvoorbeeld `c_fdaee95e` |
-| `tooiCategorieUri` | string | Volledige TOOI-URI |
-| `tooiThemaNaam` | string | Optioneel thema |
-| `tooiThemaId` | string | Optioneel thema-id |
-| `tooiThemaUri` | string | Optioneel thema-URI |
-| `values` | array | Vrij in te vullen sleutel-waarde-paren |
+| `tooiCategorieNaam` | string (required) | Name of the category |
+| `tooiCategorieId` | string | TOOI id, for example `c_fdaee95e` |
+| `tooiCategorieUri` | string | Full TOOI URI |
+| `tooiThemaNaam` | string | Optional theme |
+| `tooiThemaId` | string | Optional theme id |
+| `tooiThemaUri` | string | Optional theme URI |
+| `values` | array | Free-form key-value pairs |
 
-De `categorieId` en `categorieUri` zijn `const` in het schema. Je hoeft ze niet zelf te vullen. OpenRegister vult ze automatisch zodra je `tooiCategorieNaam` zet.
+The `categorieId` and `categorieUri` are `const` in the schema. You do not have to fill them yourself. OpenRegister fills them automatically as soon as you set `tooiCategorieNaam`.
 
-![De Schemas-pagina in OpenRegister](./03-or-tooi-schemas.png)
+![The Schemas page in OpenRegister](./03-or-tooi-schemas.png)
 
-## Stap 4: Maak een eerste publicatie
+## Step 4: Create your first publication
 
-Test je register met één publicatie. We pakken de categorie `onderzoeksrapporten`:
+Test your register with one publication. We use the category `onderzoeksrapporten`:
 
 ```bash
 curl -u admin:admin \
@@ -155,7 +157,7 @@ curl -u admin:admin \
   }'
 ```
 
-De respons toont onder andere:
+The response shows, among other things:
 
 ```json
 {
@@ -173,17 +175,17 @@ De respons toont onder andere:
 }
 ```
 
-OpenRegister heeft de TOOI-id en URI zelf ingevuld. Het object heeft een UUID. Onthoud die UUID, want je hebt hem nodig om bestanden aan deze publicatie te koppelen.
+OpenRegister filled in the TOOI id and URI itself. The object has a UUID. Remember that UUID. You need it to attach files to this publication.
 
-## Stap 5 (optioneel): Voeg eigen velden toe
+## Step 5 (optional): Add your own fields
 
-De canonieke schemas dekken de TOOI-metadata, niet de inhoud van de publicatie zelf. Voor titel, omschrijving, datum en verantwoordelijke organisatie maak je een eigen aanvullend schema, of breid je een bestaand schema uit.
+The canonical schemas cover the TOOI metadata, not the content of the publication itself. For title, description, date, and responsible organisation, you create your own additional schema, or extend an existing one.
 
-Een minimale uitbreiding voor `onderzoeksrapporten` ziet er bijvoorbeeld zo uit:
+A minimal extension for `onderzoeksrapporten` looks like this:
 
 ```json
 {
-  "title": "Onderzoeksrapport publicatie",
+  "title": "Research report publication",
   "properties": {
     "titel": { "type": "string", "maxLength": 255 },
     "omschrijving": { "type": "string", "maxLength": 2000 },
@@ -194,21 +196,21 @@ Een minimale uitbreiding voor `onderzoeksrapporten` ziet er bijvoorbeeld zo uit:
 }
 ```
 
-Je kunt zo'n schema via `POST /api/schemas` aanmaken en daarna in de Woo-register-configuratie toevoegen. Houd het zoveel mogelijk dichtbij de [DiWoo-metadata-standaard](https://standaarden.overheid.nl/diwoo) zodat je publicaties ook door [PLOOI](https://open.overheid.nl) en [woogle.nl](https://woogle.nl) opgepikt kunnen worden.
+You can create such a schema via `POST /api/schemas` and then add it to the Woo register configuration. Keep it as close as possible to the [DiWoo metadata standard](https://standaarden.overheid.nl/diwoo) so your publications can be picked up by [PLOOI](https://open.overheid.nl) and [woogle.nl](https://woogle.nl) as well.
 
-## En nu
+## And now
 
-Je hebt:
+You have:
 
-- Een werkend Woo-register met tien TOOI-schemas
-- Eén testpublicatie met UUID
-- Een patroon om eigen velden toe te voegen waar nodig
+- A working Woo register with ten TOOI schemas
+- One test publication with a UUID
+- A pattern to add your own fields where needed
 
-In de [vervolgtutorial koppel je bestanden aan deze publicatie](/academy/woo-bestanden-uploaden), van enkele PDF's tot grote videobestanden in chunks.
+In the [follow-up tutorial you attach files to this publication](/academy/woo-bestanden-uploaden), from a few PDFs to large video files in chunks.
 
-## Opruimen
+## Cleanup
 
-Als je het testregister wilt verwijderen:
+If you want to delete the test register:
 
 ```bash
 curl -u admin:admin \
@@ -216,10 +218,10 @@ curl -u admin:admin \
   -H "OCS-APIRequest: true"
 ```
 
-Dit verwijdert het register, alle schemas en alle objecten. De configuratie-import zelf blijft bestaan, zodat je hem opnieuw kunt afspelen.
+This removes the register, all schemas, and all objects. The configuration import itself remains, so you can replay it.
 
 <ContactCta
-  title="Wil je meer weten?"
-  body="Mail ons. We helpen je in een halve dag op weg met je eigen Woo-register, inclusief publicatie-schema's en koppelingen naar bestaande systemen."
-  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=Woo-register" }}
+  title="Want to know more?"
+  body="Send us an email. We help you set up your own Woo register in half a day, including publication schemas and connections to existing systems."
+  cta={{ label: "Email us", href: "mailto:info@conduction.nl?subject=Woo-register" }}
 />

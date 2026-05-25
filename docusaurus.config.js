@@ -17,10 +17,24 @@
 
 const {createConfig} = require('@conduction/docusaurus-preset');
 
+/* AI-crawler baseline (Organization + WebSite JSON-LD, og:image,
+   twitter meta, FAQPage schema from <FAQ>, SoftwareApplication schema
+   from <DetailHero>) comes from @conduction/docusaurus-preset >= 3.4.0
+   automatically. We override only the bits that are specific to this
+   site (robots.txt + llms.txt in static/, the sitemap config below
+   because we pass our own classic-preset overrides). */
 module.exports = createConfig({
   title: 'Conduction',
   tagline: 'Open-source apps voor de Nextcloud-werkplek.',
-  url: 'https://conduction.nl',
+  /* Must match static/CNAME (www.conduction.nl) — GitHub Pages serves
+     only on the CNAME host and 301-redirects the apex to it. Using the
+     bare apex here made every canonical/og:url/sitemap entry point at
+     conduction.nl, adding an apex→www hop on top of whatever the
+     Cloudflare vanity worker already does — a redirect-loop amplifier
+     on connext./commonground. (trailingSlash is true, set by the
+     preset, so the worker must target https://www.conduction.nl/connext/
+     — with the www and the trailing slash — not /connext.) */
+  url: 'https://www.conduction.nl',
   baseUrl: '/',
 
   organizationName: 'ConductionNL',
@@ -70,9 +84,44 @@ module.exports = createConfig({
         theme: {
           customCss: [require.resolve('./src/css/site.css')],
         },
+        /* Built-in @docusaurus/plugin-sitemap (loaded via the classic
+           preset). Each locale outputs its own sitemap.xml (en at /,
+           nl at /nl/) — both are advertised in static/robots.txt so AI
+           crawlers without locale-suffix discovery still see Dutch
+           pages. /academy/tags/* is excluded because tag pages are
+           thin and confuse AI summarisers more than they help SEO.
+           ignorePatterns matches route paths *after* the locale prefix
+           is applied, so we list both forms. */
+        sitemap: {
+          changefreq: 'weekly',
+          priority: 0.5,
+          ignorePatterns: ['/academy/tags/**', '/nl/academy/tags/**'],
+          filename: 'sitemap.xml',
+        },
       },
     ],
   ],
+
+  /* Keep the canal-footer's Privacy / Terms / ISO links on relative
+     routes. The preset's default ships absolute https://www.conduction.nl/*
+     URLs so per-app subdomain footers don't 404, but this IS the
+     marketing site that hosts those pages, so a relative link is the
+     cleaner UX (no needless cross-host hop). */
+  legalLinks: {
+    privacy: '/privacy',
+    terms: '/terms',
+    iso: '/quality',
+  },
+
+  /* Search Console / Bing Webmaster / etc. verification tokens are
+     filled by ops once the property has been claimed; the preset
+     emits a meta tag for each token present. Leave keys absent until
+     a real token is available, otherwise a stale placeholder ends up
+     in the production HTML. */
+  // searchConsoleVerification: {
+  //   google: '...',
+  //   bing:   '...',
+  // },
 
   /* Brand top-navbar pattern: five left-side section links + locale
      dropdown + Partners ghost + Install primary CTA on the right.
@@ -109,8 +158,7 @@ module.exports = createConfig({
       {
         title: 'Solutions',
         items: [
-          {label: 'WOO compliance',  to: '/solutions/woo'},
-          {label: 'Software catalog',to: '/solutions/software-catalog'},
+          {label: 'OpenWoo',         to: '/solutions/openwoo'},
           {label: 'Support',         to: '/support'},
           {label: 'ConNext',         to: '/connext'},
           {label: 'Common Ground',   to: '/commonground'},
@@ -134,7 +182,7 @@ module.exports = createConfig({
           {label: 'Open source',    to: '/about#opensource'},
           {label: 'Team',           to: '/about#team'},
           {label: 'Way of Work',    href: 'https://docs.conduction.nl/WayOfWork/way-of-work/'},
-          {label: 'ISO',            to: '/iso'},
+          {label: 'Quality',        to: '/quality'},
           {label: 'Identity',       href: 'https://identity.conduction.nl/'},
         ],
       },
@@ -144,6 +192,14 @@ module.exports = createConfig({
 
   /* OpenCatalogi content plugin slot, wired in via env once it exists. */
   plugins: [
+    /* academy-modules: scans academy/*\/index.mdx frontmatter and emits
+       module → ordered parts global data. Consumed by BlogListPage
+       (composite ModuleCards + module pill row) and per-module MDX
+       index pages at /academy/modules/{slug}. */
+    [
+      require.resolve('./plugins/academy-modules'),
+      {contentDir: 'academy', routeBasePath: '/academy'},
+    ],
     // [
     //   '@conduction/docusaurus-plugin-opencatalogi',
     //   {
@@ -153,5 +209,45 @@ module.exports = createConfig({
     //     locales: ['en', 'nl'],
     //   },
     // ],
+    /* Reclaim SEO equity from URLs Google has in its index from the
+       pre-Docusaurus / pre-subdomain layout. The plugin emits one
+       static HTML page per `from` with a <meta http-equiv="refresh">
+       and a `<link rel="canonical">` to the `to` target, which Google
+       treats as a 301 signal. Only the URLs in this list have current
+       equivalents worth redirecting; the rest (componenten catalogue,
+       WP placeholders, retired training pages) are let to 404 naturally. */
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          /* Old Dutch "about us" slug. The English /about/ route is
+             the canonical replacement; NL translation pass will land
+             /nl/about/ later. */
+          {from: '/over-ons', to: '/about/'},
+          /* The OpenConnector page used to live on the apex; everything
+             moved to its own subdomain in the 2026-02 split. Send the
+             two indexed entry points to the canonical app site. */
+          {from: '/openconnector', to: 'https://openconnector.conduction.nl/'},
+          {from: '/openconnector/support', to: 'https://openconnector.conduction.nl/support/'},
+          /* OpenWoo brand rename: /solutions/woo conflated the law (Wet
+             open overheid) with the product. The page lives at
+             /solutions/openwoo since the fold-openwoo-into-fleet change;
+             keep inbound links working from anywhere that already shipped
+             the old URL (presentations, partner pages, press). The `nl`
+             locale doesn't emit page-route variants for src/pages/*.mdx
+             so /nl/solutions/openwoo doesn't exist as a target — same
+             pattern as the /over-ons → /about/ entry above. */
+          {from: '/solutions/woo', to: '/solutions/openwoo'},
+          /* /iso renamed to /quality (2026-05-19): the page was about
+             ISO 9001 + 27001 only, but we now treat ISO as one tool inside
+             a broader quality story (pentest-tools.com, GitHub workflow,
+             policy statements). The NL page lives at /nl/quality (same
+             slug as EN; the page title is localised to "Kwaliteit").
+             Only the EN /iso redirect is emitted here — /nl/iso 404s
+             gracefully because there are no inbound links to it. */
+          {from: '/iso', to: '/quality'},
+        ],
+      },
+    ],
   ],
 });
