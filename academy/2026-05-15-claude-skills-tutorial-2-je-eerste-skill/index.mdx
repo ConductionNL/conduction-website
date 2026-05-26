@@ -1,10 +1,10 @@
 ---
 slug: claude-skills-tutorial-2-je-eerste-skill
-title: "Claude Skills leerlijn — Deel 2: Je eerste skill schrijven"
+title: "Claude Skills tutorial series — Part 2: Writing your first skill"
 contentType: tutorial
 authors: [conduction]
 date: 2026-05-15
-summary: Schrijf van scratch een werkende Claude Skill — een mini-skill die git-statussen samenvat. Met /skill-creator als startpunt, een goede description, lokaal testen, en opnemen in je registry. Tweede van vier korte modules.
+summary: Write a working Claude Skill from scratch — a mini-skill that summarises git statuses. Using /skill-creator as a starting point, a solid description, local testing, and adding it to your registry. Second of four short modules.
 tags: [Claude, Claude Code, Skills, AI, Tutorial series]
 apps: []
 durationMinutes: 18
@@ -15,28 +15,28 @@ partNumber: 2
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
 import Details from '@theme/Details';
 
-In deel 1 zag je wát een skill is. In dit deel ga je er zélf eentje schrijven: een werkende `git-status-summary` skill die een leesbare samenvatting maakt van de huidige working tree. Aan het eind staat hij in je `~/.claude/skills/`-folder, kun je hem aanroepen via `/git-status-summary`, en weet je hoe je hem deelt met je team.
+In part 1 you saw *what* a skill is. In this part you'll write one yourself: a working `git-status-summary` skill that produces a readable summary of the current working tree. At the end it sits in your `~/.claude/skills/` folder, you can invoke it via `/git-status-summary`, and you'll know how to share it with your team.
 
 {/* truncate */}
 
-<Outcomes title="Wat je leert in dit deel">
-  <Outcome>Een complete skill scaffolden met <code>/skill-creator</code> in plaats van zelf folders aanleggen.</Outcome>
-  <Outcome>Een goede <code>description</code> schrijven die zowel handmatig (<code>/</code>) als automatisch betrouwbaar triggert.</Outcome>
-  <Outcome>De skill lokaal testen vóór je hem deelt — met een should-trigger / should-not-trigger checklist.</Outcome>
-  <Outcome>Wanneer een skill globaal hoort (<code>~/.claude/skills/</code>) en wanneer in een project (<code>repo/.claude/skills/</code>).</Outcome>
+<Outcomes title="What you'll learn in this part">
+  <Outcome>Scaffold a complete skill with <code>/skill-creator</code> instead of laying out folders by hand.</Outcome>
+  <Outcome>Write a good <code>description</code> that triggers reliably both manually (<code>/</code>) and automatically.</Outcome>
+  <Outcome>Test the skill locally before you share it — using a should-trigger / should-not-trigger checklist.</Outcome>
+  <Outcome>When a skill belongs in global scope (<code>~/.claude/skills/</code>) and when in a project (<code>repo/.claude/skills/</code>).</Outcome>
 </Outcomes>
 
-<Prerequisites title="Wat je nodig hebt">
-  <PrerequisiteItem>Deel 1 doorgenomen: <a href="/academy/claude-skills-tutorial-1-wat-zijn-claude-skills">Wat zijn Claude Skills?</a></PrerequisiteItem>
-  <PrerequisiteItem>Claude Code geïnstalleerd, en een werkende sessie in een willekeurige Git-repo. Zelfs een leeg <code>git init</code> mapje is voldoende.</PrerequisiteItem>
-  <PrerequisiteItem>De <code>skill-creator</code> skill geïnstalleerd. Hij komt standaard mee als plugin met Claude Code; als je hem niet hebt: <code>git clone https://github.com/anthropics/skills</code> en kopieer <code>skills/skill-creator/</code> naar je <code>~/.claude/skills/</code>.</PrerequisiteItem>
+<Prerequisites title="What you need">
+  <PrerequisiteItem>Part 1 read: <a href="/academy/claude-skills-tutorial-1-wat-zijn-claude-skills">What are Claude Skills?</a></PrerequisiteItem>
+  <PrerequisiteItem>Claude Code installed, and a working session in any Git repo. Even an empty <code>git init</code> folder is enough.</PrerequisiteItem>
+  <PrerequisiteItem>The <code>skill-creator</code> skill installed. It ships as a plugin with Claude Code by default; if you don't have it: <code>git clone https://github.com/anthropics/skills</code> and copy <code>skills/skill-creator/</code> into your <code>~/.claude/skills/</code>.</PrerequisiteItem>
 </Prerequisites>
 
-## Wat we gaan bouwen
+## What we're building
 
-Een mini-skill die je `git status` leesbaar samenvat — met categorieën (staged / unstaged / untracked), bestandsaantallen, en een lijst van wijzigingen per categorie. Eenvoudig genoeg om in dit deel volledig te schrijven, maar concreet genoeg om alle stappen mee te illustreren.
+A mini-skill that summarises your `git status` in a readable way — with categories (staged / unstaged / untracked), file counts, and a list of changes per category. Simple enough to write out completely in this part, but concrete enough to illustrate every step.
 
-Eindresultaat: typ `/git-status-summary` in je sessie en je krijgt iets zoals:
+End result: type `/git-status-summary` in your session and you get something like:
 
 ```
 Working tree status
@@ -54,52 +54,52 @@ Untracked (1 file):
   • notes.txt
 ```
 
-## Stap 1 — Scaffold met `/skill-creator`
+## Step 1 — Scaffold with `/skill-creator`
 
-De makkelijkste manier om een nieuwe skill te starten is **niet** zelf folders aanleggen, maar `/skill-creator` laten begeleiden. Open een Claude-sessie en typ:
+The easiest way to start a new skill is **not** to lay out folders yourself, but to let `/skill-creator` guide you. Open a Claude session and type:
 
 ```
 /skill-creator
 ```
 
-Claude vraagt je vervolgens wat je wilt maken. Antwoord ongeveer zo:
+Claude then asks what you want to create. Answer roughly like this:
 
-> Ik wil een skill `git-status-summary` die `git status --porcelain` draait, de output parset, en in drie groepen (staged / unstaged / untracked) presenteert met bestandsnamen en wijzigings-type. Hij hoort op alle Git-repo's te werken.
+> I want a skill `git-status-summary` that runs `git status --porcelain`, parses the output, and presents it in three groups (staged / unstaged / untracked) with filenames and change type. It should work on any Git repo.
 
-`/skill-creator` zal vervolgens:
+`/skill-creator` will then:
 
-1. Vragen om een korte description — geef hier de zorgvuldig geformuleerde versie van hieronder.
-2. Vragen of de skill side-effects heeft (nee — alleen lezen).
-3. Een mapje aanmaken: `~/.claude/skills/git-status-summary/` met een eerste `SKILL.md`.
+1. Ask for a short description — paste the carefully crafted version from below here.
+2. Ask whether the skill has side effects (no — read-only).
+3. Create a folder: `~/.claude/skills/git-status-summary/` with a starter `SKILL.md`.
 
-:::tip Niet bang zijn om met de hand te starten
-Als `/skill-creator` om wat voor reden dan ook niet werkt, kun je het mapje ook gewoon aanmaken: `mkdir -p ~/.claude/skills/git-status-summary && touch ~/.claude/skills/git-status-summary/SKILL.md`. De skill is een doodgewoon tekstbestand.
+:::tip Don't be afraid to start by hand
+If `/skill-creator` doesn't work for any reason, you can also just create the folder directly: `mkdir -p ~/.claude/skills/git-status-summary && touch ~/.claude/skills/git-status-summary/SKILL.md`. The skill is a plain text file.
 :::
 
-## Stap 2 — De `description` zorgvuldig formuleren
+## Step 2 — Craft the `description` carefully
 
-Herinner je uit deel 1: alleen de `description` staat altijd in de system prompt geladen. Hier valt of staat je auto-triggering.
+Recall from part 1: only the `description` is permanently loaded in the system prompt. This is where your auto-triggering stands or falls.
 
-Een goede description voor onze skill:
+A good description for our skill:
 
 ```
 description: Summarise the current Git working tree — groups changes by staged, unstaged, and untracked, and lists files per group with their change type
 ```
 
-Wat zit daarin?
+What's in there?
 
-| Stuk | Waarom |
+| Piece | Why |
 |---|---|
-| `Summarise` | Action-werkwoord vooraan. Geen "this skill is" of "helps with". |
-| `current Git working tree` | Concrete trigger-woorden: iemand die "git status overview" of "what's changed" typt, raakt hier. |
-| `groups changes by staged, unstaged, and untracked` | Vertelt Claude precies wat hij krijgt — handig bij keuzes tussen meerdere skills. |
-| `lists files per group with their change type` | Sluit af met het waarneembare resultaat, zodat een gebruiker meteen herkent of dit is wat hij zoekt. |
+| `Summarise` | Action verb up front. No "this skill is" or "helps with". |
+| `current Git working tree` | Concrete trigger words: someone who types "git status overview" or "what's changed" lands here. |
+| `groups changes by staged, unstaged, and untracked` | Tells Claude exactly what he gets — useful when choosing between several skills. |
+| `lists files per group with their change type` | Closes with the observable result so a user immediately recognises whether this is what they want. |
 
-Schrijf 'm in **derde persoon** (de description wordt letterlijk geïnjecteerd in de system prompt) en blijf onder ~250 tekens — daarna kapt skill-listings af.
+Write it in **third person** (the description is injected verbatim into the system prompt) and stay under ~250 characters — skill listings cut off after that.
 
-## Stap 3 — Schrijf de `SKILL.md`
+## Step 3 — Write the `SKILL.md`
 
-Open `~/.claude/skills/git-status-summary/SKILL.md` en vul hem zo:
+Open `~/.claude/skills/git-status-summary/SKILL.md` and fill it in like this:
 
 ````markdown
 ---
@@ -172,42 +172,42 @@ working directory.
 - Do not invent files. Only list what `git status --porcelain` actually returns.
 ````
 
-Drie dingen om op te merken:
+Three things to note:
 
-1. **Genummerde stappen** — geen prozaïsche paragrafen. Eén handeling per stap, met een duidelijke kop.
-2. **Een "Guardrails" sectie** — wat de skill expliciet niet mag. Voor read-only skills is de regel "geen schrijfacties" cruciaal.
-3. **Concreet output-formaat in een code-block** — Claude volgt zichtbare voorbeelden veel betrouwbaarder dan vage instructies.
+1. **Numbered steps** — no prose paragraphs. One action per step, with a clear heading.
+2. **A "Guardrails" section** — what the skill explicitly may not do. For read-only skills, the "no write actions" rule is crucial.
+3. **Concrete output format in a code block** — Claude follows visible examples far more reliably than vague instructions.
 
-### Hoe specifiek moet je SKILL.md zijn? — degrees of freedom
+### How specific should your SKILL.md be? — degrees of freedom
 
-Een veelgemaakte fout: alle skills hetzelfde detail-niveau geven. In de praktijk past je specificiteit zich aan de fragiliteit van de taak aan:
+A common mistake: giving every skill the same level of detail. In practice, your specificity should match the fragility of the task:
 
-| Soort taak | Vrijheid | Skill-stijl |
+| Kind of task | Freedom | Skill style |
 |---|:---:|---|
-| Exploratie, brainstorm, code review | **Hoog** | Geef doelen en kaders, laat Claude de aanpak kiezen |
-| Feature-werk, refactor | **Middel** | Geef stappen met beslispunten, laat Claude adapteren |
-| DB-migraties, production-deploys, CI-config | **Laag** | Voorgeschreven commando's, expliciete confirmation-gates |
+| Exploration, brainstorming, code review | **High** | Give goals and guardrails, let Claude pick the approach |
+| Feature work, refactor | **Medium** | Give steps with decision points, let Claude adapt |
+| DB migrations, production deploys, CI config | **Low** | Prescribed commands, explicit confirmation gates |
 
-Onze `git-status-summary` is read-only en mechanisch — middel-tot-laag, met expliciete formattering en harde guardrails. Een hypothetische `/explore-architecture` zou juist hoge vrijheid willen ("denk hardop, vergelijk opties, geen vaste vorm").
+Our `git-status-summary` is read-only and mechanical — medium-to-low, with explicit formatting and hard guardrails. A hypothetical `/explore-architecture` would want high freedom instead ("think out loud, compare options, no fixed shape").
 
-### Dynamic content: argumenten en shell-output injecteren
+### Dynamic content: injecting arguments and shell output
 
-Een laatste stuk syntax dat je verderop tegen gaat komen, maar nog niet nodig hebt voor `git-status-summary`:
+A last bit of syntax you'll run into later, but don't need yet for `git-status-summary`:
 
-| Syntax | Betekenis | Voorbeeld |
+| Syntax | Meaning | Example |
 |---|---|---|
-| `$ARGUMENTS` | Alles wat na `/skill-naam` getypt is | `/app-create my-app` → `$ARGUMENTS` = `"my-app"` |
-| `$ARGUMENTS[0]` | Eerste positionele argument | Eerste woord na de skill-naam |
-| `${CLAUDE_SKILL_DIR}` | Absoluut pad naar de skill-folder | Voor verwijzingen naar bundled scripts |
-| `` !`command` `` | Shell-output geïnjecteerd vóór de skill laadt | `` !`git branch --show-current` `` injecteert de huidige branch |
+| `$ARGUMENTS` | Everything typed after `/skill-name` | `/app-create my-app` → `$ARGUMENTS` = `"my-app"` |
+| `$ARGUMENTS[0]` | First positional argument | First word after the skill name |
+| `${CLAUDE_SKILL_DIR}` | Absolute path to the skill folder | For references to bundled scripts |
+| `` !`command` `` | Shell output injected *before* the skill loads | `` !`git branch --show-current` `` injects the current branch |
 
-Vooral de `` !`command` ``-syntax is krachtig: hij draait *voordat* de skill in context komt, dus je kunt runtime-informatie (current branch, git-user, datum) als context meegeven aan Claude. Niet nodig voor onze mini-skill, maar goed om te kennen voor wanneer je meer dynamische skills schrijft.
+The `` !`command` `` syntax in particular is powerful: it runs *before* the skill enters context, so you can pass runtime information (current branch, git user, date) to Claude as context. Not needed for our mini-skill, but worth knowing about for when you write more dynamic skills.
 
-### De gebruiker iets vragen: `AskUserQuestion`
+### Asking the user something: `AskUserQuestion`
 
-Sommige skills hebben input nodig die je niet uit shell-commando's kunt afleiden — bijvoorbeeld een keuze tussen twee aanpakken, of confirmatie vóór een destructieve actie. Daarvoor is er de **`AskUserQuestion`** tool: een ingebouwde Claude Code-tool waarmee een skill midden in z'n uitvoering een korte multiple-choice vraag aan de gebruiker stelt en op het antwoord wacht.
+Some skills need input you can't derive from shell commands — for example a choice between two approaches, or confirmation before a destructive action. For that there is the **`AskUserQuestion`** tool: a built-in Claude Code tool that lets a skill, mid-execution, ask the user a short multiple-choice question and wait for the answer.
 
-In je `SKILL.md` instrueer je 'm gewoon in tekst:
+In your `SKILL.md` you simply instruct it in text:
 
 ```markdown
 3. **Confirm before applying**
@@ -217,104 +217,104 @@ In je `SKILL.md` instrueer je 'm gewoon in tekst:
    Only continue to step 4 if the user picks the first option.
 ```
 
-Wanneer gebruiken: bij beslismomenten waar Claude niet zelfstandig mag kiezen (production-deploys, branch-strategie, gevoelige refactors). Wanneer níet: voor info die je uit `git`, `gh` of het bestand zelf kunt halen — dan is `` !`command` `` of een Read-call sneller en minder storend. Voor `git-status-summary` is er geen keuzemoment, dus we gebruiken hem niet — maar onthou hem voor je volgende, zwaardere skill.
+When to use it: at decision moments where Claude shouldn't choose autonomously (production deploys, branch strategy, sensitive refactors). When *not*: for info you can pull from `git`, `gh` or the file itself — then `` !`command` `` or a Read call is faster and less intrusive. There's no decision moment in `git-status-summary`, so we don't use it — but keep it in mind for your next, heavier skill.
 
-## Stap 4 — Lokaal testen
+## Step 4 — Test locally
 
-Vóór je de skill deelt: test hem zelf. Drie soorten tests:
+Before you share the skill: test it yourself. Three kinds of tests:
 
-### A. Handmatige trigger
+### A. Manual trigger
 
-Open een Claude-sessie in een Git-repo met wat unstaged wijzigingen en typ:
+Open a Claude session in a Git repo with some unstaged changes and type:
 
 ```
 /git-status-summary
 ```
 
-Wat je verwacht: een nette samenvatting in het beloofde formaat. Wat je controleert: klopt de telling? Mist er een bestand? Worden staged + unstaged dubbel getoond bij gemengde wijzigingen?
+What you expect: a clean summary in the promised format. What you check: do the counts match? Is a file missing? Are staged + unstaged shown twice for mixed changes?
 
 ### B. Auto-trigger checklist
 
-De moeilijkere test: triggert hij automatisch wanneer hij zou moeten, en blijft hij stil wanneer dat niet zou moeten?
+The harder test: does it trigger automatically when it should, and stay quiet when it shouldn't?
 
-| Prompt | Verwacht gedrag |
+| Prompt | Expected behaviour |
 |---|---|
-| "Wat is er veranderd in mijn working tree?" | **Should trigger** |
-| "Geef me een overzicht van staged en unstaged" | **Should trigger** |
-| "Show me the diff for src/App.vue" | **Should not trigger** (dat is `git diff`, niet status) |
-| "Commit my changes" | **Should not trigger** (write-actie, niet status) |
-| "Wat doet git rebase?" | **Should not trigger** (informatieve vraag) |
+| "What's changed in my working tree?" | **Should trigger** |
+| "Give me an overview of staged and unstaged" | **Should trigger** |
+| "Show me the diff for src/App.vue" | **Should not trigger** (that's `git diff`, not status) |
+| "Commit my changes" | **Should not trigger** (write action, not status) |
+| "What does git rebase do?" | **Should not trigger** (informational question) |
 
-Loopt een prompt mis? Pas de `description` aan en probeer opnieuw. Triggert hij over-eager? Voeg specifiekere woorden toe ("working tree", "staged/unstaged/untracked"). Triggert hij niet vaak genoeg? Haal jargon weg en voeg natuurlijke termen toe ("git status overview", "what's changed").
+A prompt going wrong? Tweak the `description` and try again. Triggers over-eagerly? Add more specific words ("working tree", "staged/unstaged/untracked"). Triggers too rarely? Strip jargon and add natural terms ("git status overview", "what's changed").
 
 ### C. Edge cases
 
-- **Lege repo** — geen commits, geen wijzigingen. Krijg je de "Working tree clean" boodschap?
-- **Alleen untracked** — `echo "test" > new.txt` zonder add. Wordt alleen de Untracked-groep getoond?
-- **Bestand met spaties** — `touch "my file.txt" && git add "my file.txt"`. Wordt de naam correct gerenderd?
+- **Empty repo** — no commits, no changes. Do you get the "Working tree clean" message?
+- **Untracked only** — `echo "test" > new.txt` without add. Is only the Untracked group shown?
+- **File with spaces** — `touch "my file.txt" && git add "my file.txt"`. Is the name rendered correctly?
 
-## Stap 5 — Globaal of per project?
+## Step 5 — Global or per project?
 
-Nu de skill werkt, is de vraag: waar laat je hem staan?
+Now that the skill works, the question is: where do you keep it?
 
-<HexCard title="~/.claude/skills/ — globaal">
-  Voor skills die je in <strong>elke repo</strong> bruikbaar vindt. Onze <code>git-status-summary</code> is hier een goede kandidaat — het is een algemeen Git-hulpmiddel. Nadeel: je teamgenoten hebben hem niet automatisch.
+<HexCard title="~/.claude/skills/ — global">
+  For skills you find useful in <strong>every repo</strong>. Our <code>git-status-summary</code> is a good candidate here — it's a general Git helper. Downside: your teammates don't get it automatically.
 </HexCard>
 
 <HexCard title="repo/.claude/skills/ — per project">
-  Voor skills die <strong>specifiek voor deze repo</strong> zijn (eigen quality-gates, eigen workflow, eigen domein-kennis). Voordeel: je commit hem, je team heeft hem, en CI/Hydra-containers gebruiken dezelfde versie. Bijna alle skills in Conduction-repo's leven hier.
+  For skills <strong>specific to this repo</strong> (custom quality gates, custom workflow, custom domain knowledge). Upside: you commit it, your team gets it, and CI/Hydra containers use the same version. Almost all skills in Conduction repos live here.
 </HexCard>
 
-<HexCard title="vendor/skills/ — extern">
-  Voor skills die je <strong>van buiten</strong> importeert (Anthropic-community, Trail of Bits, OWASP). Apart houden helpt bij audit-spoor en onderhoud — externe skills muteer je niet, je volgt de bron.
+<HexCard title="vendor/skills/ — external">
+  For skills you <strong>import from outside</strong> (Anthropic community, Trail of Bits, OWASP). Keeping them separate helps with audit trail and maintenance — you don't mutate external skills, you follow upstream.
 </HexCard>
 
-Voor `git-status-summary` is globaal prima. Voor een fictieve `conduction-quality-check`-skill die de Conduction-specifieke PHPCS/Psalm/ESLint-config draait, hoort het in `.claude/skills/` van de project-repo zelf.
+For `git-status-summary` global is fine. For a fictional `conduction-quality-check` skill that runs the Conduction-specific PHPCS/Psalm/ESLint config, it belongs in `.claude/skills/` of the project repo itself.
 
-## Stap 6 — Opnemen in de skill-registry
+## Step 6 — Add it to the skill registry
 
-Binnen Conduction houden we een lijst bij van alle interne skills (zowel persoonlijk relevant als project-niveau). Als je een nieuwe skill schrijft die voor het team waardevol is:
+Within Conduction we keep a list of all internal skills (both personally useful and project-level). If you write a new skill that's valuable to the team:
 
-1. **Voeg 'm toe aan de relevante repo** — meestal `<repo>/.claude/skills/<naam>/` met een gewone commit.
-2. **Update de `README.md` van die `.claude/skills/`-folder** als die bestaat — voeg een regel toe met naam, één-zin-omschrijving, en wanneer je hem aanroept.
-3. **Update de Hydra skill-docs in [`ConductionNL/.github`](https://github.com/ConductionNL/.github)** als de skill in een Hydra-pipeline meedraait — de centrale documentatie over welke skills Hydra kent, in welke familie ze horen en wat ze doen, leeft daar. Zonder die update weet de rest van het team (en latere Hydra-runs) niet dat je skill bestaat.
-4. **Open een PR** en laat één teamgenoot de skill triggeren in zijn eigen sessie. Niet de description theoretisch beoordelen — letterlijk een prompt typen die zou moeten triggeren.
+1. **Add it to the relevant repo** — usually `<repo>/.claude/skills/<name>/` with a regular commit.
+2. **Update the `README.md` of that `.claude/skills/` folder** if it exists — add a line with the name, a one-sentence description, and when you invoke it.
+3. **Update the Hydra skill docs in [`ConductionNL/.github`](https://github.com/ConductionNL/.github)** if the skill runs in a Hydra pipeline — the central documentation about which skills Hydra knows, what family they belong to, and what they do lives there. Without that update, the rest of the team (and later Hydra runs) won't know your skill exists.
+4. **Open a PR** and let one teammate trigger the skill in their own session. Don't review the description theoretically — literally type a prompt that ought to trigger it.
 
-Voor globaal-persoonlijke skills (`~/.claude/skills/`) hoeft niets gecommit te worden — het is je eigen workshop.
+For global-personal skills (`~/.claude/skills/`) nothing needs to be committed — it's your own workshop.
 
-## Veelgemaakte beginnersfouten
+## Common beginner mistakes
 
-| Symptoom | Oorzaak | Fix |
+| Symptom | Cause | Fix |
 |---|---|---|
-| Skill triggert nooit automatisch | `description` is te vaag of mist trigger-woorden | Herschrijf in derde persoon, action-werkwoord vooraan, concrete zelfstandige naamwoorden uit de gebruiker-vraag |
-| Skill triggert te vaak op onverwante prompts | `description` is te breed of overlapt met andere skills | Voeg specifieke afbakening toe ("only for X, not Y") |
-| `/skill-naam` werkt niet | `name`-veld in frontmatter wijkt af van mapnaam | Maak ze identiek (folder `git-status-summary` → `name: git-status-summary`) |
-| Skill doet iets onverwachts destructiefs | Geen guardrails | Voeg een **Guardrails** sectie toe met expliciete "never do X"-regels |
-| Skill werkt op één laptop, niet op een andere | Hardcoded paden of OS-specifieke commando's | Gebruik relatieve paden; check OS-afhankelijke commando's (`grep` vs `ggrep`, etc.) |
+| Skill never triggers automatically | `description` is too vague or lacks trigger words | Rewrite in third person, action verb up front, concrete nouns from the user's question |
+| Skill triggers too often on unrelated prompts | `description` is too broad or overlaps with other skills | Add specific scoping ("only for X, not Y") |
+| `/skill-name` doesn't work | `name` field in frontmatter differs from folder name | Make them identical (folder `git-status-summary` → `name: git-status-summary`) |
+| Skill does something unexpectedly destructive | No guardrails | Add a **Guardrails** section with explicit "never do X" rules |
+| Skill works on one laptop, not another | Hardcoded paths or OS-specific commands | Use relative paths; check OS-dependent commands (`grep` vs `ggrep`, etc.) |
 
-## Test jezelf
+## Test yourself
 
-Vier korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
+Four short questions to check you understood this part. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
 
 <div className="tutorial-quiz">
 
-**1. Hoe test je een skill voordat je hem deelt met het team?**
+**1. How do you test a skill before sharing it with the team?**
 
 <Details summary="Hint">
 
-Drie soorten tests: een handmatige, een over auto-triggering, en eentje voor randgevallen. Wat doet elk daarvan?
+Three kinds of tests: a manual one, one for auto-triggering, and one for edge cases. What does each of them do?
 
 </Details>
 
-<Details summary="Antwoord">
+<Details summary="Answer">
 
-Drie niveaus:
+Three levels:
 
-1. **Handmatige trigger** — typ `/skill-naam` in een sessie waar de skill van toepassing is. Controleer of de output klopt en het formaat strak is.
-2. **Auto-trigger checklist** — verzin 5+ prompts die wél moeten triggeren en 5+ die níet mogen triggeren. Loop ze één voor één door. Triggert hij te weinig? `description` te vaag. Te vaak? `description` te breed.
-3. **Edge cases** — test situaties die voorzienbaar mis kunnen gaan (lege input, speciale tekens, ontbrekende dependencies). Een skill die de happy path doet maar de leeg-geval mist, is niet af.
+1. **Manual trigger** — type `/skill-name` in a session where the skill applies. Check that the output is correct and the format is tight.
+2. **Auto-trigger checklist** — come up with 5+ prompts that *should* trigger and 5+ that *should not* trigger. Walk through them one by one. Triggers too rarely? `description` too vague. Too often? `description` too broad.
+3. **Edge cases** — test situations that can predictably go wrong (empty input, special characters, missing dependencies). A skill that handles the happy path but misses the empty case isn't finished.
 
-Pas na alle drie deel je hem — anders ontdek je problemen in een teamgenoot z'n sessie in plaats van je eigen.
+Only after all three do you share it — otherwise you discover problems in a teammate's session instead of your own.
 
 </Details>
 
@@ -322,19 +322,19 @@ Pas na alle drie deel je hem — anders ontdek je problemen in een teamgenoot z'
 
 <div className="tutorial-quiz">
 
-**2. Waar zou je een skill voor "Conduction-specifieke PR-template invullen" plaatsen — globaal of per project?**
+**2. Where would you put a skill for "fill in the Conduction-specific PR template" — global or per project?**
 
 <Details summary="Hint">
 
-De vraag is: voor wie is dit nuttig? Alleen jij, of het hele team?
+The question is: who is this useful for? Just you, or the whole team?
 
 </Details>
 
-<Details summary="Antwoord">
+<Details summary="Answer">
 
-**Per project**, in `<repo>/.claude/skills/`. Reden: het is Conduction-specifiek (een algemene Claude-gebruiker zou er niets aan hebben) en je wilt dat het hele team — én Hydra's containers — dezelfde versie heeft. Commit hem in Git, zodat hij meekomt met elke fresh checkout.
+**Per project**, in `<repo>/.claude/skills/`. Reason: it's Conduction-specific (a general Claude user wouldn't benefit) and you want the whole team — and Hydra's containers — to have the same version. Commit it to Git so it comes along with every fresh checkout.
 
-Globaal (`~/.claude/skills/`) is voor skills die jij over álle repo's heen handig vindt en die niets met de specifieke codebase te maken hebben. Bijvoorbeeld: een persoonlijke `summarise-clipboard` skill.
+Global (`~/.claude/skills/`) is for skills you find useful across *all* repos and that have nothing to do with the specific codebase. For example: a personal `summarise-clipboard` skill.
 
 </Details>
 
@@ -342,22 +342,22 @@ Globaal (`~/.claude/skills/`) is voor skills die jij over álle repo's heen hand
 
 <div className="tutorial-quiz">
 
-**3. Waarom moet de `name` in de frontmatter exact gelijk zijn aan de mapnaam?**
+**3. Why must the `name` in the frontmatter exactly match the folder name?**
 
 <Details summary="Hint">
 
-De naam die je achter `/` typt moet ergens vandaan komen. Wat ziet Claude eerst — de map of het frontmatter-veld?
+The name you type after `/` has to come from somewhere. What does Claude see first — the folder or the frontmatter field?
 
 </Details>
 
-<Details summary="Antwoord">
+<Details summary="Answer">
 
-Claude vindt skills door je `~/.claude/skills/` en `.claude/skills/` te scannen op mappen met een `SKILL.md`. Voor de slash-trigger kijkt hij naar het `name`-veld in de frontmatter. Komen die niet overeen, dan zijn er twee mogelijke symptomen:
+Claude finds skills by scanning your `~/.claude/skills/` and `.claude/skills/` for folders containing a `SKILL.md`. For the slash trigger it looks at the `name` field in the frontmatter. If they don't match, there are two possible symptoms:
 
-- **`/foldername` werkt niet** maar `/nameveld` wel — verwarrend, want je teamgenoot kent alleen de mapnaam uit Git.
-- **Auto-trigger werkt onverwacht** — Claude koppelt de description aan het frontmatter-name, niet aan de mapnaam.
+- **`/foldername` doesn't work** but `/namefield` does — confusing, because your teammate only knows the folder name from Git.
+- **Auto-trigger behaves unexpectedly** — Claude links the description to the frontmatter name, not the folder name.
 
-Vuistregel: kies één naam, gebruik 'm overal hetzelfde. `skill-creator` zorgt dat dit klopt; bij handmatig scaffolden moet je er zelf op letten.
+Rule of thumb: pick one name, use it everywhere identically. `skill-creator` keeps them in sync; with manual scaffolding you have to watch it yourself.
 
 </Details>
 
@@ -365,48 +365,48 @@ Vuistregel: kies één naam, gebruik 'm overal hetzelfde. `skill-creator` zorgt 
 
 <div className="tutorial-quiz">
 
-**4. Je hebt een skill die soms over-eager triggert op onverwante prompts. Wat is je eerste actie?**
+**4. You have a skill that sometimes over-eagerly triggers on unrelated prompts. What's your first action?**
 
 <Details summary="Hint">
 
-Welk veld bepaalt wanneer Claude een skill oppikt? En welk gereedschap heb je om dat veld te valideren?
+Which field decides when Claude picks up a skill? And what tool do you have to validate that field?
 
 </Details>
 
-<Details summary="Antwoord">
+<Details summary="Answer">
 
-Pas de **`description`** aan. Concreet:
+Tweak the **`description`**. Concretely:
 
-1. **Maak hem specifieker** — voeg trigger-woorden toe die alleen bij de bedoelde situatie passen ("for the current Git working tree", niet alleen "for changes").
-2. **Voeg afbakening toe** — een korte zin als "Only for X, not Y" werkt verrassend goed.
-3. **Test opnieuw** met je should-trigger / should-not-trigger checklist (zie vraag 1).
+1. **Make it more specific** — add trigger words that only fit the intended situation ("for the current Git working tree", not just "for changes").
+2. **Add scoping** — a short sentence like "Only for X, not Y" works surprisingly well.
+3. **Re-test** with your should-trigger / should-not-trigger checklist (see question 1).
 
-Pas als de description al ijzersterk is en hij nóg over-eager is, overweeg `disable-model-invocation: true` om auto-triggering helemaal uit te zetten en alleen `/<naam>` toe te staan. Dat is een laatste redmiddel — meestal lost een betere description het op.
+Only once the description is rock-solid and it's *still* over-eager should you consider `disable-model-invocation: true` to turn auto-triggering off entirely and only allow `/<name>`. That's a last resort — usually a better description solves it.
 
 </Details>
 
 </div>
 
-<NextSteps title="Volgende stap" lede="Je skill werkt nu. In deel 3 leer je hoe je systematisch meet of hij blijft werken — met skill-evals.">
+<NextSteps title="Next step" lede="Your skill works now. In part 3 you'll learn how to systematically measure whether it keeps working — with skill evals.">
   <NextStep
-    title="Deel 3 — Skill-evals: meten of je skill werkt"
+    title="Part 3 — Skill evals: measuring whether your skill works"
     href="/academy/claude-skills-tutorial-3-skill-evals"
-    description="Test-scenario's schrijven, baseline-meting, trigger-tests. Hoe je van een 'voelt goed' skill naar een gemeten skill gaat (Maturity Level 5)."
+    description="Writing test scenarios, baseline measurement, trigger tests. How to move from a 'feels good' skill to a measured skill (Maturity Level 5)."
   />
   <NextStep
-    title="Vorige stap — Wat zijn Claude Skills?"
+    title="Previous step — What are Claude Skills?"
     href="/academy/claude-skills-tutorial-1-wat-zijn-claude-skills"
-    description="De concept-introductie als je nog wilt teruglezen."
+    description="The concept introduction if you want to re-read it."
   />
   <NextStep
-    title="Anthropic skill-creator op GitHub"
+    title="Anthropic skill-creator on GitHub"
     href="https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md"
-    description="De officiële skill-creator skill, met scripts voor scaffolden, eval-runner, en description-optimizer."
+    description="The official skill-creator skill, with scripts for scaffolding, eval runner, and description optimiser."
   />
 </NextSteps>
 
 <ContactCta
-  title="Vastgelopen bij je eerste skill?"
-  body="Stuur ons je SKILL.md en de prompts waarmee je test — we kijken even mee en helpen je 'm sneller goed te krijgen."
-  cta={{ label: "Mail Conduction", href: "mailto:info@conduction.nl?subject=Claude%20Skills%20leerlijn%20deel%202" }}
+  title="Stuck on your first skill?"
+  body="Send us your SKILL.md and the prompts you're testing with — we'll take a look and help you get it right faster."
+  cta={{ label: "Email Conduction", href: "mailto:info@conduction.nl?subject=Claude%20Skills%20track%20part%202" }}
 />

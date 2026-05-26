@@ -1,0 +1,325 @@
+---
+slug: deskdesk-tutorial-5-advanced-manifest
+title: "Bouw een Nextcloud-app op de Conduction-stack, Deel 5: Geavanceerde manifest-features"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-21
+summary: Voorbij de schema-gedreven CRUD-basis geeft het v2.7.0 manifest-schema je `actionToggles`, `fieldWidgets`, route-param-sentinels, public-mode pagina's, en zeven extra page types (form, wiki, search, roadmap, map, logs, settings). Eén tutorial die ze stuk voor stuk doorloopt, met DeskDesk als doorlopend voorbeeld.
+tags: [App development, Manifest, OpenRegister, nextcloud-vue, Tutorial series, Advanced]
+apps: [openregister]
+durationMinutes: 30
+series: deskdesk-tutorial
+partNumber: 5
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+} from '@conduction/docusaurus-preset/components';
+
+Dit is **Deel 5** van de DeskDesk-tutorial. Deel 1 tot en met 4 leverden je een werkende app: scaffold, schema's + manifest, schema-gedreven Calendar, en een custom Knowledge-tab. Deel 5 is de "en nu?", de v2.7.0 manifest-features die Deel 1 tot en met 4 bewust oversloegen zodat de leercurve mild bleef. Je hebt er geen van nodig om DeskDesk te leveren, maar op het moment dat je app een publiek formulier, een wiki, een admin-only listing of een markdown-editor binnen een formulier nodig heeft, besparen ze je een nieuwe ronde handgemaakte Vue.
+
+:::tip Deel 5 en 6 lopen parallel
+Dit deel verdiept het *manifest*-oppervlak. [Deel 6, Integreren](/nl/academy/deskdesk-tutorial-6-integrate) verbreedt de app naar *andere systemen* (cross-register-reads, OpenConnector-sources, webhooks). Beide bouwen direct op Deel 4, neem ze in willekeurige volgorde, of pak welke je volgende app als eerste nodig heeft.
+:::
+
+Drie principes lopen door elke feature in dit deel: **schema-gedreven** (geen per-pagina Vue), **type-safe** (het manifest-schema valideert elke vorm voor runtime), en **fleet-portable** (dezelfde JSON werkt in elke Conduction-app en krijgt lib-upgrades gratis).
+
+{/* truncate */}
+
+<Outcomes title="Wat je hebt aan het eind van Deel 5">
+  <Outcome>Een admin-only desks-listing die <code>config.actionToggles</code> gebruikt in plaats van negen broer-en-zus boolean-flags.</Outcome>
+  <Outcome>Een booking-creation-formulier met een markdown notes-veld, gedeclareerd via <code>config.fieldWidgets</code>, geen Vue-bestand geschreven.</Outcome>
+  <Outcome>Een <strong>publieke booking-bevestigingspagina</strong> bereikbaar via een token-URL, met <code>config.mode: 'public'</code> + route-param-sentinels.</Outcome>
+  <Outcome>Een <code>type:'wiki'</code> zone-richtlijnen-oppervlak gevoed door hetzelfde OpenRegister-register dat de rest van de app aandrijft.</Outcome>
+  <Outcome>Een <code>type:'search'</code> faceted cross-schema zoekpagina.</Outcome>
+  <Outcome>Een werkende mentale kaart van elke v2.7.0 manifest-feature, zodat je de volgende keer de juiste vorm kunt kiezen zonder de docs te herlezen.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Voor je begint">
+  <PrerequisiteItem>Je hebt minimaal <a href="/nl/academy/deskdesk-tutorial-2-schemas-manifest">Deel 2</a> afgerond, je hebt een werkend manifest met index- en detailpagina's.</PrerequisiteItem>
+  <PrerequisiteItem><code>@conduction/nextcloud-vue</code> op <code>^1.0.0-beta.65</code> of nieuwer. De features in dit deel leunen op schema 2.7.0 getypeerde vormen.</PrerequisiteItem>
+  <PrerequisiteItem>Je <code>src/manifest.json</code> declareert de v2 schema-URL (<code>app-manifest-v2.schema.json</code>). Deel 2 heeft dit opgezet.</PrerequisiteItem>
+</Prerequisites>
+
+## 1. `config.actionToggles`, read-only listings zonder negen flags
+
+De klassieke vorm, vóór v2.7.0, voor een admin-only of read-only `type:'index'`-pagina betekende negen broer-en-zus booleans:
+
+```json title="Old shape — works but reads poorly"
+"config": {
+  "register": "deskdesk", "schema": "desk", "columns": [...],
+  "showAdd": false, "showEdit": false, "showCopy": false, "showDelete": false,
+  "showMassImport": false, "showMassCopy": false, "showMassDelete": false,
+  "selectable": false, "showFormDialog": false
+}
+```
+
+`config.actionToggles` klapt alle negen in één object. De renderer vlakt het bij dispatch terug uit naar de onderliggende props, expliciete `config.<key>` wint nog steeds als je beide zet, dus je kunt één flag overrulen zonder het toggle-blok te herschrijven.
+
+```json title="src/manifest.json — admin-only desks read-out"
+{"id": "desks-admin-readout",
+ "route": "/admin/desks",
+ "type": "index",
+ "title": "deskdesk.admin.desks",
+ "permission": "admin",
+ "config": {
+   "register": "deskdesk", "schema": "desk",
+   "columns": ["label","floor","zone","equipment","capacity"],
+   "actionToggles": {
+     "showAdd": false, "showEdit": false, "showCopy": false,
+     "showDelete": false, "showMassImport": false, "showMassCopy": false,
+     "showMassDelete": false, "selectable": false, "showFormDialog": false
+   }
+ }}
+```
+
+Er is een shorthand voor het all-off-geval: `config.readOnly: true` ontvouwt naar dezelfde negen flags. Gebruik het voor echt read-only views, audit logs, gearchiveerde snapshots, alles wat de gebruiker moet kunnen lezen maar niet aanraken.
+
+```json
+"config": {"register": "deskdesk", "schema": "desk", "readOnly": true}
+```
+
+## 2. `config.fieldWidgets`, lib-widgets binnen een formulier, geen Vue-bestand
+
+De booking-dialoog van DeskDesk heeft een vrije-tekst-notitieveld. De schema-gegenereerde input geeft je een `<textarea>`, prima, maar niet geweldig. Je wilt een markdown-editor met een preview-paneel, syntax highlighting, en de standaard toolbar. Vóór v2.7.0 betekende dat een eigen Vue-component schrijven, registreren, en het veld overrulen met een `#field-notes`-slot.
+
+Schema 2.7.0 typeerde de `fieldWidgets[]`-slot op `type:'form'`- en `type:'detail'`-pagina's: elke entry mount een lib-`Cn*`-component voor één veld op id.
+
+```json title="src/manifest.json — booking creation form"
+{"id": "bookings-create",
+ "route": "/bookings/new",
+ "type": "form",
+ "title": "deskdesk.bookings.createTitle",
+ "config": {
+   "register": "deskdesk", "schema": "booking",
+   "submitEndpoint": "/index.php/apps/openregister/api/objects/deskdesk/booking",
+   "submitMethod": "POST",
+   "mode": "create",
+   "fieldWidgets": [
+     {"id": "notes", "component": "CnMarkdownEditor"}
+   ]
+ }}
+```
+
+Een paar regels:
+
+- **De `component`-waarde moet matchen met het lib-`Cn*`-patroon** (`^Cn[A-Z]\w+$`). Host-app SFC's gaan op `type:'custom'`-pagina's, niet in `fieldWidgets[]`.
+- **`id` matcht een schema-property-naam.** De widget vervangt de auto-gegenereerde input van dat veld; al het andere in het formulier blijft schema-gedreven.
+- **`props` is optioneel**, een serialiseerbaar object dat bij mount-tijd aan de lib-component wordt meegegeven (bijv. `{"id": "preview", "component": "CnCodeViewer", "props": {"language": "yaml"}}`).
+- **Meerdere `fieldWidgets[]`-entries zijn toegestaan.** Gebruik ze voor welke velden ook rijkere editing nodig hebben; de rest van het formulier behoudt zijn schema-gedreven inputs.
+
+## 3. Route-param-sentinels, bind URL-params aan config
+
+Het manifest kan een route met `:`-placeholders declareren (`/bookings/:id`) en de params bereiken automatisch de gedispatchte component. v2.7.0 laat het manifest die params ook *gebruiken* binnen `config`, door `@route.<paramName>` te schrijven als een string-sentinel die de renderer bij dispatch resolved:
+
+```json title="A detail page that filters by route param"
+{"id": "desk-bookings",
+ "route": "/desks/:deskId/bookings",
+ "type": "index",
+ "title": "deskdesk.desks.bookings",
+ "config": {
+   "register": "deskdesk", "schema": "booking",
+   "filter": {"desk": "@route.deskId"},
+   "columns": ["bookedBy","start","end","status"]
+ }}
+```
+
+Wanneer de gebruiker `/desks/abc-123/bookings` bezoekt, resolved de renderer `"@route.deskId"` → `"abc-123"` en `CnIndexPage` ontvangt `filter: {desk: "abc-123"}`, de listing toont alleen boekingen op dat bureau. Geen Vue, geen `mounted()`-hook, geen `watch` op `$route.params`.
+
+Onopgeloste sentinels worden `null` (met een eenmalige `console.warn` voor de pagina-id), ze crashen de pagina niet, ze produceren gewoon geen filter. Nuttig tijdens incrementele migraties waar de route nog niet is gedeclareerd.
+
+## 4. `config.mode: 'public'`, token-scoped unauthenticated pagina's
+
+Publieke booking-bevestiging. De gebruiker klikt een link in een e-mail, landt op een pagina die hun boeking bevestigt, ziet een klein formulier om optioneel een notitie toe te voegen, geen Nextcloud-login vereist. De pagina is bereikbaar via een eenmalig token, iedereen met het token ziet hem, niemand zonder.
+
+```json title="src/manifest.json — public booking confirmation"
+{"id": "booking-confirm",
+ "route": "/public/bookings/:token",
+ "type": "detail",
+ "title": "deskdesk.bookings.confirmTitle",
+ "config": {
+   "register": "deskdesk", "schema": "booking",
+   "mode": "public",
+   "objectId": "@route.token",
+   "sidebar": false,
+   "fieldWidgets": [
+     {"id": "guestNote", "component": "CnMarkdownEditor"}
+   ]
+ }}
+```
+
+Wat je krijgt:
+
+- **`mode: "public"`** signaleert aan de renderer en de achterliggende API dat deze pagina unauthenticated is. Het OR-endpoint dat hem serveert moet de token-query accepteren, dat is bedraad in je `appinfo/routes.php` en een kleine public-mode-handler in `lib/Controller/`.
+- **`objectId: "@route.token"`** gebruikt de route-sentinel om het token in de object-lookup van de pagina te voeden. Het token is de externe identifier van het object in deze flow.
+- **`sidebar: false`** zet de audit/files/notes-sidebar expliciet uit, publieke kijkers horen het interne spoor niet te zien.
+- **`fieldWidgets[]`** werkt hetzelfde als op geauthenticeerde formulieren.
+
+Dezelfde vorm werkt voor `type:'form'` (een publiek inzendingsformulier), de `submitEndpoint` van het formulier resolved ook een token-sentinel.
+
+## 5. Andere page types, `wiki`, `search`, `roadmap`, `map`, `logs`, `settings`
+
+Deel 2 tot en met 4 gebruikten `index`, `detail`, `dashboard` en `custom`. De 13-type enum van v2.7.0 geeft je nog meerdere getypeerde oppervlakken die alleen via het manifest erbij komen.
+
+### `type: 'wiki'`
+
+Voor markdown-artikel-oppervlakken gevoed vanuit een OR-register. Handig voor zone-richtlijnen, kennisbankartikelen, interne policies, alles wat "een artikel gerenderd vanuit een opgeslagen markdown-blob" is.
+
+```json
+{"id": "zone-guides",
+ "route": "/zones/guides/:id",
+ "type": "wiki",
+ "title": "deskdesk.zones.guideTitle",
+ "config": {
+   "register": "deskdesk", "schema": "zoneGuide",
+   "contentField": "body",
+   "titleField": "title",
+   "idParam": "id",
+   "sidebarSchema": "zoneGuide",
+   "treeField": "children"
+ }}
+```
+
+De `contentField` is de markdown-property op het artikel-record. `sidebarSchema` (optioneel) zet een in-pagina tree-sidebar aan gevoed vanuit hetzelfde register, perfect wanneer de wiki een hiërarchie heeft.
+
+### `type: 'search'`
+
+Een faceted cross-schema zoekpagina. Eén config-blok declareert welke registers + schema's te bevragen en welke velden facets zijn. `CnSearchPage` doet de rest.
+
+```json
+{"id": "global-search",
+ "route": "/search",
+ "type": "search",
+ "title": "deskdesk.search.title",
+ "config": {
+   "scopes": [
+     {"register": "deskdesk", "schema": "desk"},
+     {"register": "deskdesk", "schema": "booking"},
+     {"register": "deskdesk", "schema": "zoneGuide"}
+   ],
+   "facets": ["floor","zone","schema"]
+ }}
+```
+
+### `type: 'roadmap'`
+
+`CnFeaturesAndRoadmapPage` leest een manifest-gedeclareerde roadmap en haalt live status uit GitHub issues. Valt in voor een `Features & Roadmap`-menuregel in elke app.
+
+```json
+{"id": "features-roadmap",
+ "route": "/roadmap",
+ "type": "roadmap",
+ "title": "deskdesk.roadmap.title",
+ "config": {
+   "repo": "ConductionNL/deskdesk",
+   "milestones": ["1.0", "1.1", "Future"]
+ }}
+```
+
+### `type: 'map'`
+
+`CnMapPage` mount een Leaflet-kaart met marker-layers gevoed vanuit een register, een statische GeoJSON, of een tile-source. Handig voor asset-locaties, geo-getagde objecten, of gewoon "waar op deze plattegrond staat bureau X".
+
+```json
+{"id": "floor-map",
+ "route": "/floors/:floorId/map",
+ "type": "map",
+ "title": "deskdesk.floors.mapTitle",
+ "config": {
+   "center": [52.13, 5.29], "zoom": 18,
+   "layers": [{"type": "tile", "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png"}],
+   "markers": {"dataSource": {"register": "deskdesk", "schema": "desk"},
+               "latField": "lat", "lngField": "lng", "popupField": "label"}
+ }}
+```
+
+### `type: 'logs'` en `type: 'settings'`
+
+`logs` rendert een audit/event-log-viewer (wijst vaak naar een OR-beheerde `auditEntry`-schema of een externe `source`). `settings` mount `CnSettingsPage` met een sections-of-tabs-config die zijn eigen formulier-rendering meelevert, het hele admin-oppervlak van de app kan één `type:'settings'`-pagina zijn.
+
+```json
+"settings": {
+  "id": "deskdesk-settings",
+  "route": "/settings",
+  "type": "settings",
+  "title": "deskdesk.settings.title",
+  "config": {
+    "sections": [
+      {"id": "register-mapping", "label": "Register mapping",
+       "widgets": [{"type": "register-mapping"}]},
+      {"id": "version", "label": "Version",
+       "widgets": [{"type": "version-info"}]}
+    ]
+  }
+}
+```
+
+`CnSettingsPage` heeft zijn eigen widget-vocabulaire (`version-info`, `register-mapping`, `component` voor een eigen mount) dat dunner is dan de dashboard-`widgetDef`. De referentiepagina in de nc-vue docs heeft de volledige lijst.
+
+## 6. De `_note`-regel op `type:'custom'`, versoepeld
+
+Wanneer je een host-app SFC mount via `type:'custom'`, vraagt het v2.7.0-schema je om in een `_note`-veld te documenteren *waarom* de custom nodig was. Dat staat er om scope creep te bevechten, elke custom is een plek waar het manifest-pad niet paste, en de reden opschrijven dwingt een eerlijk antwoord af.
+
+```json title="A custom that needs _note"
+{"id": "pipeline-board",
+ "route": "/pipeline",
+ "type": "custom",
+ "title": "deskdesk.pipeline.title",
+ "component": "PipelineBoard",
+ "_note": "Bespoke kanban board with drag-drop column reorder + per-card status transitions. No lib analogue."}
+```
+
+2.7.0 *versoepelt* de regel voor één geval: als `component` matcht met het lib-`Cn*`-patroon (`^Cn[A-Z]\w+$`), is `_note` optioneel omdat de componentnaam de keuze al documenteert. Dus:
+
+```json title="Lib Cn* custom — _note no longer required"
+{"id": "federation-status",
+ "route": "/directory",
+ "type": "custom",
+ "title": "deskdesk.directory.title",
+ "component": "CnFederationStatus"}
+```
+
+De regel bijt nog steeds op host-app SFC's (geen `Cn*`-prefix), en daar verdient hij zijn brood.
+
+## 7. Kiezen tussen fieldWidgets, custom pages, en geregistreerde componenten
+
+Wanneer je een eenmalige UI-behoefte hebt, heb je drie opties. De juiste kiezen bespaart je later een refactor.
+
+| Behoefte | Gebruik | Waarom |
+|---|---|---|
+| Eén rich field binnen een verder schema-gedreven formulier | `config.fieldWidgets[]` met een lib-`Cn*`-component | Kleinste scope. Formulier blijft declaratief. |
+| Een hele pagina die niet in een getypeerd type past | `type:'custom'` met `component: 'YourHostSfc'` + `_note` | Eerlijke ontsnappingsklep. De rest van het manifest blijft schoon. |
+| Een herbruikbaar oppervlak (een widget of tab) dat meerdere pagina's willen | Registreer een integration met `OCA.OpenRegister.integrations.register({...})` en gebruik `useRegistry: true` | Cross-app herbruikbaar. Andere Conduction-apps kunnen je registratie oppikken. |
+
+Hoe hoger je `type:'custom'`-aantal klimt, hoe meer het de moeite waard is om te vragen of het onderliggende gat eigenlijk een lib-feature zou moeten zijn. Als je vergelijkbare custom pagina's in twee apps zit te schrijven, open een issue op `nextcloud-vue`, zo zijn features als `CnWikiPage` en de getypeerde `actionToggles`-vorm gepromoveerd van "iedereen schrijft dezelfde custom" naar "first-class lib-oppervlak".
+
+## Waar nu naartoe
+
+<NextSteps>
+  <NextStep
+    title="Deel 6: Integreren"
+    href="/nl/academy/deskdesk-tutorial-6-integrate"
+    description="Het laatste deel: koppel je app aan de rest van de workspace. Cross-register-reads, OpenConnector-sources, en een tweerichtings webhook-sync, drie integratiepatronen gelaagd van minst naar meest ingrijpend."
+  />
+  <NextStep
+    title="Volledige manifest-schema-referentie"
+    href="https://nextcloud-vue.conduction.nl/docs/architecture/manifest/"
+    description="Elk veld, elke constraint, elke $def, de schema-URL waar je manifest.json naar wijst, gerenderd als docs."
+  />
+  <NextStep
+    title="Pluggable integration registry (ADR-019)"
+    href="https://nextcloud-vue.conduction.nl/docs/architecture/integrations/"
+    description="Wanneer je per-app sidebars ontgroeit en cross-app tabs (Calendar, Talk, Files) door wilt laten stromen naar de detailpagina van elke app, is dit de volgende stap omhoog."
+  />
+  <NextStep
+    title="OpenRegister geavanceerde patronen"
+    href="https://openregister.conduction.nl/docs/advanced/"
+    description="GraphQL-endpoints, cross-register-relaties, formule-properties, de OR-features die het beste passen bij manifest-gedreven apps."
+  />
+</NextSteps>

@@ -1,10 +1,10 @@
 ---
 slug: hydra-tutorial-3-quality-gates
-title: "Hydra leerlijn — Deel 3: Quality gates"
+title: "Hydra tutorial series — Part 3: Quality gates"
 contentType: tutorial
 authors: [conduction]
 date: 2026-05-12
-summary: Wat zijn de mechanische quality gates van Hydra, waarom werken ze juist NIET met AI-oordeel, en wat doe je als een gate per ongeluk fout slaat? Derde van zes korte modules.
+summary: What are Hydra's mechanical quality gates, why do they deliberately NOT rely on AI judgement, and what do you do when a gate misfires? The third of six short modules.
 tags: [Hydra, Gates, Quality, Tutorial series]
 apps: []
 durationMinutes: 12
@@ -15,132 +15,132 @@ partNumber: 3
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard} from '@conduction/docusaurus-preset/components';
 import Details from '@theme/Details';
 
-In deel 2 zag je dat de drie personas worden aangevuld door **mechanische quality gates** — checks die deterministisch slagen of falen, zonder AI in de loop. Dit deel legt uit welke gates we hebben, waarom ze mechanisch zijn, en hoe je omgaat met de uitzondering: de fout positief.
+In part 2 you saw that the three personas are backed up by **mechanical quality gates** — checks that pass or fail deterministically, without AI in the loop. This part explains which gates we have, why they are mechanical, and how to handle the exception: the false positive.
 
 {/* truncate */}
 
-<Outcomes title="Wat je leert in dit deel">
-  <Outcome>De twee soorten gates: <strong>generieke</strong> code-quality-tools en Hydra-specifieke <strong><code>hydra-gate-*</code></strong> skills.</Outcome>
-  <Outcome>Waarom mechanische checks naast AI-review hard nodig zijn (en niet "AI lost dat wel op").</Outcome>
-  <Outcome>Hoe je een fout-positieve gate herkent en wat de juiste fix is.</Outcome>
-  <Outcome>Wat ADR-020 betekent: <strong>gates draaien op de PR-diff.</strong></Outcome>
+<Outcomes title="What you'll learn in this part">
+  <Outcome>The two kinds of gates: <strong>generic</strong> code-quality tools and Hydra-specific <strong><code>hydra-gate-*</code></strong> skills.</Outcome>
+  <Outcome>Why mechanical checks alongside AI review are strictly necessary (and not "AI will sort that out").</Outcome>
+  <Outcome>How to recognise a false-positive gate and what the right fix is.</Outcome>
+  <Outcome>What ADR-020 means: <strong>gates run on the PR diff.</strong></Outcome>
 </Outcomes>
 
-<Prerequisites title="Wat je nodig hebt">
-  <PrerequisiteItem>Deel 1 en 2 doorgenomen: <a href="/academy/hydra-tutorial-1-wat-is-hydra">Wat is Hydra?</a> en <a href="/academy/hydra-tutorial-2-drie-pipelines">De drie pipelines</a>.</PrerequisiteItem>
-  <PrerequisiteItem>Basisbegrip van wat een linter is en wat een statische analyser is.</PrerequisiteItem>
+<Prerequisites title="What you need">
+  <PrerequisiteItem>Parts 1 and 2 read: <a href="/academy/hydra-tutorial-1-wat-is-hydra">What is Hydra?</a> and <a href="/academy/hydra-tutorial-2-drie-pipelines">The three pipelines</a>.</PrerequisiteItem>
+  <PrerequisiteItem>Basic understanding of what a linter is and what a static analyser is.</PrerequisiteItem>
 </Prerequisites>
 
-## Waarom mechanische gates?
+## Why mechanical gates?
 
-AI-review schaalt mee, maar is **niet voorspelbaar.** Twee runs op precies dezelfde diff kunnen verschillende bevindingen opleveren. En AI is juist niet sterk in het saaie nakijkwerk dat geen oordeel vraagt — bijvoorbeeld: "heeft elke nieuwe PHP-file bovenaan een SPDX-licentie-header staan?". Zo'n check kun je veel sneller en goedkoper met een simpel `grep`-commando doen.
+AI review scales, but it's **not predictable.** Two runs on exactly the same diff can produce different findings. And AI is especially weak at the boring checking that doesn't require judgement — for example: "does every new PHP file have an SPDX licence header at the top?". You can do that kind of check much faster and cheaper with a simple `grep` command.
 
-De stelregel binnen Hydra:
+The rule inside Hydra:
 
-> **Wat objectief te controleren is, doet een mechanische gate — één script dat per check slaagt of faalt. Pas waar je oordeel nodig hebt, schakelen we een reviewer in.**
+> **Whatever can be checked objectively, a mechanical gate handles — one script that passes or fails per check. Only where judgement is required do we bring in a reviewer.**
 
-Concreet betekent dat: voor we Juan Claude of Clyde duur Sonnet-tijd laten verspillen aan "deze functie heet `doSomething` en dat zou een werkwoord-zelfstandig-naamwoord-paar moeten zijn", draaien we eerst PHPCS. Pas daarna gaan de AI-paar-ogen aan het werk, en die concentreren zich op wat een tool níet kan vangen.
+Concretely: before we let Juan Claude or Clyde waste expensive Sonnet time on "this function is called `doSomething` and that should be a verb-noun pair", we run PHPCS first. Only then do the AI extra pairs of eyes start their work, focused on what a tool can't catch.
 
-## Categorie 1: generieke code-quality tools
+## Category 1: generic code-quality tools
 
-Deze checks draaien in `scripts/run-quality.sh` inside een Docker `php:X.Y-cli` container, met `--keep-server` om Nextcloud daarna voor de browser-tests te laten staan:
+These checks run inside `scripts/run-quality.sh` in a Docker `php:X.Y-cli` container, with `--keep-server` to leave Nextcloud running afterwards for the browser tests:
 
-| Tool | Wat het vangt |
+| Tool | What it catches |
 |---|---|
-| `lint` | Syntax-fouten in PHP. |
-| `phpcs` | Coding standard (PSR-12 + Nextcloud-conventie). |
-| `phpmd` | Code-mess detector (te lange methodes, te diepe nesting, dode code). |
-| `psalm` | Statische type-analyse, level 4 baseline. |
-| `phpstan` | Tweede statische type-analyser (vangt dingen die Psalm mist en vice versa). |
-| `phpmetrics` | Complexiteits-metriek (cyclomatic, maintainability-index). |
-| `composer audit` | CVE-check op `composer.lock`-dependencies. |
-| `eslint` | JS-/TS-lint. |
-| `stylelint` | CSS-/SCSS-lint. |
-| `npm audit` | CVE-check op `package-lock.json`. |
-| `PHPUnit` | Unit + integration tests met een gecontaineriseerd Nextcloud + SQLite. |
-| `Newman` | API-tests tegen de PHP built-in server. |
+| `lint` | Syntax errors in PHP. |
+| `phpcs` | Coding standard (PSR-12 + Nextcloud convention). |
+| `phpmd` | Code-mess detector (overlong methods, deep nesting, dead code). |
+| `psalm` | Static type analysis, level 4 baseline. |
+| `phpstan` | Second static type analyser (catches things Psalm misses and vice versa). |
+| `phpmetrics` | Complexity metrics (cyclomatic, maintainability index). |
+| `composer audit` | CVE check on `composer.lock` dependencies. |
+| `eslint` | JS/TS lint. |
+| `stylelint` | CSS/SCSS lint. |
+| `npm audit` | CVE check on `package-lock.json`. |
+| `PHPUnit` | Unit + integration tests with a containerised Nextcloud + SQLite. |
+| `Newman` | API tests against the PHP built-in server. |
 
-Iedere check is rood of groen. Eén rode check → `build:fail` (in de pre-review-fase) of `code-review:fail` / `security-review:fail` (post-fixes).
+Each check is red or green. One red check → `build:fail` (in the pre-review phase) or `code-review:fail` / `security-review:fail` (post-fixes).
 
-## Categorie 2: Hydra-specifieke gates
+## Category 2: Hydra-specific gates
 
-Naast de generieke tools heeft Hydra **een eigen reeks `hydra-gate-*` skills** voor zaken die Conduction-specifiek zijn. Die zitten in `hydra/.claude/skills/`. De huidige set telt 14 skills: één dispatcher die de andere 13 mechanische gates achter elkaar aanroept.
+On top of the generic tools, Hydra has **its own set of `hydra-gate-*` skills** for things that are Conduction-specific. They live in `hydra/.claude/skills/`. The current set is 14 skills: one dispatcher that calls the other 13 mechanical gates one after another.
 
-| Gate | Wat het controleert |
+| Gate | What it checks |
 |---|---|
-| `hydra-gates` | Dispatcher: roept de 13 gates hieronder achter elkaar aan en levert één pass/fail-overzicht. |
-| `hydra-gate-spdx` | Iedere nieuwe PHP-file heeft een EUPL-1.2 SPDX-header. |
-| `hydra-gate-forbidden-patterns` | Geen `dd(`, `var_dump`, `dump(`, `console.log` blijft over. |
-| `hydra-gate-composer-audit` | Mirror van de generieke composer-audit, voor de reviewer's mandatory block. |
-| `hydra-gate-stub-scan` | Geen lege stub-methods met TODO's blijven over. |
-| `hydra-gate-route-auth` | Iedere route in `appinfo/routes.php` heeft expliciete auth-annotaties. |
-| `hydra-gate-orphan-auth` | Geen `@AuthorizedAdminSetting` op een endpoint dat niet bestaat. |
-| `hydra-gate-unsafe-auth-resolver` | Auth resolvers slaan geen claim-bypass. |
-| `hydra-gate-semantic-auth` | Authorisatie-logica klopt semantisch met de route-doel. |
-| `hydra-gate-admin-router` | Admin-routes hebben de admin-router en niet de gewone. |
-| `hydra-gate-no-admin-idor` | Geen Insecure Direct Object Reference op admin-endpoints. |
-| `hydra-gate-modal-isolation` | Modal components isoleren state correct. |
-| `hydra-gate-nc-input-labels` | Nextcloud `<NcTextField>`-componenten hebben `<label>`-koppeling. |
-| `hydra-gate-initial-state` | Geen `initialState` lekt naar de client zonder bewuste expose. |
+| `hydra-gates` | Dispatcher: calls the 13 gates below one after another and produces one pass/fail summary. |
+| `hydra-gate-spdx` | Every new PHP file has an EUPL-1.2 SPDX header. |
+| `hydra-gate-forbidden-patterns` | No `dd(`, `var_dump`, `dump(`, `console.log` left behind. |
+| `hydra-gate-composer-audit` | Mirror of the generic composer audit, for the reviewer's mandatory block. |
+| `hydra-gate-stub-scan` | No empty stub methods with TODOs left behind. |
+| `hydra-gate-route-auth` | Every route in `appinfo/routes.php` has explicit auth annotations. |
+| `hydra-gate-orphan-auth` | No `@AuthorizedAdminSetting` on an endpoint that doesn't exist. |
+| `hydra-gate-unsafe-auth-resolver` | Auth resolvers don't allow a claim bypass. |
+| `hydra-gate-semantic-auth` | Authorisation logic matches the route's purpose semantically. |
+| `hydra-gate-admin-router` | Admin routes use the admin router and not the regular one. |
+| `hydra-gate-no-admin-idor` | No Insecure Direct Object Reference on admin endpoints. |
+| `hydra-gate-modal-isolation` | Modal components isolate state correctly. |
+| `hydra-gate-nc-input-labels` | Nextcloud `<NcTextField>` components have `<label>` linkage. |
+| `hydra-gate-initial-state` | No `initialState` leaks to the client without deliberate exposure. |
 
-Een groot deel hiervan is geboren uit incidenten: een gate ontstaat als reactie op een bug die door alle eerdere mazen heen glipte. `hydra-gate-stub-scan` bijvoorbeeld kwam uit het [`decidesk-44-45` retrospectief](https://github.com/ConductionNL/hydra/blob/main/docs/retrospectives/decidesk-44-45-phase-g.md), waar een builder een methode opleverde die slechts `return null;` deed met een TODO. PHPCS slikte het, PHPUnit had geen test, code review las het als "in scope", en het brak in productie.
+A large share of these were born out of incidents: a gate arises in response to a bug that slipped through all earlier checks. `hydra-gate-stub-scan`, for example, came out of the [`decidesk-44-45` retrospective](https://github.com/ConductionNL/hydra/blob/main/docs/retrospectives/decidesk-44-45-phase-g.md), where a builder delivered a method that just did `return null;` with a TODO. PHPCS swallowed it, PHPUnit had no test for it, code review read it as "in scope", and it broke in production.
 
-## ADR-020: gate-scope is de PR-diff
+## ADR-020: gate scope is the PR diff
 
-Een belangrijke regel die je in deel 2 al kort tegenkwam: **gates draaien op de PR-diff, niet op de hele repo**. Dat staat in [ADR-020](https://github.com/ConductionNL/hydra/blob/main/openspec/architecture/adr-020-gate-scope-to-pr-diff.md).
+An important rule you already brushed against in part 2: **gates run on the PR diff, not on the whole repo**. That's in [ADR-020](https://github.com/ConductionNL/hydra/blob/main/openspec/architecture/adr-020-gate-scope-to-pr-diff.md).
 
-Waarom? Omdat veel van onze repo's een achterstand aan technische schuld dragen. Als je `phpcs` op de hele repo loslaat krijg je honderden findings die niets met de huidige PR te maken hebben — en wordt elke PR rood. Door de scope te beperken tot de regels die in de PR-diff aangeraakt worden, valt de gate alleen om *wat de huidige builder net heeft toegevoegd of gewijzigd*.
+Why? Because many of our repos carry a backlog of technical debt. If you turn `phpcs` loose on the whole repo you get hundreds of findings that have nothing to do with the current PR — and every PR ends up red. By limiting the scope to the lines touched in the PR diff, the gate only fires on *what the current builder just added or changed*.
 
-Override-mechanisme: `HYDRA_REVIEW_SCOPE=full` in `secrets/.env` zet de scope om naar de hele repo. Gebruik dat als je een nieuwe repo onboardt of een dedicated tech-debt-sweep doet. Verwacht in alle andere gevallen veel rood.
+Override mechanism: `HYDRA_REVIEW_SCOPE=full` in `secrets/.env` flips the scope to the whole repo. Use it when you onboard a new repo or do a dedicated tech-debt sweep. Expect a lot of red in any other case.
 
-## Fout-positieven herkennen
+## Recognising false positives
 
-Mechanische gates zijn deterministisch, maar niet altijd correct. Een klassieker uit eigen huis: `hydra-gate-forbidden-patterns` zocht naar `dd(` zonder word-boundary, en sloeg dus ook foutief alarm op een legitieme `$builder->add(`. Eén grep-flag verkeerd en je hebt een herhaalbare fout-positief.
+Mechanical gates are deterministic, but not always correct. A homegrown classic: `hydra-gate-forbidden-patterns` searched for `dd(` without a word boundary and so falsely tripped on a legitimate `$builder->add(`. One wrong grep flag and you have a repeatable false positive.
 
-Hoe je een fout-positief herkent:
+How to recognise a false positive:
 
-1. **De gate slaat steeds op dezelfde regel** in elke retry, terwijl de regel zelf onschuldig oogt.
-2. **Een handmatige test van de gate-implementatie** (open `scripts/run-quality.sh` of de bijbehorende skill, run hem lokaal) bevestigt het: ja, het patroon matched, maar niet om de bedoelde reden.
-3. **Niemand in het team kan uitleggen waarom dit specifieke regel-niveau erover zou moeten klagen.**
+1. **The gate keeps firing on the same line** in every retry, while the line itself looks innocuous.
+2. **A manual test of the gate implementation** (open `scripts/run-quality.sh` or the associated skill, run it locally) confirms it: yes, the pattern matches, but not for the intended reason.
+3. **Nobody on the team can explain why this specific line should be complained about.**
 
-In dat geval is de fix **niet** "nog een retry". De fix is: ga naar `scripts/run-quality.sh` of de gate-skill, en repareer de detectie. Voorbeeld voor `hydra-gate-forbidden-patterns`: van `grep 'dd('` naar `grep -wE '(^|[^A-Za-z0-9_])dd\('`.
+In that case the fix is **not** "another retry". The fix is: go to `scripts/run-quality.sh` or the gate skill and repair the detection. Example for `hydra-gate-forbidden-patterns`: from `grep 'dd('` to `grep -wE '(^|[^A-Za-z0-9_])dd\('`.
 
-## Recheck na reviewer-fixes
+## Recheck after reviewer fixes
 
-Een subtiele maar belangrijke regel: na elke reviewer-fix-cyclus draait de orchestrator **opnieuw** de mechanische gates op de uiteindelijke PR-staat. Dit is de "quality-recheck"-fase. Reden: een reviewer kan tijdens zijn bounded-fix wel een PHPCS-style fout repareren en daarbij per ongeluk een nieuwe overtreding introduceren.
+A subtle but important rule: after every reviewer-fix cycle the orchestrator **reruns** the mechanical gates on the final PR state. This is the "quality recheck" phase. Reason: during their bounded fix, a reviewer can repair a PHPCS-style error and accidentally introduce a new violation.
 
-Slaat de recheck rood, dan gaat het issue naar `needs-input`. Geen retry. De reviewer is gestopt, de bouwer is gestopt, een mens kijkt.
+If the recheck goes red, the issue moves to `needs-input`. No retry. The reviewer has stopped, the builder has stopped, a human looks.
 
-<HexCard title="Let op: wanneer de retry-loop blijft hangen">
-  De recheck hierboven is je vangnet — maar dat vangnet kan zelf in een lus terechtkomen. Eén patroon om te herkennen:
+<HexCard title="Watch out: when the retry loop gets stuck">
+  The recheck above is your safety net — but that safety net can land in a loop of its own. One pattern to spot:
 
-  De builder vergeet in één file een gate-regel die hij in andere files wél correct toepast (in de praktijk meestal de <code>spdx-headers</code>-licentiekop). De reviewer pikt het niet op, omdat hij de file als "bestaande boilerplate" leest en eroverheen kijkt. De mechanische recheck slaat dan rood, het issue gaat terug naar de builder, en die maakt bij de retry exact dezelfde fout opnieuw. Hetzelfde gate-issue blijft zo terugkomen.
+  The builder forgets, in one file, a gate rule he applies correctly in other files (in practice usually the <code>spdx-headers</code> licence header). The reviewer doesn't pick it up, because he reads the file as "existing boilerplate" and skims past it. The mechanical recheck then goes red, the issue goes back to the builder, and on the retry he makes the exact same mistake again. The same gate issue keeps coming back.
 
-  **Wat te doen:** zie je 3 of meer retries op precies hetzelfde gate-issue, stop dan de loop. Twee opties — fix het handmatig, of scherp de gate-detectie aan zodat de reviewer hem niet meer als boilerplate kan wegklasseren. De volledige post-mortem van dit patroon (incidenten van 19–23 april 2026) staat in <a href="https://github.com/ConductionNL/hydra/blob/main/docs/retrospectives/decidesk-44-45-phase-g.md">decidesk-44-45-phase-g</a>.
+  **What to do:** if you see 3 or more retries on the exact same gate issue, stop the loop. Two options — fix it by hand, or tighten the gate detection so the reviewer can no longer dismiss it as boilerplate. The full post-mortem of this pattern (incidents from 19–23 April 2026) is in <a href="https://github.com/ConductionNL/hydra/blob/main/docs/retrospectives/decidesk-44-45-phase-g.md">decidesk-44-45-phase-g</a>.
 </HexCard>
 
-## Test jezelf
+## Test yourself
 
-Vier korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
+Four short questions to check whether you've understood this part. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
 
 <div className="tutorial-quiz">
 
-**1. Waarom heeft Hydra mechanische gates *en* AI-reviewers, en niet alleen één van de twee?**
+**1. Why does Hydra have mechanical gates *and* AI reviewers, instead of just one of the two?**
 
 <Details summary="Hint">
 
-Eén soort check is voorspelbaar en goedkoop, de andere is duur maar kan oordelen. Wat is sterk en zwak aan elk?
+One kind of check is predictable and cheap, the other is expensive but can judge. What's the strength and weakness of each?
 
 </Details>
 
-<Details summary="Antwoord">
+<Details summary="Answer">
 
-Ze vullen elkaar precies aan op de plekken waar de ander zwak is.
+They complement each other exactly where the other is weak.
 
-- **Mechanische gates** zijn **deterministisch**: zelfde input → zelfde uitkomst, slagen of falen. Perfect voor saai, objectief nakijkwerk — bijvoorbeeld "heeft elke nieuwe PHP-file een SPDX-header?". Goedkoop en herhaalbaar.
-- **AI-reviewers** doen **oordeel**: "klopt deze authorization-logica semantisch met het route-doel", "is dit in deze context een veiligheidsrisico". Niet voorspelbaar en duurder, dus zet je ze in waar oordeel nodig is.
+- **Mechanical gates** are **deterministic**: same input → same outcome, pass or fail. Perfect for boring, objective checking — for example "does every new PHP file have an SPDX header?". Cheap and repeatable.
+- **AI reviewers** do **judgement**: "does this authorisation logic semantically match the route's purpose", "is this a security risk in this context". Not predictable and more expensive, so you deploy them where judgement is needed.
 
-Alleen-mechanisch mist context-afhankelijke fouten; alleen-AI is duur, niet voorspelbaar, en verspilt Sonnet-tijd aan dingen die een `grep` kan.
+Mechanical-only misses context-dependent errors; AI-only is expensive, not predictable, and wastes Sonnet time on things a `grep` can do.
 
 </Details>
 
@@ -148,25 +148,25 @@ Alleen-mechanisch mist context-afhankelijke fouten; alleen-AI is duur, niet voor
 
 <div className="tutorial-quiz">
 
-**2. Wat zegt ADR-020 over de gate-scope, en wanneer schakel je dat via `HYDRA_REVIEW_SCOPE=full` uit?**
+**2. What does ADR-020 say about gate scope, and when do you switch that off via `HYDRA_REVIEW_SCOPE=full`?**
 
 <Details summary="Hint">
 
-Denk aan wat er gebeurt als je `phpcs` op een repo met veel oude technische schuld loslaat. En wanneer wil je dat juist wél?
+Think about what happens when you turn `phpcs` loose on a repo with lots of old technical debt. And when do you actually want that?
 
 </Details>
 
-<Details summary="Antwoord">
+<Details summary="Answer">
 
-ADR-020 zegt: **gates draaien op de PR-diff, niet op de hele repo**.
+ADR-020 says: **gates run on the PR diff, not on the whole repo**.
 
-Reden: veel repo's slepen technische schuld mee. `phpcs` over alles geeft honderden findings die niets met de huidige PR te maken hebben — elke PR zou rood worden. Door alleen de geraakte regels te checken slaat de gate alleen om op wat de builder net heeft toegevoegd of gewijzigd.
+Reason: many repos drag along technical debt. `phpcs` across all of it produces hundreds of findings that have nothing to do with the current PR — every PR would be red. By only checking the touched lines, the gate only fires on what the builder just added or changed.
 
-**`HYDRA_REVIEW_SCOPE=full`** in `secrets/.env` schakelt dit uit — gates draaien dan op de hele repo. Gebruik bij:
-- **Onboarding van een nieuwe repo** in Hydra.
-- Een **dedicated tech-debt-sweep**.
+**`HYDRA_REVIEW_SCOPE=full`** in `secrets/.env` disables this — gates then run on the whole repo. Use for:
+- **Onboarding a new repo** into Hydra.
+- A **dedicated tech-debt sweep**.
 
-NIET voor reguliere PRs — verwacht veel rood.
+NOT for regular PRs — expect a lot of red.
 
 </Details>
 
@@ -174,25 +174,25 @@ NIET voor reguliere PRs — verwacht veel rood.
 
 <div className="tutorial-quiz">
 
-**3. Hoe herken je een fout-positieve gate, en wat is de juiste fix? Wat NIET?**
+**3. How do you recognise a false-positive gate, and what's the right fix? What is NOT?**
 
 <Details summary="Hint">
 
-Drie signalen samen wijzen op een fout-positief. En de "verleidelijke maar verkeerde" reflex is hetzelfde nóg een keer doen.
+Three signals together point at a false positive. And the "tempting but wrong" reflex is doing the same thing again.
 
 </Details>
 
-<Details summary="Antwoord">
+<Details summary="Answer">
 
-**Herkenning** — drie signalen samen:
+**Recognition** — three signals together:
 
-1. De gate slaat in elke retry op **dezelfde regel**, terwijl die regel onschuldig oogt.
-2. **Handmatig lokaal de gate runnen** bevestigt: het patroon matched, maar niet om de bedoelde reden (bijv. `grep 'dd('` matcht ook `$builder->add(`).
-3. Niemand in het team kan uitleggen waarom dit specifieke regel-niveau erover zou moeten klagen.
+1. The gate fires on the **same line** in every retry, while that line looks innocuous.
+2. **Running the gate locally by hand** confirms: the pattern matches, but not for the intended reason (e.g. `grep 'dd('` also matches `$builder->add(`).
+3. Nobody on the team can explain why this specific line should be complained about.
 
-**Juiste fix:** scherp de **gate-detectie** aan in `scripts/run-quality.sh` of de bijbehorende skill. Voorbeeld: `grep 'dd('` → `grep -wE '(^|[^A-Za-z0-9_])dd\('`.
+**Right fix:** tighten the **gate detection** in `scripts/run-quality.sh` or the associated skill. Example: `grep 'dd('` → `grep -wE '(^|[^A-Za-z0-9_])dd\('`.
 
-**NIET:** nog een keer `retry:queued`. Dat reproduceert hetzelfde fout-positief en verspilt cycles.
+**NOT:** another `retry:queued`. That reproduces the same false positive and wastes cycles.
 
 </Details>
 
@@ -200,38 +200,38 @@ Drie signalen samen wijzen op een fout-positief. En de "verleidelijke maar verke
 
 <div className="tutorial-quiz">
 
-**4. Waarom draait Hydra de mechanische gates nogmaals NA de reviewer-fixes (de "quality-recheck"-fase)?**
+**4. Why does Hydra rerun the mechanical gates AFTER the reviewer fixes (the "quality recheck" phase)?**
 
 <Details summary="Hint">
 
-De reviewers mogen binnen scope zelf fixen. Wat kan daarbij misgaan?
+The reviewers may fix within scope. What can go wrong while they do that?
 
 </Details>
 
-<Details summary="Antwoord">
+<Details summary="Answer">
 
-Reviewers (Juan + Clyde) mogen binnen scope mechanische fixes pushen (ADR-021). Daarbij kan een reviewer **per ongeluk een nieuwe overtreding introduceren** — bijvoorbeeld een PHPCS-style fix die elders een regel breekt.
+Reviewers (Juan + Clyde) may push mechanical fixes within scope (ADR-021). While doing so a reviewer can **accidentally introduce a new violation** — for instance a PHPCS-style fix that breaks a rule elsewhere.
 
-De **quality-recheck** draait alle mechanische gates opnieuw op de uiteindelijke PR-staat zodat zeker is dat wat er nu staat ook objectief schoon is. Slaat de recheck rood → `needs-input`, geen retry. De reviewer is gestopt, de bouwer is gestopt, een mens kijkt. Het is de laatste deterministische gate vóór er een menselijke beslissing valt.
+The **quality recheck** reruns all mechanical gates on the final PR state to make sure what's there now is also objectively clean. If the recheck goes red → `needs-input`, no retry. The reviewer has stopped, the builder has stopped, a human looks. It's the last deterministic gate before a human decision falls.
 
 </Details>
 
 </div>
 
-<NextSteps title="Volgende stap" lede="In deel 4 kijken we naar de skills en commands die de personas tijdens hun werk gebruiken — inclusief hoe je zelf een nieuwe skill kunt toevoegen.">
+<NextSteps title="Next step" lede="In part 4 we look at the skills and commands the personas use during their work — including how you can add a new skill yourself.">
   <NextStep
-    title="Deel 4 — Skills & commands"
+    title="Part 4 — Skills & commands"
     href="/academy/hydra-tutorial-4-skills"
-    description="Hoe passen <code>opsx-*</code>, <code>hydra-gate-*</code> en <code>team-*</code> skills in de loop. Wanneer schrijf je zelf een nieuwe."
+    description="How <code>opsx-*</code>, <code>hydra-gate-*</code> and <code>team-*</code> skills fit into the loop. When you write a new one yourself."
   />
   <NextStep
-    title="Vorige stap — De drie pipelines"
+    title="Previous step — The three pipelines"
     href="/academy/hydra-tutorial-2-drie-pipelines"
-    description="Korte herhaling van het label-state-machine."
+    description="A short recap of the label state machine."
   />
   <NextStep
     title="ADR-020 — gate scope = PR diff"
     href="https://github.com/ConductionNL/hydra/blob/main/openspec/architecture/adr-020-gate-scope-to-pr-diff.md"
-    description="De officiële motivatie achter de diff-only scope."
+    description="The official motivation behind the diff-only scope."
   />
 </NextSteps>
