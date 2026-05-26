@@ -4,6 +4,11 @@
  * here when this site needs something the brand baseline does not.
  */
 
+/* Keep inline code on the text baseline so it does not drop below surrounding text. */
+:not(pre) > code {
+  vertical-align: baseline;
+}
+
 /* Hero treatment, tied to the cobalt-900 inverse panel */
 .cn-hero {
   background: var(--c-cobalt-900);
@@ -161,6 +166,23 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--c-cobalt-700);
+}
+
+/* Default blockquote treatment, brand-aligned. Infima's default leaves
+   quotes in neutral gray-800 with a 2px gray border, which reads
+   washed-out next to the cobalt-700 body. Bring the quote into the
+   cobalt palette so it carries the brand and stands out as a callout. */
+:root {
+  --ifm-blockquote-color: var(--c-cobalt-900);
+  --ifm-blockquote-border-color: var(--c-blue-cobalt);
+  --ifm-blockquote-border-left-width: 4px;
+  --ifm-blockquote-padding-vertical: var(--space-3);
+  --ifm-blockquote-padding-horizontal: var(--space-5);
+}
+blockquote {
+  background: var(--c-cobalt-50);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: 1.05em;
 }
 
 /* ============================================================
@@ -397,3 +419,27 @@
   color: var(--c-blue-cobalt);
 }
 
+
+/* ============================================================
+   Footnote label cleanup
+   ============================================================
+   Docusaurus's GFM footnote handler auto-injects an <h2> with the
+   text "Footnotes" above the generated <ol>. The blog post already
+   prints its own '## Sources' heading above the footnote anchors,
+   so the auto label duplicates that heading. Hide the auto one
+   (visually) but keep it accessible to screen readers via sr-only
+   semantics. */
+.markdown section.footnotes > h2,
+.markdown section[data-footnotes] > h2,
+.content-detail-body section.footnotes > h2,
+.content-detail-body section[data-footnotes] > h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

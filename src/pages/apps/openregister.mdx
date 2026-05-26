@@ -4,7 +4,8 @@ description: Schema-driven object store with audit trail. The data foundation un
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, McpToolShelf, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, CtaBanner, AppMock, WidgetMock, SidebarMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, McpToolShelf, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
   background="cobalt"
@@ -80,6 +81,8 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
     />
   </div>
 </Section>
+
+<PartnersForApp slug="openregister" />
 
 <RotatingCards
   eyebrow="Three ways OpenRegister earns its place"
@@ -185,14 +188,23 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
       title: 'Files, mail, and shares stay with the record.',
       summary: "Every object in a register gets an auto-created folder. Drop files into it, write notes against the record, tag rows from the same workspace taxonomy your files use. Add a mail to a project and your colleagues see it without anyone forwarding. When someone shares one of those files in Nextcloud, the share is visible on the record. The case file is part of the workspace, not a parallel storage to keep in sync.",
       cta: {label: 'See the integration guide', href: 'https://openregister.conduction.nl/docs/Integrations/leaf-system'},
-      panel: <AppMock app="openregister" />,
+      panel: <MockScene
+        width={680}
+        height={420}
+        items={[
+          {type: 'sidebar', kind: 'openregister-metadata',  x: 200, y: 10,  size: 'md', z: 1},
+          {type: 'widget',  kind: 'nextcloud-mail',         x: 0,   y: 0,   size: 'sm', z: 2},
+          {type: 'widget',  kind: 'nextcloud-files',        x: 0,   y: 230, size: 'sm', z: 2},
+          {type: 'widget',  kind: 'openregister-activity',  x: 460, y: 60,  size: 'sm', z: 0},
+        ]}
+      />,
     },
     {
       id: 'groupware',
       title: 'Your CRM uses your real contacts and calendar.',
       summary: "When a CRM app needs contacts, it reads Nextcloud Contacts; when it needs an agenda, it writes to Nextcloud Calendar. Open a lead, see the meetings about it. Click a contact, jump straight into a Talk conversation. Mail threads link back to the case automatically. One Nextcloud login covers all of it, and nobody maintains a second address book.",
       cta: {label: 'See the groupware integrations', href: 'https://openregister.conduction.nl/docs/Integrations/calendar'},
-      panel: <AppMock app="openconnector" />,
+      panel: <AppMock app="openconnector" />
     },
     {
       id: 'project-knowledge',
@@ -224,7 +236,16 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
       title: 'Outside systems, in the same fabric.',
       summary: "OpenConnector reaches XWiki for runbooks, OpenProject for work packages, Windmill and n8n for automation, Presidio for PII redaction, and any LLM (Claude, Mistral, Ollama) for plain-language search across registers. The outside app stays its own app, but the workspace treats its data as a first-class part of the record. Write your own integration with the scaffold script and it shows up wherever the app is installed.",
       cta: {label: 'See the external integrations', href: 'https://openregister.conduction.nl/docs/Integrations/xwiki'},
-      panel: <AppMock app="docudesk" />,
+      panel: <MockScene
+        width={680}
+        height={420}
+        items={[
+          {type: 'sidebar', kind: 'openconnector-run-detail', x: 220, y: 10,  size: 'md', z: 1},
+          {type: 'widget',  kind: 'openregister-activity',    x: 0,   y: 0,   size: 'sm', z: 2},
+          {type: 'widget',  kind: 'openconnector-runs',       x: 0,   y: 230, size: 'sm', z: 2},
+          {type: 'widget',  kind: 'procest-werkvoorraad',     x: 480, y: 80,  size: 'sm', z: 0},
+        ]}
+      />,
     },
   ]}
 />
