@@ -75,18 +75,18 @@ You still want OpenSpec under your belt first. After that, **[Hydra Part 1](/aca
 
 A few areas you'll meet at Conduction that don't have a dedicated tutorial series yet:
 
-- **The day-to-day Claude Code workflow** — the [getting-started.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/getting-started.md) doc in the `.github` repo is the closest to a single-page workflow primer.
+- **The day-to-day Claude Code workflow** — the [getting-started.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/getting-started.md) doc in `Conduction/.github` on Codeberg is the closest to a single-page workflow primer.
 - **Frontend standards** — covered in [frontend-standards.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/frontend-standards.md). Worth a skim before your first Vue PR.
-- **Testing skills in depth** — `/test-app`, `/test-counsel` and the `hydra-gate-*` family are documented in [testing.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/testing.md). Read on demand, not upfront.
+- **Testing skills in depth** — `/test-app`, `/test-counsel` and the rest of the testing workflow are documented in [testing.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/testing.md). The `hydra-gate-*` family lives in `hydra/.claude/skills/` in the [hydra repo](https://codeberg.org/Conduction/hydra) — closer to the gates themselves. Read on demand, not upfront.
 - **The local LLM workflow (Ollama + Qwen)** — see [local-llm.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/local-llm.md). Optional, useful if you want overnight batch jobs.
 
 These are reference docs, not tutorials. Use them when a specific question comes up; don't try to read them upfront.
 
-## A note on Pluvo
+## A note on the quiz blocks
 
-Every Conduction tutorial in the academy ends with the **Test yourself** quiz block — five questions per part with Hint and Answer fold-outs. Internally we call those **Pluvo questions** (after the spaced-repetition tool we use). The answers are not exam questions; they're a self-check that the part actually landed. If you blank on three out of five, the part is probably worth a re-read.
+Every part of this series ends with a **Test yourself** quiz block — a few short questions with Hint and Answer fold-outs. They're not exam questions; they're a self-check that the part actually landed. If you blank on most of them, the part is probably worth a re-read.
 
-For this series specifically, the Pluvo questions cover:
+For this series specifically, the questions cover:
 
 | Part | Sample question |
 | --- | --- |
@@ -97,22 +97,22 @@ For this series specifically, the Pluvo questions cover:
 | 5 — Nextcloud | When to reset the local Nextcloud, and when to keep the existing state? |
 | 6 — What now? | (the questions below) |
 
-Spend ten minutes on the Pluvo blocks before declaring a part "done" — that's the easiest way to make this knowledge stick.
+Spend a few minutes on the quiz blocks before declaring a part "done" — that's the easiest way to make this knowledge stick.
 
 ## How long does this all take?
 
-A rough honest estimate, on a clean Windows machine:
+A rough estimate, based on the reading times the tutorials themselves list:
 
-- **This workstation series**: one evening (~3 hours clock, ~1 hour hands-on).
-- **OpenSpec Parts 1+2**: one short session (~45 minutes).
-- **Claude Skills Parts 1–2 or Build an App**: one evening (~2 hours).
-- **First real Conduction PR**: another evening (~2 hours of pair work with someone who already knows the stack).
+- **This workstation series**: one evening (the six parts together are well under an hour of reading, but plan for installs and the first run of each piece).
+- **OpenSpec Parts 1+2**: ~35 minutes of reading (12 + 22), plus the time to actually do the first change.
+- **Claude Skills Parts 1+2**: ~30 minutes of reading (12 + 18). The full four-part track adds Parts 3 and 4 on top.
+- **Build an App**: ~30 minutes for the teaser. The DeskDesk series is longer.
 
-So roughly **three evenings** from clean laptop to first merged PR. That's the target; it varies with how much terminal + Git muscle memory you bring in.
+Add a Conduction colleague pairing with you on a first real change, and "clean laptop to first merged PR" is realistically a few evenings of mixed reading and doing. Your mileage will vary with how much terminal and Git muscle memory you bring in.
 
 ## Test yourself
 
-Five short questions to check that this part landed. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+Three short questions to check that this part landed. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
 
 <div className="tutorial-quiz">
 
@@ -136,19 +136,21 @@ Why first: every change to every Conduction app — including the tutorials *aft
 
 <div className="tutorial-quiz">
 
-**2. Which series do you pick if your first task is to write a Claude Skill rather than an app feature?**
+**2. Your first task is to write a Claude Skill. You're tempted to skip OpenSpec and dive straight into the Skills series — after all, the task isn't about app code. Why is that probably a mistake?**
 
 <Details summary="Hint">
 
-Still do OpenSpec first; then there's one obvious series.
+How does a skill itself get tracked, reviewed, and changed at Conduction? Look at how the existing skills in `hydra/.claude/skills/` are version-controlled.
 
 </Details>
 
 <Details summary="Answer">
 
-**[Claude Skills Part 1](/academy/claude-skills-tutorial-1-wat-zijn-claude-skills)** through **Part 4**. Four short modules: what a skill is, your first skill, evals (measurement), and the L6/L7 maturity levels.
+Because skills are versioned and specified the same way as app code. Every skill at Conduction lives in `.claude/skills/<name>/SKILL.md`, and a non-trivial change to a skill goes through the same OpenSpec workflow as an app feature: proposal → spec-delta → tasks → review.
 
-OpenSpec still comes first because skills are versioned and specified the same way as app code. Without it, you won't know what's expected in a skill's `proposal.md`.
+If you skip OpenSpec, the first time you propose a skill change you'll see the reviewer ask *"where's the spec-delta?"* and you'll be back-filling concepts that 30 minutes of OpenSpec Parts 1+2 would have given you upfront. The Skills tutorial series even references `proposal.md`, `tasks.md` and `spec-delta` as if you already know what they mean — because it assumes you've done OpenSpec first.
+
+Spec-first applies to *everything Conduction ships, including the tooling that ships the things*. Skipping OpenSpec for skill work is like skipping Git for solo work — you can do it, but you're paying the cost later in a less convenient form.
 
 </Details>
 
@@ -172,50 +174,6 @@ Two reasons:
 2. **It's the most internal and most opinionated of the four pillars.** Many new developers won't touch Hydra in their first month; the ones who do should already be comfortable with the rest of the stack.
 
 So: OpenSpec → Skills (or Build an App) → Hydra. If you want a one-pager preview before reading the full series, the [hydra/README.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/hydra/README.md) in the `.github` repo is a good warm-up.
-
-</Details>
-
-</div>
-
-<div className="tutorial-quiz">
-
-**4. Where do you go for the day-to-day Claude Code workflow that isn't covered by these tutorial series?**
-
-<Details summary="Hint">
-
-A doc in the `.github` repo — the closest thing to a single-page workflow primer.
-
-</Details>
-
-<Details summary="Answer">
-
-**[getting-started.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/getting-started.md)** in the `ConductionNL/.github` repo. It's the workflow primer that walks you through opening a Conduction project, finding your way around, and running your first `/opsx-*` cycle.
-
-It's a reference doc rather than a tutorial — read it once after you've finished OpenSpec, then come back when something specific is unclear.
-
-</Details>
-
-</div>
-
-<div className="tutorial-quiz">
-
-**5. Roughly how many evenings does it take to go from a clean laptop to a first merged Conduction PR?**
-
-<Details summary="Hint">
-
-This series, then OpenSpec, then one of Skills/Build an App, then a real PR.
-
-</Details>
-
-<Details summary="Answer">
-
-About **three evenings** on average:
-
-- Evening 1 — this Workstation Setup series (~3 hours clock, ~1 hour hands-on).
-- Evening 2 — OpenSpec Parts 1+2 (~45 min) and either Claude Skills Parts 1–2 or Build an App (~2 hours).
-- Evening 3 — your first real Conduction PR, ideally paired with someone who already knows the stack (~2 hours).
-
-It varies with how much Git, terminal, and Vue/PHP muscle memory you bring in, but three evenings is a fair planning number.
 
 </Details>
 

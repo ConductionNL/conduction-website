@@ -37,7 +37,7 @@ A working Conduction workstation needs a specific combination of tools: Claude C
 Conduction's stack is opinionated for a reason: every tool below has been picked because the next tool in the chain depends on it. The default combination is:
 
 <HexCard title="Windows 11 + WSL2 + Ubuntu 24.04">
-  Your editor and browser run on Windows, your terminal and code on Linux. Best of both worlds, and it's what most of the team uses.
+  Your editor and browser run on Windows, your terminal and code on Linux. This is the combination the canonical workstation-setup doc covers end to end.
 </HexCard>
 
 <HexCard title="Docker Desktop (Windows-side)">
@@ -56,15 +56,15 @@ Conduction's stack is opinionated for a reason: every tool below has been picked
 
 A few common questions from people who've used something else before:
 
-**"Can I use macOS instead?"** Yes — the team has macOS users too. Skip the WSL2 step in Part 2, install everything natively via Homebrew, and the rest of the series applies. The only thing that changes is the install commands; the concepts are identical.
+**"Can I use macOS instead?"** The canonical workstation-setup doc only covers Windows + WSL2. The concepts (Docker Desktop, VS Code + Claude Code, Node, PHP, Composer, `gh`, OpenSpec, Playwright) translate to macOS via Homebrew, but you'll be adapting install commands yourself.
 
-**"Can I use plain Linux instead?"** Yes — even simpler. No WSL needed. Pick your favourite distro, install everything natively, the rest of the series applies. Same caveat as macOS: install commands differ, concepts don't.
+**"Can I use plain Linux instead?"** Same story — the canonical doc is Windows-first, so on native Linux you'll skip the WSL section and adapt the install commands to your distro. The concepts are the same.
 
 **"Why not native Windows without WSL?"** Because half of the stack is Linux-first: Nextcloud's official Docker images, PHP CLI tooling, bash hooks, and the `gh` CLI all behave better on Linux. WSL2 gives you a fast Linux VM that integrates with Windows so well that you usually forget it's a separate OS.
 
 **"Can I use VS Code's web version instead?"** No. We rely on local file access, the Claude Code extension, and MCP servers that need filesystem access — none of which work in the web build.
 
-**"Can I use a different editor — Cursor, JetBrains, Vim?"** In theory yes. In practice the Claude Code extension and the MCP browser setup are tested against VS Code, and most internal docs assume it. Start with VS Code; switch later if you must.
+**"Can I use a different editor — Cursor, JetBrains, Vim?"** In theory yes. In practice the canonical workstation-setup doc lists VS Code + the Claude Code extension as the default, and most internal docs assume it. Start with VS Code; switch later if you must.
 
 ## What you'll install along the way
 
@@ -105,26 +105,19 @@ The series is intentionally split into short modules. Don't have time tonight? S
 
 ## How long does it really take?
 
-On a clean Windows 11 machine with a decent connection: **about three hours of clock time, of which one hour is hands-on**. The rest is downloads and installer dialogs you click through while the kettle is on.
+Plan for one evening on a clean Windows machine with a decent connection. A chunk of that is downloads and installer dialogs that run while you do something else; the hands-on portion is shorter.
 
-The five most common time sinks — and how to avoid them:
+Things to plan around:
 
 1. **WSL2 install needs a reboot.** Don't start it five minutes before a meeting. Plan it for the end of the day.
-2. **Docker Desktop's WSL integration sometimes needs a "restart" before it sees your Ubuntu distro.** No big deal once you know it; can cost twenty minutes if you don't.
-3. **`composer install` fails because `vendor/` is owned by root.** Happens after the first Docker run. Part 2 walks through the fix.
-4. **`gh auth login` opens a browser that doesn't accept your SSO.** If your work GitHub uses SSO, do `gh auth login --web` from a terminal where Edge or Chrome is your default — Firefox sometimes silently fails.
-5. **The Playwright Chromium binary is 300 MB.** Run that download from a place with a stable connection, not the train.
+2. **`composer install` can fail because `vendor/` is owned by root** after the first Docker run. Part 2 walks through the fix (it's also documented in the canonical workstation-setup doc).
+3. **The Playwright Chromium download** is sizeable. Run it from a place with a stable connection, not from the train.
 
-If you hit any other issue, [Troubleshooting](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md) in the canonical workstation-setup doc has the rest.
+If you hit any other issue, the [canonical workstation-setup doc](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md) is the source of truth.
 
-## Tested on what?
+## What this series follows
 
-This tutorial series was tested end-to-end on:
-
-- **Windows 11 (build 23H2) + WSL2 + Ubuntu 24.04** — primary target.
-- **macOS 14.x (Apple Silicon)** — secondary target; only WSL section differs.
-
-Linux native (Ubuntu desktop) is supported in spirit — most of the commands work as-is, but we didn't run the full sequence on a clean Linux laptop. If you do, send corrections and we'll fold them in.
+This series is a guided walk through the canonical [`workstation-setup.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md) in the Conduction `.github` repo. That doc is Windows + WSL2 + Docker Desktop + VS Code. macOS and native Linux aren't covered there — if you go that route, you're adapting from the same concepts.
 
 ## A note on order
 
@@ -181,19 +174,21 @@ You *could* run only Docker on Windows and skip WSL, but you'd then hit a wall t
 
 <div className="tutorial-quiz">
 
-**3. Roughly how long does the full setup take, and where does the time mostly go?**
+**3. Which step in the series shouldn't be started right before a meeting, and why?**
 
 <Details summary="Hint">
 
-Three hours of clock time vs. one hour of hands-on work. Most of the rest is one specific kind of activity.
+Look at the time-sinks list. One specific step is unavoidable mid-process and can't be paused.
 
 </Details>
 
 <Details summary="Answer">
 
-About **three hours of clock time on a clean Windows machine**, of which roughly **one hour is hands-on**. The rest goes into downloads (WSL image, Docker Desktop, VS Code extensions, Node, the Playwright Chromium binary) and installer dialogs you click through while doing something else.
+The **WSL2 install** in Part 2. It needs a Windows reboot mid-process, and Ubuntu only finishes its first-time setup *after* the reboot. Start it five minutes before a meeting and you'll either join late or come back to a half-configured Ubuntu prompt that you've forgotten the context for.
 
-The single biggest time sink to plan around: the WSL2 install needs a reboot. Don't start it five minutes before a meeting.
+The other slow step to plan around is the **Playwright Chromium download** (~300 MB) — not a hard interruption, but noticeably slow on a train or coffee-shop wifi.
+
+Rule of thumb: schedule the WSL2 step for the start of an uninterrupted block, ideally the end of the workday so the reboot lands when nothing else is competing.
 
 </Details>
 

@@ -75,18 +75,18 @@ Toch wil je eerst OpenSpec op zak hebben. Daarna **[Hydra Deel 1](/nl/academy/hy
 
 Een paar onderwerpen die je bij Conduction tegenkomt en waar nog geen aparte tutorial-leerlijn voor is:
 
-- **De dagelijkse Claude Code-workflow** — het [getting-started.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/getting-started.md)-doc in de `.github`-repo komt het dichtst in de buurt van een workflow-primer op één pagina.
+- **De dagelijkse Claude Code-workflow** — het [getting-started.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/getting-started.md)-doc in `Conduction/.github` op Codeberg komt het dichtst in de buurt van een workflow-primer op één pagina.
 - **Frontend-standaarden** — beschreven in [frontend-standards.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/frontend-standards.md). Doorlezen voor je eerste Vue-PR is de moeite waard.
-- **Testing-skills in de diepte** — `/test-app`, `/test-counsel` en de `hydra-gate-*`-familie staan in [testing.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/testing.md). Op aanvraag lezen, niet vooraf.
+- **Testing-skills in de diepte** — `/test-app`, `/test-counsel` en de rest van de test-workflow staan in [testing.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/testing.md). De `hydra-gate-*`-familie woont in `hydra/.claude/skills/` in de [hydra-repo](https://codeberg.org/Conduction/hydra) — dichter bij de gates zelf. Op aanvraag lezen, niet vooraf.
 - **De lokale LLM-workflow (Ollama + Qwen)** — zie [local-llm.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/local-llm.md). Optioneel, handig als je 's nachts batch-jobs wilt draaien.
 
 Dit zijn naslagdocs, geen tutorials. Gebruik ze als er een concrete vraag opkomt; probeer ze niet vooraf door te lezen.
 
-## Een woord over Pluvo
+## Een woord over de quizblokken
 
-Elke Conduction-tutorial in de academy eindigt met het **Test jezelf**-quizblok — vijf vragen per deel met Hint- en Antwoord-uitklappers. Intern noemen we die **Pluvo-vragen** (naar de spaced-repetition-tool die we gebruiken). De antwoorden zijn geen examenvragen; het is een self-check of het deel ook echt is geland. Blank je op drie van de vijf, dan is het deel waarschijnlijk een herlezing waard.
+Elk deel van deze leerlijn eindigt met een **Test jezelf**-quizblok — een paar korte vragen met Hint- en Antwoord-uitklappers. Het zijn geen examenvragen; het is een self-check of het deel ook echt is geland. Blank je op de meeste vragen, dan is het deel waarschijnlijk een herlezing waard.
 
-Voor deze leerlijn specifiek dekken de Pluvo-vragen:
+Voor deze leerlijn specifiek dekken de vragen:
 
 | Deel | Voorbeeldvraag |
 | --- | --- |
@@ -97,22 +97,22 @@ Voor deze leerlijn specifiek dekken de Pluvo-vragen:
 | 5 — Nextcloud | Wanneer reset je de lokale Nextcloud, en wanneer behoud je de bestaande state? |
 | 6 — Wat nu? | (de vragen hieronder) |
 
-Besteed tien minuten aan de Pluvo-blokken voor je een deel "afgerond" verklaart — dat is de eenvoudigste manier om deze kennis te laten beklijven.
+Besteed een paar minuten aan de quizblokken voor je een deel "afgerond" verklaart — dat is de eenvoudigste manier om deze kennis te laten beklijven.
 
 ## Hoe lang duurt dit allemaal?
 
-Een ruwe, eerlijke schatting, op een schone Windows-machine:
+Een ruwe schatting, gebaseerd op de leestijden die de tutorials zelf opgeven:
 
-- **Deze workstation-leerlijn**: één avond (~3 uur kloktijd, ~1 uur hands-on).
-- **OpenSpec Delen 1+2**: één korte sessie (~45 minuten).
-- **Claude Skills Delen 1–2 of Build an App**: één avond (~2 uur).
-- **Eerste echte Conduction-PR**: nog een avond (~2 uur pairen met iemand die de stack al kent).
+- **Deze workstation-leerlijn**: één avond (de zes delen samen zijn ruim onder het uur leestijd, maar reken op extra tijd voor installs en de eerste run van elk onderdeel).
+- **OpenSpec Delen 1+2**: ~35 minuten leestijd (12 + 22), plus de tijd om de eerste change ook echt te doen.
+- **Claude Skills Delen 1+2**: ~30 minuten leestijd (12 + 18). De volledige vierdelige track voegt Delen 3 en 4 daar bovenop toe.
+- **Build an App**: ~30 minuten voor de teaser. De DeskDesk-leerlijn is langer.
 
-Dus grofweg **drie avonden** van schone laptop tot eerste gemergede PR. Dat is de richtlijn; het varieert met hoeveel terminal- en Git-spiergeheugen je meeneemt.
+Voeg een Conduction-collega toe die met je pairt op een eerste echte change, en "schone laptop tot eerste gemergede PR" duurt realistisch een paar avonden van afwisselend lezen en doen. Het varieert met hoeveel terminal- en Git-spiergeheugen je meeneemt.
 
 ## Test jezelf
 
-Vijf korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
+Drie korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
 
 <div className="tutorial-quiz">
 
@@ -136,19 +136,21 @@ Waarom als eerste: elke wijziging aan elke Conduction-app — inclusief de tutor
 
 <div className="tutorial-quiz">
 
-**2. Welke leerlijn pak je als je eerste taak een Claude Skill schrijven is in plaats van een app-feature?**
+**2. Je eerste taak is het schrijven van een Claude Skill. Je bent in de verleiding OpenSpec over te slaan en meteen in de Skills-leerlijn te duiken — de taak gaat tenslotte niet over app-code. Waarom is dat waarschijnlijk een vergissing?**
 
 <Details summary="Hint">
 
-OpenSpec doe je nog steeds eerst; daarna ligt er één voor de hand liggende leerlijn.
+Hoe wordt een skill zelf bijgehouden, gereviewd en gewijzigd bij Conduction? Kijk eens hoe de bestaande skills in `hydra/.claude/skills/` onder versiebeheer staan.
 
 </Details>
 
 <Details summary="Antwoord">
 
-**[Claude Skills Deel 1](/nl/academy/claude-skills-tutorial-1-wat-zijn-claude-skills)** tot en met **Deel 4**. Vier korte modules: wat een skill is, je eerste skill, evals (meten), en de L6/L7 maturity-niveaus.
+Omdat skills op dezelfde manier geversioneerd en gespecificeerd worden als app-code. Elke skill bij Conduction woont in `.claude/skills/<name>/SKILL.md`, en een niet-triviale wijziging aan een skill doorloopt dezelfde OpenSpec-workflow als een app-feature: proposal → spec-delta → tasks → review.
 
-OpenSpec gaat er nog steeds aan vooraf, omdat skills op dezelfde manier geversioneerd en gespecificeerd worden als app-code. Zonder OpenSpec weet je niet wat er in de `proposal.md` van een skill verwacht wordt.
+Sla je OpenSpec over, dan zie je de eerste keer dat je een skill-change voorstelt de reviewer vragen *"waar is de spec-delta?"* — en dan zit je achteraf concepten in te halen die 30 minuten OpenSpec Delen 1+2 je vooraf hadden gegeven. De Skills-leerlijn verwijst zelfs naar `proposal.md`, `tasks.md` en `spec-delta` alsof je al weet wat dat betekent — want ze gaat ervan uit dat je OpenSpec eerst hebt gedaan.
+
+Spec-first geldt voor *alles wat Conduction levert, inclusief de tooling die de dingen levert*. OpenSpec overslaan bij skill-werk is als Git overslaan bij solo-werk — het kan, maar je betaalt de prijs later in een minder handige vorm.
 
 </Details>
 
@@ -172,50 +174,6 @@ Twee redenen:
 2. **Het is de meest interne en meest opinionated pijler van de vier.** Veel nieuwe developers raken Hydra in hun eerste maand niet aan; degenen die dat wel doen, moeten al comfortabel zijn met de rest van de stack.
 
 Dus: OpenSpec → Skills (of Build an App) → Hydra. Wil je een one-pager preview voor je de volledige leerlijn leest, dan is de [hydra/README.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/hydra/README.md) in de `.github`-repo een goede opwarmer.
-
-</Details>
-
-</div>
-
-<div className="tutorial-quiz">
-
-**4. Waar vind je de dagelijkse Claude Code-workflow die niet door deze tutorial-leerlijnen wordt gedekt?**
-
-<Details summary="Hint">
-
-Een doc in de `.github`-repo — het dichtst bij een workflow-primer op één pagina.
-
-</Details>
-
-<Details summary="Antwoord">
-
-**[getting-started.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/getting-started.md)** in de `ConductionNL/.github`-repo. Het is de workflow-primer die je meeneemt door het openen van een Conduction-project, je weg vinden, en je eerste `/opsx-*`-cyclus draaien.
-
-Het is een naslagdoc, geen tutorial — lees het één keer nadat je OpenSpec hebt afgerond, en keer terug wanneer iets specifieks onduidelijk is.
-
-</Details>
-
-</div>
-
-<div className="tutorial-quiz">
-
-**5. Hoeveel avonden kost het ruwweg om van schone laptop naar een eerste gemergede Conduction-PR te gaan?**
-
-<Details summary="Hint">
-
-Deze leerlijn, dan OpenSpec, dan een van Skills/Build an App, dan een echte PR.
-
-</Details>
-
-<Details summary="Antwoord">
-
-Gemiddeld zo'n **drie avonden**:
-
-- Avond 1 — deze Workstation Setup-leerlijn (~3 uur kloktijd, ~1 uur hands-on).
-- Avond 2 — OpenSpec Delen 1+2 (~45 min) en Claude Skills Delen 1–2 of Build an App (~2 uur).
-- Avond 3 — je eerste echte Conduction-PR, idealiter gepairt met iemand die de stack al kent (~2 uur).
-
-Het varieert met hoeveel Git-, terminal- en Vue/PHP-spiergeheugen je meeneemt, maar drie avonden is een redelijk planningsgetal.
 
 </Details>
 

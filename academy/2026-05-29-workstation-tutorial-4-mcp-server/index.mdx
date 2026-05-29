@@ -15,7 +15,7 @@ partNumber: 4
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
 import Details from '@theme/Details';
 
-MCP — **Model Context Protocol** — is how Claude Code talks to the outside world: browsers, GitHub, Slack, your local Nextcloud, the Conduction MCP server. A workstation isn't really complete until at least one MCP server is wired into your project root via `.mcp.json`. This part covers the basics and gets you a working Playwright browser pool. The dedicated **Conduction MCP server** install lives in its own tutorial — we link to it at the bottom.
+MCP — **Model Context Protocol** — is the standard interface Claude Code uses to call out to external tools. Inside a Conduction project, that means two things in practice: a **Playwright browser pool** (browser-1 … browser-7) for the testing skills, and the **OpenRegister MCP server** for direct access to your local Conduction data layer. A workstation isn't really complete until at least the browser pool is wired into your project root via `.mcp.json`. This part covers that; the OpenRegister MCP server has its own tutorial — we link to it at the bottom.
 
 {/* truncate */}
 
@@ -39,8 +39,7 @@ MCP is a small open protocol that lets Claude Code call **out** to external serv
 A few servers you'll meet at Conduction:
 
 - **`browser-1` … `browser-7`** — Playwright browser instances Claude can use for testing skills (`/test-app`, `/test-counsel`, the `hydra-gate-*` family).
-- **The Conduction MCP server** — live access to internal Conduction systems while you work. Covered in its own tutorial.
-- **Nextcloud MCP** — direct access to a running Nextcloud instance from Claude. Optional.
+- **The OpenRegister MCP server** — Claude can call OpenRegister directly: list registers and schemas, search and read objects, read the audit trail. Covered in [its own tutorial](/academy/mcp-server).
 
 This module deliberately stops at the Playwright pool: it's the one every Conduction developer needs and it works without any extra accounts.
 
@@ -136,22 +135,22 @@ If a browser errors out, Claude falls back to the next numbered one. You don't h
 
 ## Why seven browsers?
 
-A pragmatic choice from a few years of internal testing:
+The count is sized for `/test-app` Full mode's worst case, with one slot reserved for human observation:
 
-- One default + five parallel sub-agents = six headless. That covers the heaviest parallel scenario in `/test-app` Full mode (five concurrent sub-agents plus the orchestrator).
+- One main agent (`browser-1`) + five parallel sub-agents (`browser-2`–`browser-5` and `browser-7`) = six headless. That covers `/test-app` Full mode's heaviest parallel run.
 - One headed browser for observation — handy when you want to *see* what Claude is doing rather than just read the result.
 
-Other workspaces may use fewer (or more) browsers depending on parallelism. The Nextcloud workspace uses these seven; for a one-off prototype you can drop to two and be fine.
+Other workspaces may use fewer (or more) browsers depending on parallelism. The Nextcloud workspace uses these seven.
 
-## What about the Conduction MCP server?
+## What about the OpenRegister MCP server?
 
-For Conduction projects, the Playwright pool alone isn't enough. The **Conduction MCP server** — a server we run internally — gives Claude live access to the systems we build with: registers, catalogs, the Hydra job board, and more.
+For Conduction projects, the Playwright pool alone isn't enough. The **OpenRegister MCP server** — shipped as an endpoint inside the OpenRegister Nextcloud app at `http://localhost:8080/index.php/apps/openregister/mcp` — gives Claude direct access to the data layer of your Conduction stack: list registers and schemas, search and read objects, walk the audit trail.
 
-It's a separate install with its own auth and configuration. We split it out into a dedicated tutorial so this one stays short:
+It's a separate install with its own configuration, so it lives in a dedicated tutorial:
 
-- **Tutorial (planned):** [Set up the Conduction MCP server](https://codeberg.org/Conduction/.github/issues/55) — see issue #55 for status.
+- **[Set up the Conduction MCP server](/academy/mcp-server)** — the dedicated tutorial for that step.
 
-When that tutorial is live, you'll add another entry to the same `.mcp.json` and reload. The Playwright pool stays.
+When you do that tutorial, you add another entry to the same `.mcp.json` and reload. The Playwright pool stays.
 
 ## A note on `.mcp.json` vs. `~/.claude/settings.json`
 
@@ -186,19 +185,21 @@ Five short questions to check that this part landed. Stuck? Click **Hint**. Curi
 
 <div className="tutorial-quiz">
 
-**1. What does MCP stand for, and what's its job inside Claude Code?**
+**1. Why does MCP need to exist as a separate protocol? Why not just give Claude direct API access to each tool?**
 
 <Details summary="Hint">
 
-Three letters. The middle word is what every external tool Claude touches needs to share.
+Think about how many tools Claude might touch in one project (browser, database, GitHub, Slack, your local Nextcloud) and how that scales without a uniform interface.
 
 </Details>
 
 <Details summary="Answer">
 
-**Model Context Protocol.** It's the small open protocol that lets Claude Code call out to external services — browsers, Slack, GitHub, your local Nextcloud, the Conduction MCP server — through a uniform interface.
+A Conduction project might have Claude driving a browser (Playwright), reading from a local Nextcloud, calling GitHub's API, posting to Slack, and querying a database — all in the same session. Without MCP, each integration would be a custom adapter inside Claude: hand-written, version-locked to Claude's release schedule, impossible for third parties to add without forking.
 
-Anything that speaks MCP can be wired into a project's `.mcp.json` and Claude can use it as a tool. Without MCP, every external integration would need a custom adapter; with MCP, they all look the same to Claude.
+MCP makes those adapters **outside** Claude: a small server speaks a standard protocol, Claude just consumes it. The trade-off is one extra hop (Claude → MCP server → tool), but the win is composability — anyone can write an MCP server in any language, drop it into `.mcp.json`, and Claude can use it without a Claude release.
+
+It's the same idea as the Language Server Protocol for editors: define the wire format once, every editor + every language gets to interoperate without N×M custom integrations.
 
 </Details>
 
@@ -226,31 +227,20 @@ Six headless covers a specific parallel scenario; the seventh has a different pu
 
 <div className="tutorial-quiz">
 
-**3. Which two project-level settings pre-approve the MCP browsers so background agents aren't blocked by prompts?**
+**3. Without `enableAllProjectMcpServers: true` *and* the `mcp__browser-*` allow rule, parallel sub-agents silently fail with no error. What does each rule do, and why are *both* needed?**
 
 <Details summary="Hint">
 
-One is a boolean that auto-trusts every server in `.mcp.json`; the other is a pattern in the permissions allowlist.
+One controls *which servers Claude is willing to start*. The other controls *which tool calls Claude is willing to make without asking*. Both must be true for a background agent to use a browser non-interactively.
 
 </Details>
 
 <Details summary="Answer">
 
-In the project's `.claude/settings.json`:
+- **`enableAllProjectMcpServers: true`** auto-approves every server listed in `.mcp.json`. Without it, Claude prompts for permission each time `.mcp.json` is read (e.g. on every reload), and a background sub-agent can't respond to that prompt — it just hangs or fails.
+- **`mcp__browser-*` in the allow list** pre-approves every browser *tool call*. Without it, Claude prompts before each `mcp__browser-3__navigate` etc. — again, a background sub-agent can't respond.
 
-```json
-{
-  "enableAllProjectMcpServers": true,
-  "permissions": {
-    "allow": ["mcp__browser-*"]
-  }
-}
-```
-
-- **`enableAllProjectMcpServers: true`** auto-approves every server listed in `.mcp.json` without a per-reload prompt.
-- **`mcp__browser-*`** pre-approves every browser tool call so background and parallel sub-agents can use their assigned browser silently.
-
-Without these two, parallel sub-agents are silently denied and no testing happens — even though everything else looks healthy.
+So one rule unblocks **server startup**, the other unblocks **per-call execution**. A sub-agent that hits either gate without pre-approval fails silently because it has no UI to prompt against. The symptom is identical in both cases — *"the test didn't run and there's no error"* — which is why both rules need to be in place before parallel testing is attempted.
 
 </Details>
 
@@ -280,22 +270,22 @@ The split matters because it lets each project pick its own MCP servers without 
 
 <div className="tutorial-quiz">
 
-**5. How do you confirm — at a glance — that the browsers are actually live after you've created `.mcp.json`?**
+**5. You run `/test-app` Full mode and notice that one parallel sub-agent silently fails — it just produces no test output. The MCP servers panel shows all seven browsers as Connected. What are the two most likely causes, and where do you look?**
 
 <Details summary="Hint">
 
-There's a built-in panel for this. You can open it from the Claude Code chat or from the command palette.
+If the panel says "Connected" but the agent didn't use the browser, the breakage is between *agent → tool call*, not *Claude → server*. Two project-level things gate that interaction.
 
 </Details>
 
 <Details summary="Answer">
 
-Open the **MCP servers panel** in VS Code:
+Two likely causes:
 
-- Type **`/MCP servers`** in the Claude Code chat input, or
-- `Ctrl+Shift+P` → search **"MCP servers"** → open the panel.
+1. **The project's `.claude/settings.json` is missing the `mcp__browser-*` allow rule.** Without it, the sub-agent's tool call is silently denied — no error returned, just no work done. Open the file and confirm the `permissions.allow` array includes `"mcp__browser-*"`.
+2. **The sub-agent picked a browser that's in use by another sub-agent.** Each `mcp__browser-N` is exclusive: if two agents try to grab `browser-3`, the second silently waits and may time out before the first releases. The fix is to make sure your skill assigns a unique browser per sub-agent (`browser-2`, `browser-3`, etc.) instead of all defaulting to `browser-1`.
 
-All seven browsers should show **Connected**. If any are red, open the output panel (`Ctrl+Shift+P` → "Output: Focus on Output" → select **Claude VSCode**) and read the error line. The most common cause is a missing Playwright Chromium binary — fix with `npx playwright install chromium`.
+To diagnose: open the Output panel (`Ctrl+Shift+P` → "Output: Focus on Output" → select **Claude VSCode**). The denied tool-call shows up there even when the parent agent's output looks clean.
 
 </Details>
 
@@ -308,9 +298,9 @@ All seven browsers should show **Connected**. If any are red, open the output pa
     description="A short pointer to the existing Nextcloud-locally tutorial, framed as the last installation step before you're production-ready."
   />
   <NextStep
-    title="Set up the Conduction MCP server (issue #55)"
-    href="https://codeberg.org/Conduction/.github/issues/55"
-    description="The follow-up tutorial that adds the Conduction MCP server to the same .mcp.json. Tracked as issue #55 — read the issue for status and timing."
+    title="Set up the Conduction MCP server"
+    href="/academy/mcp-server"
+    description="The follow-up tutorial that adds the OpenRegister MCP server to the same .mcp.json."
   />
   <NextStep
     title="The canonical playwright-setup.md"

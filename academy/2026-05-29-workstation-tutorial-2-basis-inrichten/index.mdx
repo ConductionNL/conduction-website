@@ -40,7 +40,7 @@ This part assumes **Windows 11**. If you're on macOS or Linux:
 - **macOS** — skip step 1 (WSL2) entirely. Replace `apt install` with `brew install` in the rest. Install Docker Desktop natively. The order and the verification commands stay the same.
 - **Linux native** — skip step 1 (WSL2). Install Docker Engine natively (not Docker Desktop). The order stays the same.
 
-Both alternatives are tested less thoroughly than the Windows path. If you hit something that doesn't translate cleanly, send a note via [Email us](mailto:info@conduction.nl) at the bottom.
+Our canonical [workstation-setup.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md) documents the Windows + WSL2 path; the macOS and Linux variants above are the translation most teams use. If you hit something that doesn't translate cleanly, send a note via [Email us](mailto:info@conduction.nl) at the bottom.
 
 ## Step 1: install WSL2 (Windows only)
 
@@ -129,7 +129,7 @@ node --version    # v20.x
 npm --version     # 10.x
 ```
 
-> **Why Node 20, not the latest?** Docusaurus 3.x and the OpenSpec CLI both want Node 20+ — and a few of our internal tools haven't been tested on Node 22 yet. Stick to 20 LTS until you have a reason not to.
+> **Why Node 20, not the latest?** Docusaurus 3.x and the OpenSpec CLI both want Node 20+, and our canonical [workstation-setup.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md) installs Node 20 specifically. Stick to 20 LTS until you have a reason not to.
 
 ## Step 6: install PHP 8.1+ and Composer
 
@@ -247,7 +247,7 @@ sudo apt install -y gh
 gh auth login   # GitHub.com → HTTPS → Login with a web browser
 ```
 
-If your work GitHub uses SSO, make sure your default browser is Edge or Chrome — Firefox has been known to drop the SSO callback silently.
+If your work GitHub uses SSO, make sure your default browser is Edge or Chrome — Firefox SSO callbacks sometimes don't complete cleanly.
 
 Verify all three:
 
@@ -311,7 +311,7 @@ If every command returns a real version, `ssh -T` greets you by your Codeberg us
     Happens after the first Docker run inside a project — Docker created <code>vendor/</code> as root. Two fixes: (1) <code>sudo chown -R $USER:$USER vendor/</code> and rerun, or (2) install phpcs globally with <code>composer global require "squizlabs/php_codesniffer:^3.9"</code> and skip <code>composer install</code> for now.
   </TroubleshootingItem>
   <TroubleshootingItem symptom="gh auth login opens the wrong browser and SSO never completes">
-    If your work GitHub uses SSO and Firefox is the default browser, the callback can drop silently. Set Edge or Chrome as the default browser and rerun <code>gh auth login --web</code>.
+    If your work GitHub uses SSO and Firefox is the default browser, the callback sometimes doesn't come back cleanly. Set Edge or Chrome as the default browser and rerun <code>gh auth login --web</code>.
   </TroubleshootingItem>
   <TroubleshootingItem symptom="ssh -T git@codeberg.org returns 'Permission denied (publickey)'">
     Either the public key wasn't pasted into Codeberg, or <code>&#126;/.ssh/config</code> doesn't have <code>chmod 600</code>. Recopy <code>&#126;/.ssh/id_ed25519_codeberg.pub</code> to <a href="https://codeberg.org/user/settings/keys">codeberg.org/user/settings/keys</a> and run <code>chmod 600 ~/.ssh/config</code>. Then retry.
@@ -393,26 +393,22 @@ Installing language extensions on Windows when the code lives in WSL gives you b
 
 <div className="tutorial-quiz">
 
-**4. How do you confirm Codeberg auth is fully wired up — both SSH and the `tea` CLI?**
+**4. Your `git push` to a Codeberg repo hangs silently for two minutes, then errors out with "Permission denied (publickey)". What are the two most likely causes, and how do you tell them apart?**
 
 <Details summary="Hint">
 
-Two separate commands for two separate things: one talks to Codeberg over SSH, the other reads the saved token.
+One is about whether the key is *known to Codeberg*. The other is about whether the key is *unlocked on your machine*. Two separate failure modes; two separate checks.
 
 </Details>
 
 <Details summary="Answer">
 
-```bash
-ssh -T git@codeberg.org
-tea login list
-```
+The two failure modes are:
 
-`ssh -T` should reply with `Hi there, <YourCodebergUsername>! You've successfully authenticated…`. If you instead see `Permission denied (publickey)`, the public key wasn't pasted to Codeberg or `~/.ssh/config` doesn't have `chmod 600`.
+1. **The public key isn't paired with your Codeberg account.** Diagnose: `cat ~/.ssh/id_ed25519_codeberg.pub` and compare against the keys listed at [codeberg.org/user/settings/keys](https://codeberg.org/user/settings/keys). If it's missing, paste it in.
+2. **The key is on Codeberg, but no ssh-agent has it loaded on this machine.** Diagnose: `ssh-add -l`. If the output is *"The agent has no identities"*, `keychain` either isn't installed or isn't running in this shell. Run `keychain ~/.ssh/id_ed25519_codeberg` once, then open a fresh terminal.
 
-`tea login list` should show one row with `NAME=codeberg`, `URL=https://codeberg.org`, and your username. If empty, the token wasn't added — re-run `tea login add` with a token that has the `repository`, `issue`, `user`, and `organization` scopes.
-
-For the secondary `gh` CLI (GitHub side): `gh auth status` should print a green checkmark with your GitHub username.
+In either case, after fixing, `ssh -T git@codeberg.org` should reply *"Hi there, &lt;your username&gt;!"* — the surest single confirmation that auth works.
 
 </Details>
 
@@ -420,35 +416,28 @@ For the secondary `gh` CLI (GitHub side): `gh auth status` should print a green 
 
 <div className="tutorial-quiz">
 
-**5. Which command tells you in one go that your full Conduction workstation has the right runtimes installed?**
+**5. After the first `docker compose up -d` of a Conduction project, `composer install` on the host suddenly fails with `Permission denied` on `vendor/`. What happened, why is it specifically the *first* Docker run, and what's the fastest fix?**
 
 <Details summary="Hint">
 
-There isn't a single command — it's a checklist of `--version` calls.
+Docker containers run as root by default. When a container writes into a bind-mounted directory, the files inherit that ownership on the host.
 
 </Details>
 
 <Details summary="Answer">
 
-There's no one "doctor" command. The verification checklist from Step 10 is:
+When Docker first starts a Conduction project, the PHP container writes into the bind-mounted `vendor/` directory — but the container runs as **root**, so the resulting files are owned by `root:root` on the host file system. Your host user (`$USER`) can't write to them, and `composer install` from the host fails.
+
+**Why specifically the first run:** before that, `vendor/` either didn't exist or was clean. Subsequent runs reuse the already-root-owned files, so the error persists until you fix the ownership.
+
+**Fastest fix:**
 
 ```bash
-node --version
-npm --version
-php --version
-composer --version
-docker --version
-docker compose version
-ssh -T git@codeberg.org
-tea --version
-tea login list
-gh --version
-gh auth status
-openspec --version
-npx playwright --version
+sudo chown -R $USER:$USER vendor/
+composer install
 ```
 
-If every line returns a real version, `ssh -T` greets you by your Codeberg username, `tea login list` shows the codeberg row, and `gh auth status` is green, your machine has everything Part 3 onwards will need. If anything is missing or fails, jump to the Troubleshooting section above and fix it before moving on — Part 3 assumes all of these work.
+Alternative if you don't want to use `sudo`: install phpcs globally (`composer global require "squizlabs/php_codesniffer:^3.9"`) and skip the local `composer install` for the moment. The CI still uses the project's `composer.json`, so this only affects local tooling.
 
 </Details>
 

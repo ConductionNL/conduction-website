@@ -40,7 +40,7 @@ Dit deel gaat uit van **Windows 11**. Werk je op macOS of Linux:
 - **macOS** — sla stap 1 (WSL2) volledig over. Vervang `apt install` door `brew install` in de rest. Installeer Docker Desktop native. De volgorde en de verificatie-commando's blijven hetzelfde.
 - **Linux native** — sla stap 1 (WSL2) over. Installeer Docker Engine native (geen Docker Desktop). De volgorde blijft hetzelfde.
 
-Beide alternatieven zijn minder grondig getest dan het Windows-pad. Loop je tegen iets aan dat niet één-op-één vertaalt, stuur dan onderaan even een berichtje via [Mail ons](mailto:info@conduction.nl).
+Onze canonical [workstation-setup.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md) beschrijft het Windows + WSL2-pad; de macOS- en Linux-varianten hierboven zijn de vertaling die de meeste teams gebruiken. Loop je tegen iets aan dat niet één-op-één vertaalt, stuur dan onderaan even een berichtje via [Mail ons](mailto:info@conduction.nl).
 
 ## Stap 1: installeer WSL2 (alleen Windows)
 
@@ -129,7 +129,7 @@ node --version    # v20.x
 npm --version     # 10.x
 ```
 
-> **Waarom Node 20, niet de nieuwste?** Docusaurus 3.x en de OpenSpec-CLI willen allebei Node 20+ — en een paar van onze interne tools zijn nog niet getest op Node 22. Blijf bij 20 LTS tot je een reden hebt om dat niet te doen.
+> **Waarom Node 20, niet de nieuwste?** Docusaurus 3.x en de OpenSpec-CLI willen allebei Node 20+, en onze canonical [workstation-setup.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md) installeert specifiek Node 20. Blijf bij 20 LTS tot je een reden hebt om dat niet te doen.
 
 ## Stap 6: installeer PHP 8.1+ en Composer
 
@@ -247,7 +247,7 @@ sudo apt install -y gh
 gh auth login   # GitHub.com → HTTPS → Login with a web browser
 ```
 
-Gebruikt je werk-GitHub SSO, zorg er dan voor dat je standaardbrowser Edge of Chrome is — Firefox laat de SSO-callback wel eens stilzwijgend vallen.
+Gebruikt je werk-GitHub SSO, zorg er dan voor dat je standaardbrowser Edge of Chrome is — Firefox-SSO-callbacks komen soms niet schoon terug.
 
 Verifieer alledrie:
 
@@ -311,7 +311,7 @@ Geeft elk commando een echte versie terug en is `gh auth status` groen, dan ben 
     Gebeurt na de eerste Docker-run in een project — Docker heeft <code>vendor/</code> als root aangemaakt. Twee fixes: (1) <code>sudo chown -R $USER:$USER vendor/</code> en opnieuw draaien, of (2) installeer phpcs globaal met <code>composer global require "squizlabs/php_codesniffer:^3.9"</code> en sla <code>composer install</code> voor nu over.
   </TroubleshootingItem>
   <TroubleshootingItem symptom="gh auth login opent de verkeerde browser en SSO komt niet rond">
-    Gebruikt je werk-GitHub SSO en is Firefox de standaardbrowser, dan kan de callback stilzwijgend wegvallen. Zet Edge of Chrome als standaardbrowser en draai <code>gh auth login --web</code> opnieuw.
+    Gebruikt je werk-GitHub SSO en is Firefox de standaardbrowser, dan komt de callback soms niet schoon terug. Zet Edge of Chrome als standaardbrowser en draai <code>gh auth login --web</code> opnieuw.
   </TroubleshootingItem>
   <TroubleshootingItem symptom="ssh -T git@codeberg.org geeft 'Permission denied (publickey)'">
     Of je publieke sleutel staat niet op Codeberg, of <code>&#126;/.ssh/config</code> heeft niet <code>chmod 600</code>. Plak <code>&#126;/.ssh/id_ed25519_codeberg.pub</code> opnieuw op <a href="https://codeberg.org/user/settings/keys">codeberg.org/user/settings/keys</a> en draai <code>chmod 600 ~/.ssh/config</code>. Probeer dan opnieuw.
@@ -393,26 +393,22 @@ Taal-extensies op Windows installeren terwijl de code in WSL staat geeft je kapo
 
 <div className="tutorial-quiz">
 
-**4. Hoe bevestig je dat de Codeberg-auth volledig in orde is — zowel SSH als de `tea`-CLI?**
+**4. Je `git push` naar een Codeberg-repo hangt twee minuten stil en faalt dan met "Permission denied (publickey)". Wat zijn de twee meest waarschijnlijke oorzaken, en hoe onderscheid je ze?**
 
 <Details summary="Hint">
 
-Twee aparte commando's voor twee aparte dingen: één praat met Codeberg over SSH, de ander leest de opgeslagen token.
+De één gaat erover of de sleutel *bekend is bij Codeberg*. De ander gaat erover of de sleutel *ontgrendeld is op je machine*. Twee aparte failure modes; twee aparte checks.
 
 </Details>
 
 <Details summary="Antwoord">
 
-```bash
-ssh -T git@codeberg.org
-tea login list
-```
+De twee failure modes zijn:
 
-`ssh -T` hoort te antwoorden met `Hi there, <JouwCodebergUsername>! You've successfully authenticated…`. Zie je in plaats daarvan `Permission denied (publickey)`, dan staat je publieke sleutel niet op Codeberg of mist `~/.ssh/config` de `chmod 600`.
+1. **De publieke sleutel is niet gekoppeld aan je Codeberg-account.** Diagnose: `cat ~/.ssh/id_ed25519_codeberg.pub` en vergelijk met de sleutels op [codeberg.org/user/settings/keys](https://codeberg.org/user/settings/keys). Staat hij er niet tussen, plak hem erin.
+2. **De sleutel staat op Codeberg, maar geen enkele ssh-agent heeft hem geladen op deze machine.** Diagnose: `ssh-add -l`. Als de output *"The agent has no identities"* is, is `keychain` of niet geïnstalleerd, of draait hij niet in deze shell. Draai eenmalig `keychain ~/.ssh/id_ed25519_codeberg` en open een verse terminal.
 
-`tea login list` hoort één rij te tonen met `NAME=codeberg`, `URL=https://codeberg.org` en je username. Is hij leeg, dan is de token niet toegevoegd — draai `tea login add` opnieuw met een token die de scopes `repository`, `issue`, `user` en `organization` heeft.
-
-Voor de secundaire `gh`-CLI (GitHub-kant): `gh auth status` hoort een groen vinkje + je GitHub-username te printen.
+In beide gevallen hoort `ssh -T git@codeberg.org` na de fix te antwoorden met *"Hi there, &lt;jouw username&gt;!"* — de meest waterdichte enkele bevestiging dat auth werkt.
 
 </Details>
 
@@ -420,35 +416,28 @@ Voor de secundaire `gh`-CLI (GitHub-kant): `gh auth status` hoort een groen vink
 
 <div className="tutorial-quiz">
 
-**5. Met welk commando weet je in één keer of je volledige Conduction-workstation de juiste runtimes geïnstalleerd heeft?**
+**5. Na de eerste `docker compose up -d` van een Conduction-project faalt `composer install` op de host opeens met `Permission denied` op `vendor/`. Wat is er gebeurd, waarom juist bij de *eerste* Docker-run, en wat is de snelste fix?**
 
 <Details summary="Hint">
 
-Er is geen één-enkel commando — het is een checklist van `--version`-aanroepen.
+Docker-containers draaien standaard als root. Wanneer een container in een bind-mounted directory schrijft, erven de bestanden die ownership op de host.
 
 </Details>
 
 <Details summary="Antwoord">
 
-Er is geen enkel "doctor"-commando. De verificatie-checklist uit Stap 10 is:
+Wanneer Docker een Conduction-project voor het eerst opstart, schrijft de PHP-container in de bind-mounted `vendor/`-directory — maar de container draait als **root**, dus de resulterende bestanden zijn op het host file system eigendom van `root:root`. Je host-user (`$USER`) kan er niet in schrijven, en `composer install` vanaf de host faalt.
+
+**Waarom juist bij de eerste run:** daarvóór bestond `vendor/` nog niet of was hij schoon. Volgende runs hergebruiken de al-root-owned bestanden, dus de fout blijft staan tot je de ownership fixt.
+
+**Snelste fix:**
 
 ```bash
-node --version
-npm --version
-php --version
-composer --version
-docker --version
-docker compose version
-ssh -T git@codeberg.org
-tea --version
-tea login list
-gh --version
-gh auth status
-openspec --version
-npx playwright --version
+sudo chown -R $USER:$USER vendor/
+composer install
 ```
 
-Geeft elke regel een echte versie terug, begroet `ssh -T` je met je Codeberg-username, toont `tea login list` de codeberg-rij en is `gh auth status` groen, dan heeft je machine alles wat Deel 3 en verder nodig hebben. Ontbreekt er iets of faalt iets, spring dan naar de Troubleshooting-sectie hierboven en los het op voor je verdergaat — Deel 3 gaat ervan uit dat dit alles werkt.
+Alternatief als je geen `sudo` wilt gebruiken: installeer phpcs globaal (`composer global require "squizlabs/php_codesniffer:^3.9"`) en sla de lokale `composer install` voorlopig over. CI gebruikt nog steeds de `composer.json` van het project, dus dit raakt alleen je lokale tooling.
 
 </Details>
 

@@ -38,7 +38,7 @@ Jij bent die lezer niet meer. Je hebt Deel 1 t/m 4 gedaan. Skim hem dus liever d
 
 1. **Open of clone de Nextcloud-werkmap** — meestal `apps-extra/` of welke map de `docker-compose.yml` ook bevat.
 2. **Start de stack**: `docker compose up -d` (standaardprofiel: db + nextcloud + n8n).
-3. **Ga naar `http://localhost:8080`** — de eerste keer laden duurt ~3 minuten terwijl Docker de officiële Nextcloud-image binnenhaalt.
+3. **Ga naar `http://localhost:8080`** — de eerste keer laden duurt een paar minuten terwijl Docker de images voor het eerst binnenhaalt.
 4. **Maak het admin-account aan** (bijv. `admin` / `admin` voor lokaal werk — gebruik dit nooit opnieuw voor iets dat publiek bereikbaar is).
 5. **Installeer Conduction-apps vanuit de app store** (de volgende sectie geeft aan welke).
 6. **Klaar voor vandaag**: `bash clean-env.sh` of de `/clean-env`-skill — breekt de stack af en reset de volumes.
@@ -47,16 +47,20 @@ Uitgebreide tekst, screenshots, probleemoplossing: in [Nextcloud lokaal draaien 
 
 ## Welk Docker-profiel wil je?
 
-Het standaard `docker compose up -d` start **db + nextcloud + n8n**. Dat is voor het meeste Conduction-werk genoeg. Voor specifieke scenario's voeg je een profiel toe:
+Het standaard `docker compose up -d` start **db + nextcloud + n8n**. Dat is voor het meeste Conduction-werk genoeg. Voor specifieke scenario's voeg je een profiel toe. De canonieke [`docker.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/docker.md) bevat de volledige set; de profielen die je het eerst pakt zijn:
 
-| Profiel | Voegt toe | Gebruik wanneer |
-| --- | --- | --- |
-| `ai` | AI/LLM-diensten | Je werkt aan een Conduction-app die Claude of een andere LLM via het platform aanroept |
-| `ui` | Aparte frontend-UI-container | Je werkt op een Vue dev-loop die hot-reloadt |
-| `exapps` | ExApp sidecar-containers | Je bouwt een Nextcloud ExApp (Python sidecar) |
-| `solr` / `elasticsearch` | Zoek-backends | Je test zoekgedrag dat verder gaat dan de standaard van Nextcloud |
-| `ollama` | Lokale LLM via Ollama | Je wilt Claude (online) combineren met een lokale Qwen voor nachtelijke jobs |
-| `mariadb` | MariaDB in plaats van de standaard DB | Een specifieke app heeft MariaDB-compatibiliteit nodig |
+| Profiel | Voegt toe |
+| --- | --- |
+| `ai` | AI/LLM-diensten |
+| `ui` | Aparte frontend-UI-container |
+| `exapps` | ExApp sidecar-containers |
+| `solr` | Solr search |
+| `elasticsearch` | Elasticsearch |
+| `ollama` | Lokale LLM via Ollama |
+| `standalone` | Standalone mode (zonder Nextcloud) |
+| `mariadb` | MariaDB in plaats van de standaard DB |
+
+De volledige tabel bevat ook `openproject`, `xwiki`, `ox`, `valtimo`, `openzaak` en `openklant` — die zet je pas aan als een specifieke tutorial erom vraagt.
 
 Je start een profiel door `--profile <naam>` toe te voegen aan het compose-commando:
 
@@ -64,7 +68,7 @@ Je start een profiel door `--profile <naam>` toe te voegen aan het compose-comma
 docker compose --profile ui --profile exapps up -d
 ```
 
-Voor het meeste beginwerk volstaat het standaardprofiel. Zie de [canonieke docker.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/docker.md) voor de volledige lijst.
+Voor het meeste beginwerk volstaat het standaardprofiel.
 
 ## Welke Conduction-apps installeer je eerst
 
@@ -75,10 +79,11 @@ Zodra het admin-account klaar is, installeer je minimaal:
 
 Beide installeer je rechtstreeks vanuit de Nextcloud app store binnen je lokale Nextcloud. Zoek op de app-naam en klik op **Download en activeren**.
 
-Twee andere apps die in veel tutorials terugkomen, installeer je wanneer je ze nodig hebt:
+Eén andere app die in veel tutorials terugkomt, installeer je wanneer je hem nodig hebt:
 
-- **OpenCatalogi** — catalogiseert publicaties, registers en publiek toegankelijke portalen.
-- **OpenWoo** — het Woo-register dat door de Woo-tutorials wordt gebruikt.
+- **OpenCatalogi** — maakt elk register doorzoekbaar als publieke catalogus en federeert naar `data.overheid.nl`.
+
+Een opmerking over namen: **OpenWoo** is een *oplossing* gebouwd op OpenRegister en OpenCatalogi, geen aparte Nextcloud-app. De Woo-tutorials installeren OpenRegister (en meestal OpenCatalogi) en importeren een Woo-register daarin — er staat niets in de Nextcloud app store dat "OpenWoo" heet.
 
 Je hoeft niet elke Conduction-app te installeren. Installeer wat de tutorial die je volgt vraagt en negeer de rest tot je hem nodig hebt.
 
@@ -89,7 +94,7 @@ Een vraag die vaak terugkomt als je de lokale Nextcloud een tijdje gebruikt:
 - **Behouden** als je verdergaat met dezelfde wijziging. Schema's die je gisteren hebt geïmporteerd, testobjecten die je hebt aangemaakt — staan er nog. Meestal hou je hem aan.
 - **Resetten** als een tutorial zegt *"begin vanaf een schone Nextcloud"*. Dat is bijna altijd het geval voor de **Build an App**- en **DeskDesk**-series. Reset met `bash clean-env.sh` of de `/clean-env`-skill. Duurt 30 seconden, daarna weer `docker compose up -d`.
 
-Het opschonen is snel omdat Docker de volumes opnieuw binnenhaalt — het is geen trage Windows-stijl "verwijderen en opnieuw installeren". Wees niet zuinig op je lokale state.
+Het opschonen is snel omdat de volumes worden weggegooid en opnieuw aangemaakt en de images lokaal in cache blijven staan — het is geen trage Windows-stijl "verwijderen en opnieuw installeren". Wees niet zuinig op je lokale state.
 
 ## Hoe past dit in de workstation-keten
 
@@ -106,7 +111,7 @@ Na dit deel is je workstation *compleet*. De tools zijn geïnstalleerd, Claude i
 
 ## Test jezelf
 
-Vijf korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
+Vier korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
 
 <div className="tutorial-quiz">
 
@@ -130,23 +135,29 @@ Tegen de tijd dat je bij Deel 5 bent, staat al het andere gereedschap klaar. Nex
 
 <div className="tutorial-quiz">
 
-**2. Welk Docker-profiel voeg je toe als je een Vue-frontend hot-reload wil?**
+**2. OpenRegister en OpenConnector zijn de twee apps die je als eerste installeert. Wat voor Conduction-werk zou je kunnen doen met *alleen* OpenRegister geïnstalleerd — en wat zou je opeens niet meer kunnen zonder OpenConnector?**
 
 <Details summary="Hint">
 
-Het profiel dat een aparte frontend-UI-container toevoegt.
+OpenRegister is de schema-gedreven object store. OpenConnector is de integratielaag. Denk na over welke van die twee een typische Conduction-tutorial daadwerkelijk raakt.
 
 </Details>
 
 <Details summary="Antwoord">
 
-Het **`ui`**-profiel:
+Met **alleen OpenRegister** kun je:
 
-```bash
-docker compose --profile ui up -d
-```
+- Registers aanmaken en schema's definiëren (de *hoe ziet deze data eruit*-laag).
+- Objecten aanmaken, bijwerken en bevragen via de API van OpenRegister.
+- Bestanden koppelen aan objecten (de tutorial [Bestanden uploaden bij een Woo-publicatie](/nl/academy/woo-bestanden-uploaden) heeft alleen OpenRegister nodig).
 
-Dat start een aparte frontend-UI-container die hot-reloadt bij bestandswijzigingen — de Vue dev-loop die het meeste Conduction-Vue-werk veronderstelt. Zonder dit profiel wordt de frontend vanuit Nextcloud zelf geserveerd en zie je wijzigingen pas na een rebuild.
+Zonder **OpenConnector** kun je niet:
+
+- Data ontvangen van een externe bron (formulieren, webhooks, geplande imports).
+- Data naar buiten pushen — naar PLOOI, een open-overheid.nl-endpoint of een ander extern systeem.
+- Een tutorial bouwen die een publiek formulier → Conduction-app-flow gebruikt ([Build an App](/nl/academy/build-an-app) heeft OpenConnector nodig voor de publieke-formulier-stap).
+
+De kortere versie: **OpenRegister bewaart; OpenConnector verplaatst**. Als de tutorial alleen data leest/schrijft binnen Nextcloud, is OpenRegister alleen genoeg. Zodra data de grens oversteekt, heb je OpenConnector nodig.
 
 </Details>
 
@@ -154,28 +165,7 @@ Dat start een aparte frontend-UI-container die hot-reloadt bij bestandswijziging
 
 <div className="tutorial-quiz">
 
-**3. Welke twee Conduction-apps installeer je als eerste in je lokale Nextcloud, en waarom?**
-
-<Details summary="Hint">
-
-De schema-gedreven store, en de integratielaag.
-
-</Details>
-
-<Details summary="Antwoord">
-
-- **OpenRegister** — de schema-gedreven object store. Elke Conduction-app leest en schrijft erdoorheen; zonder OpenRegister werkt feitelijk niets.
-- **OpenConnector** — de integratielaag (inkomende formulieren, uitgaande webhooks, sync-flows, periodieke jobs).
-
-Installeer andere apps (OpenCatalogi, OpenWoo, DeskDesk, …) wanneer de specifieke tutorial die je volgt erom vraagt. Probeer niet alles vooraf te installeren — dat kost tijd en vervuilt het menu.
-
-</Details>
-
-</div>
-
-<div className="tutorial-quiz">
-
-**4. Wanneer reset je de lokale Nextcloud met `clean-env.sh`, en wanneer hou je de bestaande state aan?**
+**3. Wanneer reset je de lokale Nextcloud met `clean-env.sh`, en wanneer hou je de bestaande state aan?**
 
 <Details summary="Hint">
 
@@ -196,19 +186,23 @@ De reset is goedkoop. Aarzel niet om hem te gebruiken als de tutorial erom vraag
 
 <div className="tutorial-quiz">
 
-**5. Wat is de URL van de lokale Nextcloud, en hoe lang duurt de eerste keer laden?**
+**4. Je bent gisteren halverwege DeskDesk-tutorial 3 gestopt — je lokale Nextcloud heeft een half afgebouwde kalender-app en een register vol testevenementen. Vandaag begin je met een schone lei aan de Build an App-tutorial. Reset je Nextcloud eerst, of laat je het zoals het is?**
 
 <Details summary="Hint">
 
-Localhost, een bekende poort, en de eerste keer haalt Docker een image binnen.
+Welke van de twee tutorials gaat uit van een schone Nextcloud? En wat kost het je als je *niet* reset terwijl dat wel had gemoeten?
 
 </Details>
 
 <Details summary="Antwoord">
 
-De URL is `http://localhost:8080`. **De eerste keer laden duurt ongeveer 3 minuten** terwijl Docker de officiële Nextcloud-image (~750 MB) binnenhaalt. Daarna duren volgende starts maar een paar seconden.
+**Resetten.** De Build an App-tutorial gaat uit van een schone Nextcloud — je loopt door het aanmaken van registers en schema's heen met namen die botsen met de restanten van DeskDesk (`incident`, `responder`, plus register-slugs die conflicteren met die van gisteren). Proberen door te modderen met de vervuilde state betekent dat je onverwachte validatiefouten gaat debuggen in plaats van de tutorial volgen.
 
-Reageert localhost:8080 helemaal niet, dan is de stack niet gestart: check met `docker compose ps` de containerstatus en met `docker compose logs nextcloud` of er foutmeldingen zijn.
+De reset is goedkoop: `bash clean-env.sh` (of `/clean-env`) breekt de stack af en reset de volumes, daarna brengt `docker compose up -d` alles weer omhoog — bij elkaar zo'n 30 seconden. De state van gisteren is weg, maar de state van gisteren was een half-afgemaakte oefening die je toch niet middenin een tutorial ging hervatten.
+
+Het omgekeerde geval — je bent gisteren halverwege DeskDesk 3 gestopt en gaat daar vandaag *verder* mee — is juist wanneer je de state **aanhoudt**. Je register-in-uitvoering staat er nog en je zou 20 minuten kwijt zijn met het opnieuw opzetten ervan.
+
+De vuistregel: **zelfde tutorial → aanhouden, nieuwe tutorial → resetten.**
 
 </Details>
 
