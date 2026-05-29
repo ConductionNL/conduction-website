@@ -1,0 +1,373 @@
+---
+slug: workstation-tutorial-2-basis-inrichten
+title: "Workstation Setup tutorial series — Part 2: Set up the basics"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-29
+summary: WSL2, Docker Desktop, VS Code with the right extensions, Node, PHP, the GitHub CLI, the OpenSpec CLI, and the Playwright browser. The longest part of the series — most of the time goes into downloads while you do something else. After this, you have a working dev workstation, just without Claude Code wired up yet.
+tags: [Workstation, Setup, WSL2, Docker, VS Code, Node, PHP, Tutorial series]
+apps: []
+durationMinutes: 60
+series: workstation-tutorial
+partNumber: 2
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+This is the part with the most install commands. WSL2, Docker Desktop, VS Code with the right extensions, the language runtimes (Node, PHP, Composer), the CLIs (`gh`, OpenSpec), and the Playwright Chromium binary. By the end of Part 2 you'll have a working dev workstation — just without Claude Code wired up yet. That's Part 3.
+
+{/* truncate */}
+
+<Outcomes title="What you'll deliver">
+  <Outcome>WSL2 + Ubuntu 24.04 running on your machine (Windows only).</Outcome>
+  <Outcome>Docker Desktop installed, integrated with WSL, and a working <code>docker</code> command inside WSL.</Outcome>
+  <Outcome>VS Code installed with the required Conduction extensions, connected to WSL.</Outcome>
+  <Outcome>Node 20+, PHP 8.1+, Composer, the <code>gh</code> CLI, the OpenSpec CLI, and the Playwright Chromium binary all installed inside WSL.</Outcome>
+  <Outcome>A verified working setup — every <code>--version</code> check at the end of the part returns a real version.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem><a href="/academy/workstation-tutorial-1-wat-installeer-je">Part 1</a> read through — you should know which combination of tools we're installing and why.</PrerequisiteItem>
+  <PrerequisiteItem>A laptop with admin rights and around 30 GB free disk space.</PrerequisiteItem>
+  <PrerequisiteItem>About an hour. Plan around the WSL2 reboot (early in the process) and the Playwright Chromium download (large, near the end).</PrerequisiteItem>
+</Prerequisites>
+
+## A note on macOS and Linux
+
+This part assumes **Windows 11**. If you're on macOS or Linux:
+
+- **macOS** — skip step 1 (WSL2) entirely. Replace `apt install` with `brew install` in the rest. Install Docker Desktop natively. The order and the verification commands stay the same.
+- **Linux native** — skip step 1 (WSL2). Install Docker Engine natively (not Docker Desktop). The order stays the same.
+
+Both alternatives are tested less thoroughly than the Windows path. If you hit something that doesn't translate cleanly, send a note via [Email us](mailto:info@conduction.nl) at the bottom.
+
+## Step 1: install WSL2 (Windows only)
+
+Open **PowerShell as Administrator** — right-click the Start button, pick "Terminal (Admin)" or "PowerShell (Admin)" — then:
+
+```powershell
+wsl --install -d Ubuntu-24.04
+```
+
+Restart your machine when prompted. After the reboot, Ubuntu finishes its first-time setup and asks you to create a Linux username and password. Pick a username you'll remember; the password is the `sudo` password for your Ubuntu install.
+
+Verify in PowerShell:
+
+```powershell
+wsl --version
+wsl -l -v
+```
+
+You should see `Ubuntu-24.04` running on WSL version 2.
+
+> **No reboot? Restart Ubuntu via `wsl --shutdown` in PowerShell, then re-open the Ubuntu app.** That clears nine out of ten "it just won't start" issues.
+
+## Step 2: install Docker Desktop
+
+Download **Docker Desktop for Windows** from [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/) and install it. After installation:
+
+1. Open Docker Desktop > **Settings** > **Resources** > **WSL Integration**.
+2. Enable integration with your **Ubuntu-24.04** distro.
+3. Click **Apply & Restart**.
+
+Open your Ubuntu terminal (Start menu → **Ubuntu**) and verify:
+
+```bash
+docker --version
+docker compose version
+```
+
+Both should return a version string. If `docker --version` reports "command not found" inside WSL, the WSL integration didn't apply — quit Docker Desktop fully (right-click tray icon → Quit), then start it again.
+
+## Step 3: install VS Code
+
+Download **Visual Studio Code** from [code.visualstudio.com](https://code.visualstudio.com/) and install it on Windows (not inside WSL).
+
+Then connect it to WSL:
+
+1. Open VS Code.
+2. `Ctrl+Shift+X` to open Extensions, install **WSL** (`ms-vscode-remote.remote-wsl`) on the **Windows side**. This one really must be on Windows, not WSL.
+3. `Ctrl+Shift+P` > **"WSL: Connect to WSL"**.
+4. Pick **Ubuntu-24.04**.
+
+VS Code installs its server component inside WSL automatically. From now on, every VS Code terminal lives inside WSL.
+
+## Step 4: install VS Code extensions
+
+Inside the WSL-connected VS Code window, install these. Easiest is from the WSL terminal:
+
+```bash
+code --install-extension anthropic.claude-code
+code --install-extension ms-azuretools.vscode-docker
+code --install-extension bmewburn.vscode-intelephense
+code --install-extension vue.volar
+code --install-extension dbaeumer.vscode-eslint
+code --install-extension ms-python.python
+code --install-extension eamodio.gitlens
+code --install-extension redhat.vscode-yaml
+code --install-extension github.vscode-github-actions
+```
+
+That covers the required + recommended set for a Conduction project. See [workstation-setup.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md#4-install-vs-code-extensions) for the optional ones.
+
+## Step 5: install Node (via nvm)
+
+All Node work happens **inside WSL**, never on the Windows side. Use `nvm` so you can switch versions per project without sudo:
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+source ~/.bashrc
+nvm install 20
+nvm alias default 20
+```
+
+Verify:
+
+```bash
+node --version    # v20.x
+npm --version     # 10.x
+```
+
+> **Why Node 20, not the latest?** Docusaurus 3.x and the OpenSpec CLI both want Node 20+ — and a few of our internal tools haven't been tested on Node 22 yet. Stick to 20 LTS until you have a reason not to.
+
+## Step 6: install PHP 8.1+ and Composer
+
+```bash
+sudo apt update
+sudo apt install -y php8.1-cli php8.1-xml php8.1-mbstring php8.1-curl php8.1-zip unzip
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+```
+
+Verify:
+
+```bash
+php --version       # 8.1+
+composer --version  # 2.x
+```
+
+> **Use phpcs v3, not v4, when a project asks for it.** The CI is pinned to v3 and v4 breaks the shared `phpcs.xml` config. If a `composer install` later tries to upgrade, override with `composer require --dev "squizlabs/php_codesniffer:^3.9"`.
+
+## Step 7: install the GitHub CLI
+
+```bash
+sudo apt install -y gh
+gh auth login
+```
+
+Pick **GitHub.com** → **HTTPS** → **Login with a web browser** and follow the device-flow prompt. If your work GitHub uses SSO, make sure your default browser is Edge or Chrome — Firefox has been known to drop the SSO callback silently.
+
+Verify:
+
+```bash
+gh --version
+gh auth status
+```
+
+Both should print a green checkmark. The `gh auth status` line ends with your GitHub username.
+
+## Step 8: install the OpenSpec CLI
+
+Used by all `/opsx-*` skills for spec-driven development:
+
+```bash
+npm install -g @fission-ai/openspec
+openspec --version
+```
+
+> **Do NOT run `openspec init`** inside a Conduction project — those projects already have a customised `openspec/` directory. Running `init` overwrites them.
+
+## Step 9: install the Playwright Chromium binary
+
+The Playwright MCP browsers (used by our testing skills) need Chromium installed once on this machine:
+
+```bash
+npx playwright install chromium
+```
+
+The download is ~300 MB. Run it on a stable connection — not on the train.
+
+## Step 10: verify everything
+
+A clean dev workstation passes this checklist with no errors:
+
+```bash
+node --version            # v20.x
+npm --version             # 10.x
+php --version             # 8.1+
+composer --version        # 2.x
+docker --version          # 24+
+docker compose version    # 2.x
+gh --version              # 2.x
+gh auth status            # green checkmark + your username
+openspec --version        # 1.x
+npx playwright --version  # 1.x
+```
+
+If every command returns a real version and `gh auth status` is green, you're done with Part 2. Otherwise, jump to Troubleshooting below.
+
+<Troubleshooting title="Troubleshooting">
+  <TroubleshootingItem symptom="WSL2 won't install: 'WSL is not supported on this version of Windows'">
+    You're probably on Windows 10 without the latest cumulative update, or on Home edition without virtualisation enabled. Update Windows, then enable <strong>Virtual Machine Platform</strong> and <strong>Windows Subsystem for Linux</strong> via <em>Turn Windows features on or off</em>. Reboot and retry.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="docker command not found inside WSL after Docker Desktop install">
+    The WSL integration didn't take. Open Docker Desktop > Settings > Resources > WSL Integration, toggle Ubuntu-24.04 off and on again, click Apply & Restart. Then re-open the Ubuntu terminal.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="composer install fails with 'vendor/ is owned by root'">
+    Happens after the first Docker run inside a project — Docker created <code>vendor/</code> as root. Two fixes: (1) <code>sudo chown -R $USER:$USER vendor/</code> and rerun, or (2) install phpcs globally with <code>composer global require "squizlabs/php_codesniffer:^3.9"</code> and skip <code>composer install</code> for now.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="gh auth login opens the wrong browser and SSO never completes">
+    If your work GitHub uses SSO and Firefox is the default browser, the callback can drop silently. Set Edge or Chrome as the default browser and rerun <code>gh auth login --web</code>.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="npx playwright install chromium hangs or times out">
+    The download is ~300 MB. On a slow connection it can look stuck. Wait it out, or rerun on a faster network. If it really refuses, set <code>HTTPS_PROXY</code> and try again from a network where the proxy resolves.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+## Test yourself
+
+Five short questions to check that this part landed. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. Why do we install Node, PHP and the rest *inside WSL* instead of on the Windows side?**
+
+<Details summary="Hint">
+
+Think about which file system the tooling reads and writes, and which shell scripts later steps will run.
+
+</Details>
+
+<Details summary="Answer">
+
+Because every later step — Composer, the OpenSpec CLI, the `gh` CLI, the global Claude safety hooks (Part 3) — assumes a POSIX shell and Linux file paths.
+
+Installing Node or PHP on Windows leads to two trips through path translation (`\\wsl$\...` ↔ `C:\Users\...`), inconsistent line endings, and bash hooks that just don't run. The rule of thumb: **anything you'll run from a shell goes inside WSL; editor and Docker Desktop run on Windows**.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. The Docker command works in Windows PowerShell but not inside WSL. What's the most likely cause?**
+
+<Details summary="Hint">
+
+Docker Desktop runs on Windows. It needs an explicit step to be reachable from WSL.
+
+</Details>
+
+<Details summary="Answer">
+
+The **WSL Integration** wasn't enabled (or didn't apply) for your Ubuntu distro. Open Docker Desktop > Settings > Resources > WSL Integration, toggle your Ubuntu distro off and on, click Apply & Restart. Then re-open the Ubuntu terminal.
+
+If that still doesn't help, quit Docker Desktop fully (right-click tray icon → Quit) and start it again. That clears the last 10% of cases.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Why do we install the WSL extension for VS Code on the *Windows side*, and the rest on the *WSL side*?**
+
+<Details summary="Hint">
+
+The WSL extension does one specific thing the others don't.
+
+</Details>
+
+<Details summary="Answer">
+
+The **WSL extension** is what *connects* VS Code on Windows to a remote VS Code Server inside WSL — that step has to live on Windows. Once that connection is up, the other extensions (Claude Code, Volar, ESLint, Intelephense, Docker) need access to your code, your `node_modules`, and your shell — so they install on the **WSL side**, against the same file system as your project.
+
+Installing language extensions on Windows when the code lives in WSL gives you broken IntelliSense, slow file watchers, and confusing path errors. Keep the rule simple: **WSL extension on Windows, everything else inside WSL.**
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. How do you verify the `gh` CLI is correctly wired to your GitHub account?**
+
+<Details summary="Hint">
+
+One command, two pieces of information: it should print a green checkmark and your username.
+
+</Details>
+
+<Details summary="Answer">
+
+```bash
+gh auth status
+```
+
+A correctly-configured `gh` prints something like:
+
+```
+github.com
+  ✓ Logged in to github.com as wilcoLouwerse (oauth_token)
+  ✓ Git operations for github.com configured to use https protocol.
+  ✓ Token: gho_***************
+```
+
+If the checkmark is red or the username is missing, run `gh auth login` again. If your work GitHub uses SSO, your default browser should be Edge or Chrome — Firefox has been known to drop the callback silently.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. Which command tells you in one go that your full Conduction workstation has the right runtimes installed?**
+
+<Details summary="Hint">
+
+There isn't a single command — it's a checklist of `--version` calls.
+
+</Details>
+
+<Details summary="Answer">
+
+There's no one "doctor" command. The verification checklist from Step 10 is:
+
+```bash
+node --version
+npm --version
+php --version
+composer --version
+docker --version
+docker compose version
+gh --version
+gh auth status
+openspec --version
+npx playwright --version
+```
+
+If every line returns a real version and `gh auth status` is green, your machine has the runtimes Part 3 onwards will need. If anything is missing or fails, jump to the Troubleshooting section above and fix it before moving on — Part 3 assumes all of these work.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="With the runtimes installed, it's time to wire up Claude Code itself — and, just as importantly, the global safety hooks.">
+  <NextStep
+    title="Part 3 — Install and configure Claude Code"
+    href="/academy/workstation-tutorial-3-claude-code"
+    description="Install Claude Code, sign in, install the mandatory global settings and safety hooks. Short and important."
+  />
+  <NextStep
+    title="The canonical workstation-setup.md"
+    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md"
+    description="The internal reference doc with the long-form versions of every step above."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Stuck halfway through?"
+  body="Don't lose an evening on a single broken installer. Send us an email or grab your team lead — it's often a five-minute fix once someone with the context looks at it."
+  cta={{ label: "Email us", href: "mailto:info@conduction.nl?subject=Workstation%20setup%20tutorial%20part%202" }}
+/>

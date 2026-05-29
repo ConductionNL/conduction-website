@@ -1,0 +1,239 @@
+---
+slug: workstation-tutorial-5-nextcloud-lokaal
+title: "Workstation Setup tutorial series — Part 5: Run Nextcloud locally"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-29
+summary: A working Conduction workstation needs a Nextcloud you can test against. That tutorial already exists — this short module frames it as the last install step before you're production-ready, and tells you which apps to install once Nextcloud is up. Fifth of six short modules.
+tags: [Workstation, Nextcloud, Docker, Tutorial series]
+apps: []
+durationMinutes: 5
+series: workstation-tutorial
+partNumber: 5
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+A workstation without a Nextcloud is half a workstation. Nearly every other tutorial in the academy assumes you have one running on `localhost:8080`. The good news: a dedicated tutorial already covers this end to end. This module is a short bridge that explains *why* you do it now, *which* Conduction apps to install once it's up, and *how* this part connects to the rest of the series.
+
+{/* truncate */}
+
+<Outcomes title="What you'll deliver">
+  <Outcome>A Nextcloud running on <code>http://localhost:8080</code> with an admin account you control.</Outcome>
+  <Outcome>The Conduction apps you need — OpenRegister and OpenConnector at minimum — installed from the Nextcloud app store.</Outcome>
+  <Outcome>A clear idea of when to use a fresh install (the next OpenSpec change) and when to keep the existing one (continuing yesterday's work).</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem><a href="/academy/workstation-tutorial-4-mcp-server">Part 4</a> done — Docker is running, the MCP browser pool is connected.</PrerequisiteItem>
+  <PrerequisiteItem>About half an hour, mostly Docker pulling images.</PrerequisiteItem>
+</Prerequisites>
+
+## The actual install lives elsewhere
+
+This is the only part of the series we don't re-explain. The existing **[Run Nextcloud locally with Docker](/academy/nextcloud-lokaal-draaien)** tutorial walks through every step — Docker Desktop, the compose file, the first-time admin account, the app store, the cleanup command — for a reader who has never touched Docker or a terminal before.
+
+You're not that reader anymore. You've done Parts 1–4. So skim it rather than read it word for word; the key steps are:
+
+1. **Clone or open the Nextcloud workspace** — typically `apps-extra/` or whichever folder hosts the `docker-compose.yml`.
+2. **Start the stack**: `docker compose up -d` (default profile: db + nextcloud + n8n).
+3. **Visit `http://localhost:8080`** — first load is ~3 minutes while Docker pulls the official Nextcloud image.
+4. **Create the admin account** (e.g. `admin` / `admin` for local work — never reuse this for anything public).
+5. **Install Conduction apps from the app store** (the next section lists which ones).
+6. **When done for the day**: `bash clean-env.sh` or `/clean-env` skill — tears down the stack and resets volumes.
+
+Detailed prose, screenshots, troubleshooting: in [Run Nextcloud locally with Docker](/academy/nextcloud-lokaal-draaien). Go do it, then come back.
+
+## Which Docker profile do you want?
+
+The default `docker compose up -d` brings up **db + nextcloud + n8n**. That's enough for most Conduction work. For specific scenarios, add a profile:
+
+| Profile | Adds | Use when |
+| --- | --- | --- |
+| `ai` | AI/LLM services | You're working on a Conduction app that calls Claude or another LLM via the platform |
+| `ui` | Separate frontend UI container | You're working on a Vue dev loop that hot-reloads |
+| `exapps` | ExApp sidecar containers | You're building a Nextcloud ExApp (Python sidecar) |
+| `solr` / `elasticsearch` | Search backends | You're testing search behaviour beyond Nextcloud's defaults |
+| `ollama` | Local LLM via Ollama | You want to pair Claude (online) with a local Qwen for overnight jobs |
+| `mariadb` | MariaDB instead of the default DB | A specific app needs MariaDB compatibility |
+
+You start a profile by adding `--profile <name>` to the compose command:
+
+```bash
+docker compose --profile ui --profile exapps up -d
+```
+
+For most starting work the default profile is fine. See the [canonical docker.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/docker.md) for the full list.
+
+## Which Conduction apps to install first
+
+Once the admin account is up, install at minimum:
+
+- **OpenRegister** — the schema-backed object store every Conduction app reads and writes through. Without it, nothing else works.
+- **OpenConnector** — the integration layer for inbound and outbound flows (forms, webhooks, sync, periodic jobs).
+
+Both install directly from the Nextcloud app store inside your local Nextcloud. Search for the app name, click **Download and enable**.
+
+Two more apps that show up in many tutorials, install when needed:
+
+- **OpenCatalogi** — catalogs publications, registers, and consumer-facing portals.
+- **OpenWoo** — the public-records register that the Woo tutorials use.
+
+You don't need to install every Conduction app. Install what the tutorial you're following asks for and ignore the rest until you need it.
+
+## Fresh install or keep the existing one?
+
+A question that comes up a lot once you've used the local Nextcloud for a while:
+
+- **Keep it** when continuing on the same change. Schemas you imported yesterday, test objects you created — all still there. Most of the time you keep it.
+- **Reset it** when a tutorial says *"start from a clean Nextcloud"*. That's almost always the case for the **Build an App** and **DeskDesk** series. Reset with `bash clean-env.sh` or the `/clean-env` skill. Takes 30 seconds, then `docker compose up -d` again.
+
+The cleanup is fast because Docker volumes are pulled afresh — it's not a slow Windows-style "uninstall and reinstall". Don't be precious about your local state.
+
+## How this fits in the workstation chain
+
+A quick recap before Part 6:
+
+1. Part 1 — **what** you install, and why.
+2. Part 2 — **runtimes** and CLIs (WSL2, Docker, Node, PHP, `gh`, OpenSpec, Playwright).
+3. Part 3 — **Claude Code** and the mandatory safety hooks.
+4. Part 4 — **MCP browser pool** so Claude can drive a browser for testing.
+5. Part 5 — **Nextcloud** so there's something to drive *against*.
+6. Part 6 — **what now?** — a map of the next tutorials.
+
+After this part your workstation is *complete*. The tools are installed, Claude is wired up with safety, the browsers can drive the UI, and Nextcloud is running with the apps you need. Part 6 is the lap of honour.
+
+## Test yourself
+
+Five short questions to check that this part landed. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. Why is Nextcloud locally the *last* install step rather than an earlier one?**
+
+<Details summary="Hint">
+
+It's not about installation order being arbitrary — it's about what each earlier part gives you.
+
+</Details>
+
+<Details summary="Answer">
+
+Because the earlier parts deliver the toolchain — Docker (Part 2), Claude Code (Part 3), the browser pool (Part 4) — that you need to *use* the local Nextcloud productively. Installing Nextcloud first would give you a working server with no AI assistant, no automated tests, and no easy way to inspect it from VS Code.
+
+By the time you reach Part 5, every other tool is in place. Bringing up Nextcloud is the moment your workstation starts to feel like a *workstation*, not a pile of installers.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Which Docker profile do you add when you want to hot-reload a Vue frontend?**
+
+<Details summary="Hint">
+
+The one that adds a separate frontend UI container.
+
+</Details>
+
+<Details summary="Answer">
+
+The **`ui`** profile:
+
+```bash
+docker compose --profile ui up -d
+```
+
+It starts a separate frontend UI container that hot-reloads on file changes — the Vue dev-loop most Conduction Vue work assumes. Without it, the frontend is served from inside Nextcloud and changes only show after a rebuild.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Which two Conduction apps should you install first inside your local Nextcloud, and why?**
+
+<Details summary="Hint">
+
+The schema-backed store, and the integration layer.
+
+</Details>
+
+<Details summary="Answer">
+
+- **OpenRegister** — the schema-backed object store. Every Conduction app reads and writes through it; nothing else really works without it.
+- **OpenConnector** — the integration layer (inbound forms, outbound webhooks, sync flows, periodic jobs).
+
+Install other apps (OpenCatalogi, OpenWoo, DeskDesk, …) when the specific tutorial you're following asks for them. Don't try to install everything upfront — you'll waste time and clutter the menu.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. When do you reset the local Nextcloud with `clean-env.sh`, and when do you keep the existing state?**
+
+<Details summary="Hint">
+
+The two answers map cleanly: same change → keep, new tutorial demanding a clean state → reset.
+
+</Details>
+
+<Details summary="Answer">
+
+- **Keep it** when continuing on the same change. Yesterday's schemas, test objects, and config are still in the volumes — and you usually want them.
+- **Reset it** when a tutorial says *"start from a clean Nextcloud"*. The Build an App and DeskDesk series usually do. Reset with `bash clean-env.sh` (or the `/clean-env` skill), then `docker compose up -d` again — about 30 seconds.
+
+The reset is cheap. Don't hesitate to use it when the tutorial calls for it; trying to "make do" with a dirty environment costs more time than the reset itself.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. What's the URL of the local Nextcloud, and how long does the first load take?**
+
+<Details summary="Hint">
+
+Localhost, a familiar port, and the first time goes through Docker pulling an image.
+
+</Details>
+
+<Details summary="Answer">
+
+The URL is `http://localhost:8080`. **First load takes about 3 minutes** while Docker pulls the official Nextcloud image (~750 MB) for the first time. After that, subsequent starts take a few seconds.
+
+If localhost:8080 doesn't respond at all, the stack didn't start: check `docker compose ps` to see container state, and `docker compose logs nextcloud` for errors.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="Your workstation is complete. Time for the lap of honour — what you do next now that you can actually build.">
+  <NextStep
+    title="Part 6 — Done, what now?"
+    href="/academy/workstation-tutorial-6-klaar-wat-nu"
+    description="The map of the next tutorials: OpenSpec, Claude Skills, Build an App, Hydra. Where to go for what kind of work."
+  />
+  <NextStep
+    title="Run Nextcloud locally with Docker"
+    href="/academy/nextcloud-lokaal-draaien"
+    description="The full step-by-step Nextcloud install — screenshots, troubleshooting, cleanup. Read it once."
+  />
+  <NextStep
+    title="The canonical docker.md"
+    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/docker.md"
+    description="Internal reference with the full Docker profile list and example compose commands."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Nextcloud refusing to start?"
+  body="Almost always a port conflict (something else on :8080) or a stale Docker volume. Send us the output of docker compose ps and we'll spot it quickly."
+  cta={{ label: "Email us", href: "mailto:info@conduction.nl?subject=Workstation%20setup%20tutorial%20part%205" }}
+/>

@@ -1,0 +1,256 @@
+---
+slug: workstation-tutorial-6-klaar-wat-nu
+title: "Workstation Setup tutorial series — Part 6: Done — what now?"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-29
+summary: Your workstation is complete. This is the lap of honour — a short map of the next tutorials, grouped by what kind of work you'll do. OpenSpec, Claude Skills, Build an App, Hydra — what each one is for, and where to start. Sixth and final of six short modules.
+tags: [Workstation, Onboarding, Roadmap, Tutorial series]
+apps: []
+durationMinutes: 8
+series: workstation-tutorial
+partNumber: 6
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, ContactCta, HexCard} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+Your workstation is complete. WSL2, Docker, VS Code with the right extensions, Claude Code with the safety hooks live, the MCP browser pool connected, Nextcloud running locally with the apps you need. Take a moment to feel good about that — most new Conduction developers used to lose one or two days to this; you've done it in one evening. This last part is a short map of the *next* tutorials, grouped by what kind of work you'll do.
+
+{/* truncate */}
+
+<Outcomes title="What you'll take away">
+  <Outcome>A clear picture of which tutorial to do next, depending on what you'll be working on.</Outcome>
+  <Outcome>Pointers to the four pillars of the Conduction way of work: OpenSpec, Claude Skills, Build an App, and Hydra.</Outcome>
+  <Outcome>An honest sense of how long it takes to become productive on a Conduction project (spoiler: another evening or two).</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>Parts 1–5 done. If anything is still red, fix that first — the tutorials below assume a working setup.</PrerequisiteItem>
+</Prerequisites>
+
+## The four pillars
+
+Almost every Conduction tutorial leans on one of four pillars. Pick the one that matches your first real task:
+
+<HexCard title="OpenSpec — spec-first development">
+  Every change to every app starts as a spec. Two short modules (~30 min total) teach you the concepts and walk you through your first change.
+</HexCard>
+
+<HexCard title="Claude Skills — bundled AI behaviour">
+  Custom slash-commands that Claude Code loads on demand. Four short modules teach you to read and write skills, and the maturity framework we measure them against.
+</HexCard>
+
+<HexCard title="Build an App — your first published app">
+  A 30-minute teaser that takes you from a fresh Nextcloud to a published app. Or the longer DeskDesk series for the proper tour.
+</HexCard>
+
+<HexCard title="Hydra — agentic CI/CD pipeline">
+  The platform that turns OpenSpec changes into reviewed, tested PRs. Six modules; mostly relevant once you're comfortable with the first three pillars.
+</HexCard>
+
+## Which one first?
+
+Honest answer: **OpenSpec, then either Skills or Build an App, then Hydra last**. The order matters because:
+
+- OpenSpec is the substrate. Every change to every app — including the next four tutorials' worth of changes — is shaped as an OpenSpec change. Skipping it makes the rest harder to read.
+- Skills and Build an App are sideways from each other. Pick the one closer to your first task.
+- Hydra is the most opinionated and the most internal. Save it for when you're confident with the previous three.
+
+### If your first task involves writing actual code
+
+Start with **[OpenSpec Part 1](/academy/openspec-tutorial-1-wat-is-openspec)** (~12 min) — what OpenSpec is, the four core concepts. Then **[OpenSpec Part 2](/academy/openspec-tutorial-2-eerste-change)** (~22 min) — your first change end-to-end.
+
+After that, jump to **[Build an App](/academy/build-an-app)** for the 30-minute teaser, or **[DeskDesk Tutorial 0](/academy/deskdesk-tutorial-0-three-paths)** if you want the honest map of how Conduction apps actually get built (it lists three paths and explains why we teach the third).
+
+### If your first task involves writing tooling or skills
+
+Start the same way — **[OpenSpec Part 1](/academy/openspec-tutorial-1-wat-is-openspec)** and **[Part 2](/academy/openspec-tutorial-2-eerste-change)** — because skills are versioned and specified the same way as app code. Then go to **[Claude Skills Part 1](/academy/claude-skills-tutorial-1-wat-zijn-claude-skills)** (~12 min) — what a skill is, when not to write one. **Parts 2–4** of that series take you through writing your first skill and the maturity framework that turns "feels good" into "measured good".
+
+### If your first task is about Hydra itself
+
+You still want OpenSpec under your belt first. After that, **[Hydra Part 1](/academy/hydra-tutorial-1-wat-is-hydra)** (~10 min) — what Hydra is, four container personas, when not to use it. The series has six parts; budget an afternoon for the full read.
+
+## What's *not* covered by these tutorials
+
+A few areas you'll meet at Conduction that don't have a dedicated tutorial series yet:
+
+- **The day-to-day Claude Code workflow** — the [getting-started.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/getting-started.md) doc in the `.github` repo is the closest to a single-page workflow primer.
+- **Frontend standards** — covered in [frontend-standards.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/frontend-standards.md). Worth a skim before your first Vue PR.
+- **Testing skills in depth** — `/test-app`, `/test-counsel` and the `hydra-gate-*` family are documented in [testing.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/testing.md). Read on demand, not upfront.
+- **The local LLM workflow (Ollama + Qwen)** — see [local-llm.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/local-llm.md). Optional, useful if you want overnight batch jobs.
+
+These are reference docs, not tutorials. Use them when a specific question comes up; don't try to read them upfront.
+
+## A note on Pluvo
+
+Every Conduction tutorial in the academy ends with the **Test yourself** quiz block — five questions per part with Hint and Answer fold-outs. Internally we call those **Pluvo questions** (after the spaced-repetition tool we use). The answers are not exam questions; they're a self-check that the part actually landed. If you blank on three out of five, the part is probably worth a re-read.
+
+For this series specifically, the Pluvo questions cover:
+
+| Part | Sample question |
+| --- | --- |
+| 1 — Overview | Which OS + tooling combination does Conduction recommend, and why? |
+| 2 — Basics | Why install Node and PHP inside WSL rather than on the Windows side? |
+| 3 — Claude Code | What's the difference between global and project-level Claude settings? |
+| 4 — MCP | Which two settings pre-approve the MCP browsers so background agents aren't blocked? |
+| 5 — Nextcloud | When to reset the local Nextcloud, and when to keep the existing state? |
+| 6 — What now? | (the questions below) |
+
+Spend ten minutes on the Pluvo blocks before declaring a part "done" — that's the easiest way to make this knowledge stick.
+
+## How long does this all take?
+
+A rough honest estimate, on a clean Windows machine:
+
+- **This workstation series**: one evening (~3 hours clock, ~1 hour hands-on).
+- **OpenSpec Parts 1+2**: one short session (~45 minutes).
+- **Claude Skills Parts 1–2 or Build an App**: one evening (~2 hours).
+- **First real Conduction PR**: another evening (~2 hours of pair work with someone who already knows the stack).
+
+So roughly **three evenings** from clean laptop to first merged PR. That's the target; it varies with how much terminal + Git muscle memory you bring in.
+
+## Test yourself
+
+Five short questions to check that this part landed. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. What's the first tutorial series you do *after* finishing this Workstation Setup chain — and why that one?**
+
+<Details summary="Hint">
+
+It's the substrate underneath everything else.
+
+</Details>
+
+<Details summary="Answer">
+
+**The [OpenSpec tutorial series](/academy/openspec-tutorial-1-wat-is-openspec)** — two short parts, ~30 minutes total.
+
+Why first: every change to every Conduction app — including the tutorials *after* OpenSpec — is shaped as an OpenSpec change. Skipping it makes the rest of the academy harder to read because you'll be guessing at the structure of every `proposal.md`, `tasks.md` and spec-delta you see.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Which series do you pick if your first task is to write a Claude Skill rather than an app feature?**
+
+<Details summary="Hint">
+
+Still do OpenSpec first; then there's one obvious series.
+
+</Details>
+
+<Details summary="Answer">
+
+**[Claude Skills Part 1](/academy/claude-skills-tutorial-1-wat-zijn-claude-skills)** through **Part 4**. Four short modules: what a skill is, your first skill, evals (measurement), and the L6/L7 maturity levels.
+
+OpenSpec still comes first because skills are versioned and specified the same way as app code. Without it, you won't know what's expected in a skill's `proposal.md`.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Why is the Hydra tutorial series saved for *after* OpenSpec, Skills, and Build an App?**
+
+<Details summary="Hint">
+
+Two reasons — one about prerequisites, one about scope.
+
+</Details>
+
+<Details summary="Answer">
+
+Two reasons:
+
+1. **Hydra builds on top of OpenSpec and Skills.** It runs `/opsx-*` skills against OpenSpec changes inside containers. Without those two pillars first, the Hydra tutorials read like a foreign language.
+2. **It's the most internal and most opinionated of the four pillars.** Many new developers won't touch Hydra in their first month; the ones who do should already be comfortable with the rest of the stack.
+
+So: OpenSpec → Skills (or Build an App) → Hydra. If you want a one-pager preview before reading the full series, the [hydra/README.md](https://github.com/ConductionNL/.github/blob/main/docs/hydra/README.md) in the `.github` repo is a good warm-up.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Where do you go for the day-to-day Claude Code workflow that isn't covered by these tutorial series?**
+
+<Details summary="Hint">
+
+A doc in the `.github` repo — the closest thing to a single-page workflow primer.
+
+</Details>
+
+<Details summary="Answer">
+
+**[getting-started.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/getting-started.md)** in the `ConductionNL/.github` repo. It's the workflow primer that walks you through opening a Conduction project, finding your way around, and running your first `/opsx-*` cycle.
+
+It's a reference doc rather than a tutorial — read it once after you've finished OpenSpec, then come back when something specific is unclear.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. Roughly how many evenings does it take to go from a clean laptop to a first merged Conduction PR?**
+
+<Details summary="Hint">
+
+This series, then OpenSpec, then one of Skills/Build an App, then a real PR.
+
+</Details>
+
+<Details summary="Answer">
+
+About **three evenings** on average:
+
+- Evening 1 — this Workstation Setup series (~3 hours clock, ~1 hour hands-on).
+- Evening 2 — OpenSpec Parts 1+2 (~45 min) and either Claude Skills Parts 1–2 or Build an App (~2 hours).
+- Evening 3 — your first real Conduction PR, ideally paired with someone who already knows the stack (~2 hours).
+
+It varies with how much Git, terminal, and Vue/PHP muscle memory you bring in, but three evenings is a fair planning number.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next steps" lede="You're done with the workstation series. Below are the four pillars in the order most new developers actually do them.">
+  <NextStep
+    title="OpenSpec tutorial series — Part 1"
+    href="/academy/openspec-tutorial-1-wat-is-openspec"
+    description="What OpenSpec is, why we work spec-first, and the four core concepts. The substrate under everything else."
+  />
+  <NextStep
+    title="Claude Skills tutorial series — Part 1"
+    href="/academy/claude-skills-tutorial-1-wat-zijn-claude-skills"
+    description="What a Claude Skill is, when to write one (and when not to), and how Claude triggers them."
+  />
+  <NextStep
+    title="Build an App — 30-minute teaser"
+    href="/academy/build-an-app"
+    description="From a fresh Nextcloud to a published app in half an hour. The shortest path from setup to running code."
+  />
+  <NextStep
+    title="DeskDesk tutorial series — Part 0"
+    href="/academy/deskdesk-tutorial-0-three-paths"
+    description="The honest map of the three ways Conduction apps get built — and why we teach the manifest path."
+  />
+  <NextStep
+    title="Hydra tutorial series — Part 1"
+    href="/academy/hydra-tutorial-1-wat-is-hydra"
+    description="What Hydra is, the four container personas, when not to use it. Save this one for later."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Made it this far?"
+  body="Send us a note — we like hearing from people who finish the chain. And if anything in the series was unclear, we'd rather hear it now than have the next person hit the same wall."
+  cta={{ label: "Email us", href: "mailto:info@conduction.nl?subject=Workstation%20setup%20tutorial%20part%206%20%E2%80%94%20done" }}
+/>

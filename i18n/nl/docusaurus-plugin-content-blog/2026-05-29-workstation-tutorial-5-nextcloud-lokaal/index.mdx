@@ -1,0 +1,239 @@
+---
+slug: workstation-tutorial-5-nextcloud-lokaal
+title: "Workstation Setup leerlijn — Deel 5: Nextcloud lokaal draaien"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-29
+summary: Een werkende Conduction-workstation heeft een Nextcloud nodig waarop je kunt testen. Die tutorial bestaat al — deze korte module plaatst hem als de laatste installatiestap voordat je productieklaar bent, en vertelt je welke apps je installeert zodra Nextcloud draait. Vijfde van zes korte modules.
+tags: [Workstation, Nextcloud, Docker, Tutorial series]
+apps: []
+durationMinutes: 5
+series: workstation-tutorial
+partNumber: 5
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+Een workstation zonder Nextcloud is een halve workstation. Bijna elke andere tutorial in de academy gaat ervan uit dat je er een hebt draaien op `localhost:8080`. Het goede nieuws: er is al een speciale tutorial die dit van begin tot eind behandelt. Deze module is een korte brug die uitlegt *waarom* je het nu doet, *welke* Conduction-apps je installeert zodra het draait, en *hoe* dit deel aansluit op de rest van de serie.
+
+{/* truncate */}
+
+<Outcomes title="Wat je oplevert">
+  <Outcome>Een Nextcloud die draait op <code>http://localhost:8080</code> met een admin-account dat jij beheert.</Outcome>
+  <Outcome>De Conduction-apps die je nodig hebt — minimaal OpenRegister en OpenConnector — geïnstalleerd vanuit de Nextcloud app store.</Outcome>
+  <Outcome>Een helder beeld van wanneer je een verse installatie gebruikt (de volgende OpenSpec-wijziging) en wanneer je de bestaande aanhoudt (verdergaan met gisteren).</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem><a href="/nl/academy/workstation-tutorial-4-mcp-server">Deel 4</a> afgerond — Docker draait en de MCP browser pool is verbonden.</PrerequisiteItem>
+  <PrerequisiteItem>Ongeveer een half uur, voornamelijk Docker die images binnenhaalt.</PrerequisiteItem>
+</Prerequisites>
+
+## De eigenlijke installatie staat ergens anders
+
+Dit is het enige deel van de serie dat we niet opnieuw uitleggen. De bestaande **[Nextcloud lokaal draaien met Docker](/nl/academy/nextcloud-lokaal-draaien)**-tutorial doorloopt elke stap — Docker Desktop, het compose-bestand, het eerste admin-account, de app store, het opruimcommando — voor een lezer die nog nooit Docker of een terminal heeft gebruikt.
+
+Jij bent die lezer niet meer. Je hebt Deel 1 t/m 4 gedaan. Skim hem dus liever dan dat je hem woord voor woord leest; de belangrijkste stappen zijn:
+
+1. **Open of clone de Nextcloud-werkmap** — meestal `apps-extra/` of welke map de `docker-compose.yml` ook bevat.
+2. **Start de stack**: `docker compose up -d` (standaardprofiel: db + nextcloud + n8n).
+3. **Ga naar `http://localhost:8080`** — de eerste keer laden duurt ~3 minuten terwijl Docker de officiële Nextcloud-image binnenhaalt.
+4. **Maak het admin-account aan** (bijv. `admin` / `admin` voor lokaal werk — gebruik dit nooit opnieuw voor iets dat publiek bereikbaar is).
+5. **Installeer Conduction-apps vanuit de app store** (de volgende sectie geeft aan welke).
+6. **Klaar voor vandaag**: `bash clean-env.sh` of de `/clean-env`-skill — breekt de stack af en reset de volumes.
+
+Uitgebreide tekst, screenshots, probleemoplossing: in [Nextcloud lokaal draaien met Docker](/nl/academy/nextcloud-lokaal-draaien). Doe het, en kom daarna terug.
+
+## Welk Docker-profiel wil je?
+
+Het standaard `docker compose up -d` start **db + nextcloud + n8n**. Dat is voor het meeste Conduction-werk genoeg. Voor specifieke scenario's voeg je een profiel toe:
+
+| Profiel | Voegt toe | Gebruik wanneer |
+| --- | --- | --- |
+| `ai` | AI/LLM-diensten | Je werkt aan een Conduction-app die Claude of een andere LLM via het platform aanroept |
+| `ui` | Aparte frontend-UI-container | Je werkt op een Vue dev-loop die hot-reloadt |
+| `exapps` | ExApp sidecar-containers | Je bouwt een Nextcloud ExApp (Python sidecar) |
+| `solr` / `elasticsearch` | Zoek-backends | Je test zoekgedrag dat verder gaat dan de standaard van Nextcloud |
+| `ollama` | Lokale LLM via Ollama | Je wilt Claude (online) combineren met een lokale Qwen voor nachtelijke jobs |
+| `mariadb` | MariaDB in plaats van de standaard DB | Een specifieke app heeft MariaDB-compatibiliteit nodig |
+
+Je start een profiel door `--profile <naam>` toe te voegen aan het compose-commando:
+
+```bash
+docker compose --profile ui --profile exapps up -d
+```
+
+Voor het meeste beginwerk volstaat het standaardprofiel. Zie de [canonieke docker.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/docker.md) voor de volledige lijst.
+
+## Welke Conduction-apps installeer je eerst
+
+Zodra het admin-account klaar is, installeer je minimaal:
+
+- **OpenRegister** — de schema-gedreven object store waar elke Conduction-app van leest en naar schrijft. Zonder OpenRegister werkt verder niets.
+- **OpenConnector** — de integratielaag voor inkomende en uitgaande flows (formulieren, webhooks, sync, periodieke jobs).
+
+Beide installeer je rechtstreeks vanuit de Nextcloud app store binnen je lokale Nextcloud. Zoek op de app-naam en klik op **Download en activeren**.
+
+Twee andere apps die in veel tutorials terugkomen, installeer je wanneer je ze nodig hebt:
+
+- **OpenCatalogi** — catalogiseert publicaties, registers en publiek toegankelijke portalen.
+- **OpenWoo** — het Woo-register dat door de Woo-tutorials wordt gebruikt.
+
+Je hoeft niet elke Conduction-app te installeren. Installeer wat de tutorial die je volgt vraagt en negeer de rest tot je hem nodig hebt.
+
+## Verse installatie of de bestaande aanhouden?
+
+Een vraag die vaak terugkomt als je de lokale Nextcloud een tijdje gebruikt:
+
+- **Behouden** als je verdergaat met dezelfde wijziging. Schema's die je gisteren hebt geïmporteerd, testobjecten die je hebt aangemaakt — staan er nog. Meestal hou je hem aan.
+- **Resetten** als een tutorial zegt *"begin vanaf een schone Nextcloud"*. Dat is bijna altijd het geval voor de **Build an App**- en **DeskDesk**-series. Reset met `bash clean-env.sh` of de `/clean-env`-skill. Duurt 30 seconden, daarna weer `docker compose up -d`.
+
+Het opschonen is snel omdat Docker de volumes opnieuw binnenhaalt — het is geen trage Windows-stijl "verwijderen en opnieuw installeren". Wees niet zuinig op je lokale state.
+
+## Hoe past dit in de workstation-keten
+
+Een korte recap voor Deel 6:
+
+1. Deel 1 — **wat** je installeert, en waarom.
+2. Deel 2 — **runtimes** en CLI's (WSL2, Docker, Node, PHP, `gh`, OpenSpec, Playwright).
+3. Deel 3 — **Claude Code** en de verplichte veiligheids-hooks.
+4. Deel 4 — **MCP browser pool** zodat Claude een browser kan aansturen voor tests.
+5. Deel 5 — **Nextcloud** zodat er iets is om *tegenaan* te werken.
+6. Deel 6 — **wat nu?** — een kaart van de volgende tutorials.
+
+Na dit deel is je workstation *compleet*. De tools zijn geïnstalleerd, Claude is bedraad met veiligheid, de browsers kunnen de UI aansturen, en Nextcloud draait met de apps die je nodig hebt. Deel 6 is de ereronde.
+
+## Test jezelf
+
+Vijf korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
+
+<div className="tutorial-quiz">
+
+**1. Waarom is Nextcloud lokaal de *laatste* installatiestap en niet een eerdere?**
+
+<Details summary="Hint">
+
+Het gaat niet om een willekeurige volgorde — het gaat om wat elk voorgaand deel je oplevert.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Omdat de eerdere delen de toolchain leveren — Docker (Deel 2), Claude Code (Deel 3), de browser pool (Deel 4) — die je nodig hebt om de lokale Nextcloud productief te *gebruiken*. Nextcloud als eerste installeren zou je een werkende server geven zonder AI-assistent, zonder geautomatiseerde tests en zonder makkelijke manier om hem vanuit VS Code te inspecteren.
+
+Tegen de tijd dat je bij Deel 5 bent, staat al het andere gereedschap klaar. Nextcloud opstarten is het moment waarop je workstation begint te voelen als een echte *workstation*, niet als een stapel installers.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Welk Docker-profiel voeg je toe als je een Vue-frontend hot-reload wil?**
+
+<Details summary="Hint">
+
+Het profiel dat een aparte frontend-UI-container toevoegt.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Het **`ui`**-profiel:
+
+```bash
+docker compose --profile ui up -d
+```
+
+Dat start een aparte frontend-UI-container die hot-reloadt bij bestandswijzigingen — de Vue dev-loop die het meeste Conduction-Vue-werk veronderstelt. Zonder dit profiel wordt de frontend vanuit Nextcloud zelf geserveerd en zie je wijzigingen pas na een rebuild.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Welke twee Conduction-apps installeer je als eerste in je lokale Nextcloud, en waarom?**
+
+<Details summary="Hint">
+
+De schema-gedreven store, en de integratielaag.
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **OpenRegister** — de schema-gedreven object store. Elke Conduction-app leest en schrijft erdoorheen; zonder OpenRegister werkt feitelijk niets.
+- **OpenConnector** — de integratielaag (inkomende formulieren, uitgaande webhooks, sync-flows, periodieke jobs).
+
+Installeer andere apps (OpenCatalogi, OpenWoo, DeskDesk, …) wanneer de specifieke tutorial die je volgt erom vraagt. Probeer niet alles vooraf te installeren — dat kost tijd en vervuilt het menu.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Wanneer reset je de lokale Nextcloud met `clean-env.sh`, en wanneer hou je de bestaande state aan?**
+
+<Details summary="Hint">
+
+De twee antwoorden zijn helder gemapt: zelfde wijziging → aanhouden, nieuwe tutorial die een schone state eist → resetten.
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **Aanhouden** als je verdergaat met dezelfde wijziging. De schema's, testobjecten en config van gisteren staan nog in de volumes — en die wil je meestal hebben.
+- **Resetten** als een tutorial zegt *"begin vanaf een schone Nextcloud"*. De Build an App- en DeskDesk-series doen dat meestal. Reset met `bash clean-env.sh` (of de `/clean-env`-skill), daarna weer `docker compose up -d` — duurt ongeveer 30 seconden.
+
+De reset is goedkoop. Aarzel niet om hem te gebruiken als de tutorial erom vraagt; proberen "te roeien" met een vervuilde omgeving kost meer tijd dan de reset zelf.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. Wat is de URL van de lokale Nextcloud, en hoe lang duurt de eerste keer laden?**
+
+<Details summary="Hint">
+
+Localhost, een bekende poort, en de eerste keer haalt Docker een image binnen.
+
+</Details>
+
+<Details summary="Antwoord">
+
+De URL is `http://localhost:8080`. **De eerste keer laden duurt ongeveer 3 minuten** terwijl Docker de officiële Nextcloud-image (~750 MB) binnenhaalt. Daarna duren volgende starts maar een paar seconden.
+
+Reageert localhost:8080 helemaal niet, dan is de stack niet gestart: check met `docker compose ps` de containerstatus en met `docker compose logs nextcloud` of er foutmeldingen zijn.
+
+</Details>
+
+</div>
+
+<NextSteps title="Volgende stap" lede="Je workstation is compleet. Tijd voor de ereronde — wat je nu gaat doen, nu je écht kunt bouwen.">
+  <NextStep
+    title="Deel 6 — Klaar — wat nu?"
+    href="/nl/academy/workstation-tutorial-6-klaar-wat-nu"
+    description="De kaart van de volgende tutorials: OpenSpec, Claude Skills, Build an App, Hydra. Waar je heen gaat voor welk soort werk."
+  />
+  <NextStep
+    title="Nextcloud lokaal draaien met Docker"
+    href="/nl/academy/nextcloud-lokaal-draaien"
+    description="De volledige stap-voor-stap Nextcloud-installatie — screenshots, probleemoplossing, opruimen. Lees hem één keer."
+  />
+  <NextStep
+    title="De canonieke docker.md"
+    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/docker.md"
+    description="Interne referentie met de volledige lijst Docker-profielen en voorbeeld-compose-commando's."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Nextcloud weigert te starten?"
+  body="Bijna altijd een poortconflict (iets anders draait op :8080) of een verouderde Docker-volume. Stuur ons de output van docker compose ps en we sporen het snel op."
+  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=Workstation%20setup%20tutorial%20deel%205" }}
+/>

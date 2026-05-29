@@ -1,0 +1,307 @@
+---
+slug: workstation-tutorial-3-claude-code
+title: "Workstation Setup tutorial series — Part 3: Install and configure Claude Code"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-29
+summary: Claude Code in VS Code, sign-in, and — crucially — the mandatory global settings and safety hooks. Short part, but the one where most "I'll fix it later" decisions become "I just wiped my repo" stories. Third of six short modules.
+tags: [Workstation, Claude Code, Hooks, Settings, Safety, Tutorial series]
+apps: []
+durationMinutes: 20
+series: workstation-tutorial
+partNumber: 3
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+With the runtimes in place from Part 2, it's time to add the AI pair programmer we actually work *with*: **Claude Code**. This part covers the install, the sign-in, and — the bit you should not skip — the **mandatory global settings and safety hooks** that keep Claude from running destructive shell commands without your approval. Short part, important part.
+
+{/* truncate */}
+
+<Outcomes title="What you'll deliver">
+  <Outcome>The Claude Code extension installed inside your WSL-connected VS Code, signed into your Anthropic account.</Outcome>
+  <Outcome>The Conduction global Claude settings installed at <code>&#126;/.claude/settings.json</code>, with the two mandatory safety hooks at <code>&#126;/.claude/hooks/</code>.</Outcome>
+  <Outcome>The version-check hook configured to track the canonical <code>ConductionNL/.github</code> repo so you'll be warned when a settings update is available.</Outcome>
+  <Outcome>The kernel-level immutable lock applied — so even if every other guard fails, the kernel refuses unauthorised writes to your hooks.</Outcome>
+  <Outcome>A first session in which Claude greets you with a green <em>"Global Claude Settings up to date"</em> panel.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem><a href="/academy/workstation-tutorial-2-basis-inrichten">Part 2</a> done — Node, the <code>gh</code> CLI, and Docker need to work before you go further.</PrerequisiteItem>
+  <PrerequisiteItem>Your Anthropic account credentials. If you don't have a paid Claude subscription yet, ask your team lead — Conduction has a shared plan.</PrerequisiteItem>
+  <PrerequisiteItem>About 20 minutes. The actual install is fast; reading what the hooks do is what takes the time.</PrerequisiteItem>
+</Prerequisites>
+
+## Step 1: install the Claude Code extension
+
+Inside your **WSL-connected VS Code** window:
+
+1. `Ctrl+Shift+X` to open Extensions.
+2. Search for **Claude Code** by Anthropic.
+3. Click **Install**.
+
+Or from the WSL terminal:
+
+```bash
+code --install-extension anthropic.claude-code
+```
+
+You should already have this from Part 2 (it was in the extension list). If so, just verify it shows up in the sidebar.
+
+## Step 2: sign in
+
+Open the Claude Code panel from the VS Code sidebar (the small Claude icon). Click **Sign in** and follow the OAuth flow in your browser. Once signed in, the panel shows your subscription tier in the bottom-right.
+
+> **Working from the terminal?** Run `claude auth login` instead. This is needed if you want to use the `claude` CLI for skills like `/opsx-apply-loop` that run inside Docker containers. Optional for now; come back to it once you're comfortable.
+
+Try a quick test prompt: ask Claude something simple like "what's the current directory?" and confirm you get an answer. If you see a permission prompt for a Bash command — that's the **first sign** that the safety hooks aren't installed yet. Don't approve anything destructive; finish the next steps first.
+
+## Step 3: clone the `.github` repo
+
+The global settings live in the canonical [`ConductionNL/.github`](https://github.com/ConductionNL/.github) repo. Clone it once:
+
+```bash
+mkdir -p ~/code/conduction
+cd ~/code/conduction
+gh repo clone ConductionNL/.github
+cd .github
+```
+
+You only need to clone this once — the version-check hook fetches updates via the GitHub API after this, no further `git pull` needed.
+
+## Step 4: install the global settings + hooks
+
+From inside the cloned `.github` repo:
+
+```bash
+REPO_ROOT="$(pwd)"
+
+mkdir -p ~/.claude/hooks
+
+cp "$REPO_ROOT/global-settings/settings.json" ~/.claude/settings.json
+cp "$REPO_ROOT/global-settings/block-write-commands.sh" ~/.claude/hooks/block-write-commands.sh
+cp "$REPO_ROOT/global-settings/block-config-tool-writes.sh" ~/.claude/hooks/block-config-tool-writes.sh
+cp "$REPO_ROOT/global-settings/check-settings-version.sh" ~/.claude/hooks/check-settings-version.sh
+chmod +x ~/.claude/hooks/*.sh
+
+cp "$REPO_ROOT/global-settings/VERSION" ~/.claude/settings-version
+echo "$REPO_ROOT" > ~/.claude/settings-repo-path
+
+# Online version checking via GitHub API (recommended — no local repo required):
+cp "$REPO_ROOT/global-settings/settings-repo-url.example" ~/.claude/settings-repo-url
+```
+
+That's the working set. What did you just install?
+
+| File | What it does |
+| --- | --- |
+| `~/.claude/settings.json` | The user-level permissions allowlist — which commands Claude can run without asking, which need approval, which are blocked. Plus references to the two hooks below. |
+| `~/.claude/hooks/block-write-commands.sh` | **The big one.** Runs before every `Bash` tool call. Detects write/destructive commands (`rm`, `mv`, `git push --force`, `chmod`, etc.) and prompts for explicit approval. |
+| `~/.claude/hooks/block-config-tool-writes.sh` | Runs before every `Write`/`Edit`/`MultiEdit` call. Refuses any tool that tries to write to `~/.claude/` or produce a script that would. Protects the hooks themselves from being silently rewritten. |
+| `~/.claude/hooks/check-settings-version.sh` | Runs on session start. Compares your installed version against `ConductionNL/.github` and warns you if you're behind. |
+| `~/.claude/settings-repo-url` | The repo slug the version check uses to fetch the canonical version (`ConductionNL/.github`). |
+
+> **Tracking a non-default branch?** Copy `settings-repo-ref.example` to `~/.claude/settings-repo-ref` and put your branch/tag/SHA in it. For most developers the default — `main` — is right.
+
+## Step 5: lock the hooks with `chattr +i`
+
+This is the layer no Claude command can bypass. Even if every other guard fails — a hook gets disabled, a permission gets approved by accident — the kernel refuses the write:
+
+```bash
+sudo chattr +i ~/.claude/settings.json ~/.claude/hooks/*.sh ~/.claude/settings-version
+```
+
+`chattr +i` sets the **immutable** bit on Linux file systems. After this, only `sudo chattr -i` (which Claude can't run without prompting you) can clear it.
+
+> **WSL2 quirk:** `chattr +i` works on ext4 (the WSL2 default). If you run on a different file system inside WSL and `chattr` fails, fall back to making the files owned by root with `chmod 644`. Less strict, still useful.
+
+## Step 6: restart Claude Code
+
+The hooks register at session start. Quit Claude Code in VS Code (`Ctrl+Shift+P` → **"Developer: Reload Window"** is the fastest path) and start a new session.
+
+On the next session start, Claude's first message should contain a panel like:
+
+```
+NEW SESSION — Global Claude Settings checked. ✅ Settings are up to date (v1.7.0).
+```
+
+If you instead see **UPDATE REQUIRED**, your installed version is behind `main`. To update:
+
+```bash
+sudo chattr -i ~/.claude/settings.json ~/.claude/hooks/*.sh ~/.claude/settings-version
+```
+
+Then ask Claude *"update my global settings to \<version\>"* — it pulls the new files from GitHub. After that, re-lock:
+
+```bash
+sudo chattr +i ~/.claude/settings.json ~/.claude/hooks/*.sh ~/.claude/settings-version
+```
+
+## What's the difference between global and project settings?
+
+A common point of confusion. Two layers:
+
+| Layer | Lives at | Covers | Who maintains it |
+| --- | --- | --- | --- |
+| **Global (user-level)** | `~/.claude/settings.json` + `~/.claude/hooks/` | Safety policy on **your** machine. Read-first, write-with-approval. Affects every project you open. | You — but from the canonical Conduction templates. Versioned in `ConductionNL/.github`. |
+| **Project-level** | `.claude/settings.json` inside each repo | Project-specific allowlist — which MCP servers to enable, which Bash commands are pre-approved for this project's tests. | The project maintainers; checked into the repo. |
+
+The two **complement** each other. Project settings can pre-approve specific commands for that project's tests; they cannot loosen the global write-approval policy. If a project tries to allow `rm -rf` without a prompt, the global hook still catches it.
+
+## Which hooks are recommended, and what do they do?
+
+The default Conduction install ships **three** hooks. In one sentence each:
+
+- **`block-write-commands.sh`** — every `Bash` command Claude wants to run gets checked first. Destructive or write-class commands (`rm`, `mv`, `chmod`, `git push --force`, `npm publish`, etc.) trigger an approval prompt; safe read-only commands pass through silently.
+- **`block-config-tool-writes.sh`** — every `Write`/`Edit`/`MultiEdit` Claude attempts gets checked first. If the target is inside `~/.claude/`, or the content would create a script that writes to `~/.claude/`, the hook refuses. This is what stops Claude from quietly disabling its own safety net.
+- **`check-settings-version.sh`** — runs once at session start. Compares your installed version to the canonical repo and tells you (in the chat) whether you're up to date.
+
+The first two are the safety net. The third is the heartbeat that keeps that safety net current.
+
+<Troubleshooting title="Troubleshooting">
+  <TroubleshootingItem symptom="Session-start panel says 'CONFIGURATION ERROR'">
+    Read the error line directly below the panel. Most common causes: <code>gh</code> not authenticated (run <code>gh auth login</code>), <code>jq</code> not installed (<code>sudo apt install jq</code>), or <code>&#126;/.claude/settings-repo-url</code> missing (recopy from <code>global-settings/settings-repo-url.example</code>).
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="chattr: Operation not supported">
+    Your WSL2 distro may be on a non-ext4 file system, or you may be on macOS where <code>chattr</code> doesn't exist. Skip the immutable-lock step; the hook layer still defends. On macOS use <code>chflags uchg</code> as the equivalent.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Claude offered to run rm -rf and no approval prompt appeared">
+    The hooks didn't load. Confirm the files exist (<code>ls -la ~/.claude/hooks/</code>), are executable (<code>chmod +x</code>), and Claude Code was restarted after install. If still nothing, re-run Step 4 — odds are <code>settings.json</code> didn't get copied in.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Version-check banner says NEW SESSION but no version number">
+    The version file is missing. Run <code>cat ~/.claude/settings-version</code> — if empty, recopy from <code>global-settings/VERSION</code> in the cloned repo.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+## Test yourself
+
+Five short questions to check that this part landed. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. What is the difference between global and project-level Claude settings, and why do we need both?**
+
+<Details summary="Hint">
+
+Where each lives, what each controls, and how they relate when both are present.
+
+</Details>
+
+<Details summary="Answer">
+
+**Global settings** live at `~/.claude/settings.json` + `~/.claude/hooks/`. They define the safety policy on *your* machine and apply to every project you open. The Conduction global settings (mandatory) enforce read-first, write-with-approval behaviour.
+
+**Project settings** live at `.claude/settings.json` inside each repo. They define project-specific allowances: which MCP servers to enable, which test commands are pre-approved, which file paths are read-only for that project.
+
+They complement each other. Project settings can pre-approve commands *that the global policy also allows*; they cannot loosen the global write-approval policy. The global hook always runs first.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Which hooks does the Conduction global-settings install, and what does each one do?**
+
+<Details summary="Hint">
+
+Three hooks. One guards Bash, one guards Write/Edit, one runs once per session.
+
+</Details>
+
+<Details summary="Answer">
+
+Three hooks ship by default:
+
+- **`block-write-commands.sh`** — runs before every Bash call; destructive or write-class commands need explicit approval.
+- **`block-config-tool-writes.sh`** — runs before every Write/Edit/MultiEdit; refuses any tool that would touch `~/.claude/` or generate a script that does.
+- **`check-settings-version.sh`** — runs once per session; checks your installed version against `ConductionNL/.github` and warns you if you're behind.
+
+The first two are the safety net; the third keeps that safety net current.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Why does Step 5 use `chattr +i` on top of the hooks, and what's the trade-off?**
+
+<Details summary="Hint">
+
+Defense in depth — what does the kernel guarantee that an in-process hook cannot?
+
+</Details>
+
+<Details summary="Answer">
+
+`chattr +i` sets the **immutable** bit at the kernel level. Once set, no process — including any Claude command — can write to those files until `sudo chattr -i` clears it. That's the one layer no in-process hook can bypass.
+
+The trade-off: when a legitimate update *is* needed, you have to `sudo chattr -i` first, then re-lock with `sudo chattr +i` afterwards. A small friction tax in exchange for a guarantee that the safety net itself can't be silently rewritten.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. After install, where do you confirm that the safety hooks are actually live?**
+
+<Details summary="Hint">
+
+Two places: a message at session start, and a one-off destructive Bash command you do *not* run.
+
+</Details>
+
+<Details summary="Answer">
+
+Two confirmations:
+
+1. **Session-start panel** in Claude Code's first message should show *"Global Claude Settings checked. ✅ Settings are up to date (v\<N.N.N\>)"*. If it says "UPDATE REQUIRED" or "CONFIGURATION ERROR", the hooks loaded but something needs fixing.
+2. **Approval prompt for any destructive command.** Ask Claude to run something safe-looking that triggers the write-guard — for example *"check if rm has the right permissions"*. The hook should intervene and ask for explicit approval. Don't approve; you just wanted to see the prompt.
+
+If the second test passes without a prompt, the hooks didn't load — back to Step 4.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. Why do we install Claude Code *together with* the global hooks rather than installing Claude first and adding the hooks later?**
+
+<Details summary="Hint">
+
+Think about the very first command Claude might suggest, and what's protecting you in the window before the hooks are installed.
+
+</Details>
+
+<Details summary="Answer">
+
+Because Claude Code can run shell commands the moment it's installed. Without the global hooks, the very first commands Claude suggests would run with no safety net — including any destructive ones it might propose by mistake.
+
+By installing them in the same part of the tutorial, the safety net is in place before Claude has had a chance to do anything irreversible. The cost is twenty extra minutes; the saving is the "I just wiped my repo" story.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="Claude Code is wired up and the safety net is in place. Time to give Claude direct access to the Conduction systems via the MCP server.">
+  <NextStep
+    title="Part 4 — Connect the MCP server"
+    href="/academy/workstation-tutorial-4-mcp-server"
+    description="What MCP is, and how to wire Conduction's MCP server into your project root via .mcp.json. Includes a pointer to the dedicated MCP tutorial."
+  />
+  <NextStep
+    title="The canonical global-claude-settings.md"
+    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/global-claude-settings.md"
+    description="The internal reference with the full breakdown of every config file, update flow, and security model."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Got the warning panel and not sure what to do?"
+  body="A red banner at session start usually means a five-minute fix. Send us the exact error or ask in #claude-code on Slack."
+  cta={{ label: "Email us", href: "mailto:info@conduction.nl?subject=Workstation%20setup%20tutorial%20part%203" }}
+/>
