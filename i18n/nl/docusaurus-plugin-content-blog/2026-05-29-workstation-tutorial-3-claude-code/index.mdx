@@ -59,16 +59,18 @@ Probeer een snelle test-prompt: vraag Claude iets simpels zoals "wat is de huidi
 
 ## Stap 3: clone de `.github` repo
 
-De global settings leven in de canonieke [`ConductionNL/.github`](https://github.com/ConductionNL/.github) repo. Clone hem eenmalig:
+De global settings leven in de canonieke [`Conduction/.github`](https://codeberg.org/Conduction/.github) repo op Codeberg. Clone hem eenmalig:
 
 ```bash
 mkdir -p ~/code/conduction
 cd ~/code/conduction
-gh repo clone ConductionNL/.github
+git clone git@codeberg.org:Conduction/.github.git
 cd .github
 ```
 
-Je hoeft dit maar één keer te clonen — de version-check hook haalt daarna updates op via de GitHub API, dus geen extra `git pull` nodig.
+> **Nog geen SSH-sleutel?** [Deel 2 — Codeberg auth](/nl/academy/workstation-tutorial-2-basis-inrichten#stap-7-codeberg-auth-ssh--tea) loopt je erdoorheen. Als terugval kun je ook over HTTPS clonen: `git clone https://codeberg.org/Conduction/.github.git` — werkt zonder auth, maar je kunt dan niet pushen.
+
+Je hoeft dit maar één keer te clonen — de version-check hook haalt daarna updates op via de GitHub API (de settings-repo is gemirrord van Codeberg naar `ConductionNL/.github` op GitHub zodat de hook blijft werken), dus geen extra `git pull` nodig.
 
 ## Stap 4: installeer de global settings + hooks
 
@@ -295,7 +297,7 @@ Door ze in hetzelfde tutorialdeel te installeren staat het safety net er voordat
   />
   <NextStep
     title="De canonieke global-claude-settings.md"
-    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/global-claude-settings.md"
+    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/global-claude-settings.md"
     description="De interne referentie met de volledige uitsplitsing van elk config-bestand, update-flow en security-model."
   />
 </NextSteps>

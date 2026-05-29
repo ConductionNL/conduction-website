@@ -78,14 +78,15 @@ A bird's-eye view of every tool, grouped by which part installs it. Use this as 
 | VS Code extensions (Claude Code, WSL, Docker, Vue, PHP Intelephense, ESLint) | Editor support for the languages and the AI assistant | Part 2 |
 | Node 20+ (via nvm) | Required by OpenSpec CLI and Vue tooling | Part 2 |
 | PHP 8.1+ and Composer | Backend language of every Nextcloud app | Part 2 |
-| GitHub CLI (`gh`) | Authentication, issues, PRs from the command line | Part 2 |
+| Codeberg SSH key + `tea` CLI | Primary git auth at Conduction (Codeberg is the new canonical host) | Part 2 |
+| GitHub CLI (`gh`) | Secondary host — still needed for Hydra cron scripts and a handful of unmigrated repos | Part 2 |
 | OpenSpec CLI | Spec-first development tooling | Part 2 |
 | Playwright Chromium binary | Browser automation for the testing skills | Part 2 |
 | Claude Code (in VS Code) | Day-to-day AI pair programmer | Part 3 |
 | Global Claude settings + hooks | Mandatory safety policy at the user level | Part 3 |
 | Conduction MCP server | Live links to Conduction systems while you work | Part 4 |
 | Nextcloud (in Docker) | Local copy of the platform we build apps for | Part 5 |
-| Optional: Ollama + local LLM | Local AI for overnight batch jobs | Skipped here, see [local-llm.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/local-llm.md) |
+| Optional: Ollama + local LLM | Local AI for overnight batch jobs | Skipped here, see [local-llm.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/local-llm.md) |
 
 That's the complete menu. You won't touch each item every day, but every item shows up at least once in normal Conduction work.
 
@@ -96,7 +97,7 @@ The series is intentionally split into short modules. Don't have time tonight? S
 | Part | What you do | When you can skip it |
 | --- | --- | --- |
 | **1 — What do you install, and why?** | The overview you're reading now. Decisions before installs. | Never. Read it once. |
-| **[2 — Workstation basics](/academy/workstation-tutorial-2-basis-inrichten)** | WSL2, Docker Desktop, VS Code + extensions, Node, PHP, `gh`, OpenSpec, Playwright. | If you already have a working WSL + Docker + Node + PHP setup. |
+| **[2 — Workstation basics](/academy/workstation-tutorial-2-basis-inrichten)** | WSL2, Docker Desktop, VS Code + extensions, Node, PHP, Codeberg auth (SSH + `tea`), `gh`, OpenSpec, Playwright. | If you already have a working WSL + Docker + Node + PHP + git auth setup. |
 | **[3 — Install and configure Claude Code](/academy/workstation-tutorial-3-claude-code)** | Install Claude Code, sign in, install the **mandatory** global settings and safety hooks. | Never — the global settings are mandatory at Conduction. |
 | **[4 — Connect the MCP server](/academy/workstation-tutorial-4-mcp-server)** | Wire your Claude Code to Conduction's MCP server via `.mcp.json`. | If you'll only work outside Conduction projects. |
 | **[5 — Run Nextcloud locally](/academy/workstation-tutorial-5-nextcloud-lokaal)** | Run Nextcloud on `localhost:8080` to test against. | If you'll only do tooling work that doesn't need Nextcloud running. |
@@ -114,7 +115,7 @@ The five most common time sinks — and how to avoid them:
 4. **`gh auth login` opens a browser that doesn't accept your SSO.** If your work GitHub uses SSO, do `gh auth login --web` from a terminal where Edge or Chrome is your default — Firefox sometimes silently fails.
 5. **The Playwright Chromium binary is 300 MB.** Run that download from a place with a stable connection, not the train.
 
-If you hit any other issue, [Troubleshooting](https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md) in the canonical workstation-setup doc has the rest.
+If you hit any other issue, [Troubleshooting](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md) in the canonical workstation-setup doc has the rest.
 
 ## Tested on what?
 
@@ -247,7 +248,7 @@ Installing Claude Code without those hooks means the very first commands Claude 
   />
   <NextStep
     title="The canonical workstation-setup.md"
-    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md"
+    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md"
     description="The internal reference doc this series is based on. Useful if you ever need to look something up later."
   />
 </NextSteps>

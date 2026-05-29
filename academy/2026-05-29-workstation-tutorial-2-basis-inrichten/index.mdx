@@ -4,8 +4,8 @@ title: "Workstation Setup tutorial series — Part 2: Set up the basics"
 contentType: tutorial
 authors: [conduction]
 date: 2026-05-29
-summary: WSL2, Docker Desktop, VS Code with the right extensions, Node, PHP, the GitHub CLI, the OpenSpec CLI, and the Playwright browser. The longest part of the series — most of the time goes into downloads while you do something else. After this, you have a working dev workstation, just without Claude Code wired up yet.
-tags: [Workstation, Setup, WSL2, Docker, VS Code, Node, PHP, Tutorial series]
+summary: WSL2, Docker Desktop, VS Code with the right extensions, Node, PHP, Codeberg auth (SSH key + tea CLI) plus the GitHub CLI, the OpenSpec CLI, and the Playwright browser. The longest part of the series — most of the time goes into downloads while you do something else. After this, you have a working dev workstation, just without Claude Code wired up yet.
+tags: [Workstation, Setup, WSL2, Docker, VS Code, Node, PHP, Codeberg, Tutorial series]
 apps: []
 durationMinutes: 60
 series: workstation-tutorial
@@ -109,7 +109,7 @@ code --install-extension redhat.vscode-yaml
 code --install-extension github.vscode-github-actions
 ```
 
-That covers the required + recommended set for a Conduction project. See [workstation-setup.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md#4-install-vs-code-extensions) for the optional ones.
+That covers the required + recommended set for a Conduction project. See [workstation-setup.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md#4-install-vs-code-extensions) for the optional ones.
 
 ## Step 5: install Node (via nvm)
 
@@ -149,23 +149,113 @@ composer --version  # 2.x
 
 > **Use phpcs v3, not v4, when a project asks for it.** The CI is pinned to v3 and v4 breaks the shared `phpcs.xml` config. If a `composer install` later tries to upgrade, override with `composer require --dev "squizlabs/php_codesniffer:^3.9"`.
 
-## Step 7: install the GitHub CLI
+## Step 7: Codeberg auth (SSH + tea)
+
+Conduction migrated from `github.com/ConductionNL` to `codeberg.org/Conduction` in May 2026 — **Codeberg is the primary git host now**, GitHub stays as a secondary mirror. This step gets two things working: SSH (for `git clone/push/pull`) and the `tea` CLI (for PRs, issues, labels via Codeberg's REST API). Both stick around across reboots once configured.
+
+This is the condensed walkthrough. The full version, with every troubleshooting case and a deeper rationale, lives in [Codeberg Authentication Setup](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/codeberg-auth-setup.md) in the `.github` repo. Read that if anything below misbehaves.
+
+### 7a. Generate an SSH key and add it to Codeberg
 
 ```bash
-sudo apt install -y gh
-gh auth login
+ssh-keygen -t ed25519 -C "your.name@conduction.nl" -f ~/.ssh/id_ed25519_codeberg
 ```
 
-Pick **GitHub.com** → **HTTPS** → **Login with a web browser** and follow the device-flow prompt. If your work GitHub uses SSO, make sure your default browser is Edge or Chrome — Firefox has been known to drop the SSO callback silently.
+Enter a passphrase when prompted — `keychain` (next step) makes the day-to-day cost almost zero, and a passphraseless key on disk is a stand-alone credential to anyone who reads the file.
+
+Copy the **public** key (the `.pub` file) to Codeberg:
+
+```bash
+cat ~/.ssh/id_ed25519_codeberg.pub
+# or pipe directly to the Windows clipboard from WSL:
+cat ~/.ssh/id_ed25519_codeberg.pub | clip.exe
+```
+
+Go to [codeberg.org/user/settings/keys](https://codeberg.org/user/settings/keys) → **Add Key**, paste the whole line, give it a recognisable name (e.g. `WSL Ubuntu — <laptop>`), click **Add Key**.
+
+### 7b. Point SSH at the right key for Codeberg
+
+```bash
+cat >> ~/.ssh/config <<'EOF'
+
+Host codeberg.org
+  HostName codeberg.org
+  User git
+  IdentityFile ~/.ssh/id_ed25519_codeberg
+  IdentitiesOnly yes
+EOF
+chmod 600 ~/.ssh/config
+```
+
+`chmod 600` is required — SSH silently ignores a config file with looser permissions.
 
 Verify:
 
 ```bash
-gh --version
-gh auth status
+ssh -T git@codeberg.org
+# Hi there, <YourCodebergUsername>! You've successfully authenticated...
 ```
 
-Both should print a green checkmark. The `gh auth status` line ends with your GitHub username.
+### 7c. Keep the key loaded across shells with `keychain`
+
+Without `keychain`, every `git push` asks for the passphrase. With it, you enter the passphrase once per WSL boot and every subsequent shell (including Claude Code's Bash tool) inherits the unlocked agent.
+
+```bash
+sudo apt install -y keychain
+cat >> ~/.bashrc <<'EOF'
+
+# Keep an ssh-agent alive across shells, with the Codeberg key loaded
+eval $(keychain --eval --quiet --agents ssh ~/.ssh/id_ed25519_codeberg)
+EOF
+```
+
+Open a new terminal — `keychain` prompts for the passphrase once. After that:
+
+```bash
+ssh-add -l
+# 256 SHA256:... your.name@conduction.nl (ED25519)
+```
+
+### 7d. Install the `tea` CLI for PRs/issues/labels
+
+SSH covers the git protocol. Everything else (creating a PR, listing issues, applying labels) goes through Codeberg's REST API. `tea` is Gitea's official CLI — think of it as `gh` for Codeberg.
+
+```bash
+sudo wget -O /usr/local/bin/tea https://dl.gitea.com/tea/0.11.0/tea-0.11.0-linux-amd64
+sudo chmod +x /usr/local/bin/tea
+tea --version
+```
+
+### 7e. Create a Codeberg API token and tell `tea` about it
+
+Go to [codeberg.org/user/settings/applications](https://codeberg.org/user/settings/applications) → **Generate New Token** with these scopes (tick **write** where applicable): `repository`, `issue`, `user`, `organization`. Set a 90-day expiry; rotate quarterly. **Copy the token immediately** — Codeberg shows it once.
+
+```bash
+tea login add --name codeberg --url https://codeberg.org --token <paste-token-here>
+tea login list
+# NAME=codeberg  URL=https://codeberg.org  USER=<YourCodebergUsername>
+```
+
+The token sits in `~/.config/tea/config.yml` from then on; every `tea` invocation reuses it.
+
+### 7f. Install the GitHub CLI (secondary, still useful)
+
+A handful of repos still live on GitHub and Hydra's cron scripts haven't migrated yet, so `gh` stays in the toolbelt:
+
+```bash
+sudo apt install -y gh
+gh auth login   # GitHub.com → HTTPS → Login with a web browser
+```
+
+If your work GitHub uses SSO, make sure your default browser is Edge or Chrome — Firefox has been known to drop the SSO callback silently.
+
+Verify all three:
+
+```bash
+ssh -T git@codeberg.org   # → "Hi there, <YourCodebergUsername>!"
+tea login list            # → row with NAME=codeberg
+gh auth status            # → green checkmark + your GitHub username
+```
 
 ## Step 8: install the OpenSpec CLI
 
@@ -199,13 +289,16 @@ php --version             # 8.1+
 composer --version        # 2.x
 docker --version          # 24+
 docker compose version    # 2.x
+ssh -T git@codeberg.org   # "Hi there, <YourCodebergUsername>!"
+tea --version             # 0.11+
+tea login list            # row with NAME=codeberg
 gh --version              # 2.x
-gh auth status            # green checkmark + your username
+gh auth status            # green checkmark + your GitHub username
 openspec --version        # 1.x
 npx playwright --version  # 1.x
 ```
 
-If every command returns a real version and `gh auth status` is green, you're done with Part 2. Otherwise, jump to Troubleshooting below.
+If every command returns a real version, `ssh -T` greets you by your Codeberg username, `tea login list` shows the codeberg row, and `gh auth status` is green, you're done with Part 2. Otherwise, jump to Troubleshooting below.
 
 <Troubleshooting title="Troubleshooting">
   <TroubleshootingItem symptom="WSL2 won't install: 'WSL is not supported on this version of Windows'">
@@ -219,6 +312,15 @@ If every command returns a real version and `gh auth status` is green, you're do
   </TroubleshootingItem>
   <TroubleshootingItem symptom="gh auth login opens the wrong browser and SSO never completes">
     If your work GitHub uses SSO and Firefox is the default browser, the callback can drop silently. Set Edge or Chrome as the default browser and rerun <code>gh auth login --web</code>.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="ssh -T git@codeberg.org returns 'Permission denied (publickey)'">
+    Either the public key wasn't pasted into Codeberg, or <code>&#126;/.ssh/config</code> doesn't have <code>chmod 600</code>. Recopy <code>&#126;/.ssh/id_ed25519_codeberg.pub</code> to <a href="https://codeberg.org/user/settings/keys">codeberg.org/user/settings/keys</a> and run <code>chmod 600 ~/.ssh/config</code>. Then retry.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Every git push asks for the SSH passphrase">
+    <code>keychain</code> isn't installed, or the <code>eval $(keychain ...)</code> line isn't in <code>&#126;/.bashrc</code>. Open a fresh terminal after editing <code>&#126;/.bashrc</code> — <code>keychain</code> only runs on shell start. Verify with <code>ssh-add -l</code>; you should see the Codeberg key listed.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="tea pulls create returns 401 Unauthorized">
+    The token in <code>&#126;/.config/tea/config.yml</code> doesn't have <code>write:repository</code> or <code>write:issue</code>. Regenerate the token at <a href="https://codeberg.org/user/settings/applications">codeberg.org/user/settings/applications</a> with the right scopes (see Step 7e) and re-run <code>tea login add</code>.
   </TroubleshootingItem>
   <TroubleshootingItem symptom="npx playwright install chromium hangs or times out">
     The download is ~300 MB. On a slow connection it can look stuck. Wait it out, or rerun on a faster network. If it really refuses, set <code>HTTPS_PROXY</code> and try again from a network where the proxy resolves.
@@ -291,30 +393,26 @@ Installing language extensions on Windows when the code lives in WSL gives you b
 
 <div className="tutorial-quiz">
 
-**4. How do you verify the `gh` CLI is correctly wired to your GitHub account?**
+**4. How do you confirm Codeberg auth is fully wired up — both SSH and the `tea` CLI?**
 
 <Details summary="Hint">
 
-One command, two pieces of information: it should print a green checkmark and your username.
+Two separate commands for two separate things: one talks to Codeberg over SSH, the other reads the saved token.
 
 </Details>
 
 <Details summary="Answer">
 
 ```bash
-gh auth status
+ssh -T git@codeberg.org
+tea login list
 ```
 
-A correctly-configured `gh` prints something like:
+`ssh -T` should reply with `Hi there, <YourCodebergUsername>! You've successfully authenticated…`. If you instead see `Permission denied (publickey)`, the public key wasn't pasted to Codeberg or `~/.ssh/config` doesn't have `chmod 600`.
 
-```
-github.com
-  ✓ Logged in to github.com as wilcoLouwerse (oauth_token)
-  ✓ Git operations for github.com configured to use https protocol.
-  ✓ Token: gho_***************
-```
+`tea login list` should show one row with `NAME=codeberg`, `URL=https://codeberg.org`, and your username. If empty, the token wasn't added — re-run `tea login add` with a token that has the `repository`, `issue`, `user`, and `organization` scopes.
 
-If the checkmark is red or the username is missing, run `gh auth login` again. If your work GitHub uses SSO, your default browser should be Edge or Chrome — Firefox has been known to drop the callback silently.
+For the secondary `gh` CLI (GitHub side): `gh auth status` should print a green checkmark with your GitHub username.
 
 </Details>
 
@@ -341,13 +439,16 @@ php --version
 composer --version
 docker --version
 docker compose version
+ssh -T git@codeberg.org
+tea --version
+tea login list
 gh --version
 gh auth status
 openspec --version
 npx playwright --version
 ```
 
-If every line returns a real version and `gh auth status` is green, your machine has the runtimes Part 3 onwards will need. If anything is missing or fails, jump to the Troubleshooting section above and fix it before moving on — Part 3 assumes all of these work.
+If every line returns a real version, `ssh -T` greets you by your Codeberg username, `tea login list` shows the codeberg row, and `gh auth status` is green, your machine has everything Part 3 onwards will need. If anything is missing or fails, jump to the Troubleshooting section above and fix it before moving on — Part 3 assumes all of these work.
 
 </Details>
 
@@ -361,7 +462,7 @@ If every line returns a real version and `gh auth status` is green, your machine
   />
   <NextStep
     title="The canonical workstation-setup.md"
-    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md"
+    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md"
     description="The internal reference doc with the long-form versions of every step above."
   />
 </NextSteps>

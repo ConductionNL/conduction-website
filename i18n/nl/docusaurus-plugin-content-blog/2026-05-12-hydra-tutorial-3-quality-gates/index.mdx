@@ -83,11 +83,11 @@ Naast de generieke tools heeft Hydra **een eigen reeks `hydra-gate-*` skills** v
 | `hydra-gate-nc-input-labels` | Nextcloud `<NcTextField>`-componenten hebben `<label>`-koppeling. |
 | `hydra-gate-initial-state` | Geen `initialState` lekt naar de client zonder bewuste expose. |
 
-Een groot deel hiervan is geboren uit incidenten: een gate ontstaat als reactie op een bug die door alle eerdere mazen heen glipte. `hydra-gate-stub-scan` bijvoorbeeld kwam uit het [`decidesk-44-45` retrospectief](https://github.com/ConductionNL/hydra/blob/main/docs/retrospectives/decidesk-44-45-phase-g.md), waar een builder een methode opleverde die slechts `return null;` deed met een TODO. PHPCS slikte het, PHPUnit had geen test, code review las het als "in scope", en het brak in productie.
+Een groot deel hiervan is geboren uit incidenten: een gate ontstaat als reactie op een bug die door alle eerdere mazen heen glipte. `hydra-gate-stub-scan` bijvoorbeeld kwam uit het [`decidesk-44-45` retrospectief](https://codeberg.org/Conduction/hydra/src/branch/main/docs/retrospectives/decidesk-44-45-phase-g.md), waar een builder een methode opleverde die slechts `return null;` deed met een TODO. PHPCS slikte het, PHPUnit had geen test, code review las het als "in scope", en het brak in productie.
 
 ## ADR-020: gate-scope is de PR-diff
 
-Een belangrijke regel die je in deel 2 al kort tegenkwam: **gates draaien op de PR-diff, niet op de hele repo**. Dat staat in [ADR-020](https://github.com/ConductionNL/hydra/blob/main/openspec/architecture/adr-020-gate-scope-to-pr-diff.md).
+Een belangrijke regel die je in deel 2 al kort tegenkwam: **gates draaien op de PR-diff, niet op de hele repo**. Dat staat in [ADR-020](https://codeberg.org/Conduction/hydra/src/branch/main/openspec/architecture/adr-020-gate-scope-to-pr-diff.md).
 
 Waarom? Omdat veel van onze repo's een achterstand aan technische schuld dragen. Als je `phpcs` op de hele repo loslaat krijg je honderden findings die niets met de huidige PR te maken hebben — en wordt elke PR rood. Door de scope te beperken tot de regels die in de PR-diff aangeraakt worden, valt de gate alleen om *wat de huidige builder net heeft toegevoegd of gewijzigd*.
 
@@ -116,7 +116,7 @@ Slaat de recheck rood, dan gaat het issue naar `needs-input`. Geen retry. De rev
 
   De builder vergeet in één file een gate-regel die hij in andere files wél correct toepast (in de praktijk meestal de <code>spdx-headers</code>-licentiekop). De reviewer pikt het niet op, omdat hij de file als "bestaande boilerplate" leest en eroverheen kijkt. De mechanische recheck slaat dan rood, het issue gaat terug naar de builder, en die maakt bij de retry exact dezelfde fout opnieuw. Hetzelfde gate-issue blijft zo terugkomen.
 
-  **Wat te doen:** zie je 3 of meer retries op precies hetzelfde gate-issue, stop dan de loop. Twee opties — fix het handmatig, of scherp de gate-detectie aan zodat de reviewer hem niet meer als boilerplate kan wegklasseren. De volledige post-mortem van dit patroon (incidenten van 19–23 april 2026) staat in <a href="https://github.com/ConductionNL/hydra/blob/main/docs/retrospectives/decidesk-44-45-phase-g.md">decidesk-44-45-phase-g</a>.
+  **Wat te doen:** zie je 3 of meer retries op precies hetzelfde gate-issue, stop dan de loop. Twee opties — fix het handmatig, of scherp de gate-detectie aan zodat de reviewer hem niet meer als boilerplate kan wegklasseren. De volledige post-mortem van dit patroon (incidenten van 19–23 april 2026) staat in <a href="https://codeberg.org/Conduction/hydra/src/branch/main/docs/retrospectives/decidesk-44-45-phase-g.md">decidesk-44-45-phase-g</a>.
 </HexCard>
 
 ## Test jezelf
@@ -231,7 +231,7 @@ De **quality-recheck** draait alle mechanische gates opnieuw op de uiteindelijke
   />
   <NextStep
     title="ADR-020 — gate scope = PR diff"
-    href="https://github.com/ConductionNL/hydra/blob/main/openspec/architecture/adr-020-gate-scope-to-pr-diff.md"
+    href="https://codeberg.org/Conduction/hydra/src/branch/main/openspec/architecture/adr-020-gate-scope-to-pr-diff.md"
     description="De officiële motivatie achter de diff-only scope."
   />
 </NextSteps>

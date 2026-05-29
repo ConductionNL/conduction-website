@@ -39,7 +39,7 @@ Dat klinkt idealistisch totdat je het in de praktijk ziet werken. De apps van Co
   <PrerequisiteItem>Goede kennis van <a href="https://nextcloud-vue.conduction.nl/docs/architecture/app-design-principles/">hoe wij Nextcloud-apps ontwerpen</a> — het chassis, de vijf atomen, de gestapelde views.</PrerequisiteItem>
   <PrerequisiteItem>Basiskennis van het <a href="https://nextcloud-vue.conduction.nl/docs/architecture/manifest/">app-manifest</a> en <a href="https://nextcloud-vue.conduction.nl/docs/architecture/schemas-and-registers/">schemas en registers</a> — de twee declaratieve oppervlakken waarop een spec landt.</PrerequisiteItem>
   <PrerequisiteItem>Claude, Mistral, Codex, of een andere LLM-tool die je vanuit je editor of terminal kunt aanspreken. De workflow is model-agnostisch; je brengt je eigen agent mee.</PrerequisiteItem>
-  <PrerequisiteItem>De OpenSpec-skills geïnstalleerd — de <code>{'opsx-*'}</code>-familie zit in de <a href="https://github.com/ConductionNL/hydra">ConductionNL/hydra</a>-repository. Clone die (of kopieer de <code>.claude/skills/</code> naar je project) zodat de <code>{'/opsx-*'}</code>-commando's beschikbaar zijn.</PrerequisiteItem>
+  <PrerequisiteItem>De OpenSpec-skills geïnstalleerd — de <code>{'opsx-*'}</code>-familie zit in de <a href="https://codeberg.org/Conduction/hydra">ConductionNL/hydra</a>-repository. Clone die (of kopieer de <code>.claude/skills/</code> naar je project) zodat de <code>{'/opsx-*'}</code>-commando's beschikbaar zijn.</PrerequisiteItem>
 </Prerequisites>
 
 ## Wat "spec-gedreven" echt betekent
@@ -90,7 +90,7 @@ ADR's zitten op twee niveaus, met een schone eigenaarschapssplitsing. Het patroo
 
 Wanneer een spec iets voorstelt dat conflicteert met één van beide niveaus, weigert de apply-skill en de reviewer signaleert het. Zo houden de twee lagen tientallen onafhankelijk gebouwde features samenhangend.
 
-In het geval van Conduction zijn de organisatie-niveau ADR's de fleet-brede set die elke Conduction-app erft (datalaag, frontend, beveiliging, i18n, testen, licentie, de app-manifest-conventie, schema-declaratieve business logic, spec-sizing). Voor een concreet, browsebaar voorbeeld van **applicatie-niveau** ADR's vormen die van OpenConnector goede leesvoer — 16 stuks, van [`adr-001-domain-pinia-stores-app-local`](https://github.com/ConductionNL/openconnector/tree/main/openspec/architecture) tot het ontwerp van de encryption-service, elk een echte lokale beslissing die de rest van de fleet niet bindt.
+In het geval van Conduction zijn de organisatie-niveau ADR's de fleet-brede set die elke Conduction-app erft (datalaag, frontend, beveiliging, i18n, testen, licentie, de app-manifest-conventie, schema-declaratieve business logic, spec-sizing). Voor een concreet, browsebaar voorbeeld van **applicatie-niveau** ADR's vormen die van OpenConnector goede leesvoer — 16 stuks, van [`adr-001-domain-pinia-stores-app-local`](https://codeberg.org/Conduction/openconnector/src/branch/main/openspec/architecture) tot het ontwerp van de encryption-service, elk een echte lokale beslissing die de rest van de fleet niet bindt.
 
 ## Eén feature, één spec
 
@@ -297,10 +297,10 @@ De reden dat dit nu telt: een LLM met een schoon manifest-schema, een complete s
   <NextStep title="Open OpenBuilt" href="https://conduction.nl/apps/openbuilt">
     De visuele app-builder. Dezelfde OpenSpec-artifacten, geen JSON-editor. Ontworpen voor citizen developers en AI-gedreven generatie.
   </NextStep>
-  <NextStep title="Loop een echte OpenSpec-change door" href="https://github.com/ConductionNL/hydra/tree/main/openspec/changes">
+  <NextStep title="Loop een echte OpenSpec-change door" href="https://codeberg.org/Conduction/hydra/src/branch/main/openspec/changes">
     De "consume OR workflow engine fleet-wide"-change is een compleet, echt voorbeeld: proposal, design, delta-specs, tasks. Gebruik die als template de volgende keer dat je er een schrijft.
   </NextStep>
-  <NextStep title="Probeer /opsx-explore in je eigen repo" href="https://github.com/ConductionNL/hydra/blob/main/.claude/skills/opsx-explore/SKILL.md">
+  <NextStep title="Probeer /opsx-explore in je eigen repo" href="https://codeberg.org/Conduction/hydra/src/branch/main/.claude/skills/opsx-explore/SKILL.md">
     Lees de skill-prompt, en roep die aan in Claude Code tegen je eigen app. De houding is het makkelijkste deel van de workflow om je eigen te maken.
   </NextStep>
 </NextSteps>

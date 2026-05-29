@@ -191,7 +191,7 @@ Seed ook drie artikelen die matchen met de xWiki-inhoud. De seeds maken de app d
 }
 ```
 
-Voeg de `knowledge_article`-slug toe aan de kleine lijst `SettingsService::SCHEMA_SLUGS` in [lib/Service/SettingsService.php](https://github.com/ConductionNL/deskdesk/blob/main/lib/Service/SettingsService.php), zodat `/api/settings` het numerieke id naast de andere schema's blootlegt. Hetzelfde in `src/store/store.js`:
+Voeg de `knowledge_article`-slug toe aan de kleine lijst `SettingsService::SCHEMA_SLUGS` in [lib/Service/SettingsService.php](https://codeberg.org/Conduction/deskdesk/src/branch/main/lib/Service/SettingsService.php), zodat `/api/settings` het numerieke id naast de andere schema's blootlegt. Hetzelfde in `src/store/store.js`:
 
 ```js title="src/store/store.js"
 const SCHEMAS = ['floor', 'desk', 'booking', 'knowledge_article']
@@ -356,7 +356,7 @@ export default {
 </template>
 ```
 
-(Zie de [reference repo](https://github.com/ConductionNL/deskdesk/blob/main/src/App.vue) voor het volledige bestand. App.vue voorziet ook in `objectSidebarState`, zodat het externe-sidebar-kanaal van CnDetailPage werkt.)
+(Zie de [reference repo](https://codeberg.org/Conduction/deskdesk/src/branch/main/src/App.vue) voor het volledige bestand. App.vue voorziet ook in `objectSidebarState`, zodat het externe-sidebar-kanaal van CnDetailPage werkt.)
 
 Bouw, herlaad en navigeer naar de detail-URL van een 3-East-desk. De rechter sidebar toont drie tabs: Data, Kennis, Metadata. Klik op **Kennis**. Het artikel "East zone etiquette" verschijnt, met de body gerenderd en een link terug naar de wiki om te bewerken.
 
@@ -383,7 +383,7 @@ Het release-proces is mechanisch:
 4. **Onderteken de tarball** met de EC-key die de Nextcloud app store verwacht (zie [de Nextcloud-docs](https://nextcloudappstore.readthedocs.io/en/latest/developer.html#publishing-your-app)).
 5. **Push naar GitHub** met een tag die overeenkomt met de versie (`git tag v0.4.0 && git push origin v0.4.0`). Het template levert een `.github/workflows/release.yml` die de tag oppikt, de tarball bouwt, ondertekent en de release publiceert.
 
-Voor de **Conduction app store** (`apps.conduction.nl`) duwt dezelfde release-pipeline naar dat endpoint als de secret is geconfigureerd. Zie [de .github/workflows/release.yml](https://github.com/ConductionNL/nextcloud-app-template/blob/main/.github/workflows/release.yml) als referentie.
+Voor de **Conduction app store** (`apps.conduction.nl`) duwt dezelfde release-pipeline naar dat endpoint als de secret is geconfigureerd. Zie [de .github/workflows/release.yml](https://codeberg.org/Conduction/nextcloud-app-template/src/branch/main/.github/workflows/release.yml) als referentie.
 
 ## Stap 7: Indienen bij apps.nextcloud.com (optioneel)
 

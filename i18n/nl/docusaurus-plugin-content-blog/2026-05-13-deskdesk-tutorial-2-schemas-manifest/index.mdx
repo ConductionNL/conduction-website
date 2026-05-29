@@ -38,7 +38,7 @@ De vorm waar we steeds van zeggen "dit scheelt je code" krijgt eindelijk getalle
 <Prerequisites title="Waar je moet staan">
   <PrerequisiteItem>Deel 1 af: DeskDesk geïnstalleerd, het chassis rendert op <code>http://localhost:8080/apps/deskdesk/</code>.</PrerequisiteItem>
   <PrerequisiteItem>OpenRegister geïnstalleerd, ingeschakeld, op versie 0.2.10 of nieuwer (de <code>importFromFilePath</code>-methode in ConfigurationService is verplicht).</PrerequisiteItem>
-  <PrerequisiteItem>Een lokale clone van <a href="https://github.com/ConductionNL/deskdesk">ConductionNL/deskdesk</a> op je schijf en een werkende <code>npm run build</code>.</PrerequisiteItem>
+  <PrerequisiteItem>Een lokale clone van <a href="https://codeberg.org/Conduction/deskdesk">ConductionNL/deskdesk</a> op je schijf en een werkende <code>npm run build</code>.</PrerequisiteItem>
 </Prerequisites>
 
 ## Stap 1: Definieer de drie schema's
@@ -95,7 +95,7 @@ Het `desk`-schema voegt de getypeerde relatie naar floor toe:
 
 Booking heeft dezelfde vorm: een relatie, een paar datetimes, een enum-status en een optionele RRULE voor terugkerende boekingen.
 
-Het volledige bestand staat in [de deskdesk repo](https://github.com/ConductionNL/deskdesk/blob/main/lib/Settings/deskdesk_register.json), met vijf seed-desks, twee floors en drie bookings. Zo is de app meteen te doorbladeren na de eerste install.
+Het volledige bestand staat in [de deskdesk repo](https://codeberg.org/Conduction/deskdesk/src/branch/main/lib/Settings/deskdesk_register.json), met vijf seed-desks, twee floors en drie bookings. Zo is de app meteen te doorbladeren na de eerste install.
 
 ## Stap 2: Declareer het register zelf
 
@@ -142,7 +142,7 @@ Hoe dan ook, je ziet in de registerlijst van OpenRegister:
 slug: deskdesk    title: DeskDesk    application: deskdesk    schemas: floor, desk, booking
 ```
 
-Het pad dat de SettingsService neemt is **importFromFilePath** met een pad dat relatief aan `\OC::$SERVERROOT` wordt opgelost (dat is `/var/www/html` in een standaardinstall). De boot-time bug die ik raakte tijdens deze tutorial — `Configuration file not found: html/custom_apps/deskdesk/...` — was een relatief-pad-fout; de fix staat in [de diff](https://github.com/ConductionNL/deskdesk/pull/2/files#diff-lib-Service-SettingsService.php).
+Het pad dat de SettingsService neemt is **importFromFilePath** met een pad dat relatief aan `\OC::$SERVERROOT` wordt opgelost (dat is `/var/www/html` in een standaardinstall). De boot-time bug die ik raakte tijdens deze tutorial — `Configuration file not found: html/custom_apps/deskdesk/...` — was een relatief-pad-fout; de fix staat in [de diff](https://codeberg.org/Conduction/deskdesk/pull/2/files#diff-lib-Service-SettingsService.php).
 
 ## Stap 4: Het manifest
 

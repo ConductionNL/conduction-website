@@ -59,16 +59,18 @@ Try a quick test prompt: ask Claude something simple like "what's the current di
 
 ## Step 3: clone the `.github` repo
 
-The global settings live in the canonical [`ConductionNL/.github`](https://github.com/ConductionNL/.github) repo. Clone it once:
+The global settings live in the canonical [`Conduction/.github`](https://codeberg.org/Conduction/.github) repo on Codeberg. Clone it once:
 
 ```bash
 mkdir -p ~/code/conduction
 cd ~/code/conduction
-gh repo clone ConductionNL/.github
+git clone git@codeberg.org:Conduction/.github.git
 cd .github
 ```
 
-You only need to clone this once — the version-check hook fetches updates via the GitHub API after this, no further `git pull` needed.
+> **No SSH key yet?** [Part 2 — Codeberg auth](/academy/workstation-tutorial-2-basis-inrichten#step-7-codeberg-auth-ssh--tea) walks through it. As a fallback you can also clone over HTTPS: `git clone https://codeberg.org/Conduction/.github.git` — that works without auth but won't let you push.
+
+You only need to clone this once — the version-check hook fetches updates via the GitHub API after this (the settings repo is mirrored from Codeberg to `ConductionNL/.github` on GitHub for the hook), no further `git pull` needed.
 
 ## Step 4: install the global settings + hooks
 
@@ -295,7 +297,7 @@ By installing them in the same part of the tutorial, the safety net is in place 
   />
   <NextStep
     title="The canonical global-claude-settings.md"
-    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/global-claude-settings.md"
+    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/global-claude-settings.md"
     description="The internal reference with the full breakdown of every config file, update flow, and security model."
   />
 </NextSteps>

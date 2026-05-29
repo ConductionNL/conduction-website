@@ -38,7 +38,7 @@ The shape we keep saying "this saves you code" finally has numbers behind it: ~2
 <Prerequisites title="Where you should be">
   <PrerequisiteItem>Part 1 done: DeskDesk installed, the chassis renders at <code>http://localhost:8080/apps/deskdesk/</code>.</PrerequisiteItem>
   <PrerequisiteItem>OpenRegister installed, enabled, and at version 0.2.10 or newer (the <code>importFromFilePath</code> ConfigurationService method is required).</PrerequisiteItem>
-  <PrerequisiteItem>The local clone of <a href="https://github.com/ConductionNL/deskdesk">ConductionNL/deskdesk</a> on your filesystem and a working <code>npm run build</code>.</PrerequisiteItem>
+  <PrerequisiteItem>The local clone of <a href="https://codeberg.org/Conduction/deskdesk">ConductionNL/deskdesk</a> on your filesystem and a working <code>npm run build</code>.</PrerequisiteItem>
 </Prerequisites>
 
 ## Step 1: Define the three schemas
@@ -95,7 +95,7 @@ The `desk` schema adds the typed relation to floor:
 
 Booking is the same shape — a relation, a couple of date-times, an enum status, and an optional RRULE for recurring bookings.
 
-The full file ships in [the deskdesk repo](https://github.com/ConductionNL/deskdesk/blob/main/lib/Settings/deskdesk_register.json), with five seed desks, two floors, and three bookings so the app is browsable on first install.
+The full file ships in [the deskdesk repo](https://codeberg.org/Conduction/deskdesk/src/branch/main/lib/Settings/deskdesk_register.json), with five seed desks, two floors, and three bookings so the app is browsable on first install.
 
 ## Step 2: Declare the register itself
 
@@ -142,7 +142,7 @@ Either way, you should see in the OpenRegister registers list:
 slug: deskdesk    title: DeskDesk    application: deskdesk    schemas: floor, desk, booking
 ```
 
-The matching path the SettingsService takes is **importFromFilePath** with a path resolved relative to `\OC::$SERVERROOT` (which is `/var/www/html` in a default install). The boot-time bug I hit during this tutorial — `Configuration file not found: html/custom_apps/deskdesk/...` — was a relative-path mistake; the fix lands in [the diff](https://github.com/ConductionNL/deskdesk/pull/2/files#diff-lib-Service-SettingsService.php).
+The matching path the SettingsService takes is **importFromFilePath** with a path resolved relative to `\OC::$SERVERROOT` (which is `/var/www/html` in a default install). The boot-time bug I hit during this tutorial — `Configuration file not found: html/custom_apps/deskdesk/...` — was a relative-path mistake; the fix lands in [the diff](https://codeberg.org/Conduction/deskdesk/pull/2/files#diff-lib-Service-SettingsService.php).
 
 ## Step 4: The manifest
 
