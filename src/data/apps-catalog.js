@@ -131,10 +131,10 @@ const PRESENTATION = {
     categories: ['Processes'],
     icon: <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="19" cy="18" r="2"/></svg>,
   },
-  openbuilt: {
-    name: 'OpenBuilt',
+  openbuild: {
+    name: 'OpenBuild',
     tagline: 'Citizen-developer app builder. Compose Nextcloud apps from registers, connectors, workflows, no PHP.',
-    href: '/apps/openbuilt',
+    href: '/apps/openbuild',
     categories: ['Processes'],
     icon: <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9-9 9z"/><path d="M9 12h6M12 9v6"/></svg>,
   },
