@@ -111,7 +111,7 @@ Paths 2 and 3 both build on this foundation. Path 1 does not — every one of th
 
 A common confusion when reading the rest of this series: **the manifest is not the same thing as the component library**, even though we teach them together.
 
-- The **manifest** is `src/manifest.json`. It is a JSON document validated by a schema (`https://raw.githubusercontent.com/ConductionNL/nextcloud-vue/main/src/schemas/app-manifest-v2.schema.json`, currently version 2.7.0). It describes navigation entries, routes, and what each page renders. It has no runtime behaviour on its own.
+- The **manifest** is `src/manifest.json`. It is a JSON document validated by a schema (`https://codeberg.org/Conduction/nextcloud-vue/raw/branch/main/src/schemas/app-manifest-v2.schema.json`, currently version 2.7.0). It describes navigation entries, routes, and what each page renders. It has no runtime behaviour on its own.
 - The **component library** is `@conduction/nextcloud-vue`. It is a set of Vue 2 components prefixed `Cn*` — `CnAppRoot` mounts the app shell, `CnPageRenderer` reads the manifest and dispatches the right page component, `CnIndexPage`/`CnDetailPage`/`CnDashboardPage` render the actual page surfaces.
 
 You can use the library without the manifest. Path 2 in the table above does exactly that — a hand-rolled `App.vue` mounts `Cn*` components directly in a hand-written router. You write more Vue, but you keep the schema-driven listing/detail/form behaviour and you keep all the OpenRegister perks.

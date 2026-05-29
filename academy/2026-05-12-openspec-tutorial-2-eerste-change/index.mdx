@@ -15,7 +15,7 @@ partNumber: 2
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
 import Details from '@theme/Details';
 
-Time to see OpenSpec in action. In this part you'll create your **first real change** inside a Conduction project — from empty folder, through a spec-delta with a requirement and scenario, to a validated proposal ready for implementation. We do that with the Claude Code skills [`/opsx-new`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md) and [`/opsx-ff`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md).
+Time to see OpenSpec in action. In this part you'll create your **first real change** inside a Conduction project — from empty folder, through a spec-delta with a requirement and scenario, to a validated proposal ready for implementation. We do that with the Claude Code skills [`/opsx-new`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md) and [`/opsx-ff`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md).
 
 {/* truncate */}
 
@@ -30,7 +30,7 @@ Time to see OpenSpec in action. In this part you'll create your **first real cha
 <Prerequisites title="What you'll need">
   <PrerequisiteItem>Part 1 read through — <a href="/academy/openspec-tutorial-1-wat-is-openspec">What is OpenSpec?</a> — so that you know what a spec, requirement, scenario and change are.</PrerequisiteItem>
   <PrerequisiteItem>Claude Code installed and working in your project folder. If you don't have that yet, start with <a href="/academy/build-an-app">Build an App</a>.</PrerequisiteItem>
-  <PrerequisiteItem>A checked-out Conduction repo you can poke around in — for example <a href="https://github.com/ConductionNL/openregister">openregister</a>. We work in a new branch, so you won't lose anything.</PrerequisiteItem>
+  <PrerequisiteItem>A checked-out Conduction repo you can poke around in — for example <a href="https://codeberg.org/Conduction/openregister">openregister</a>. We work in a new branch, so you won't lose anything.</PrerequisiteItem>
   <PrerequisiteItem>Basic Git: create a branch, commit, push.</PrerequisiteItem>
 </Prerequisites>
 
@@ -48,7 +48,7 @@ Already know exactly what you want to build? Skip this step and jump to Step 1. 
 /opsx-explore
 ```
 
-`/opsx-explore` is the **Pre-spec phase** from the [command reference](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-explore): it produces **no artefacts**, it thinks alongside you. Claude explores the codebase, asks about your intent, weighs alternative approaches, and points out the unknowns that are still floating around. It's a conversation — not a file on disk.
+`/opsx-explore` is the **Pre-spec phase** from the [command reference](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-explore): it produces **no artefacts**, it thinks alongside you. Claude explores the codebase, asks about your intent, weighs alternative approaches, and points out the unknowns that are still floating around. It's a conversation — not a file on disk.
 
 Good moments to reach for `/opsx-explore`:
 
@@ -71,7 +71,7 @@ git pull
 git checkout -b feature/add-publication-search
 ```
 
-The branch name follows the `feature/<change-name>` pattern — handy for reviewers to see which spec it belongs to. In the fully automated [Hydra flow](https://github.com/ConductionNL/.github/blob/main/docs/hydra/README.md) that becomes `feature/<issue-number>/<change-name>` once `/opsx-plan-to-issues` (Step 10) has created a tracking issue. For this tutorial we'll stick with the short pattern.
+The branch name follows the `feature/<change-name>` pattern — handy for reviewers to see which spec it belongs to. In the fully automated [Hydra flow](https://codeberg.org/Conduction/.github/src/branch/main/docs/hydra/README.md) that becomes `feature/<issue-number>/<change-name>` once `/opsx-plan-to-issues` (Step 10) has created a tracking issue. For this tutorial we'll stick with the short pattern.
 
 ## Step 2: an empty change with `/opsx-new`
 
@@ -103,7 +103,7 @@ From here there are two ways to fill in the change:
 
 In production you'll often grab `/opsx-ff` for a rough draft and adjust from there — that's the **canonical path** from the Conduction docs (`/opsx-ff` → `/opsx-apply` → `/opsx-verify`). In this tutorial we do it step by step by hand — that gives the best feel for what each artefact actually is. At Step 7 we show what `/opsx-ff` would do for you in one go.
 
-> **Dependency order from the [command reference](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-continue):** `proposal` (root) → `specs` + `design` (both depend on proposal) → `tasks` (depends on both specs and design). We follow that order below.
+> **Dependency order from the [command reference](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-continue):** `proposal` (root) → `specs` + `design` (both depend on proposal) → `tasks` (depends on both specs and design). We follow that order below.
 
 ## Step 4: `proposal.md` — the why and the what
 
@@ -226,7 +226,7 @@ New: `GET /api/publications/search`
 
 Tasks are small and concrete — 15-30 minutes of work each. Tasks that feel too big are a sign you still need to split them. Good task breakdown directly drives how smoothly `/opsx-apply` (Step 10) will move through your change later.
 
-> **Optional extra artefacts.** Beyond the four standard artefacts, OpenSpec has a few optional ones: `discovery.md` (open questions you hit during research), `contract.md` (cross-project API contracts), `migration.md` (data migration between schema versions), and `test-plan.md` (test classification for `/opsx-apply-loop`). For a first change you usually don't need them — see the [command reference](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-continue) for the full dependency chain.
+> **Optional extra artefacts.** Beyond the four standard artefacts, OpenSpec has a few optional ones: `discovery.md` (open questions you hit during research), `contract.md` (cross-project API contracts), `migration.md` (data migration between schema versions), and `test-plan.md` (test classification for `/opsx-apply-loop`). For a first change you usually don't need them — see the [command reference](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-continue) for the full dependency chain.
 
 ## Step 7: or all at once with `/opsx-ff`
 
@@ -238,9 +238,9 @@ For anyone who'd rather start with a single command: after running `/opsx-new ad
 
 Claude Code asks a few questions first ("what should the change do?", "which model do you want to use?") and then generates the proposal, the specs/, the design and the tasks in one run — in **the same dependency order** we walked through by hand above. Fast, and in our experience good enough as a starting point to adjust from.
 
-When to reach for `/opsx-ff`: for changes where you already have a clear picture and mostly want to save typing. Per [`spec-driven-development.md`](https://github.com/ConductionNL/.github/blob/main/docs/WayOfWork/spec-driven-development.md), **`/opsx-ff` → `/opsx-apply` → `/opsx-verify`** is the canonical path for most changes.
+When to reach for `/opsx-ff`: for changes where you already have a clear picture and mostly want to save typing. Per [`spec-driven-development.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/WayOfWork/spec-driven-development.md), **`/opsx-ff` → `/opsx-apply` → `/opsx-verify`** is the canonical path for most changes.
 
-When not to: when there are architectural choices you want to think through step by step — then [`/opsx-continue`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-continue) earns its keep (it generates the next artefact after review and any adjustment). Or, for the brainstorm upfront, [`/opsx-explore`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-explore) (see Step 0) — that creates nothing yet, but thinks with you.
+When not to: when there are architectural choices you want to think through step by step — then [`/opsx-continue`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-continue) earns its keep (it generates the next artefact after review and any adjustment). Or, for the brainstorm upfront, [`/opsx-explore`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-explore) (see Step 0) — that creates nothing yet, but thinks with you.
 
 ## Step 8: validate
 
@@ -250,7 +250,7 @@ At the spec level you run the OpenSpec CLI:
 openspec validate --strict
 ```
 
-That's a **terminal command**, not a slash-command (see the [command reference](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#openspec-cli-commands)). With `--strict` warnings are treated as errors. The validator checks, among other things:
+That's a **terminal command**, not a slash-command (see the [command reference](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#openspec-cli-commands)). With `--strict` warnings are treated as errors. The validator checks, among other things:
 
 - Scenarios use **four** hashes (`####`), not three — the most common OpenSpec mistake, otherwise silently skipped by the parser.
 - Requirements use RFC 2119 keywords (MUST / MAY / SHOULD).
@@ -301,11 +301,11 @@ From now on the change is on the project board — visible to the team. Optional
 
 `/opsx-apply` runs the **Build phase**: picks the next open task from `plan.json`, reads **only** the relevant spec section (via `spec_ref` — minimal context, no "AI amnesia"), implements backend + UI + tests, runs those tests, ticks the task off in `tasks.md` and on the GitHub issue, and repeats until everything is in place.
 
-The skill automatically loads every company-wide ADR from [`hydra/openspec/architecture/`](https://github.com/ConductionNL/hydra/tree/main/openspec/architecture) along the way — hard constraints on the implementation (data layer, API patterns, frontend conventions, security, i18n).
+The skill automatically loads every company-wide ADR from [`hydra/openspec/architecture/`](https://codeberg.org/Conduction/hydra/src/branch/main/openspec/architecture) along the way — hard constraints on the implementation (data layer, API patterns, frontend conventions, security, i18n).
 
-Per [`spec-driven-development.md`](https://github.com/ConductionNL/.github/blob/main/docs/WayOfWork/spec-driven-development.md), this is the canonical path: **most changes only need `/opsx-ff` → `/opsx-apply` → `/opsx-verify`**.
+Per [`spec-driven-development.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/WayOfWork/spec-driven-development.md), this is the canonical path: **most changes only need `/opsx-ff` → `/opsx-apply` → `/opsx-verify`**.
 
-**Hands-off alternative.** [`/opsx-apply-loop`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-apply-loop) runs `apply` → `verify` inside an isolated Docker container (max 5 iterations), optionally with tests, and archives after. Or use Hydra itself: label the tracking issue `ready-to-build`, and [Hydra](https://github.com/ConductionNL/.github/blob/main/docs/hydra/README.md) picks it up via the container pipeline and produces a draft PR.
+**Hands-off alternative.** [`/opsx-apply-loop`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-apply-loop) runs `apply` → `verify` inside an isolated Docker container (max 5 iterations), optionally with tests, and archives after. Or use Hydra itself: label the tracking issue `ready-to-build`, and [Hydra](https://codeberg.org/Conduction/.github/src/branch/main/docs/hydra/README.md) picks it up via the container pipeline and produces a draft PR.
 
 ## Step 11: verify and archive
 
@@ -334,7 +334,7 @@ Only once verify is green do you run:
 `/opsx-archive` does five things:
 
 1. Re-checks artefact and task completeness.
-2. Syncs the delta into the main spec via [`/opsx-sync`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-sync) (if that hasn't happened yet).
+2. Syncs the delta into the main spec via [`/opsx-sync`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-sync) (if that hasn't happened yet).
 3. Moves the folder to `openspec/changes/archive/YYYY-MM-DD-<name>/`.
 4. Updates `CHANGELOG.md` (completed tasks become version entries).
 5. Creates or updates `docs/features/<change-name>.md` and the feature overview in `docs/features/README.md`.
@@ -496,7 +496,7 @@ Steps 3 and 4 you don't do by hand — run **`/opsx-archive`**. It re-checks tha
   />
   <NextStep
     title="The full OpenSpec command list"
-    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md"
+    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md"
     description="Every /opsx-* command in one place: new, ff, continue, explore, apply, verify, sync, archive."
   />
 </NextSteps>

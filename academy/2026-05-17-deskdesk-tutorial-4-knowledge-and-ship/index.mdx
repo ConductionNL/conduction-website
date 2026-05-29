@@ -191,7 +191,7 @@ Also seed three articles matching the xWiki content. The seeds make the app demo
 }
 ```
 
-Add the `knowledge_article` slug to the small list `SettingsService::SCHEMA_SLUGS` in [lib/Service/SettingsService.php](https://github.com/ConductionNL/deskdesk/blob/main/lib/Service/SettingsService.php) so `/api/settings` exposes its numeric id alongside the other schemas. Same in `src/store/store.js`:
+Add the `knowledge_article` slug to the small list `SettingsService::SCHEMA_SLUGS` in [lib/Service/SettingsService.php](https://codeberg.org/Conduction/deskdesk/src/branch/main/lib/Service/SettingsService.php) so `/api/settings` exposes its numeric id alongside the other schemas. Same in `src/store/store.js`:
 
 ```js title="src/store/store.js"
 const SCHEMAS = ['floor', 'desk', 'booking', 'knowledge_article']
@@ -360,7 +360,7 @@ export default {
 </template>
 ```
 
-(See the [reference repo](https://github.com/ConductionNL/deskdesk/blob/main/src/App.vue) for the complete file — App.vue also provides `objectSidebarState` so CnDetailPage's external-sidebar channel works.)
+(See the [reference repo](https://codeberg.org/Conduction/deskdesk/src/branch/main/src/App.vue) for the complete file — App.vue also provides `objectSidebarState` so CnDetailPage's external-sidebar channel works.)
 
 Build, reload, navigate to a 3-East desk's detail URL. The right sidebar shows three tabs — Data, Knowledge, Metadata. Click **Knowledge**. The "East zone etiquette" article appears, with the body rendered and a link back to the wiki for editing.
 
@@ -387,7 +387,7 @@ The release process is mechanical:
 4. **Sign the tarball** with the EC key Nextcloud's app store expects (see [the Nextcloud docs](https://nextcloudappstore.readthedocs.io/en/latest/developer.html#publishing-your-app)).
 5. **Push to GitHub** with a tag matching the version (`git tag v0.4.0 && git push origin v0.4.0`). The template ships a `.github/workflows/release.yml` that picks up the tag, builds the tarball, signs it, and publishes the release.
 
-For the **Conduction app store** (`apps.conduction.nl`), the same release pipeline pushes to that endpoint when the secret is configured. See [the .github/workflows/release.yml](https://github.com/ConductionNL/nextcloud-app-template/blob/main/.github/workflows/release.yml) reference.
+For the **Conduction app store** (`apps.conduction.nl`), the same release pipeline pushes to that endpoint when the secret is configured. See [the .github/workflows/release.yml](https://codeberg.org/Conduction/nextcloud-app-template/src/branch/main/.github/workflows/release.yml) reference.
 
 ## Step 7: Submit to apps.nextcloud.com (optional)
 
