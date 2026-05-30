@@ -152,7 +152,7 @@ module.exports = createConfig({
           {label: 'OpenRegister',  href: 'https://openregister.conduction.nl/'},
           {label: 'OpenConnector', href: 'https://openconnector.conduction.nl/'},
           {label: 'DocuDesk',      href: 'https://docudesk.conduction.nl/'},
-          {label: 'MyDash',        href: 'https://mydash.conduction.nl/'},
+          {label: 'LaunchPad',        href: 'https://launchpad.conduction.nl/'},
         ],
       },
       {
