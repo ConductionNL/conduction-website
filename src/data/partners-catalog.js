@@ -147,9 +147,9 @@ const PARTNERS_DATA = [
     tier: 'host',
     name: 'Sendent',
     logo: '/img/partners/sendent.png',
-    summaryEn: <>Dutch supplier that connects Microsoft Outlook and Teams to <span className="next-blue">Nextcloud</span>. Provides support on MyDash for customers who want to keep their mail and file flows inside their own Nextcloud environment.</>,
-    summaryNl: <>Nederlandse leverancier die Microsoft Outlook en Teams koppelt aan <span className="next-blue">Nextcloud</span>. Levert support op MyDash voor klanten die hun mail- en bestandsstroom binnen de eigen Nextcloud-omgeving willen houden.</>,
-    apps: ['MyDash'],
+    summaryEn: <>Dutch supplier that connects Microsoft Outlook and Teams to <span className="next-blue">Nextcloud</span>. Provides support on LaunchPad for customers who want to keep their mail and file flows inside their own Nextcloud environment.</>,
+    summaryNl: <>Nederlandse leverancier die Microsoft Outlook en Teams koppelt aan <span className="next-blue">Nextcloud</span>. Levert support op LaunchPad voor klanten die hun mail- en bestandsstroom binnen de eigen Nextcloud-omgeving willen houden.</>,
+    apps: ['LaunchPad'],
     solutions: [],
   },
 ];

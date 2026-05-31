@@ -246,6 +246,12 @@ module.exports = createConfig({
              Only the EN /iso redirect is emitted here — /nl/iso 404s
              gracefully because there are no inbound links to it. */
           {from: '/iso', to: '/quality'},
+          /* App rename 2026-05-30: MyDash → LaunchPad and OpenBuilt → OpenBuild.
+             The old /apps/mydash and /apps/openbuilt URLs were indexed in
+             search engines and shipped on partner sites; redirect them to
+             the new canonical app pages. */
+          {from: '/apps/mydash', to: '/apps/launchpad'},
+          {from: '/apps/openbuilt', to: '/apps/openbuild'},
         ],
       },
     ],
