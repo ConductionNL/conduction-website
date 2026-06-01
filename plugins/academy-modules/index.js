@@ -20,14 +20,14 @@
  *
  *   {
  *     modules: {
- *       'deskdesk-tutorial': {
- *         slug: 'deskdesk-tutorial',
+ *       'build-an-app-tutorial': {
+ *         slug: 'build-an-app-tutorial',
  *         title: 'Build a Nextcloud app on the Conduction stack',
  *         lede: 'A four-part path from blank Nextcloud to a published app …',
  *         parts: [
  *           {
- *             slug: 'deskdesk-tutorial-1-scaffold',
- *             permalink: '/academy/deskdesk-tutorial-1-scaffold',
+ *             slug: 'build-an-app-tutorial-1-scaffold',
+ *             permalink: '/academy/build-an-app-tutorial-1-scaffold',
  *             title: 'Build a Nextcloud app on the Conduction stack — Part 1: Scaffold',
  *             summary: 'Clone the Conduction app template …',
  *             contentType: 'tutorial',
@@ -46,7 +46,7 @@
  *       ...
  *     },
  *     postModuleIndex: {
- *       '/academy/deskdesk-tutorial-1-scaffold': 'deskdesk-tutorial',
+ *       '/academy/build-an-app-tutorial-1-scaffold': 'build-an-app-tutorial',
  *       ...
  *     },
  *   }

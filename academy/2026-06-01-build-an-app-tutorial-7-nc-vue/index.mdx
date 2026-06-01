@@ -4,7 +4,7 @@ title: "Build a Nextcloud app on the Conduction stack — Part 7: The nc-vue com
 contentType: tutorial
 authors: [conduction]
 date: 2026-06-01
-summary: Parts 2–6 used a handful of nc-vue components by name (CnAppRoot, CnObjectSidebar, CnDashboardPage, CnMarkdownEditor). Part 7 completes the picture — organised by capability so you can reach for the right component the moment your PetStore app needs it.
+summary: Parts 2–6 used a handful of nc-vue components by name (CnAppRoot, CnObjectSidebar, CnDashboardPage, CnMarkdownEditor). Part 7 completes the picture, organised by capability so you can reach for the right component the moment your PetStore app needs it.
 tags: [App development, nextcloud-vue, Components, Composables, Tutorial series]
 apps: [openregister]
 durationMinutes: 50
@@ -34,7 +34,7 @@ This is a tour, not a reference. The full prop tables live on [nextcloud-vue.con
 
 {/* truncate */}
 
-:::tip Recommended first — Part 6
+:::tip Recommended first: Part 6
 Part 7 assumes you've finished [Part 6: Integrate](/academy/build-an-app-tutorial-6-integrate). The examples extend the PetStore app from Parts 1–6, so the schemas (`pet`, `order`, `category`, `care_guide`) and the manifest are already in place.
 :::
 
@@ -89,7 +89,7 @@ Part 2 generated forms from the schema automatically. Part 5 added a `CnMarkdown
 
     A standalone page that hosts a form, takes the whole column. Use when the form deserves its own URL (multi-step creation, a long edit form, a wizard).
 
-    ```json title="src/manifest.json — order placement as its own page"
+    ```json title="src/manifest.json: order placement as its own page"
     {"id": "orders-create",
      "route": "/orders/new",
      "type": "form",
@@ -170,7 +170,7 @@ Part 2 generated forms from the schema automatically. Part 5 added a `CnMarkdown
 
     A form dialog with multiple tabs, one per schema section. Used when the schema has natural groupings ("General", "Shipping", "Tracking") and shoving every field on one screen would intimidate.
 
-    ```vue title="Edit order — three tabs"
+    ```vue title="Edit order: three tabs"
     <template>
       <CnTabbedFormDialog
         v-model:open="open"
@@ -242,7 +242,7 @@ When the user clicks "Delete", a confirmation surface stands between the click a
 
 `CnIndexPage` already shows row checkboxes when `actionToggles.selectable` (or the legacy `selectable: true`) is on. When at least one row is selected, `CnMassActionBar` slides in from the bottom of the list with the actions you wired:
 
-```json title="src/manifest.json — bulk actions enabled"
+```json title="src/manifest.json: bulk actions enabled"
 {"id": "orders-index",
  "route": "/orders",
  "type": "index",
@@ -286,9 +286,9 @@ The library separates "filter for power users" from "find for everyone" from "fa
 | `CnQuickFilterBar` | Omnibox-style free-text search across declared fields | Single input above the list | The common "I just want to find one thing" case |
 | `CnFacetSidebar` | Faceted browse by a small set of high-cardinality fields | Left-rail with collapsible facets, each showing counts | Catalogues, search pages, anywhere browsing by attribute matters |
 
-PetStore's orders index ships with `CnQuickFilterBar` by default — it's what most users want. To add `CnFilterBar` for power users, declare `filterBar` in the page config:
+PetStore's orders index ships with `CnQuickFilterBar` by default: it's what most users want. To add `CnFilterBar` for power users, declare `filterBar` in the page config:
 
-```json title="src/manifest.json — orders index with both"
+```json title="src/manifest.json: orders index with both"
 {"id": "orders-index",
  "route": "/orders",
  "type": "index",
@@ -320,7 +320,7 @@ The renderer mounts `CnQuickFilterBar` and `CnFilterBar` above the list; both fe
 
 Four components carry small but loud messages.
 
-### `CnStatusBadge` — release status, mode flags
+### `CnStatusBadge`: release status, mode flags
 
 ```vue
 <CnStatusBadge tone="stable">{{ $t('petstore.released') }}</CnStatusBadge>
@@ -330,7 +330,7 @@ Four components carry small but loud messages.
 
 Tones: `stable`, `beta`, `warning`, `info`, `neutral`. The component renders the brand hex bullet in the corresponding semantic colour. Use it for tagging the app's release status near the title, or for tagging individual objects whose state shifts ("draft", "published", "archived"). Don't sprinkle: one or two per page maximum.
 
-### `CnLockedBanner` — object lock notice
+### `CnLockedBanner`: object lock notice
 
 When OpenRegister's object-lock feature is on and another user holds the lock on the current detail object, the lock banner appears at the top of the detail page. You don't usually mount it directly: `CnDetailPage` auto-mounts it when `useObjectLock` reports a held lock. Reach for it manually only when you've built a custom detail surface and want the same chrome.
 
@@ -340,7 +340,7 @@ When OpenRegister's object-lock feature is on and another user holds the lock on
 </template>
 ```
 
-### `CnDependencyMissing` — required app not installed
+### `CnDependencyMissing`: required app not installed
 
 The Conduction stack has app dependencies (PetStore requires OpenRegister; the integrations from Part 6 require OpenConnector). When a dependency is missing, the page renders a friendly banner that says what's missing and how to install it, instead of a stack trace.
 
@@ -357,7 +357,7 @@ The Conduction stack has app dependencies (PetStore requires OpenRegister; the i
 
 In the manifest path, the renderer surfaces this automatically when the page declares `requires-apps`. Reach for the component manually only when you need finer-grained guards.
 
-### `CnProgressBar` — long operations
+### `CnProgressBar`: long operations
 
 For anything that takes more than two seconds and produces a progress signal (bulk import, mass export, sync). Drives off an `IProgressReporter` your service exposes, or off a polled endpoint.
 
@@ -371,7 +371,7 @@ For anything that takes more than two seconds and produces a progress signal (bu
 </template>
 ```
 
-`CnIndexPage` and the bulk-action dialogs use it internally — you rarely mount it by hand.
+`CnIndexPage` and the bulk-action dialogs use it internally, so you rarely mount it by hand.
 
 <Eyebrow>Detail-page anatomy</Eyebrow>
 
@@ -381,17 +381,17 @@ A `CnDetailPage` is more than the object form. Its right side is a column of "ca
 
 | Card | Shows | When to drop it on a detail page |
 |---|---|---|
-| `CnDetailCard` | The object form itself (auto-generated from schema) | Always — this is the spine of the detail page |
+| `CnDetailCard` | The object form itself (auto-generated from schema) | Always: this is the spine of the detail page |
 | `CnDetailGrid` | A grid layout for multiple `CnDetailCard`s side-by-side | When the object has natural left/right groupings (pet identity left, inventory right) |
-| `CnObjectCard` | A compact reference to a related object | "This order is for pet X" — clickable, opens X in a slide-over |
+| `CnObjectCard` | A compact reference to a related object | "This order is for pet X", clickable, opens X in a slide-over |
 | `CnAuditTrailCard` | The OR audit log for this object | Required for compliance flows; useful for "who changed what when" tracing |
 | `CnFilesCard` | Files attached to the object | When the object has a `files[]` relation (pet photos, care_guide assets) |
-| `CnNotesCard` | Free-form notes against the object | When `CnDetailCard`'s schema-driven `notes` field isn't enough — multi-author, threaded notes |
+| `CnNotesCard` | Free-form notes against the object | When `CnDetailCard`'s schema-driven `notes` field isn't enough: multi-author, threaded notes |
 | `CnTagsCard` | Tags applied to the object | When the object has a `tags[]` relation, surfaces them as removable chips |
-| `CnTasksCard` | Tasks linked to the object | When the workflow needs a to-do list on each object — common on incidents/cases, less so on orders |
-| `CnConfigurationCard` | Per-object configuration overrides | Rare — used on objects that themselves configure something else (a register's settings object) |
+| `CnTasksCard` | Tasks linked to the object | When the workflow needs a to-do list on each object: common on incidents/cases, less so on orders |
+| `CnConfigurationCard` | Per-object configuration overrides | Rare: used on objects that themselves configure something else (a register's settings object) |
 
-```json title="src/manifest.json — PetStore pet detail with the right cards"
+```json title="src/manifest.json: PetStore pet detail with the right cards"
 {"id": "pet-detail",
  "route": "/pets/:id",
  "type": "detail",
@@ -415,9 +415,9 @@ The renderer hosts them in the right column, in the order you declare. Reorder b
 
 ## 6. The composables: what runs underneath every component
 
-Every `Cn*` component is built on a small composable surface. Once you know the composables, you can drop into Vue and rebuild any surface — or compose a custom one that the library doesn't yet ship.
+Every `Cn*` component is built on a small composable surface. Once you know the composables, you can drop into Vue and rebuild any surface, or compose a custom one that the library doesn't yet ship.
 
-### `useObjectStore` — the workhorse you've already used
+### `useObjectStore`: the workhorse you've already used
 
 Part 4 used `useObjectStore` to fetch pets and orders. The full shape:
 
@@ -456,7 +456,7 @@ const count = await orders.count({ filter: { status: 'placed' } })
 
 This is the surface every list, detail, and dashboard widget ultimately calls. When you build a custom Vue component, this is your starting point.
 
-### `useObjectSubscription` — live updates without polling
+### `useObjectSubscription`: live updates without polling
 
 When the user is staring at a list and someone else creates an order, the list should update. `useObjectSubscription` opens the OpenRegister push channel for a (register, schema) pair and re-renders affected components.
 
@@ -477,11 +477,11 @@ onUnmounted(unsubscribe)
 </script>
 ```
 
-`useObjectStore` integrates with subscriptions automatically — if a subscription is open, cache invalidation flows through it. You'll mount `useObjectSubscription` by hand only when you need to react to events beyond what cache invalidation handles (a toast, a refresh of a derived view, etc.).
+`useObjectStore` integrates with subscriptions automatically: if a subscription is open, cache invalidation flows through it. You'll mount `useObjectSubscription` by hand only when you need to react to events beyond what cache invalidation handles (a toast, a refresh of a derived view, etc.).
 
-### `useDataSource` — manifest-driven data, the same shape the renderer uses
+### `useDataSource`: manifest-driven data, the same shape the renderer uses
 
-`useDataSource` reads a `dataSource` block (the same shape Part 5b's dashboard `widgetDef` used) and returns the resolved query result. Use it when you build a custom widget for a `kind: 'component'` dashboard slot — the widget should consume data the same way as the typed widgets next to it.
+`useDataSource` reads a `dataSource` block (the same shape Part 5b's dashboard `widgetDef` used) and returns the resolved query result. Use it when you build a custom widget for a `kind: 'component'` dashboard slot. The widget should consume data the same way as the typed widgets next to it.
 
 ```vue
 <script setup>
@@ -521,7 +521,7 @@ The rule for any custom component you write inside your app:
 
 ```css title="src/components/MyCustomCard.module.css"
 .card {
-  /* good — picks up nldesign overrides automatically */
+  /* good: picks up nldesign overrides automatically */
   background: var(--c-cobalt-50);
   color: var(--c-cobalt-900);
   padding: var(--space-5);
@@ -529,7 +529,7 @@ The rule for any custom component you write inside your app:
 }
 
 .cardWarn {
-  /* good — semantic token */
+  /* good: semantic token */
   background: var(--color-warning-bg);
   border-left: 4px solid var(--color-warning);
 }
@@ -537,14 +537,14 @@ The rule for any custom component you write inside your app:
 
 ```css title="What NOT to write"
 .card {
-  /* bad — hardcoded cobalt breaks nldesign */
+  /* bad: hardcoded cobalt breaks nldesign */
   background: #21468B;
-  /* bad — magic spacing breaks the 8px grid */
+  /* bad: magic spacing breaks the 8px grid */
   padding: 14px;
 }
 ```
 
-The full token list lives in the design-system repo: `apps-extra/design-system/tokens.css`. Search for `--c-`, `--space-`, `--color-`, `--border-radius-` and use those. The brand pointy-top hexagon clip-path is `var(--hex-pointy-top)` — never flat-top, never rotated, that's a hard brand rule.
+The full token list lives in the design-system repo: `apps-extra/design-system/tokens.css`. Search for `--c-`, `--space-`, `--color-`, `--border-radius-` and use those. The brand pointy-top hexagon clip-path is `var(--hex-pointy-top)`. Never flat-top, never rotated, that's a hard brand rule.
 
 To verify your theme behaves under nldesign, enable the `nldesign` app on your dev Nextcloud and reload your PetStore pages. If anything looks broken, the broken element is reading a non-token value somewhere. Grep your `.css`/`.vue` files for hex literals and fix them at the source.
 
@@ -598,7 +598,7 @@ You can now reach for any component in the library by capability rather than by 
 
 <NextSteps>
   <NextStep
-    title="Part 8 — Document and showcase"
+    title="Part 8: Document and showcase"
     href="/academy/build-an-app-tutorial-8-document-and-showcase"
     summary="Stand up the docs site for your PetStore app, hosted on Cloudflare via the central documentation workflow, illustrated with screen mocks and Playwright-captured screenshots." />
   <NextStep

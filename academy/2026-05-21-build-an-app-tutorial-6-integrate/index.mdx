@@ -25,13 +25,13 @@ import {
   TroubleshootingItem,
 } from '@conduction/docusaurus-preset/components';
 
-This is **Part 6 of the nine-part app-building tutorial series**. Part 4 packaged the app and put it on the Conduction store; this part makes it talk to the rest of the workspace — three integration patterns layered from least to most invasive. By the end your orders know who their supplier is, every order shows the right care guide from xWiki, and a `needs_followup` order automatically opens a maintenance page in xWiki that flips the order back to `delivered` when the page is marked resolved.
+This is **Part 6 of the nine-part app-building tutorial series**. Part 4 packaged the app and put it on the Conduction store; this part makes it talk to the rest of the workspace: three integration patterns layered from least to most invasive. By the end your orders know who their supplier is, every order shows the right care guide from xWiki, and a `needs_followup` order automatically opens a maintenance page in xWiki that flips the order back to `delivered` when the page is marked resolved.
 
 :::tip Parts 5 and 6 are parallel
-Both build directly on the shipped app from Part 4. [Part 5 — Advanced manifest features](/academy/build-an-app-tutorial-5-advanced-manifest) deepens the *manifest* surface (actionToggles, fieldWidgets, public-mode pages). Part 6 widens to *other systems*. Take them in either order, or pick whichever your next app actually needs first — neither references the other for content.
+Both build directly on the shipped app from Part 4. [Part 5: Advanced manifest features](/academy/build-an-app-tutorial-5-advanced-manifest) deepens the *manifest* surface (actionToggles, fieldWidgets, public-mode pages). Part 6 widens to *other systems*. Take them in either order, or pick whichever your next app actually needs first. Neither references the other for content.
 :::
 
-The point isn't the specific integrations — it's the pattern. Cross-register reads are how Conduction apps share data without coupling. The OpenConnector source-and-synchronisation pattern is how you absorb data from anywhere into your own register. The webhook endpoint pattern is how external systems push state back. Once you've wired all three, you've covered the integration vocabulary the rest of the catalogue uses.
+The point isn't the specific integrations, it's the pattern. Cross-register reads are how Conduction apps share data without coupling. The OpenConnector source-and-synchronisation pattern is how you absorb data from anywhere into your own register. The webhook endpoint pattern is how external systems push state back. Once you've wired all three, you've covered the integration vocabulary the rest of the catalogue uses.
 
 {/* truncate */}
 
@@ -40,7 +40,7 @@ The point isn't the specific integrations — it's the pattern. Cross-register r
   <Outcome>Each order carries a <code>supplierId</code>, and the order detail page resolves it into name, email, and phone via a cross-register read.</Outcome>
   <Outcome>The xWiki OpenConnector source from Part 4 extended with a <code>species</code> tag, so each order surfaces the care guides that match the pet's species.</Outcome>
   <Outcome>An OR event listener that fires an outbound OpenConnector synchronisation whenever an order flips to <code>status: needs_followup</code>, posting a maintenance page into xWiki under <code>PetStoreMaintenance.&lt;orderId&gt;</code>.</Outcome>
-  <Outcome>A declarative OpenConnector inbound endpoint that takes an xWiki webhook payload, reads <code>resolved: true</code>, and walks the order back to <code>delivered</code> — closing the loop without leaving the workspace.</Outcome>
+  <Outcome>A declarative OpenConnector inbound endpoint that takes an xWiki webhook payload, reads <code>resolved: true</code>, and walks the order back to <code>delivered</code>, closing the loop without leaving the workspace.</Outcome>
 </Outcomes>
 
 <Prerequisites title="Where you should be">
@@ -53,13 +53,13 @@ The point isn't the specific integrations — it's the pattern. Cross-register r
 
 ## Step 1: A second register, queried from PetStore
 
-The first integration you'll write doesn't touch a single external system. It's a cross-register read inside OpenRegister — the smallest integration the platform supports, and the one that unlocks every other Conduction app.
+The first integration you'll write doesn't touch a single external system. It's a cross-register read inside OpenRegister: the smallest integration the platform supports, and the one that unlocks every other Conduction app.
 
 The premise: PetStore's orders have a `supplierName` string today. That's fine for a demo, but in production the supplier record lives in your purchasing system. If you put it in a second OpenRegister register instead of inside PetStore, every Conduction app on the stack can read and write it without going through PetStore's API. That's the platform play: shared schemas, one source of truth.
 
 ### Create the `suppliers` register
 
-You don't need a separate app to host the register — `suppliers` is just another register OpenRegister manages. From `/apps/openregister/registers` click **New register** and fill in:
+You don't need a separate app to host the register. `suppliers` is just another register OpenRegister manages. From `/apps/openregister/registers` click **New register** and fill in:
 
 ```
 Slug:        suppliers
@@ -93,7 +93,7 @@ Aquatica Imports        ops@aquatica.example  +31 6 1234 5678
 Reptile Republic        contact@reptilerep.nl +31 6 9876 5432
 ```
 
-OpenRegister assigns each an `id` (a UUID). Note them — you'll reference them from order records.
+OpenRegister assigns each an `id` (a UUID). Note them, you'll reference them from order records.
 
 ### Extend `order` with a `supplierId`
 
@@ -129,7 +129,7 @@ Update one of your existing order seeds to point at a supplier UUID (replace `<h
 
 ### Read the supplier from OrderDetail
 
-The frontend already uses `useObjectStore` from `@conduction/nextcloud-vue` (Part 2 introduced it). The store's `fetchObject(schema, id)` and `fetchCollection(schema, params)` calls take **any** schema slug — they don't care which register owns it, because the OR REST endpoint is `/api/objects/{register}/{schema}` and the store passes the register through.
+The frontend already uses `useObjectStore` from `@conduction/nextcloud-vue` (Part 2 introduced it). The store's `fetchObject(schema, id)` and `fetchCollection(schema, params)` calls take **any** schema slug. They don't care which register owns it, because the OR REST endpoint is `/api/objects/{register}/{schema}` and the store passes the register through.
 
 Add a small composable that fetches the supplier for the current order:
 
@@ -178,13 +178,13 @@ Render the supplier above the rest of the detail body:
 </section>
 ```
 
-Build, reload, open an order. The supplier block renders at the top. Then change the `supplierId` on the order to a different UUID from the OR admin UI; reload the order; the block updates. You've integrated with the suppliers register without PetStore knowing what app owns it — and tomorrow, when PipelinQ ships and starts writing into the same `suppliers.supplier` schema, PetStore picks up its rows for free.
+Build, reload, open an order. The supplier block renders at the top. Then change the `supplierId` on the order to a different UUID from the OR admin UI; reload the order; the block updates. You've integrated with the suppliers register without PetStore knowing what app owns it, and tomorrow, when PipelinQ ships and starts writing into the same `suppliers.supplier` schema, PetStore picks up its rows for free.
 
 <Eyebrow>Pull</Eyebrow>
 
 ## Step 2: Per-order care guides from the existing xWiki source
 
-Part 4 built an xWiki source, a `care_guide` schema, and a Care tab on the pet detail page that filters guides by category. We're going to widen that source so the same guides also surface on a per-order Care tab — filtered by the pet's _species_ (dog, cat, fish, reptile), not by category.
+Part 4 built an xWiki source, a `care_guide` schema, and a Care tab on the pet detail page that filters guides by category. We're going to widen that source so the same guides also surface on a per-order Care tab, filtered by the pet's _species_ (dog, cat, fish, reptile), not by category.
 
 ### Add a `species` property to `care_guide`
 
@@ -199,7 +199,7 @@ Open the schema you added in Part 4 and add one property:
 }
 ```
 
-Bump `info.version` to `0.5.1` and reload. Existing seeds (the three category guides from Part 4) keep their default `species: category` — backwards-compatible.
+Bump `info.version` to `0.5.1` and reload. Existing seeds (the three category guides from Part 4) keep their default `species: category`: backwards-compatible.
 
 ### Author the species-scoped guides in xWiki
 
@@ -214,7 +214,7 @@ put() {
     -o /dev/null -w "%{http_code} Species/$1/$2\n"
 }
 put Dog     First-week-at-home   "First week at home" \
-    "New puppies need a quiet corner, a consistent feeding schedule, and short walks. Vaccination booklet ships with every Dogs order — staple it in the customer pouch."
+    "New puppies need a quiet corner, a consistent feeding schedule, and short walks. Vaccination booklet ships with every Dogs order, staple it in the customer pouch."
 put Cat     Litter-tray-setup    "Litter tray setup" \
     "One tray per cat plus one extra, placed in a low-traffic spot. Recommend clumping litter for first-time owners. Sample sachet in cabinet B-04."
 put Fish    Tank-cycling         "Tank cycling primer" \
@@ -264,19 +264,19 @@ this.guides = this.objectStore.collections.care_guide || []
 
 Register the component the same way Part 4 registered `care-tab` (the `customComponents` map in `App.vue`). Build, reload, open an order whose pet is a dog. The Care tab shows the "First week at home" guide. Change the pet's species to `fish` from the OR admin UI; the same tab on the same order now shows "Tank cycling primer".
 
-Two integrations, one source. That's the OpenConnector return on investment — the cost of adding the second one was an extra mapping row, not a new pipeline.
+Two integrations, one source. That's the OpenConnector return on investment: the cost of adding the second one was an extra mapping row, not a new pipeline.
 
 <Eyebrow>Push and pull</Eyebrow>
 
 ## Step 3: Two-way sync between orders and xWiki maintenance
 
-The integrations so far are read-only from PetStore's side. Step 3 closes the loop. When an order flips to `status: needs_followup`, PetStore creates a maintenance page in xWiki at `PetStoreMaintenance.<orderId>` with the order details. The fulfilment team works the page in xWiki — adds notes, photos, vendor receipts — and when they tick a `resolved` property, an xWiki webhook fires that lands back in PetStore and flips the order to `status: delivered`.
+The integrations so far are read-only from PetStore's side. Step 3 closes the loop. When an order flips to `status: needs_followup`, PetStore creates a maintenance page in xWiki at `PetStoreMaintenance.<orderId>` with the order details. The fulfilment team works the page in xWiki, adds notes, photos, vendor receipts, and when they tick a `resolved` property, an xWiki webhook fires that lands back in PetStore and flips the order to `status: delivered`.
 
-Two halves: outbound (PetStore → xWiki) and inbound (xWiki → PetStore). Outbound needs ~25 lines of PHP in PetStore to bridge `ObjectUpdatedEvent` to an OpenConnector synchronisation call. Inbound is pure configuration — an OpenConnector endpoint with a mapping.
+Two halves: outbound (PetStore → xWiki) and inbound (xWiki → PetStore). Outbound needs ~25 lines of PHP in PetStore to bridge `ObjectUpdatedEvent` to an OpenConnector synchronisation call. Inbound is pure configuration: an OpenConnector endpoint with a mapping.
 
 ### 3a: An OpenConnector synchronisation that *writes* to xWiki
 
-So far OpenConnector synchronisations have read from xWiki and written into OR. Synchronisations are bidirectional — the same surface can also POST to a source. Create a second sync:
+So far OpenConnector synchronisations have read from xWiki and written into OR. Synchronisations are bidirectional: the same surface can also POST to a source. Create a second sync:
 
 ```
 Name:             Order maintenance → xWiki
@@ -346,11 +346,11 @@ public function register(IRegistrationContext $context): void {
 }
 ```
 
-`composer install` to refresh the autoloader, then graceful-reload Nextcloud (`apache2ctl graceful`). Flip an order's status to `needs_followup` from the OR admin UI. Reload xWiki and navigate to `PetStoreMaintenance` — there's a page named after the order id, with the body template filled in. The outbound half is done.
+`composer install` to refresh the autoloader, then graceful-reload Nextcloud (`apache2ctl graceful`). Flip an order's status to `needs_followup` from the OR admin UI. Reload xWiki and navigate to `PetStoreMaintenance`: there's a page named after the order id, with the body template filled in. The outbound half is done.
 
 ### 3c: An OpenConnector inbound endpoint that catches xWiki's webhook
 
-For the return path you don't write PHP — OpenConnector has a built-in endpoint receiver at `POST /apps/openconnector/api/endpoint/{path}` that maps an incoming payload onto an OR object.
+For the return path you don't write PHP. OpenConnector has a built-in endpoint receiver at `POST /apps/openconnector/api/endpoint/{path}` that maps an incoming payload onto an OR object.
 
 From `/apps/openconnector/endpoints` create:
 
@@ -395,14 +395,14 @@ Reload the order detail in PetStore. Status: delivered. The platform did the rou
 
 ## What you've built
 
-In every prior part the only PHP in the app was infrastructure — settings, routes, a path-resolution fix. Part 6 introduces the first PHP file that actually does business logic: one event listener, twenty-five lines, gated on a status transition. Everything else is configuration:
+In every prior part the only PHP in the app was infrastructure: settings, routes, a path-resolution fix. Part 6 introduces the first PHP file that actually does business logic: one event listener, twenty-five lines, gated on a status transition. Everything else is configuration:
 
 - A second register, queried cross-register from a one-line `register: 'suppliers'` hint on `fetchObject`.
 - Two integrations on a single OpenConnector source, separated by a `species` mapping.
 - An outbound synchronisation triggered by an OR event listener.
 - An inbound endpoint that maps an xWiki webhook payload onto an OR update, declaratively, with no PHP.
 
-Three patterns. They scale. Cross-register reads are how LaunchPad composes dashboards out of every Conduction app's data without coupling. The source-and-synchronisation pattern is how every app in the catalogue absorbs data from elsewhere — xWiki today, SharePoint or Notion tomorrow, the same wiring. The webhook endpoint pattern is how external systems hand state back to the workspace.
+Three patterns. They scale. Cross-register reads are how LaunchPad composes dashboards out of every Conduction app's data without coupling. The source-and-synchronisation pattern is how every app in the catalogue absorbs data from elsewhere: xWiki today, SharePoint or Notion tomorrow, the same wiring. The webhook endpoint pattern is how external systems hand state back to the workspace.
 
 PetStore's integration story ends here. The app is shipped, in the store, integrated with the workspace and an external knowledge system, and it round-trips state with a third party. Six parts, a couple of hundred lines of JSON, three small Vue files, and a single PHP listener. That's the cost of an integrated, governable Nextcloud app on the Conduction stack.
 
@@ -427,18 +427,18 @@ PetStore's integration story ends here. The app is shipped, in the store, integr
 
 <NextSteps>
   <NextStep
-    title="Part 7 — The nc-vue component library"
+    title="Part 7: The nc-vue component library"
     href="/academy/build-an-app-tutorial-7-nc-vue"
     description="The capability tour that completes the picture: forms, dialogs, status, filtering, detail-page anatomy, composables, and theming. Pick the right Cn* component the moment your app needs it."
   />
   <NextStep
     title="Browse the integration catalogue"
     href="/connext"
-    description="See every workspace integration the platform ships — Mail, Files, Deck, OpenProject, the LLM adapters. The patterns from this tutorial are how all of them are wired."
+    description="See every workspace integration the platform ships: Mail, Files, Deck, OpenProject, the LLM adapters. The patterns from this tutorial are how all of them are wired."
   />
   <NextStep
     title="Fork PetStore into your own use case"
     href="https://codeberg.org/Conduction/petstore"
-    description="The reference app may need to be created on Codeberg first. Yours is the journey — change the schemas, rename the menu, swap the external system. The nine-part scaffolding stays the same."
+    description="The reference app may need to be created on Codeberg first. Yours is the journey: change the schemas, rename the menu, swap the external system. The nine-part scaffolding stays the same."
   />
 </NextSteps>

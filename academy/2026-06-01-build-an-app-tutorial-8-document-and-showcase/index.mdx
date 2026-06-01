@@ -28,18 +28,18 @@ A 45-minute tutorial that gives your PetStore app a documentation site. Hosted f
 
 {/* truncate */}
 
-:::tip Recommended first — Part 7
+:::tip Recommended first: Part 7
 Part 8 assumes you've finished [Part 7: The nc-vue component library](/academy/build-an-app-tutorial-7-nc-vue). The screen mocks and capture flow build on the PetStore app from Parts 1–7.
 :::
 
-:::tip Also useful first — the Claude Skills tutorial series
+:::tip Also useful first: the Claude Skills tutorial series
 Three of the steps below run Conduction skills (`/journeydoc-init`, `/journeydoc-instrument`, `/journeydoc-add-story`). Skills are short, declarative Claude Code workflows. If you've never run one, take [Part 1 of the Claude Skills series](/academy/claude-skills-tutorial-1-wat-zijn-claude-skills) first (10 minutes).
 :::
 
 <Outcomes title="What you'll learn in this part">
   <Outcome>How to bootstrap a journeydoc-shaped Docusaurus site in your app repo with <code>/journeydoc-init</code>.</Outcome>
   <Outcome>How to wire the central documentation workflow on Codeberg or GitHub so every push redeploys to Cloudflare.</Outcome>
-  <Outcome>How to compose token-built screen previews with <code>{`<AppMock>`}</code>, <code>{`<WidgetMock>`}</code>, and <code>{`<SidebarMock>`}</code> from <code>@conduction/docusaurus-preset</code> — no screenshots required.</Outcome>
+  <Outcome>How to compose token-built screen previews with <code>{`<AppMock>`}</code>, <code>{`<WidgetMock>`}</code>, and <code>{`<SidebarMock>`}</code> from <code>@conduction/docusaurus-preset</code>: no screenshots required.</Outcome>
   <Outcome>How to add a tutorial story with <code>/journeydoc-add-story</code> and capture the real walkthrough as Playwright screenshots.</Outcome>
 </Outcomes>
 
@@ -298,7 +298,7 @@ the same chrome the rest of the fleet ships:
 
 **Verify** by reloading `http://localhost:3000/docs/architecture/dashboards`. Three widget tiles render in a hex grid, and the AppMock below renders with the sidebar overlay.
 
-The result is a docs page that shows the app pattern without a single screenshot. When the real UI changes, the mock does not need updating — it speaks in shapes, not pixels.
+The result is a docs page that shows the app pattern without a single screenshot. When the real UI changes, the mock does not need updating: it speaks in shapes, not pixels.
 
 ## Step 6: Instrument your Vue components for capture
 
@@ -357,7 +357,7 @@ ls docs/tutorials/user/
 # 01-first-launch.md  02-add-pet.md  03-place-order.md  04-search-catalogue.md
 
 grep -A1 "U02 add-pet" tests/e2e/docs-screenshots.spec.ts
-# test('U02 add-pet — REPLACE WITH ACTUAL FLOW', async ({ page }) => {
+# test('U02 add-pet: REPLACE WITH ACTUAL FLOW', async ({ page }) => {
 #   // docs/tutorials/user/02-add-pet.md
 ```
 
@@ -366,7 +366,7 @@ grep -A1 "U02 add-pet" tests/e2e/docs-screenshots.spec.ts
 Open `tests/e2e/docs-screenshots.spec.ts` and fill the `U02` block. Each numbered TODO comment maps 1:1 to a step in the markdown. Use the `data-testid` attributes from Step 6 and the three helpers the template ships (`dismissOverlays`, `go`, `shoot`):
 
 ```typescript
-test('U02 add-pet — Add a pet to the store', async ({ page }) => {
+test('U02 add-pet: Add a pet to the store', async ({ page }) => {
   await dismissOverlays(page);
   await go(page, '/apps/petstore');
   await shoot(page, 'user', '02-step-1.png');
@@ -410,15 +410,15 @@ ls docs/static/screenshots/tutorials/user/02-*
 
 The journeydoc capture is the highest-leverage doc surface. Run `/journeydoc-add-story` once a sprint and your tutorials grow alongside the code. When the UI shifts, re-run `npm run test:e2e:docs` and the screenshots refresh in one pass.
 
-You have now finished the eight-part PetStore series: scaffolded, modelled, integrated, mastered the nc-vue library, and shipped a documentation site that grows with the code. The natural next move is publishing the app to the Nextcloud app store — signing the release, the `appstoreapp:create-app` flow, and shipping under your own brand. Until that part lands, the [Nextcloud app store docs](https://nextcloudappstore.readthedocs.io/) describe the upload protocol.
+You have now finished the eight-part PetStore series: scaffolded, modelled, integrated, mastered the nc-vue library, and shipped a documentation site that grows with the code. The natural next move is publishing the app to the Nextcloud app store: signing the release, the `appstoreapp:create-app` flow, and shipping under your own brand. Until that part lands, the [Nextcloud app store docs](https://nextcloudappstore.readthedocs.io/) describe the upload protocol.
 
 <NextSteps>
   <NextStep
-    title="Claude Skills tutorial series — Part 1"
+    title="Claude Skills tutorial series: Part 1"
     href="/academy/claude-skills-tutorial-1-wat-zijn-claude-skills"
     summary="A companion read: how to author your own Claude Code skills, alongside the journeydoc family used here." />
   <NextStep
-    title="OpenSpec tutorial series — Part 1"
+    title="OpenSpec tutorial series: Part 1"
     href="/academy/openspec-tutorial-1-wat-is-openspec"
     summary="The other Conduction discipline that pairs with this build: write specifications before code, let the pipeline implement them." />
   <NextStep

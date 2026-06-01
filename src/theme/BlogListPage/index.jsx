@@ -72,11 +72,11 @@ const SERIES_LABEL_OVERRIDES = {
 };
 
 function seriesLabelFor(slug) {
-  if (slug === 'deskdesk-tutorial') {
+  if (slug === 'build-an-app-tutorial') {
     return translate({
-      id: 'theme.academy.seriesLabel.deskdesk',
+      id: 'theme.academy.seriesLabel.buildAnApp',
       message: 'Build a Nextcloud app',
-      description: 'Series chip label for the DeskDesk tutorial series on the academy landing page',
+      description: 'Series chip label for the build-an-app-tutorial series on the academy landing page',
     });
   }
   if (SERIES_LABEL_OVERRIDES[slug]) return SERIES_LABEL_OVERRIDES[slug];
