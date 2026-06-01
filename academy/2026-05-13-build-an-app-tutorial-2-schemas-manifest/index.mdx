@@ -1,0 +1,325 @@
+---
+slug: build-an-app-tutorial-2-schemas-manifest
+title: "Build a Nextcloud app on the Conduction stack — Part 2: Schemas + manifest"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-13
+summary: Define the category, pet, and order schemas in OpenRegister, declare them in a manifest.json, and watch CnAppRoot replace ~200 lines of hand-rolled Vue with three lines of config.
+tags: [App development, OpenRegister, Schemas, Manifest, nextcloud-vue, Tutorial series]
+apps: [openregister]
+durationMinutes: 25
+series: build-an-app-tutorial
+partNumber: 2
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+} from '@conduction/docusaurus-preset/components';
+
+This is **Part 2 of the nine-part app-building tutorial series**. Part 1 left you with an empty app shell, a chassis, no data. Part 2 fills the chassis: three schemas (modelled on the OpenAPI Pet Store), a manifest, and the same five `Cn*` pages drive every list, every detail view, every dashboard with the schema as the single source of truth.
+
+The shape we keep saying "this saves you code" finally has numbers behind it: ~200 lines of hand-rolled Vue collapse to three.
+
+{/* truncate */}
+
+<Outcomes title="What you'll have at the end of Part 2">
+  <Outcome>Three OpenRegister schemas (<code>category</code>, <code>pet</code>, <code>order</code>) installed and seeded with realistic demo data on first boot.</Outcome>
+  <Outcome>A <code>src/manifest.json</code> that declares the navigation, the routes, and the configuration for every page. CnAppRoot reads it; CnPageRenderer dispatches.</Outcome>
+  <Outcome>An <code>App.vue</code> of ~10 lines and a <code>router/index.js</code> that generates routes from the manifest. <strong>navigation/MainMenu.vue is gone</strong>. So is <code>views/Dashboard.vue</code>, <code>views/items/*</code>, and the user-settings shells. The manifest renderer replaces them.</Outcome>
+  <Outcome>Index pages, detail pages, and CRUD dialogs that the schema generates (sortable, filterable, searchable) without you writing a column definition.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Where you should be">
+  <PrerequisiteItem>Part 1 done: PetStore installed, the chassis renders at <code>http://localhost:8080/apps/petstore/</code>.</PrerequisiteItem>
+  <PrerequisiteItem>OpenRegister installed, enabled, and at version 0.2.10 or newer (the <code>importFromFilePath</code> ConfigurationService method is required).</PrerequisiteItem>
+  <PrerequisiteItem>The local clone of <a href="https://codeberg.org/Conduction/petstore">Conduction/petstore</a> on your filesystem and a working <code>npm run build</code>.</PrerequisiteItem>
+</Prerequisites>
+
+## Step 1: Define the three schemas
+
+Open `lib/Settings/petstore_register.json` and replace the placeholder `article` schema with the real three. The shape mirrors the canonical OpenAPI Pet Store. Each schema is a JSON Schema with a couple of OpenRegister extensions: `slug` for the URL identifier, `icon` for the MDI glyph the UI uses, and `x-openregister-relations` for typed cross-schema links.
+
+```json title="lib/Settings/petstore_register.json (excerpt)"
+"category": {
+  "slug": "category",
+  "title": "Category",
+  "description": "A category of pets (Dogs, Cats, Reptiles, Fish, ...).",
+  "type": "object",
+  "required": ["name"],
+  "properties": {
+    "name":        { "type": "string", "example": "Dogs" },
+    "description": { "type": "string", "example": "Friendly mammals, four legs, often barks" }
+  }
+}
+```
+
+The `pet` schema adds the typed relation to category:
+
+```json title="lib/Settings/petstore_register.json (excerpt)"
+"pet": {
+  "slug": "pet",
+  "title": "Pet",
+  "type": "object",
+  "required": ["name", "category", "status"],
+  "properties": {
+    "name": { "type": "string", "example": "doggie" },
+    "category": {
+      "type": "string",
+      "x-openregister-relations": {
+        "schema": "category",
+        "cardinality": "many-to-one"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["available", "pending", "sold"]
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "example": "friendly" }
+    },
+    "photoUrls": {
+      "type": "array",
+      "items": { "type": "string", "format": "uri" }
+    },
+    "price":  { "type": "number",  "minimum": 0, "example": 49.95 },
+    "notes":  { "type": "string" }
+  }
+}
+```
+
+The `order` schema is the same shape: a relation, a couple of date-times, an enum status, a quantity, and a boolean completion flag.
+
+The full file ships in [the petstore repo](https://codeberg.org/Conduction/petstore/src/branch/main/lib/Settings/petstore_register.json), with five seed pets, three categories (Dogs, Cats, Fish), and three orders so the app is browsable on first install.
+
+## Step 2: Declare the register itself
+
+OpenRegister's import handler creates schemas eagerly, but it only creates a **register** when the JSON declares one explicitly. Add a `components.registers` block above your schemas:
+
+```json title="lib/Settings/petstore_register.json"
+"components": {
+  "registers": {
+    "petstore": {
+      "slug": "petstore",
+      "title": "PetStore",
+      "description": "Categories, pets, and orders for the PetStore app.",
+      "version": "0.2.0",
+      "schemas": ["category", "pet", "order"]
+    }
+  },
+  "schemas": { /* ... */ },
+  "objects": { /* ... */ }
+}
+```
+
+The `schemas` array tells OpenRegister which of the schemas in the same file belong to this register. The `slug` becomes the register's stable identifier.
+
+## Step 3: Trigger the import
+
+Two ways. Either trigger it via the SettingsController (the app exposes `POST /api/settings/load`):
+
+```bash title="From your shell, via curl, with a logged-in cookie jar"
+curl -X POST -b cookies.txt \
+  -H "requesttoken: $REQUESTTOKEN" \
+  http://localhost:8080/index.php/apps/petstore/api/settings/load
+```
+
+Or, cleaner during local development, disable + re-enable the app, which fires the `<install>` repair step from `appinfo/info.xml`:
+
+```bash
+docker exec nextcloud php occ app:disable petstore
+docker exec nextcloud php occ app:enable petstore
+```
+
+Either way, you should see in the OpenRegister registers list:
+
+```
+slug: petstore    title: PetStore    application: petstore    schemas: category, pet, order
+```
+
+The matching path the SettingsService takes is **importFromFilePath** with a path resolved relative to `\OC::$SERVERROOT` (which is `/var/www/html` in a default install). The boot-time bug pattern (`Configuration file not found: html/custom_apps/petstore/...`) is a relative-path mistake. Use `\OC::$SERVERROOT` as the anchor when stripping prefixes.
+
+## Step 4: The manifest
+
+`src/manifest.json` is the single declarative description of the app shell. Four top-level keys you care about: `$schema`, `dependencies`, `menu`, `pages`.
+
+```json title="src/manifest.json"
+{
+  "$schema": "https://codeberg.org/Conduction/nextcloud-vue/raw/branch/main/src/schemas/app-manifest-v2.schema.json",
+  "version": "2.0.0",
+  "dependencies": ["openregister"],
+  "menu": [
+    {"id": "pets-index",       "label": "petstore.menu.pets",       "icon": "icon-category-organization", "route": "pets-index",       "order": 10},
+    {"id": "orders-index",     "label": "petstore.menu.orders",     "icon": "icon-calendar",              "route": "orders-index",     "order": 20},
+    {"id": "categories-index", "label": "petstore.menu.categories", "icon": "icon-category-monitoring",   "route": "categories-index", "order": 30}
+  ],
+  "pages": [
+    {"id": "pets-index",  "route": "/",          "type": "index",  "title": "petstore.pets.indexTitle",
+     "config": {"register": "petstore", "schema": "pet",
+                "columns": ["name","category","status","tags","price"],
+                "filters": ["category","status","tags"],
+                "defaultSort": {"key": "name", "order": "asc"}}},
+    {"id": "pets-detail", "route": "/pets/:id", "type": "detail", "title": "petstore.pets.detailTitle",
+     "config": {"register": "petstore", "schema": "pet", "sidebar": true}}
+    /* orders + categories pages follow the same pattern */
+  ]
+}
+```
+
+A few rules to note:
+
+- **The `$schema` URL points at `app-manifest-v2.schema.json`.** This is the v2 schema (currently at version 2.7.0). It's the source of truth for what `manifest.json` is allowed to contain. Your IDE picks up autocompletion and validation from it the moment the URL is present.
+- **`page.id` is the vue-router route name.** `CnPageRenderer` matches `$route.name === page.id` to pick the right page entry from `pages[]`.
+- **`page.type` is a closed enum.** The 13 supported types: `index | detail | dashboard | logs | settings | chat | files | form | wiki | map | search | roadmap | custom`. Most apps will use `index`, `detail`, `dashboard`, and `custom`; the others are there when you need them. See Part 5 for `form`/`wiki`/`search`/`map` examples.
+- **`page.config` is forwarded as props.** `register`, `schema`, `columns`, `filters`, `defaultSort` map to `CnIndexPage` props one-to-one. The renderer also forwards top-level page fields (`title`, `widgets`, `actions`, `sidebar`, `description`, `icon`) alongside `config`, and bridges `config.schema → objectType` plus `:id → objectId` for `type:'detail'` so the lib's external `CnObjectSidebar` activates automatically.
+- **`config.sidebar: true` on `type:'detail'`** activates the host's mounted `CnObjectSidebar` with its built-in tabs (Files, Notes, Tags, Tasks, Audit Trail) for the current object. Without it the detail page renders without a sidebar (useful for read-only views), but for PetStore every detail page wants the standard tabs, so we set it everywhere.
+
+## Step 5: Replace App.vue and the router
+
+Now the satisfying part. Open `src/App.vue`, the 175-line shell from Part 1, and replace it with this:
+
+```vue title="src/App.vue"
+<template>
+  <CnAppRoot :app-id="appId" :manifest="manifest" />
+</template>
+
+<script>
+import { CnAppRoot } from '@conduction/nextcloud-vue'
+import manifest from './manifest.json'
+
+export default {
+  name: 'App',
+  components: { CnAppRoot },
+  data: () => ({ appId: 'petstore', manifest }),
+}
+</script>
+```
+
+That's it. The `<NcContent>`, the dependency-check empty-state, the loading spinner, the menu, the sidebars, the user-settings dialog: CnAppRoot ships them all and gates them on the manifest's `dependencies` array.
+
+Then `src/router/index.js` becomes a manifest-to-route mapping:
+
+```js title="src/router/index.js"
+import Vue from 'vue'
+import Router from 'vue-router'
+import { generateUrl } from '@nextcloud/router'
+import { CnPageRenderer } from '@conduction/nextcloud-vue'
+import manifest from '../manifest.json'
+
+Vue.use(Router)
+
+const routes = manifest.pages.map((page) => ({
+  name: page.id,
+  path: page.route,
+  component: CnPageRenderer,
+}))
+
+routes.push({ path: '*', redirect: '/' })
+
+export default new Router({
+  mode: 'history',
+  base: generateUrl('/apps/petstore'),
+  routes,
+})
+```
+
+Every page in the manifest gets a route. Every route renders `CnPageRenderer`. `CnPageRenderer` reads the manifest, finds the matching page entry by route name, and dispatches by `page.type`. The most common dispatches:
+
+- `type: "index"` → `CnIndexPage` with the schema's columns + filters
+- `type: "detail"` → `CnDetailPage` with the schema's properties + the lib's external sidebar
+- `type: "dashboard"` → `CnDashboardPage` with the layout grid
+- `type: "form"` → `CnFormPage` for create/edit flows (supports public-mode token-scoped variant)
+- `type: "wiki"` → `CnWikiPage` for markdown-article surfaces
+- `type: "search"` → faceted cross-schema search
+- `type: "custom"` → your own SFC registered in `customComponents`
+
+Schema 2.7.0 (the current beta) introduces a few v2-only shapes worth flagging. Full coverage lives in Part 5, but it's useful to know the names now:
+
+- **`config.actionToggles`**: typed object on `type:'index'` collapsing the nine `show*`/`selectable` flags into one place. `actionToggles: { showAdd: true, showEdit: false, showDelete: false }` reads cleaner than nine sibling booleans.
+- **`config.fieldWidgets[]`**: typed slot on `type:'form'` and `type:'detail'` for mounting a lib `Cn*` component as a single form field. e.g. `fieldWidgets: [{id: 'notes', component: 'CnMarkdownEditor'}]`.
+- **`config.mode: 'public'`**: on `type:'form'` and `type:'detail'`, marks an unauthenticated token-scoped page. Pair with a route-param sentinel like `submitEndpoint: "/index.php/apps/myapp/api/public/:token"`.
+- **`config.sidebar: true | {...}`**: boolean or object form. Object form (`{enabled, show, register, schema, hiddenTabs, tabs}`) gives full control; the boolean is the shortcut for the common case.
+- **`_note` on `type:'custom'`**: required when the custom mounts a host-app SFC (no lib `Cn*` analogue); softened in 2.7.0 so that a custom with `component: 'CnSomething'` no longer needs it.
+
+You won't use most of those in Part 2 (three index pages, three detail pages, one dashboard, all schema-driven). They're listed here so when Part 5 reaches for them they're not surprises.
+
+## Step 6: Delete the old views
+
+The whole point of Part 2 is that the framework writes the views for you. Delete:
+
+- `src/navigation/MainMenu.vue`: replaced by CnAppNav (auto-mounted by CnAppRoot)
+- `src/views/Dashboard.vue`: placeholder; will return in a richer form when the dashboard page wants it
+- `src/views/items/ItemList.vue`, `src/views/items/ItemDetail.vue`: replaced by CnIndexPage + CnDetailPage
+- `src/views/settings/UserSettings.vue`, `src/views/settings/Settings.vue`: settings live on the admin page (`AdminRoot.vue`) and the in-app dialog ships with CnAppRoot
+
+The before-and-after on disk:
+
+```
+before: 12 .vue files in src/, ~600 lines of hand-rolled component code
+after:   3 .vue files (App.vue, AdminRoot.vue, that's it), ~30 lines
+```
+
+## Step 7: Build, reload, browse
+
+```bash
+npm run build
+docker cp ./js nextcloud:/var/www/html/custom_apps/petstore/
+docker exec nextcloud apache2ctl graceful
+```
+
+Open `/apps/petstore/`. The left rail now reads **Pets · Orders · Categories** (the translation keys will look like `petstore.menu.pets` until you add the `l10n/` entries, that's a follow-up). The main column shows CnIndexPage with the schema's columns. Click a row, you're on CnDetailPage for that pet. The whole CRUD flow comes for free.
+
+## Why this matters
+
+You wrote three JSON files. The framework reads them and renders the app. There is no `PetsList.vue`, no `PetForm.vue`, no `usePets.js`. When you add a `price` field to the pet schema, every place a pet appears (table column, detail row, filter sidebar, form dialog) picks up the new field automatically.
+
+This is the schema-driven discipline described on [nextcloud-vue.conduction.nl](https://nextcloud-vue.conduction.nl/docs/architecture/schemas-and-registers/). Part 3 puts it to work in a way that surprises people the first time: a single JSON block on the order schema makes every order's ship-date appear in the user's Nextcloud Calendar, no controller, no event, no listener.
+
+## Troubleshooting
+
+<HexCard title="Configuration file not found: html/custom_apps/...">
+  The relative path used by ConfigurationService::importFromFilePath is computed against <code>/var/www/html</code> (Nextcloud's <code>SERVERROOT</code>). If your SettingsService strips the wrong prefix you get this error. Use <code>\OC::$SERVERROOT</code> as the anchor when stripping.
+</HexCard>
+
+<HexCard title="Schemas import but the register doesn't appear">
+  Add a <code>components.registers.YOURAPP</code> block to the JSON. Without it, the import handler creates the schemas as orphans. The block needs <code>slug</code>, <code>title</code>, <code>version</code>, and <code>schemas[]</code>.
+</HexCard>
+
+<HexCard title="Index pages render but say 'No items found'">
+  CnIndexPage's store wants the numeric register id, while <code>/api/settings</code> typically returns the register slug. Wire a slug → id resolution in your settings store, or pass the numeric id from the SettingsService directly. Tracked as a follow-up in the Part 2 PR.
+</HexCard>
+
+<HexCard title="Translation keys render literally">
+  The keys (e.g. <code>petstore.menu.pets</code>) need entries in <code>l10n/en.json</code> and <code>l10n/nl.json</code>. The library renders the key when no translation is found. Add them whenever you're ready; the app works either way.
+</HexCard>
+
+## What's next
+
+<NextSteps>
+  <NextStep
+    title="Part 3 — Schema-driven integrations (NC Calendar)"
+    href="/academy/build-an-app-tutorial-3-calendar"
+    description="A single calendarProvider block on the order schema. Order ship-dates appear in the user's Nextcloud Calendar. No controller, no listener, no glue code."
+  />
+  <NextStep
+    title="Part 5 — Advanced manifest features"
+    href="/academy/build-an-app-tutorial-5-advanced-manifest"
+    description="actionToggles, fieldWidgets, route-param sentinels, public-mode pages, and the other page types (form, wiki, search, roadmap). The v2.7.0 features Part 2 deliberately skipped."
+  />
+  <NextStep
+    title="Schemas and registers reference"
+    href="https://nextcloud-vue.conduction.nl/docs/architecture/schemas-and-registers/"
+    description="The architecture story behind why schemas drive both the OpenRegister backend and the @conduction/nextcloud-vue frontend."
+  />
+  <NextStep
+    title="App manifest reference"
+    href="https://nextcloud-vue.conduction.nl/docs/architecture/manifest/"
+    description="Full manifest spec: page types, slot configuration, custom components, sidebar gating."
+  />
+</NextSteps>

@@ -1,0 +1,617 @@
+---
+slug: build-an-app-tutorial-7-nc-vue
+title: "Build a Nextcloud app on the Conduction stack — Part 7: The nc-vue component library"
+contentType: tutorial
+authors: [conduction]
+date: 2026-06-01
+summary: Parts 2–6 used a handful of nc-vue components by name (CnAppRoot, CnObjectSidebar, CnDashboardPage, CnMarkdownEditor). Part 7 completes the picture — organised by capability so you can reach for the right component the moment your PetStore app needs it.
+tags: [App development, nextcloud-vue, Components, Composables, Tutorial series]
+apps: [openregister]
+durationMinutes: 50
+series: build-an-app-tutorial
+partNumber: 7
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+  Pill,
+  Eyebrow,
+  ContactCta,
+} from '@conduction/docusaurus-preset/components';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Details from '@theme/Details';
+
+By Part 6 your PetStore app is shipped and integrated. Along the way the manifest renderer mounted a handful of nc-vue components for you (`CnAppRoot`, `CnPageRenderer`, `CnIndexPage`, `CnDetailPage`, `CnDashboardPage`, `CnObjectSidebar`, `CnMarkdownEditor`) and Part 5b walked through the dashboard widget vocabulary. The lib ships ~70 `Cn*` components and a dozen composables. Part 7 is the capability tour: which component to reach for when, what the composable layer does for you, and how the whole library fits together so you stop guessing.
+
+This is a tour, not a reference. The full prop tables live on [nextcloud-vue.conduction.nl](https://nextcloud-vue.conduction.nl/). Use Part 7 to build the mental map; use the lib docs to look up signatures.
+
+{/* truncate */}
+
+:::tip Recommended first — Part 6
+Part 7 assumes you've finished [Part 6: Integrate](/academy/build-an-app-tutorial-6-integrate). The examples extend the PetStore app from Parts 1–6, so the schemas (`pet`, `order`, `category`, `care_guide`) and the manifest are already in place.
+:::
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>A capability map of the nc-vue library: forms, dialogs, status, filtering, detail-page anatomy, composables, theming.</Outcome>
+  <Outcome>How to pick between `CnFormPage`, `CnFormDialog`, `CnSchemaFormDialog`, `CnTabbedFormDialog`, and `CnAdvancedFormDialog` without re-reading docs.</Outcome>
+  <Outcome>How to wire a destructive flow with `CnDeleteDialog` and bulk operations with `CnMassActionBar` + the `CnMass*Dialog` family.</Outcome>
+  <Outcome>When `useObjectStore` is enough, when `useObjectSubscription` saves a polling tick, and when `useDataSource` is the right shape.</Outcome>
+  <Outcome>The right pattern for theming a Conduction app with `nldesign` and CSS tokens, with no hardcoded colours.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Before you start">
+  <PrerequisiteItem>You've finished <a href="/academy/build-an-app-tutorial-6-integrate">Part 6</a>. Your PetStore app runs locally, ships a manifest, and integrates a second register + xWiki.</PrerequisiteItem>
+  <PrerequisiteItem><code>@conduction/nextcloud-vue</code> at <code>^1.0.0-beta.65</code> or newer pinned in <code>package.json</code>.</PrerequisiteItem>
+  <PrerequisiteItem>Comfort reading Vue 3 single-file components. Composition API is the canonical pattern for any new component this part introduces; existing Parts 1–6 used Options API in places, both work.</PrerequisiteItem>
+</Prerequisites>
+
+The library breaks naturally into six capability groups. Each group below names the components, says when to reach for each, and shows the minimum integration into PetStore. The seventh section covers the composables; the eighth covers theming.
+
+<HexCard title="Forms">
+  Going beyond the schema-generated `<input>`s that Parts 2 and 5 already used. `CnFormPage`, `CnFormDialog`, `CnSchemaFormDialog`, `CnTabbedFormDialog`, `CnAdvancedFormDialog`.
+</HexCard>
+
+<HexCard title="Destructive + bulk actions">
+  The toolkit above a list when the user wants to delete or copy one or many objects. `CnDeleteDialog`, `CnCopyDialog`, `CnMassActionBar`, `CnMass{Delete,Copy,Export,Import}Dialog`.
+</HexCard>
+
+<HexCard title="Filtering and quick-find">
+  How to surface filter controls above a list. `CnFilterBar`, `CnQuickFilterBar`, `CnFacetSidebar`.
+</HexCard>
+
+<HexCard title="Status, locks, missing pieces">
+  "Tell the reader what's going on" toolkit. `CnStatusBadge`, `CnLockedBanner`, `CnDependencyMissing`, `CnProgressBar`.
+</HexCard>
+
+<HexCard title="Detail-page anatomy">
+  Composing the right side of a detail view from the canonical cards. `CnDetailCard`, `CnDetailGrid`, `CnObjectCard`, `CnAuditTrailCard`, `CnFilesCard`, `CnNotesCard`, `CnTagsCard`, `CnTasksCard`.
+</HexCard>
+
+<HexCard title="Composables and theming">
+  The reactive layer the components build on, plus how to theme the whole thing with nldesign without writing a single hardcoded colour.
+</HexCard>
+
+<Eyebrow>Forms</Eyebrow>
+
+## 1. Forms beyond `<input>`: five form components, when to reach for each
+
+Part 2 generated forms from the schema automatically. Part 5 added a `CnMarkdownEditor` via `fieldWidgets[]`. Most apps eventually outgrow the auto-form: a creation dialog with three steps, a settings page that needs tabs, a form on its own route. The library exposes five form components for those moments.
+
+<Tabs groupId="form-component">
+  <TabItem value="formpage" label="CnFormPage">
+
+    A standalone page that hosts a form, takes the whole column. Use when the form deserves its own URL (multi-step creation, a long edit form, a wizard).
+
+    ```json title="src/manifest.json — order placement as its own page"
+    {"id": "orders-create",
+     "route": "/orders/new",
+     "type": "form",
+     "title": "petstore.orders.createTitle",
+     "config": {
+       "register": "petstore", "schema": "order",
+       "submitEndpoint": "/index.php/apps/openregister/api/objects/petstore/order",
+       "submitMethod": "POST",
+       "mode": "create"
+     }}
+    ```
+
+    `CnFormPage` is what the renderer mounts behind the manifest's `type: 'form'`. No Vue file. The page reads the schema, generates inputs, validates against the schema, and submits to the endpoint declared in `config`.
+
+    Reach for it when: the form is the whole reason for a route.
+
+  </TabItem>
+  <TabItem value="formdialog" label="CnFormDialog">
+
+    A modal dialog that hosts a form. Use when the form is an action on an index or detail page, not a destination.
+
+    ```vue title="src/components/OrderQuickAddDialog.vue"
+    <template>
+      <CnFormDialog
+        v-model:open="open"
+        :register="'petstore'"
+        :schema="'order'"
+        :endpoint="endpoint"
+        method="POST"
+        :title="$t('petstore.orders.quickAdd')"
+        @submitted="onSubmitted" />
+    </template>
+
+    <script setup>
+    import { CnFormDialog } from '@conduction/nextcloud-vue'
+
+    const open = defineModel('open', { default: false })
+    const endpoint = '/index.php/apps/openregister/api/objects/petstore/order'
+
+    function onSubmitted(order) {
+      // order is the just-created object
+    }
+    </script>
+    ```
+
+    Reach for it when: the user is mid-flow and shouldn't leave the page.
+
+  </TabItem>
+  <TabItem value="schemaformdialog" label="CnSchemaFormDialog">
+
+    A `CnFormDialog` that takes the **schema slug** and figures the rest out. Used when you want a one-liner: "open the order create dialog". No template, no controlled state, no endpoint string.
+
+    ```vue title="Triggering a schema form from anywhere"
+    <template>
+      <NcButton @click="openCreate">
+        {{ $t('petstore.orders.add') }}
+      </NcButton>
+    </template>
+
+    <script setup>
+    import { openSchemaFormDialog } from '@conduction/nextcloud-vue'
+
+    function openCreate() {
+      openSchemaFormDialog({
+        register: 'petstore',
+        schema: 'order',
+        mode: 'create',
+        prefill: { status: 'placed' },
+      })
+    }
+    </script>
+    ```
+
+    Reach for it when: every page in the app might want to spawn the same form. The imperative `openSchemaFormDialog()` helper keeps the call site terse.
+
+  </TabItem>
+  <TabItem value="tabbed" label="CnTabbedFormDialog">
+
+    A form dialog with multiple tabs, one per schema section. Used when the schema has natural groupings ("General", "Shipping", "Tracking") and shoving every field on one screen would intimidate.
+
+    ```vue title="Edit order — three tabs"
+    <template>
+      <CnTabbedFormDialog
+        v-model:open="open"
+        :register="'petstore'"
+        :schema="'order'"
+        :object-id="orderId"
+        :tabs="[
+          { id: 'general', label: $t('petstore.orders.tabs.general'),
+            fields: ['pet', 'quantity', 'status', 'placedBy'] },
+          { id: 'shipping', label: $t('petstore.orders.tabs.shipping'),
+            fields: ['shipDate', 'address', 'carrier'] },
+          { id: 'tracking', label: $t('petstore.orders.tabs.tracking'),
+            fields: ['trackingNumber', 'complete'] },
+        ]" />
+    </template>
+    ```
+
+    Reach for it when: the schema has 12+ properties and the user would scroll on a flat form.
+
+  </TabItem>
+  <TabItem value="advanced" label="CnAdvancedFormDialog">
+
+    The escape hatch. Use the form dialog's chrome (title, submit/cancel, validation surface) but mount a host SFC inside instead of the schema-driven inputs.
+
+    ```vue title="A bespoke order conflict resolver"
+    <template>
+      <CnAdvancedFormDialog
+        v-model:open="open"
+        :title="$t('petstore.orders.resolveConflict')"
+        @submit="resolve">
+        <OrderConflictResolver
+          :conflict="conflict"
+          v-model:choice="choice" />
+      </CnAdvancedFormDialog>
+    </template>
+    ```
+
+    Reach for it when: the form is too bespoke for schema-driven generation but you still want the lib's dialog chrome. If you find yourself reaching for this often, the gap is probably worth a `fieldWidgets[]` proposal upstream.
+
+  </TabItem>
+</Tabs>
+
+The shorthand: `CnFormPage` if it owns the URL, `CnFormDialog` (or its `CnSchemaFormDialog` shortcut) if it doesn't, `CnTabbedFormDialog` when the schema is big, `CnAdvancedFormDialog` for the genuinely bespoke 5%.
+
+<Eyebrow>Destructive + bulk actions</Eyebrow>
+
+## 2. Destructive + bulk actions: the toolkit above a list
+
+When the user clicks "Delete", a confirmation surface stands between the click and the irreversible write. The library ships dedicated dialogs for the four common destructive flows, plus a bulk-action bar that materialises when one or more rows are selected in a `CnIndexPage`.
+
+### Single-object destructive
+
+```vue title="Single-object delete from a row action"
+<template>
+  <CnDeleteDialog
+    v-model:open="confirmOpen"
+    :title="$t('petstore.orders.delete.title')"
+    :description="$t('petstore.orders.delete.body', { label: order.id })"
+    :object-id="order.id"
+    :register="'petstore'"
+    :schema="'order'"
+    @deleted="onDeleted" />
+</template>
+```
+
+`CnCopyDialog` is the sibling for "duplicate this object". Both follow the same shape: `register`, `schema`, `object-id`, an emit on success.
+
+### Bulk actions
+
+`CnIndexPage` already shows row checkboxes when `actionToggles.selectable` (or the legacy `selectable: true`) is on. When at least one row is selected, `CnMassActionBar` slides in from the bottom of the list with the actions you wired:
+
+```json title="src/manifest.json — bulk actions enabled"
+{"id": "orders-index",
+ "route": "/orders",
+ "type": "index",
+ "title": "petstore.orders.title",
+ "config": {
+   "register": "petstore", "schema": "order",
+   "actionToggles": { "selectable": true,
+                      "showMassDelete": true,
+                      "showMassExport": true,
+                      "showMassImport": false }
+ }}
+```
+
+The bar wires `showMassDelete` to `CnMassDeleteDialog`, `showMassCopy` to `CnMassCopyDialog`, `showMassExport` to `CnMassExportDialog`, `showMassImport` to `CnMassImportDialog`. Each takes a selected-IDs array, runs the operation server-side via OpenRegister's mass-action endpoint, surfaces progress in the bar, and emits on completion. No code on your end.
+
+When you need a custom bulk action (e.g. "mark selected orders as cancelled"), drop a custom slot in `CnMassActionBar`:
+
+```vue title="Custom bulk action alongside the lib ones"
+<template>
+  <CnMassActionBar :selected="selectedIds">
+    <template #custom-actions>
+      <NcButton @click="markCancelled(selectedIds)">
+        {{ $t('petstore.orders.markCancelled') }}
+      </NcButton>
+    </template>
+  </CnMassActionBar>
+</template>
+```
+
+The lib actions stay; your custom action joins them.
+
+<Eyebrow>Filtering and quick-find</Eyebrow>
+
+## 3. Filtering: three components, three intents
+
+The library separates "filter for power users" from "find for everyone" from "facet exploration". Pick by intent.
+
+| Component | Intent | UI shape | When |
+|---|---|---|---|
+| `CnFilterBar` | Filter by named field with explicit operators | Pill chips above the list, each one a `field op value` triple | Power-user filtering where the field set is stable and the operator matters (`status = available`, `shipDate >= today`) |
+| `CnQuickFilterBar` | Omnibox-style free-text search across declared fields | Single input above the list | The common "I just want to find one thing" case |
+| `CnFacetSidebar` | Faceted browse by a small set of high-cardinality fields | Left-rail with collapsible facets, each showing counts | Catalogues, search pages, anywhere browsing by attribute matters |
+
+PetStore's orders index ships with `CnQuickFilterBar` by default — it's what most users want. To add `CnFilterBar` for power users, declare `filterBar` in the page config:
+
+```json title="src/manifest.json — orders index with both"
+{"id": "orders-index",
+ "route": "/orders",
+ "type": "index",
+ "title": "petstore.orders.title",
+ "config": {
+   "register": "petstore", "schema": "order",
+   "quickFilter": { "fields": ["id", "pet.name", "notes"] },
+   "filterBar": {
+     "filters": [
+       { "id": "status", "label": "petstore.orders.fields.status",
+         "field": "status", "operators": ["="],
+         "options": ["placed", "approved", "delivered", "cancelled"] },
+       { "id": "shipDate", "label": "petstore.orders.fields.shipDate",
+         "field": "shipDate", "operators": [">=", "<=", "between"] },
+       { "id": "category", "label": "petstore.orders.fields.category",
+         "field": "pet.category", "operators": ["="] }
+     ]
+   }
+ }}
+```
+
+The renderer mounts `CnQuickFilterBar` and `CnFilterBar` above the list; both feed their predicate into the same `useObjectStore` query.
+
+`CnFacetSidebar` is the heavier surface. Reach for it on a `type: 'search'` page (Part 5 §5) where the user starts with no query and refines by facet. It's overkill for a simple list.
+
+<Eyebrow>Status, locks, missing pieces</Eyebrow>
+
+## 4. Status indicators: the "what's going on" toolkit
+
+Four components carry small but loud messages.
+
+### `CnStatusBadge` — release status, mode flags
+
+```vue
+<CnStatusBadge tone="stable">{{ $t('petstore.released') }}</CnStatusBadge>
+<CnStatusBadge tone="beta">{{ $t('petstore.preview') }}</CnStatusBadge>
+<CnStatusBadge tone="warning">{{ $t('petstore.deprecated') }}</CnStatusBadge>
+```
+
+Tones: `stable`, `beta`, `warning`, `info`, `neutral`. The component renders the brand hex bullet in the corresponding semantic colour. Use it for tagging the app's release status near the title, or for tagging individual objects whose state shifts ("draft", "published", "archived"). Don't sprinkle: one or two per page maximum.
+
+### `CnLockedBanner` — object lock notice
+
+When OpenRegister's object-lock feature is on and another user holds the lock on the current detail object, the lock banner appears at the top of the detail page. You don't usually mount it directly: `CnDetailPage` auto-mounts it when `useObjectLock` reports a held lock. Reach for it manually only when you've built a custom detail surface and want the same chrome.
+
+```vue
+<template>
+  <CnLockedBanner v-if="lock.held" :held-by="lock.heldBy" :since="lock.since" />
+</template>
+```
+
+### `CnDependencyMissing` — required app not installed
+
+The Conduction stack has app dependencies (PetStore requires OpenRegister; the integrations from Part 6 require OpenConnector). When a dependency is missing, the page renders a friendly banner that says what's missing and how to install it, instead of a stack trace.
+
+```vue
+<template>
+  <CnDependencyMissing
+    v-if="!hasOpenConnector"
+    app="openconnector"
+    :reason="$t('petstore.integrations.openconnectorRequired')"
+    install-url="https://apps.nextcloud.com/apps/openconnector" />
+  <OrdersIntegrationPage v-else />
+</template>
+```
+
+In the manifest path, the renderer surfaces this automatically when the page declares `requires-apps`. Reach for the component manually only when you need finer-grained guards.
+
+### `CnProgressBar` — long operations
+
+For anything that takes more than two seconds and produces a progress signal (bulk import, mass export, sync). Drives off an `IProgressReporter` your service exposes, or off a polled endpoint.
+
+```vue
+<template>
+  <CnProgressBar
+    v-if="sync.running"
+    :value="sync.processed"
+    :max="sync.total"
+    :label="$t('petstore.sync.inProgress', { n: sync.total })" />
+</template>
+```
+
+`CnIndexPage` and the bulk-action dialogs use it internally — you rarely mount it by hand.
+
+<Eyebrow>Detail-page anatomy</Eyebrow>
+
+## 5. Detail-page anatomy: composing the right side from cards
+
+A `CnDetailPage` is more than the object form. Its right side is a column of "cards", each focused on one facet of the object. The library ships a card for every common facet, and they all share the same chrome (title, collapse, optional actions). Compose them in `config.detailCards[]` in the manifest, or by passing the cards as a slot when you build a detail page by hand.
+
+| Card | Shows | When to drop it on a detail page |
+|---|---|---|
+| `CnDetailCard` | The object form itself (auto-generated from schema) | Always — this is the spine of the detail page |
+| `CnDetailGrid` | A grid layout for multiple `CnDetailCard`s side-by-side | When the object has natural left/right groupings (pet identity left, inventory right) |
+| `CnObjectCard` | A compact reference to a related object | "This order is for pet X" — clickable, opens X in a slide-over |
+| `CnAuditTrailCard` | The OR audit log for this object | Required for compliance flows; useful for "who changed what when" tracing |
+| `CnFilesCard` | Files attached to the object | When the object has a `files[]` relation (pet photos, care_guide assets) |
+| `CnNotesCard` | Free-form notes against the object | When `CnDetailCard`'s schema-driven `notes` field isn't enough — multi-author, threaded notes |
+| `CnTagsCard` | Tags applied to the object | When the object has a `tags[]` relation, surfaces them as removable chips |
+| `CnTasksCard` | Tasks linked to the object | When the workflow needs a to-do list on each object — common on incidents/cases, less so on orders |
+| `CnConfigurationCard` | Per-object configuration overrides | Rare — used on objects that themselves configure something else (a register's settings object) |
+
+```json title="src/manifest.json — PetStore pet detail with the right cards"
+{"id": "pet-detail",
+ "route": "/pets/:id",
+ "type": "detail",
+ "title": "petstore.pets.detailTitle",
+ "config": {
+   "register": "petstore", "schema": "pet",
+   "detailCards": [
+     { "kind": "CnDetailCard" },
+     { "kind": "CnObjectCard", "label": "petstore.pets.categoryRef",
+       "ref": { "register": "petstore", "schema": "category", "idField": "category" } },
+     { "kind": "CnAuditTrailCard" },
+     { "kind": "CnFilesCard" },
+     { "kind": "CnNotesCard" }
+   ]
+ }}
+```
+
+The renderer hosts them in the right column, in the order you declare. Reorder by editing the array; remove what's not relevant. Don't sprinkle every card on every detail page: the right side is a place for the facets that matter for this object kind.
+
+<Eyebrow>Composables</Eyebrow>
+
+## 6. The composables: what runs underneath every component
+
+Every `Cn*` component is built on a small composable surface. Once you know the composables, you can drop into Vue and rebuild any surface — or compose a custom one that the library doesn't yet ship.
+
+### `useObjectStore` — the workhorse you've already used
+
+Part 4 used `useObjectStore` to fetch pets and orders. The full shape:
+
+```javascript
+import { useObjectStore } from '@conduction/nextcloud-vue'
+
+const orders = useObjectStore('petstore', 'order')
+
+// List with filter, sort, pagination
+const page = await orders.list({
+  filter: { status: 'placed' },
+  orderBy: 'shipDate',
+  direction: 'asc',
+  limit: 50,
+  offset: 0,
+})
+
+// One object by id
+const order = await orders.get(orderId)
+
+// Create
+const created = await orders.create({ pet: petId, quantity: 1, shipDate, placedBy: 'admin' })
+
+// Update
+await orders.update(orderId, { status: 'approved' })
+
+// Delete (soft, by default; pass force: true for hard delete)
+await orders.delete(orderId)
+
+// Aggregate
+const count = await orders.count({ filter: { status: 'placed' } })
+
+// Caching is automatic per (register, schema, query) tuple.
+// Local writes invalidate the cache; the next read re-fetches.
+```
+
+This is the surface every list, detail, and dashboard widget ultimately calls. When you build a custom Vue component, this is your starting point.
+
+### `useObjectSubscription` — live updates without polling
+
+When the user is staring at a list and someone else creates an order, the list should update. `useObjectSubscription` opens the OpenRegister push channel for a (register, schema) pair and re-renders affected components.
+
+```vue
+<script setup>
+import { useObjectSubscription } from '@conduction/nextcloud-vue'
+
+const { events, subscribe, unsubscribe } = useObjectSubscription('petstore', 'order')
+
+subscribe()
+
+watch(events, (event) => {
+  if (event.kind === 'created') reloadOrders()
+  if (event.kind === 'deleted') removeFromList(event.objectId)
+})
+
+onUnmounted(unsubscribe)
+</script>
+```
+
+`useObjectStore` integrates with subscriptions automatically — if a subscription is open, cache invalidation flows through it. You'll mount `useObjectSubscription` by hand only when you need to react to events beyond what cache invalidation handles (a toast, a refresh of a derived view, etc.).
+
+### `useDataSource` — manifest-driven data, the same shape the renderer uses
+
+`useDataSource` reads a `dataSource` block (the same shape Part 5b's dashboard `widgetDef` used) and returns the resolved query result. Use it when you build a custom widget for a `kind: 'component'` dashboard slot — the widget should consume data the same way as the typed widgets next to it.
+
+```vue
+<script setup>
+import { useDataSource } from '@conduction/nextcloud-vue'
+
+const props = defineProps(['dataSource'])
+const { data, loading, error, refresh } = useDataSource(props.dataSource)
+</script>
+
+<template>
+  <div v-if="loading">...</div>
+  <div v-else-if="error">{{ error.message }}</div>
+  <div v-else>
+    <p v-for="row in data" :key="row.id">{{ row.label }}</p>
+  </div>
+</template>
+```
+
+This is the composable that lets a custom dashboard widget participate in the renderer's batched-query optimisation and refresh cycle.
+
+### Other composables, in one paragraph each
+
+- **`useAppManifest`** reads the running app's manifest at runtime. Useful for a "what version am I on" surface or for showing a route map inside the app itself.
+- **`useAppStatus`** returns the app's running state (loading, ready, error). Used by `CnAppLoading` to draw the initial skeleton.
+- **`useIntegrationRegistry`** is the read side of ADR-036: query which integrations are registered globally so cross-app surfaces (Calendar tab, Talk tab, Files tab) can opt in.
+- **`useObjectLock`** acquires + releases a server-side lock on an object. `CnDetailPage` uses it to drive `CnLockedBanner`; you'll touch it directly only when building a custom editor.
+- **`useContextMenu`** drives the right-click + kebab-menu surface on rows and cards. Wire it once at the page level; row components pick up the menu from context.
+- **`useGraphQL`** is the OR GraphQL escape hatch. When `useObjectStore` can't express the join you need, drop to GraphQL and bind the result the same way.
+
+<Eyebrow>Theming</Eyebrow>
+
+## 7. Theming: tokens, nldesign, and never hardcoding a colour
+
+Every Conduction app is themeable by every Conduction theme. The mechanism is CSS tokens: the library reads `var(--c-cobalt-700)`, `var(--c-orange-knvb)`, `var(--space-5)`, never a hex literal. When a Nextcloud instance has `nldesign` enabled (the government theme), the same tokens resolve to the NL Design palette instead of cobalt; the lib renders correctly with no per-app code change.
+
+The rule for any custom component you write inside your app:
+
+```css title="src/components/MyCustomCard.module.css"
+.card {
+  /* good — picks up nldesign overrides automatically */
+  background: var(--c-cobalt-50);
+  color: var(--c-cobalt-900);
+  padding: var(--space-5);
+  border-radius: var(--border-radius-large);
+}
+
+.cardWarn {
+  /* good — semantic token */
+  background: var(--color-warning-bg);
+  border-left: 4px solid var(--color-warning);
+}
+```
+
+```css title="What NOT to write"
+.card {
+  /* bad — hardcoded cobalt breaks nldesign */
+  background: #21468B;
+  /* bad — magic spacing breaks the 8px grid */
+  padding: 14px;
+}
+```
+
+The full token list lives in the design-system repo: `apps-extra/design-system/tokens.css`. Search for `--c-`, `--space-`, `--color-`, `--border-radius-` and use those. The brand pointy-top hexagon clip-path is `var(--hex-pointy-top)` — never flat-top, never rotated, that's a hard brand rule.
+
+To verify your theme behaves under nldesign, enable the `nldesign` app on your dev Nextcloud and reload your PetStore pages. If anything looks broken, the broken element is reading a non-token value somewhere. Grep your `.css`/`.vue` files for hex literals and fix them at the source.
+
+## What you've built now
+
+A working mental map of the nc-vue library, organised by capability so you know which component to reach for in any given moment:
+
+- The five form components escalate from auto-generated `<input>`s to bespoke editors
+- The destructive + bulk toolkit covers the four common write patterns plus the bar that hosts them
+- Three filter components match the three intents (power-user, omnibox, faceted browse)
+- Four status components cover the common "tell the reader" needs
+- Nine detail-page cards compose the right column for any object kind
+- The composables let you build custom surfaces on the same primitives the lib uses
+- The token + nldesign discipline keeps every app themeable for free
+
+## Test yourself
+
+**Question 1:** A user clicks "Edit order" on a row in the orders list. The form needs to scroll through twelve fields. Which form component is right?
+
+<Details summary="Hint">
+  How many natural groupings do the twelve fields have? If the answer is "three or four", the answer isn't a flat dialog.
+</Details>
+
+<Details summary="Answer">
+  `CnTabbedFormDialog`. The schema has 12+ properties and the user would scroll on a flat form, which is the explicit threshold from §1. `CnFormDialog` is also acceptable if the fields really are flat with no groupings, but for order-edit-with-shipping-and-tracking, tabs win.
+</Details>
+
+**Question 2:** You're adding a "mark as cancelled" bulk action to the orders list. The lib ships `showMassDelete`, `showMassCopy`, `showMassExport`, `showMassImport` but no `showMassMarkCancelled`. Where do you wire your custom action?
+
+<Details summary="Hint">
+  The bar is already there. It has slots.
+</Details>
+
+<Details summary="Answer">
+  `CnMassActionBar`'s `#custom-actions` slot. Mount your own `NcButton` (or whatever control fits) inside the slot, pass the selected IDs through, and call your own service. The lib actions stay where they are; your custom action sits alongside them in the same bar.
+</Details>
+
+**Question 3:** You're building a custom dashboard widget that shows "orders by category, this week". The widget needs to refresh when other dashboard tiles refresh. Which composable do you bind to?
+
+<Details summary="Hint">
+  The widget needs to behave the same way the typed widgets behave: declarative data source, batched query, automatic refresh.
+</Details>
+
+<Details summary="Answer">
+  `useDataSource`. Pass it the same `dataSource` shape a typed widget would use. The composable joins the renderer's batched-query optimisation and refresh cycle, so your custom widget participates in the dashboard's lifecycle instead of fetching independently.
+</Details>
+
+## Where to go from here
+
+You can now reach for any component in the library by capability rather than by name. The natural next step is documenting and showcasing the app you've built. Part 8 stands up a documentation site with token-built screen mocks and Playwright-captured walkthroughs.
+
+<NextSteps>
+  <NextStep
+    title="Part 8 — Document and showcase"
+    href="/academy/build-an-app-tutorial-8-document-and-showcase"
+    summary="Stand up the docs site for your PetStore app, hosted on Cloudflare via the central documentation workflow, illustrated with screen mocks and Playwright-captured screenshots." />
+  <NextStep
+    title="Full nc-vue component reference"
+    href="https://nextcloud-vue.conduction.nl/docs/components/"
+    summary="Every Cn* component's prop table, render examples, and source link." />
+  <NextStep
+    title="Pluggable integration registry (ADR-036)"
+    href="https://nextcloud-vue.conduction.nl/docs/architecture/integrations/"
+    summary="When your app wants to surface cross-app tabs (Calendar, Talk, Files) without per-app code, this is the pattern." />
+</NextSteps>
+
+<ContactCta
+  heading="A component you need is missing?"
+  subheading="If you find yourself reaching for CnAdvancedFormDialog repeatedly with the same shape, the gap is probably worth a library proposal. Open an issue on nextcloud-vue or ask a Conduction partner."
+  ctaText="Find a partner" />

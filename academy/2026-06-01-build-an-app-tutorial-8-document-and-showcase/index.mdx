@@ -1,15 +1,15 @@
 ---
-slug: build-an-app-tutorial-2-docs
-title: "Build your first Conduction app — Part 2: A documentation site with screen mocks and captured walkthroughs"
+slug: build-an-app-tutorial-8-document-and-showcase
+title: "Build a Nextcloud app on the Conduction stack — Part 8: Document and showcase"
 contentType: tutorial
 authors: [conduction]
-date: 2026-05-31
-summary: Stand up the docs site for the PetStore app you built in Part 1. Hosted from your own Codeberg or GitHub repo via the central documentation workflow, illustrated with token-built screen mocks, and walked through with Playwright-captured screenshots.
+date: 2026-06-01
+summary: Stand up the documentation site for the PetStore app you've built across Parts 1–7. Hosted from your Codeberg or GitHub repo via the central documentation workflow, illustrated with token-built screen mocks, and walked through with Playwright-captured screenshots. Every push to development rebuilds and republishes.
 tags: [App development, Documentation, Docusaurus, Cloudflare, Codeberg, Playwright, Tutorial series]
-apps: [openregister, openconnector]
+apps: [openregister]
 durationMinutes: 45
 series: build-an-app-tutorial
-partNumber: 2
+partNumber: 8
 ---
 
 import {
@@ -24,12 +24,12 @@ import {
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-A 45-minute tutorial that gives your app a documentation site. Hosted from your own Codeberg or GitHub repo via the central documentation workflow, illustrated with abstract screen mocks that compose from design tokens, and brought to life with real screenshots that Playwright captures from your running app. By the end, every push to `development` rebuilds and republishes.
+A 45-minute tutorial that gives your PetStore app a documentation site. Hosted from your own Codeberg or GitHub repo via the central documentation workflow, illustrated with abstract screen mocks that compose from design tokens, and brought to life with real screenshots that Playwright captures from your running app. By the end, every push to `development` rebuilds and republishes.
 
 {/* truncate */}
 
-:::tip Recommended first — Part 1
-Part 2 picks up where Part 1 left off. You already have a Codeberg or GitHub repo, the PetStore schemas in OpenRegister, and a working OpenConnector flow. If you don't yet, take [Part 1: Schemas, registers, and a working flow](/academy/build-an-app) first (30 minutes).
+:::tip Recommended first — Part 7
+Part 8 assumes you've finished [Part 7: The nc-vue component library](/academy/build-an-app-tutorial-7-nc-vue). The screen mocks and capture flow build on the PetStore app from Parts 1–7.
 :::
 
 :::tip Also useful first — the Claude Skills tutorial series
@@ -39,12 +39,12 @@ Three of the steps below run Conduction skills (`/journeydoc-init`, `/journeydoc
 <Outcomes title="What you'll learn in this part">
   <Outcome>How to bootstrap a journeydoc-shaped Docusaurus site in your app repo with <code>/journeydoc-init</code>.</Outcome>
   <Outcome>How to wire the central documentation workflow on Codeberg or GitHub so every push redeploys to Cloudflare.</Outcome>
-  <Outcome>How to compose token-built screen previews with <code>{`<AppMock>`}</code>, <code>{`<WidgetMock>`}</code>, and <code>{`<SidebarMock>`}</code> from <code>@conduction/docusaurus-preset</code>, no screenshots required.</Outcome>
+  <Outcome>How to compose token-built screen previews with <code>{`<AppMock>`}</code>, <code>{`<WidgetMock>`}</code>, and <code>{`<SidebarMock>`}</code> from <code>@conduction/docusaurus-preset</code> — no screenshots required.</Outcome>
   <Outcome>How to add a tutorial story with <code>/journeydoc-add-story</code> and capture the real walkthrough as Playwright screenshots.</Outcome>
 </Outcomes>
 
 <Prerequisites title="What you need">
-  <PrerequisiteItem>Part 1 completed: <a href="/academy/build-an-app">your PetStore app</a> with two schemas (<code>pet</code>, <code>customer</code>), a register, and a working OpenConnector flow.</PrerequisiteItem>
+  <PrerequisiteItem>Parts 1–7 completed: <a href="/academy/build-an-app-tutorial-1-scaffold">PetStore scaffolded</a>, schemas in OpenRegister, the manifest shipping, integrations wired, the nc-vue library mapped.</PrerequisiteItem>
   <PrerequisiteItem>The app's repo on Codeberg (<code>Conduction/petstore</code>) or GitHub (<code>ConductionNL/petstore</code>). Both forges support the central workflow.</PrerequisiteItem>
   <PrerequisiteItem>A Cloudflare account with two org-level secrets set: <code>CF_API_TOKEN</code> (Workers Scripts: Edit + Zone DNS: Edit scope) and <code>CF_ACCOUNT_ID</code>. Without these the deploy step skips silently.</PrerequisiteItem>
   <PrerequisiteItem>Node 20+ and the Claude Code CLI installed locally. The journeydoc skills install Playwright on first run.</PrerequisiteItem>
@@ -64,14 +64,14 @@ The skill walks through five short prompts:
 
 1. Confirms the app slug (`petstore`).
 2. Confirms the docs domain (default `petstore.conduction.nl`).
-3. Asks for your user-track stories, one per line. For PetStore: *Open the app for the first time*, *Add a pet*, *Edit a pet's status*, *Search the catalogue*.
-4. Asks for admin-track stories, or skip if PetStore has no admin UI.
+3. Asks for your user-track stories, one per line. For PetStore: *Open the app for the first time*, *Add a pet*, *Place an order*, *Search the catalogue*.
+4. Asks for admin-track stories, or skip if PetStore's admin UI is light.
 5. Audits the repo for the four canonical brown-field migrations (screenshots dir, relative image refs, stale Dutch locale, old docs domain) and applies fixes where needed.
 
 When it finishes you have:
 
 - `docs/` with a Docusaurus config that imports `createConfig` from `@conduction/docusaurus-preset`
-- `docs/tutorials/user/01-first-launch.md`, `02-add-pet.md`, `03-edit-pet-status.md`, `04-search-catalogue.md` as skeleton pages, one per story
+- `docs/tutorials/user/01-first-launch.md`, `02-add-pet.md`, `03-place-order.md`, `04-search-catalogue.md` as skeleton pages, one per story
 - `tests/e2e/docs-screenshots.spec.ts` with empty test stubs that match the markdown filenames
 - `playwright.config.ts` extended with a `docs-capture` Playwright project
 - `docs/static/CNAME` set to `petstore.conduction.nl`
@@ -81,13 +81,13 @@ When it finishes you have:
 
 ```bash
 ls docs/tutorials/user/
-# 01-first-launch.md  02-add-pet.md  03-edit-pet-status.md  04-search-catalogue.md
+# 01-first-launch.md  02-add-pet.md  03-place-order.md  04-search-catalogue.md
 
 cat docs/static/CNAME
 # petstore.conduction.nl
 ```
 
-Merge the PR before continuing. Part 2 builds on the scaffold.
+Merge the PR before continuing. Part 8 builds on the scaffold.
 
 ## Step 2: Wire the central documentation workflow
 
@@ -282,7 +282,7 @@ import {
 
 # Dashboard widgets
 
-PetStore's launch dashboard ships three KPI widgets and an activity feed:
+PetStore's home dashboard ships three KPI widgets and an activity feed:
 
 <div className="hex-grid">
   <WidgetMock kind="kpi-tile" caption />
@@ -298,7 +298,7 @@ the same chrome the rest of the fleet ships:
 
 **Verify** by reloading `http://localhost:3000/docs/architecture/dashboards`. Three widget tiles render in a hex grid, and the AppMock below renders with the sidebar overlay.
 
-The result is a docs page that shows the app pattern without a single screenshot. When the real UI changes, the mock does not need updating: it speaks in shapes, not pixels.
+The result is a docs page that shows the app pattern without a single screenshot. When the real UI changes, the mock does not need updating — it speaks in shapes, not pixels.
 
 ## Step 6: Instrument your Vue components for capture
 
@@ -323,7 +323,7 @@ The skill:
 ```bash
 grep -n 'data-testid' src/components/PetForm.vue
 # 23:    <input data-testid="pet-form.name" v-model="form.name" />
-# 24:    <input data-testid="pet-form.species" v-model="form.species" />
+# 24:    <input data-testid="pet-form.category" v-model="form.category" />
 # 31:    <button data-testid="pet-form.submit" @click="save">Save</button>
 ```
 
@@ -334,7 +334,7 @@ The shared chrome (lists, modals, headers) is already instrumented in `@conducti
 `/journeydoc-init` left the markdown skeletons empty. `/journeydoc-add-story` fleshes them out one at a time, dropping a markdown page plus a capture-spec test block, with the sidebar position auto-incremented.
 
 ```bash
-/journeydoc-add-story petstore user "Add a pet to the store"
+/journeydoc-add-story petstore user "Add a pet"
 ```
 
 The skill asks three short questions:
@@ -343,7 +343,7 @@ The skill asks three short questions:
 |---|---|
 | Goal, in one sentence, what does the user accomplish? | Register a new pet under their customer profile. |
 | Prerequisites, what must already be true? | A pet schema exists. The user is signed in. |
-| Steps, paste a numbered list of UI clicks. | 1. Open the PetStore app. 2. Click "Add pet". 3. Fill name + species. 4. Click Save. 5. See the new row in the list. |
+| Steps, paste a numbered list of UI clicks. | 1. Open the PetStore app. 2. Click "Add pet". 3. Fill name + category. 4. Click Save. 5. See the new row in the list. |
 
 It then writes two files:
 
@@ -354,7 +354,7 @@ It then writes two files:
 
 ```bash
 ls docs/tutorials/user/
-# 01-first-launch.md  02-add-pet.md  03-edit-pet-status.md  04-search-catalogue.md
+# 01-first-launch.md  02-add-pet.md  03-place-order.md  04-search-catalogue.md
 
 grep -A1 "U02 add-pet" tests/e2e/docs-screenshots.spec.ts
 # test('U02 add-pet — REPLACE WITH ACTUAL FLOW', async ({ page }) => {
@@ -375,7 +375,7 @@ test('U02 add-pet — Add a pet to the store', async ({ page }) => {
   await shoot(page, 'user', '02-step-2.png');
 
   await page.getByTestId('pet-form.name').fill('Mochi');
-  await page.getByTestId('pet-form.species').fill('Cat');
+  await page.getByTestId('pet-form.category').fill('Cats');
   await shoot(page, 'user', '02-step-3.png');
 
   await page.getByTestId('pet-form.submit').click();
@@ -399,7 +399,7 @@ ls docs/static/screenshots/tutorials/user/02-*
 
 **Verify** by opening `http://localhost:3000/docs/tutorials/user/add-pet`. Each numbered step now renders its captured screenshot. The full capture run for all four stories takes about 90 seconds on a laptop.
 
-## What you ship at the end of Part 2
+## What you ship at the end of Part 8
 
 - `petstore.conduction.nl` serving your Docusaurus site after the custom-domain bind
 - Intro and architecture pages illustrated with `<AppMock>` and `<WidgetMock>`, scaling cleanly without screenshots
@@ -410,24 +410,21 @@ ls docs/static/screenshots/tutorials/user/02-*
 
 The journeydoc capture is the highest-leverage doc surface. Run `/journeydoc-add-story` once a sprint and your tutorials grow alongside the code. When the UI shifts, re-run `npm run test:e2e:docs` and the screenshots refresh in one pass.
 
-Part 3 of this series (forthcoming) covers publishing your app to the Nextcloud app store: signing the release, the `appstoreapp:create-app` flow, and shipping under your own brand. Until then, the [Nextcloud app store docs](https://nextcloudappstore.readthedocs.io/) describe the upload protocol.
+You have now finished the eight-part PetStore series: scaffolded, modelled, integrated, mastered the nc-vue library, and shipped a documentation site that grows with the code. The natural next move is publishing the app to the Nextcloud app store — signing the release, the `appstoreapp:create-app` flow, and shipping under your own brand. Until that part lands, the [Nextcloud app store docs](https://nextcloudappstore.readthedocs.io/) describe the upload protocol.
 
 <NextSteps>
   <NextStep
-    title="Part 1 — Schemas, registers, and a working flow"
-    href="/academy/build-an-app"
-    summary="Back to the PetStore build, in case you need to revisit the schema-and-flow setup."
-  />
-  <NextStep
     title="Claude Skills tutorial series — Part 1"
     href="/academy/claude-skills-tutorial-1-wat-zijn-claude-skills"
-    summary="A companion read: how to author your own Claude Code skills, alongside the journeydoc family used here."
-  />
+    summary="A companion read: how to author your own Claude Code skills, alongside the journeydoc family used here." />
   <NextStep
-    title="DeskDesk tutorial series — Part 4: Knowledge and ship"
-    href="/academy/deskdesk-tutorial-4-knowledge-and-ship"
-    summary="An applied take on shipping an app's knowledge surface end-to-end, with worked DeskDesk examples."
-  />
+    title="OpenSpec tutorial series — Part 1"
+    href="/academy/openspec-tutorial-1-wat-is-openspec"
+    summary="The other Conduction discipline that pairs with this build: write specifications before code, let the pipeline implement them." />
+  <NextStep
+    title="Full nc-vue component reference"
+    href="https://nextcloud-vue.conduction.nl/docs/components/"
+    summary="The capability tour from Part 7 maps to component-level reference docs here when you need prop tables." />
 </NextSteps>
 
 <ContactCta
