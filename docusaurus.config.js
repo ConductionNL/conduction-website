@@ -252,6 +252,18 @@ module.exports = createConfig({
              the new canonical app pages. */
           {from: '/apps/mydash', to: '/apps/launchpad'},
           {from: '/apps/openbuilt', to: '/apps/openbuild'},
+          /* Academy series rename 2026-06-01: deskdesk-tutorial →
+             build-an-app-tutorial. The seven existing parts (0–6) were
+             linked from earlier blog posts, partner decks, and the
+             previous build-an-app standalone teaser; redirect each one
+             to its new home so external links keep working. */
+          {from: '/academy/deskdesk-tutorial-0-three-paths',        to: '/academy/build-an-app-tutorial-0-three-paths'},
+          {from: '/academy/deskdesk-tutorial-1-scaffold',           to: '/academy/build-an-app-tutorial-1-scaffold'},
+          {from: '/academy/deskdesk-tutorial-2-schemas-manifest',   to: '/academy/build-an-app-tutorial-2-schemas-manifest'},
+          {from: '/academy/deskdesk-tutorial-3-calendar',           to: '/academy/build-an-app-tutorial-3-calendar'},
+          {from: '/academy/deskdesk-tutorial-4-knowledge-and-ship', to: '/academy/build-an-app-tutorial-4-knowledge-and-ship'},
+          {from: '/academy/deskdesk-tutorial-5-advanced-manifest',  to: '/academy/build-an-app-tutorial-5-advanced-manifest'},
+          {from: '/academy/deskdesk-tutorial-6-integrate',          to: '/academy/build-an-app-tutorial-6-integrate'},
         ],
       },
     ],
