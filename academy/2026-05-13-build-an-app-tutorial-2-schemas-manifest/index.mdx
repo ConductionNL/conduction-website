@@ -122,7 +122,7 @@ The `schemas` array tells OpenRegister which of the schemas in the same file bel
 
 ## Step 3: Trigger the import
 
-Two ways. Either trigger it via the SettingsController (the app exposes `POST /api/settings/load`):
+The recommended way is to trigger the SettingsController via the app's HTTP API (the app exposes `POST /api/settings/load`):
 
 ```bash title="From your shell, via curl, with a logged-in cookie jar"
 curl -X POST -b cookies.txt \
@@ -130,7 +130,11 @@ curl -X POST -b cookies.txt \
   http://localhost:8080/index.php/apps/petstore/api/settings/load
 ```
 
-Or, cleaner during local development, disable + re-enable the app, which fires the `<install>` repair step from `appinfo/info.xml`:
+:::tip Why the HTTP path is preferred
+The repair step that runs during `occ app:enable` fires before Nextcloud has loaded peer-app autoloaders. If your `InitializeSettings` repair step injects `OCA\OpenRegister\Service\ConfigurationService`, the container can fail to resolve the class and the import bails out partway through (`Could not resolve OCA\OpenRegister\Service\ConfigurationService` in `nextcloud.log`). The HTTP path runs inside a fully-booted request where every app's autoloader is on the path, so the import completes cleanly. Fleet apps work around this by using a repair step that *defers* to a runtime trigger; see decidesk's `InitializeRegister.php` for the canonical pattern.
+:::
+
+Alternatively, disable + re-enable the app, which fires the `<install>` repair step from `appinfo/info.xml` (works when the autoloader is healthy, see the tip above):
 
 ```bash
 docker exec nextcloud php occ app:disable petstore

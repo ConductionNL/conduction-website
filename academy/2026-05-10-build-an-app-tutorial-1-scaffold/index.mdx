@@ -119,34 +119,23 @@ These are the ones that prevent Nextcloud from booting the app at all. Edit each
 | `src/router/index.js` | `generateUrl('/apps/app-template')` → `generateUrl('/apps/petstore')` |
 | `src/store/store.js`, `src/store/modules/settings.js` | `'/apps/app-template/api/settings'` → `'/apps/petstore/api/settings'`, fallback register slug |
 | `src/settings.js` | `loadTranslations('app-template', …)` and the `#app-template-settings` mount selector |
-| `lib/Settings/app_template_register.json` | rename to `lib/Settings/petstore_register.json` (and the `app` field inside it) |
+| `lib/Settings/app_template_register.json` | rename to `lib/Settings/petstore_register.json` AND change the `"app": "app-template"` field inside it to `"app": "petstore"` (it's easy to miss after the file rename) |
+| `appinfo/info.xml` `<repair-steps>` block | the template already ships this block. Update the FQNs inside from `OCA\AppTemplate\Repair\InitializeSettings` and `InitializeActions` to the `OCA\PetStore\Repair\…` equivalents |
+| `appinfo/info.xml` `<settings>` block | update the `<admin>OCA\AppTemplate\Settings\AdminSettings</admin>` FQN to the `OCA\PetStore\…` equivalent |
 
 ### 2b. The "you can do later" files
 
-Tests (`tests/Unit/AppTemplateTest.php`, the integration Postman collection), `phpcs.xml` / `phpmd.xml` / `REUSE.toml` headers, and the `.github/` or `.forgejo/` workflow inputs. They reference the template id in metadata only; the app boots fine without them touched. Fix them when you set up CI.
+Tests (`tests/Unit/AppTemplateTest.php`, the integration Postman collection), `phpcs.xml` / `phpmd.xml` / `REUSE.toml` headers, `README.md`, and the `.github/` or `.forgejo/` workflow inputs. They reference the template id in metadata only; the app boots fine without them touched. Fix them when you set up CI.
 
 ### 2c. One Nextcloud-version compatibility nip
 
-The template's `lib/AppInfo/Application.php` registers a repair step at runtime:
+The template's `lib/AppInfo/Application.php` also registers the repair step at runtime, in addition to the `<repair-steps>` block you updated in 2a:
 
-```php title="Original. Fails on some Nextcloud builds"
+```php title="lib/AppInfo/Application.php. The duplicate runtime registration"
 $context->registerRepairStep(InitializeSettings::class);
 ```
 
-`registerRepairStep()` is missing from `IRegistrationContext` on a few Nextcloud builds (you'll see `Call to undefined method` in `nextcloud.log`). Move it to `appinfo/info.xml` instead. Same effect, more portable:
-
-```xml title="appinfo/info.xml. Append after the <settings> block"
-<repair-steps>
-    <install>
-        <step>OCA\PetStore\Repair\InitializeSettings</step>
-    </install>
-    <post-migration>
-        <step>OCA\PetStore\Repair\InitializeSettings</step>
-    </post-migration>
-</repair-steps>
-```
-
-Then drop the `registerRepairStep()` line and the `use OCA\PetStore\Repair\InitializeSettings;` import from `lib/AppInfo/Application.php`.
+`registerRepairStep()` is missing from `IRegistrationContext` on a few Nextcloud builds (you'll see `Call to undefined method` in `nextcloud.log`). Since `appinfo/info.xml` already has the equivalent `<repair-steps>` block, the runtime registration is redundant. Drop the `registerRepairStep()` line and the `use OCA\PetStore\Repair\InitializeSettings;` import from `lib/AppInfo/Application.php`.
 
 ## Step 3: Build and enable
 
@@ -161,10 +150,15 @@ npm run build
 
 Then make sure your Nextcloud container can see the directory. In a typical Docker setup the `apps-extra/` host directory is mounted at `/var/www/html/custom_apps/` in the container; if your compose file uses one bind mount per app, add a line for `petstore` and restart. Otherwise:
 
-```bash title="Quick path: copy + chown for a one-shot install"
-docker cp ./petstore nextcloud:/var/www/html/custom_apps/
-docker exec -u root nextcloud chown -R www-data:www-data /var/www/html/custom_apps/petstore
+```bash title="Quick path: tar + copy + chown (excludes node_modules to keep the transfer small)"
+tar --exclude=node_modules --exclude=vendor -czf /tmp/petstore.tgz petstore/
+docker cp /tmp/petstore.tgz nextcloud:/tmp/petstore.tgz
+docker exec -u root nextcloud bash -c 'cd /var/www/html/custom_apps && tar xzf /tmp/petstore.tgz && chown -R www-data:www-data petstore && rm /tmp/petstore.tgz'
 ```
+
+:::tip Why tar + cp instead of `docker cp ./petstore …` directly
+A fresh `node_modules/` can be 400+ MB. A direct `docker cp` on the whole directory takes minutes per iteration and silently hangs without progress output. The container doesn't need `node_modules/` because Nextcloud only serves the built `js/` bundle. Tar with the excludes keeps each rebuild cycle under 10 seconds.
+:::
 
 Now enable:
 
@@ -172,10 +166,10 @@ Now enable:
 docker exec nextcloud php occ app:enable petstore
 ```
 
-You should see:
+You should see (the version comes from `appinfo/info.xml`, usually `0.1.x` on a fresh template):
 
 ```
-petstore 0.1.0 enabled
+petstore 0.1.2 enabled
 ```
 
 Open `http://localhost:8080/apps/petstore/` and log in. You see a placeholder dashboard with sample KPI cards, two empty panels, three nav items (Dashboard / Items / Documentation) and a Settings entry pinned to the bottom of the rail. That's the chassis.
