@@ -41,17 +41,6 @@ The shape we keep saying "this saves you code" finally has numbers behind it: ~2
   <PrerequisiteItem>The local clone of <a href="https://codeberg.org/Conduction/petstore">Conduction/petstore</a> on your filesystem and a working <code>npm run build</code>.</PrerequisiteItem>
 </Prerequisites>
 
-:::warning Template freshness gap (work in progress)
-Walking this part end-to-end against `Conduction/nextcloud-app-template@main` as of 2026-06-01 surfaces several template-side gaps that this tutorial assumes are already fixed. Until the template catches up, Part 2 is not reach-the-end-state by mechanical copy of the steps; you'll need the patches called out in the steps below.
-
-1. **`lib/Service/SettingsService.php`** calls `$configurationService->importFromApp(appId: …, force: …)` with two named args. OR's signature is `importFromApp(string $appId, array $data, string $version, bool $force=false)` (4 args). The call throws `Argument #2 ($data) not passed` and the import silently fails. The fix is to call `importFromFilePath(appId, filePath, version, force)` instead, where `filePath` is **relative to `\OC::$SERVERROOT`** (OR's ImportHandler prepends `/var/www/html/`).
-2. **`src/manifest.json`** does not ship in the template. You have to create it. The shape in Step 4 below is correct; just don't expect to be "editing" a placeholder.
-3. **`src/App.vue`** ships as a hand-rolled `<NcContent>` shell (~85 lines), not the `CnAppRoot`-wrapper the rest of this part assumes. The Step 5 replacement still works, but the "from 175 lines" framing is wrong; the actual starting size is closer to ~85.
-4. **`webpack.config.js`** in the current template does not produce the `shared-vendor` and `shared-nc-vue` chunks. `templates/index.php` only emits one `Util::addScript` for `$appId-main`. The dashboard-driven (CnAppRoot) shell will only mount cleanly once the template adopts splitChunks; without that, the Vue app silently fails to mount on `#content` because the main bundle's `__webpack_require__.O` is waiting for shared chunks that never registered.
-
-A repaired reference template is in the works; in the meantime you can copy the shape used by any already-shipping Conduction app (e.g. [decidesk's `src/App.vue` + `webpack.config.js` + `templates/index.php`](https://codeberg.org/Conduction/decidesk)).
-:::
-
 ## Step 1: Define the three schemas
 
 Open `lib/Settings/petstore_register.json` and replace the placeholder `example` schema with the real three. The shape mirrors the canonical OpenAPI Pet Store. Each schema is a JSON Schema with a couple of OpenRegister extensions: `slug` for the URL identifier, `icon` for the MDI glyph the UI uses, and `x-openregister-relations` for typed cross-schema links.
