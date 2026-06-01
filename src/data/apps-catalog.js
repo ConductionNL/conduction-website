@@ -61,10 +61,10 @@ const PRESENTATION = {
     categories: ['Documents'],
     icon: <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>,
   },
-  mydash: {
-    name: 'MyDash',
+  launchpad: {
+    name: 'LaunchPad',
     tagline: 'Personal and team dashboards built from your registers, no separate BI tool, no extra login.',
-    href: '/apps/mydash',
+    href: '/apps/launchpad',
     categories: ['Dashboards'],
     icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>,
   },
@@ -131,10 +131,10 @@ const PRESENTATION = {
     categories: ['Processes'],
     icon: <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="19" cy="18" r="2"/></svg>,
   },
-  openbuilt: {
-    name: 'OpenBuilt',
+  openbuild: {
+    name: 'OpenBuild',
     tagline: 'Citizen-developer app builder. Compose Nextcloud apps from registers, connectors, workflows, no PHP.',
-    href: '/apps/openbuilt',
+    href: '/apps/openbuild',
     categories: ['Processes'],
     icon: <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9-9 9z"/><path d="M9 12h6M12 9v6"/></svg>,
   },

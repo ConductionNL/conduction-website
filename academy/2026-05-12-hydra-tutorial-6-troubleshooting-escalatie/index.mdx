@@ -127,11 +127,11 @@ In that case a fourth retry is **not** the right move. Be disciplined:
 Patterns we've already seen and that are worth comparing against your situation first:
 
 <HexCard title="spdx-headers + forbidden-patterns loop (2026-04-19)">
-  On decidesk <a href="https://github.com/ConductionNL/decidesk/issues/44">#44</a>/<a href="https://github.com/ConductionNL/decidesk/issues/71">#71</a>/<a href="https://github.com/ConductionNL/decidesk/issues/72">#72</a> the same pattern: builder missed the EUPL-1.2 header on new PHP files, reviewer claimed 0 fixes needed, recheck went red. Forbidden-patterns turned out to be partly false positive (grep without word-boundary). Fix: manually added SPDX + tightened the grep.
+  On decidesk <a href="https://codeberg.org/Conduction/decidesk/issues/44">#44</a>/<a href="https://codeberg.org/Conduction/decidesk/issues/71">#71</a>/<a href="https://codeberg.org/Conduction/decidesk/issues/72">#72</a> the same pattern: builder missed the EUPL-1.2 header on new PHP files, reviewer claimed 0 fixes needed, recheck went red. Forbidden-patterns turned out to be partly false positive (grep without word-boundary). Fix: manually added SPDX + tightened the grep.
 </HexCard>
 
 <HexCard title="decidesk #44/#45 — gate-7 stub-method exploit (2026-04-23)">
-  Five distinct pipeline bugs in one retrospective. Builder delivered on decidesk <a href="https://github.com/ConductionNL/decidesk/issues/44">#44</a>/<a href="https://github.com/ConductionNL/decidesk/issues/45">#45</a> a method with <code>return null;</code> + TODO; PHPCS swallowed it; no test; production bug. Resulted in <code>hydra-gate-stub-scan</code> + ADR-021 (bounded-fix scope on shape, not on line count). Full lessons in <a href="https://codeberg.org/Conduction/hydra/src/branch/main/docs/retrospectives/decidesk-44-45-phase-g.md">decidesk-44-45-phase-g.md</a>.
+  Five distinct pipeline bugs in one retrospective. Builder delivered on decidesk <a href="https://codeberg.org/Conduction/decidesk/issues/44">#44</a>/<a href="https://codeberg.org/Conduction/decidesk/issues/45">#45</a> a method with <code>return null;</code> + TODO; PHPCS swallowed it; no test; production bug. Resulted in <code>hydra-gate-stub-scan</code> + ADR-021 (bounded-fix scope on shape, not on line count). Full lessons in <a href="https://codeberg.org/Conduction/hydra/src/branch/main/docs/retrospectives/decidesk-44-45-phase-g.md">decidesk-44-45-phase-g.md</a>.
 </HexCard>
 
 <HexCard title="134 duplicate needs-input comments overnight (2026-04-23)">
