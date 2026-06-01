@@ -145,8 +145,14 @@ The template ships its build output uncommitted. So the first thing to do in a f
 composer install --no-dev
 composer dump-autoload
 npm install --legacy-peer-deps
+# --legacy-peer-deps skips the webpack-vue-config peer chain. Install them explicitly:
+npm install --legacy-peer-deps sass sass-loader linkifyjs node-polyfill-webpack-plugin terser-webpack-plugin vue-loader
 npm run build
 ```
+
+:::tip Why the second `npm install`
+`--legacy-peer-deps` tells npm not to resolve peer dependencies. The template's webpack config (`@nextcloud/webpack-vue-config`) needs `sass`, `sass-loader`, `node-polyfill-webpack-plugin`, `terser-webpack-plugin`, and `vue-loader` as peers. Without the second install the build fails with `Cannot find module 'node-polyfill-webpack-plugin'`. Installing them all in one command avoids the npm `--no-save` reconciliation trap (each install prunes previously unsaved packages).
+:::
 
 Then make sure your Nextcloud container can see the directory. In a typical Docker setup the `apps-extra/` host directory is mounted at `/var/www/html/custom_apps/` in the container; if your compose file uses one bind mount per app, add a line for `petstore` and restart. Otherwise:
 
