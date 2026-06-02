@@ -32,11 +32,11 @@ A workstation without a Nextcloud is half a workstation. Nearly every other tuto
 
 ## You need a working Nextcloud — here's how
 
-Already have one running on `http://localhost:8080`? Skip ahead to [Which Docker profile do you want?](#which-docker-profile-do-you-want). Otherwise, the fastest way to get there is the **[Run Nextcloud locally with Docker](/academy/nextcloud-lokaal-draaien)** tutorial — a 30-minute walkthrough that pastes a standalone `docker-compose.yml` into a fresh folder. It assumes nothing about a Conduction workspace, covers Docker Desktop / BIOS virtualization / the app store / troubleshooting, and ends with a working admin account on `localhost:8080`. Do that, then come back here.
+Already have one running on `http://localhost:8080`? Skip ahead to [Which Docker profile do you want?](#which-docker-profile-do-you-want). Otherwise, the fastest way to get there is the **[Run Nextcloud locally with Docker](/academy/nextcloud-lokaal-draaien)** tutorial — a 30-minute walkthrough that pastes a standalone `docker-compose.yml` into a fresh folder. It covers Docker Desktop / BIOS virtualization / the app store / troubleshooting, and ends with a working admin account on `localhost:8080`. Do that, then come back here.
 
-> **Standalone vs workspace.** The canonical tutorial gives you a working Nextcloud via a hand-rolled `docker-compose.yml` in its own folder. The Conduction `apps-extra` workspace ships its own `docker-compose.yml` with the `--profile` flags below and a `clean-env.sh` cleanup script. Day-to-day developer work usually uses the workspace version. If you only do the canonical tutorial today, you can switch later by cloning `apps-extra` and using its compose file instead.
+> **Standalone vs Conduction-stack compose.** The canonical tutorial gives you a working Nextcloud via a hand-rolled `docker-compose.yml` in a fresh folder. The Conduction stack has its own `docker-compose.yml` checked into the [`openregister`](https://codeberg.org/Conduction/openregister) repo — with the `--profile` flags below and the `clean-env.sh` reset documented in [`docs/claude/docker.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/docker.md). Day-to-day developer work usually uses that one. If you only did the canonical tutorial today, you can switch later by stopping the standalone stack (`docker compose down`), cloning `openregister`, and running `docker compose up -d` from inside that repo instead.
 
-The rest of this part is the **Conduction-workspace context** the canonical tutorial doesn't cover: which Docker profiles exist and when to use them, which Conduction apps you actually need, and the `clean-env.sh` reset workflow.
+The rest of this part is the **Conduction-stack context** the canonical tutorial doesn't cover: which Docker profiles exist and when to use them, which Conduction apps you actually need, and the `clean-env.sh` reset workflow.
 
 ## Which Docker profile do you want?
 
@@ -87,11 +87,11 @@ You don't need to install every Conduction app. Install what the tutorial you're
 A question that comes up a lot once you've used the local Nextcloud for a while:
 
 - **Keep it** when continuing on the same change. Schemas you imported yesterday, test objects you created — all still there. Most of the time you keep it.
-- **Reset it** when a tutorial says *"start from a clean Nextcloud"*. That's almost always the case for the **Build an App** and **DeskDesk** series.
+- **Reset it** when a tutorial says *"start from a clean Nextcloud"*. That's almost always the case for the **Build an App tutorial** series, and for any tutorial that imports schemas from scratch.
 
 How you reset depends on which Nextcloud you set up:
 
-- **Conduction `apps-extra` workspace**: `bash clean-env.sh` or the `/clean-env` skill. Takes 30 seconds, then `docker compose up -d` again.
+- **Conduction-stack compose (the one inside `openregister`)**: `bash clean-env.sh` or the `/clean-env` skill (see [`docker.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/docker.md) for the reset and profile reference). Takes 30 seconds, then `docker compose up -d` again.
 - **Standalone tutorial Nextcloud**: `docker compose down -v` in the folder where your `docker-compose.yml` lives, then `docker compose up -d`. Deletes the volumes; the images stay cached so the next start is fast.
 
 In both cases, the cleanup is fast — it's not a slow Windows-style "uninstall and reinstall". Don't be precious about your local state.
@@ -176,7 +176,7 @@ The two answers map cleanly: same change → keep, new tutorial demanding a clea
 <Details summary="Answer">
 
 - **Keep it** when continuing on the same change. Yesterday's schemas, test objects, and config are still in the volumes — and you usually want them.
-- **Reset it** when a tutorial says *"start from a clean Nextcloud"*. The Build an App and DeskDesk series usually do. Reset with `bash clean-env.sh` (or the `/clean-env` skill), then `docker compose up -d` again — about 30 seconds.
+- **Reset it** when a tutorial says *"start from a clean Nextcloud"*. The Build an App tutorial series usually does. Reset with `bash clean-env.sh` (or the `/clean-env` skill), then `docker compose up -d` again — about 30 seconds.
 
 The reset is cheap. Don't hesitate to use it when the tutorial calls for it; trying to "make do" with a dirty environment costs more time than the reset itself.
 
@@ -186,7 +186,7 @@ The reset is cheap. Don't hesitate to use it when the tutorial calls for it; try
 
 <div className="tutorial-quiz">
 
-**4. You stopped halfway through DeskDesk tutorial 3 yesterday — your local Nextcloud has a half-built calendar app and a register full of test events. Today you're starting fresh on the Build an App tutorial. Do you reset Nextcloud first, or keep it as-is?**
+**4. You stopped halfway through Build an App tutorial Part 3 yesterday — your local Nextcloud has a half-built PetStore calendar app and a register full of test pets and orders. Today you're starting fresh on the [Set up a Woo register](/academy/woo-register-opzetten) tutorial. Do you reset Nextcloud first, or keep it as-is?**
 
 <Details summary="Hint">
 
@@ -196,13 +196,13 @@ Which of the two tutorials assumes a clean Nextcloud? And what's the cost of *no
 
 <Details summary="Answer">
 
-**Reset.** The Build an App tutorial assumes a clean Nextcloud — it walks you through creating registers and schemas with names that will collide with the DeskDesk leftovers (`incident`, `responder`, plus register slugs that conflict with yesterday's). Trying to make do with the dirty state means debugging unexpected validation errors instead of following the tutorial.
+**Reset.** The Woo register tutorial assumes a clean Nextcloud — it imports the canonical Woo TOOI schemas into OpenRegister. The PetStore schemas (`pet`, `category`, `order`) and the test data from Part 3 don't strictly collide with Woo, but yesterday's clutter sits in the same OpenRegister UI and you'll be scrolling past it every time. Cleaner to start fresh.
 
 The reset is cheap: `bash clean-env.sh` (or `/clean-env`) tears down the stack and resets volumes, then `docker compose up -d` brings it back up — about 30 seconds total. Yesterday's state is gone, but yesterday's state was a half-finished exercise you weren't going to resume mid-tutorial anyway.
 
-The reverse case — you stopped halfway through DeskDesk 3 yesterday and are *continuing* it today — is when you **keep** the state. Your in-progress register is still there and you'd lose 20 minutes recreating it.
+The reverse case — you stopped halfway through Build an App tutorial Part 3 yesterday and are *continuing* with Part 4 today — is when you **keep** the state. Your in-progress register is still there and you'd lose 20 minutes recreating it.
 
-The rule of thumb: **same tutorial → keep, new tutorial → reset.**
+The rule of thumb: **same tutorial → keep, different tutorial → reset.**
 
 </Details>
 

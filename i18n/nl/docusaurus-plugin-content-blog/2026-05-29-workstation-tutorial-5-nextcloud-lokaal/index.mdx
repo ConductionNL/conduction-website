@@ -32,11 +32,11 @@ Een workstation zonder Nextcloud is een halve workstation. Bijna elke andere tut
 
 ## Je hebt een werkende Nextcloud nodig — zo regel je dat
 
-Heb je er al een draaien op `http://localhost:8080`? Sla deze sectie over en spring door naar [Welk Docker-profiel wil je?](#welk-docker-profiel-wil-je). Heb je er nog geen, dan is de snelste route de **[Nextcloud lokaal draaien met Docker](/nl/academy/nextcloud-lokaal-draaien)**-tutorial — een walk-through van 30 minuten die een standalone `docker-compose.yml` in een verse map plakt. Hij gaat nergens van uit over een Conduction-werkmap, behandelt Docker Desktop / BIOS-virtualisatie / de app store / troubleshooting, en eindigt met een werkend admin-account op `localhost:8080`. Doe dat eerst, en kom daarna hier terug.
+Heb je er al een draaien op `http://localhost:8080`? Sla deze sectie over en spring door naar [Welk Docker-profiel wil je?](#welk-docker-profiel-wil-je). Heb je er nog geen, dan is de snelste route de **[Nextcloud lokaal draaien met Docker](/nl/academy/nextcloud-lokaal-draaien)**-tutorial — een walk-through van 30 minuten die een standalone `docker-compose.yml` in een verse map plakt. Hij behandelt Docker Desktop / BIOS-virtualisatie / de app store / troubleshooting, en eindigt met een werkend admin-account op `localhost:8080`. Doe dat eerst, en kom daarna hier terug.
 
-> **Standalone vs werkmap.** De canonical tutorial geeft je een werkende Nextcloud via een handgemaakte `docker-compose.yml` in een eigen map. De Conduction `apps-extra`-werkmap heeft een eigen `docker-compose.yml` met de `--profile`-flags hieronder en een `clean-env.sh`-opruimscript. Dagelijks developer-werk gebruikt meestal de werkmap-versie. Doe je vandaag alleen de canonical tutorial, dan kun je later switchen door `apps-extra` te clonen en die compose-file te gebruiken.
+> **Standalone vs Conduction-stack-compose.** De canonical tutorial geeft je een werkende Nextcloud via een handgemaakte `docker-compose.yml` in een verse map. De Conduction-stack heeft een eigen `docker-compose.yml` in de [`openregister`](https://codeberg.org/Conduction/openregister)-repo — met de `--profile`-flags hieronder en de `clean-env.sh`-reset die in [`docs/claude/docker.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/docker.md) wordt beschreven. Dagelijks developer-werk gebruikt meestal die. Heb je vandaag alleen de canonical tutorial gedaan, dan kun je later switchen door de standalone stack te stoppen (`docker compose down`), `openregister` te clonen, en `docker compose up -d` daaruit te draaien.
 
-De rest van dit deel gaat over de **Conduction-werkmap-context** die de canonical tutorial niet behandelt: welke Docker-profielen er zijn en wanneer je ze gebruikt, welke Conduction-apps je echt nodig hebt, en de `clean-env.sh`-reset-workflow.
+De rest van dit deel gaat over de **Conduction-stack-context** die de canonical tutorial niet behandelt: welke Docker-profielen er zijn en wanneer je ze gebruikt, welke Conduction-apps je echt nodig hebt, en de `clean-env.sh`-reset-workflow.
 
 ## Welk Docker-profiel wil je?
 
@@ -87,11 +87,11 @@ Je hoeft niet elke Conduction-app te installeren. Installeer wat de tutorial die
 Een vraag die vaak terugkomt als je de lokale Nextcloud een tijdje gebruikt:
 
 - **Behouden** als je verdergaat met dezelfde wijziging. Schema's die je gisteren hebt geïmporteerd, testobjecten die je hebt aangemaakt — staan er nog. Meestal hou je hem aan.
-- **Resetten** als een tutorial zegt *"begin vanaf een schone Nextcloud"*. Dat is bijna altijd het geval voor de **Build an App**- en **DeskDesk**-series.
+- **Resetten** als een tutorial zegt *"begin vanaf een schone Nextcloud"*. Dat is bijna altijd het geval voor de **Build an App tutorial**-serie, en voor elke tutorial die schema's vanaf nul importeert.
 
 Hoe je reset hangt af van welke Nextcloud je hebt opgezet:
 
-- **Conduction `apps-extra`-werkmap**: `bash clean-env.sh` of de `/clean-env`-skill. Duurt 30 seconden, daarna weer `docker compose up -d`.
+- **Conduction-stack-compose (die in `openregister`)**: `bash clean-env.sh` of de `/clean-env`-skill (zie [`docker.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/docker.md) voor de reset- en profiel-referentie). Duurt 30 seconden, daarna weer `docker compose up -d`.
 - **Standalone tutorial-Nextcloud**: `docker compose down -v` in de map waar je `docker-compose.yml` staat, daarna `docker compose up -d`. Verwijdert de volumes; de images blijven gecached, dus de volgende start is snel.
 
 In beide gevallen is het opschonen snel — het is geen trage Windows-stijl "verwijderen en opnieuw installeren". Wees niet zuinig op je lokale state.
@@ -176,7 +176,7 @@ De twee antwoorden zijn helder gemapt: zelfde wijziging → aanhouden, nieuwe tu
 <Details summary="Antwoord">
 
 - **Aanhouden** als je verdergaat met dezelfde wijziging. De schema's, testobjecten en config van gisteren staan nog in de volumes — en die wil je meestal hebben.
-- **Resetten** als een tutorial zegt *"begin vanaf een schone Nextcloud"*. De Build an App- en DeskDesk-series doen dat meestal. Reset met `bash clean-env.sh` (of de `/clean-env`-skill), daarna weer `docker compose up -d` — duurt ongeveer 30 seconden.
+- **Resetten** als een tutorial zegt *"begin vanaf een schone Nextcloud"*. De Build an App tutorial-serie doet dat meestal. Reset met `bash clean-env.sh` (of de `/clean-env`-skill), daarna weer `docker compose up -d` — duurt ongeveer 30 seconden.
 
 De reset is goedkoop. Aarzel niet om hem te gebruiken als de tutorial erom vraagt; proberen "te roeien" met een vervuilde omgeving kost meer tijd dan de reset zelf.
 
@@ -186,7 +186,7 @@ De reset is goedkoop. Aarzel niet om hem te gebruiken als de tutorial erom vraag
 
 <div className="tutorial-quiz">
 
-**4. Je bent gisteren halverwege DeskDesk-tutorial 3 gestopt — je lokale Nextcloud heeft een half afgebouwde kalender-app en een register vol testevenementen. Vandaag begin je met een schone lei aan de Build an App-tutorial. Reset je Nextcloud eerst, of laat je het zoals het is?**
+**4. Je bent gisteren halverwege Build an App tutorial Deel 3 gestopt — je lokale Nextcloud heeft een half afgebouwde PetStore-kalender-app en een register vol test-pets en orders. Vandaag begin je met een schone lei aan de [Woo-register opzetten](/nl/academy/woo-register-opzetten)-tutorial. Reset je Nextcloud eerst, of laat je het zoals het is?**
 
 <Details summary="Hint">
 
@@ -196,13 +196,13 @@ Welke van de twee tutorials gaat uit van een schone Nextcloud? En wat kost het j
 
 <Details summary="Antwoord">
 
-**Resetten.** De Build an App-tutorial gaat uit van een schone Nextcloud — je loopt door het aanmaken van registers en schema's heen met namen die botsen met de restanten van DeskDesk (`incident`, `responder`, plus register-slugs die conflicteren met die van gisteren). Proberen door te modderen met de vervuilde state betekent dat je onverwachte validatiefouten gaat debuggen in plaats van de tutorial volgen.
+**Resetten.** De Woo-register-tutorial gaat uit van een schone Nextcloud — hij importeert de canonical Woo-TOOI-schema's in OpenRegister. De PetStore-schema's (`pet`, `category`, `order`) en de testdata van Deel 3 botsen niet strikt met Woo, maar de restjes van gisteren zitten in dezelfde OpenRegister-UI en daar scroll je dan elke keer langs. Schoner om met een lege state te beginnen.
 
 De reset is goedkoop: `bash clean-env.sh` (of `/clean-env`) breekt de stack af en reset de volumes, daarna brengt `docker compose up -d` alles weer omhoog — bij elkaar zo'n 30 seconden. De state van gisteren is weg, maar de state van gisteren was een half-afgemaakte oefening die je toch niet middenin een tutorial ging hervatten.
 
-Het omgekeerde geval — je bent gisteren halverwege DeskDesk 3 gestopt en gaat daar vandaag *verder* mee — is juist wanneer je de state **aanhoudt**. Je register-in-uitvoering staat er nog en je zou 20 minuten kwijt zijn met het opnieuw opzetten ervan.
+Het omgekeerde geval — je bent gisteren halverwege Build an App tutorial Deel 3 gestopt en gaat vandaag *verder* met Deel 4 — is juist wanneer je de state **aanhoudt**. Je register-in-uitvoering staat er nog en je zou 20 minuten kwijt zijn met het opnieuw opzetten ervan.
 
-De vuistregel: **zelfde tutorial → aanhouden, nieuwe tutorial → resetten.**
+De vuistregel: **zelfde tutorial → aanhouden, andere tutorial → resetten.**
 
 </Details>
 
