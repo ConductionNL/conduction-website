@@ -144,9 +144,13 @@ The template ships its build output uncommitted. So the first thing to do in a f
 ```bash
 composer install --no-dev
 composer dump-autoload
-npm install --legacy-peer-deps
+npm install
 npm run build
 ```
+
+:::tip Don't use `--legacy-peer-deps`
+A plain `npm install` resolves the template's peer dependencies cleanly and the build succeeds out of the box. `--legacy-peer-deps` skips peer resolution, which has two bad consequences: webpack-vue-config's peers (`sass`, `node-polyfill-webpack-plugin`, `terser-webpack-plugin`, `vue-loader`) silently don't install and the build fails with `Cannot find module 'node-polyfill-webpack-plugin'`, AND the resolved transitive dependency graph leaves webpack's module-concatenation optimisation confused on the `@nextcloud/axios` ESM bundle (`Cannot read properties of undefined (reading 'module')`). Skip the flag.
+:::
 
 Then make sure your Nextcloud container can see the directory. In a typical Docker setup the `apps-extra/` host directory is mounted at `/var/www/html/custom_apps/` in the container; if your compose file uses one bind mount per app, add a line for `petstore` and restart. Otherwise:
 
