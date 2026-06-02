@@ -30,20 +30,13 @@ A workstation without a Nextcloud is half a workstation. Nearly every other tuto
   <PrerequisiteItem>About half an hour, mostly Docker pulling images.</PrerequisiteItem>
 </Prerequisites>
 
-## The actual install lives elsewhere
+## You need a working Nextcloud — here's how
 
-This is the only part of the series we don't re-explain. The existing **[Run Nextcloud locally with Docker](/academy/nextcloud-lokaal-draaien)** tutorial walks through every step — Docker Desktop, the compose file, the first-time admin account, the app store, the cleanup command — for a reader who has never touched Docker or a terminal before.
+Already have one running on `http://localhost:8080`? Skip ahead to [Which Docker profile do you want?](#which-docker-profile-do-you-want). Otherwise, the fastest way to get there is the **[Run Nextcloud locally with Docker](/academy/nextcloud-lokaal-draaien)** tutorial — a 30-minute walkthrough that pastes a standalone `docker-compose.yml` into a fresh folder. It assumes nothing about a Conduction workspace, covers Docker Desktop / BIOS virtualization / the app store / troubleshooting, and ends with a working admin account on `localhost:8080`. Do that, then come back here.
 
-You're not that reader anymore. You've done Parts 1–4. So skim it rather than read it word for word; the key steps are:
+> **Standalone vs workspace.** The canonical tutorial gives you a working Nextcloud via a hand-rolled `docker-compose.yml` in its own folder. The Conduction `apps-extra` workspace ships its own `docker-compose.yml` with the `--profile` flags below and a `clean-env.sh` cleanup script. Day-to-day developer work usually uses the workspace version. If you only do the canonical tutorial today, you can switch later by cloning `apps-extra` and using its compose file instead.
 
-1. **Clone or open the Nextcloud workspace** — typically `apps-extra/` or whichever folder hosts the `docker-compose.yml`.
-2. **Start the stack**: `docker compose up -d` (default profile: db + nextcloud + n8n).
-3. **Visit `http://localhost:8080`** — first load takes a few minutes while Docker pulls the images for the first time.
-4. **Create the admin account** (e.g. `admin` / `admin` for local work — never reuse this for anything public).
-5. **Install Conduction apps from the app store** (the next section lists which ones).
-6. **When done for the day**: `bash clean-env.sh` or the `/clean-env` skill — tears down the stack and resets volumes.
-
-Detailed prose, screenshots, troubleshooting: in [Run Nextcloud locally with Docker](/academy/nextcloud-lokaal-draaien). Go do it, then come back.
+The rest of this part is the **Conduction-workspace context** the canonical tutorial doesn't cover: which Docker profiles exist and when to use them, which Conduction apps you actually need, and the `clean-env.sh` reset workflow.
 
 ## Which Docker profile do you want?
 
@@ -72,16 +65,18 @@ For most starting work the default profile is fine.
 
 ## Which Conduction apps to install first
 
-Once the admin account is up, install at minimum:
+If you came through the canonical tutorial just now, you already have **OpenRegister**, **OpenCatalogi**, and **OpenConnector** installed — that's the right baseline for the workstation chain, leave them in.
+
+If you started from a different Nextcloud setup, install at minimum:
 
 - **OpenRegister** — the schema-backed object store every Conduction app reads and writes through. Without it, nothing else works.
 - **OpenConnector** — the integration layer for inbound and outbound flows (forms, webhooks, sync, periodic jobs).
 
-Both install directly from the Nextcloud app store inside your local Nextcloud. Search for the app name, click **Download and enable**.
+Both install directly from the Nextcloud app store. Search for the app name, click **Download and enable**.
 
-One more app that shows up in many tutorials, install when needed:
+A third app shows up in many tutorials:
 
-- **OpenCatalogi** — makes every register searchable as a public catalogue and federates to `data.overheid.nl`.
+- **OpenCatalogi** — makes every register searchable as a public catalogue and federates to `data.overheid.nl`. Install when a tutorial asks for it.
 
 A note on naming: **OpenWoo** is a *solution* built on OpenRegister and OpenCatalogi, not a separate Nextcloud app. The Woo tutorials install OpenRegister (and usually OpenCatalogi) and import a Woo register into them — there's nothing called "OpenWoo" in the Nextcloud app store.
 
@@ -92,9 +87,14 @@ You don't need to install every Conduction app. Install what the tutorial you're
 A question that comes up a lot once you've used the local Nextcloud for a while:
 
 - **Keep it** when continuing on the same change. Schemas you imported yesterday, test objects you created — all still there. Most of the time you keep it.
-- **Reset it** when a tutorial says *"start from a clean Nextcloud"*. That's almost always the case for the **Build an App** and **DeskDesk** series. Reset with `bash clean-env.sh` or the `/clean-env` skill. Takes 30 seconds, then `docker compose up -d` again.
+- **Reset it** when a tutorial says *"start from a clean Nextcloud"*. That's almost always the case for the **Build an App** and **DeskDesk** series.
 
-The cleanup is fast because volumes are dropped and recreated and the images are still cached locally — it's not a slow Windows-style "uninstall and reinstall". Don't be precious about your local state.
+How you reset depends on which Nextcloud you set up:
+
+- **Conduction `apps-extra` workspace**: `bash clean-env.sh` or the `/clean-env` skill. Takes 30 seconds, then `docker compose up -d` again.
+- **Standalone tutorial Nextcloud**: `docker compose down -v` in the folder where your `docker-compose.yml` lives, then `docker compose up -d`. Deletes the volumes; the images stay cached so the next start is fast.
+
+In both cases, the cleanup is fast — it's not a slow Windows-style "uninstall and reinstall". Don't be precious about your local state.
 
 ## How this fits in the workstation chain
 
