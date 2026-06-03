@@ -61,6 +61,13 @@ const PRESENTATION = {
     categories: ['Documents'],
     icon: <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>,
   },
+  openanonymiser: {
+    name: 'OpenAnonymiser',
+    tagline: 'Dutch-first PII detection as a Nextcloud ExApp. Finds persons, addresses, IBANs, BSNs, case numbers in any text. CPU (Light) and GPU builds, Presidio under the hood.',
+    href: 'https://openanonymiser.conduction.nl',
+    categories: ['Documents'],
+    icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/><path d="M9 8h6"/></svg>,
+  },
   launchpad: {
     name: 'LaunchPad',
     tagline: 'Personal and team dashboards built from your registers, no separate BI tool, no extra login.',

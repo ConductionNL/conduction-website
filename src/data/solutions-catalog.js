@@ -51,6 +51,15 @@ export const SOLUTIONS = [
     icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/><path d="M9 8h6"/></svg>,
   },
   {
+    slug: 'openanonymiser',
+    href: '/solutions/openanonymiser', sector: ['public', 'mkb'], sectorLabel: 'Public & SMB',
+    title: 'OpenAnonymiser. Strip PII before it ships.',
+    shortTitle: 'OpenAnonymiser',
+    outcome: <>Dutch-first PII detection on <span className="next-blue">Nextcloud</span>. Detects persons, addresses, IBANs, BSNs, and case numbers in any document or register field. Ships as a Nextcloud ExApp, CPU (Light) and GPU builds, Presidio under the hood.</>,
+    builtOn: ['OpenAnonymiser', 'DocuDesk', 'OpenRegister', 'OpenCatalogi'], goals: ['compliance'], status: 'beta',
+    icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/><path d="M9 8h6"/></svg>,
+  },
+  {
     slug: 'mkb-workspace',
     href: '/solutions/mkb-workspace', sector: 'mkb', sectorLabel: 'MKB',
     title: 'MKB workspace in two minutes.',
