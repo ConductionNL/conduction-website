@@ -1,0 +1,463 @@
+---
+slug: workstation-tutorial-2-basis-inrichten
+title: "Workstation Setup leerlijn — Deel 2: De basis inrichten"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-29
+summary: WSL2, Docker Desktop, VS Code met de juiste extensies, Node, PHP, Codeberg-auth (SSH-sleutel + tea CLI) plus de GitHub CLI, de OpenSpec CLI en de Playwright-browser. Het langste deel van de leerlijn — de meeste tijd gaat in downloads waar je naast iets anders kunt doen. Na dit deel heb je een werkend dev-workstation, alleen Claude Code is nog niet aangesloten.
+tags: [Workstation, Setup, WSL2, Docker, VS Code, Node, PHP, Codeberg, Tutorial series]
+apps: []
+durationMinutes: 60
+series: workstation-tutorial
+partNumber: 2
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+Dit is het deel met de meeste installatie-commando's. WSL2, Docker Desktop, VS Code met de juiste extensies, de language-runtimes (Node, PHP, Composer), de CLI's (`gh`, OpenSpec) en de Playwright Chromium-binary. Aan het einde van Deel 2 heb je een werkend dev-workstation — alleen Claude Code is nog niet aangesloten. Dat is Deel 3.
+
+{/* truncate */}
+
+<Outcomes title="Wat je oplevert">
+  <Outcome>WSL2 + Ubuntu 24.04 draaiend op je machine (alleen Windows).</Outcome>
+  <Outcome>Docker Desktop geïnstalleerd, geïntegreerd met WSL, en een werkend <code>docker</code>-commando binnen WSL.</Outcome>
+  <Outcome>VS Code geïnstalleerd met de vereiste Conduction-extensies, verbonden met WSL.</Outcome>
+  <Outcome>Node 20+, PHP 8.1+, Composer, de <code>gh</code>-CLI, de OpenSpec-CLI en de Playwright Chromium-binary, allemaal binnen WSL geïnstalleerd.</Outcome>
+  <Outcome>Een geverifieerde werkende setup — elke <code>--version</code>-check aan het einde van het deel geeft een echte versie terug.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem><a href="/nl/academy/workstation-tutorial-1-wat-installeer-je">Deel 1</a> doorgelezen — je weet welke combinatie van tools we installeren en waarom.</PrerequisiteItem>
+  <PrerequisiteItem>Een laptop met admin-rechten en zo'n 30 GB vrije schijfruimte.</PrerequisiteItem>
+  <PrerequisiteItem>Ongeveer een uur. Plan rond de WSL2-reboot (vroeg in het proces) en de Playwright Chromium-download (groot, tegen het einde).</PrerequisiteItem>
+</Prerequisites>
+
+## Een opmerking over macOS en Linux
+
+Dit deel gaat uit van **Windows 11**. Werk je op macOS of Linux:
+
+- **macOS** — sla stap 1 (WSL2) volledig over. Vervang `apt install` door `brew install` in de rest. Installeer Docker Desktop native. De volgorde en de verificatie-commando's blijven hetzelfde.
+- **Linux native** — sla stap 1 (WSL2) over. Installeer Docker Engine native (geen Docker Desktop). De volgorde blijft hetzelfde.
+
+Onze canonical [workstation-setup.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md) beschrijft het Windows + WSL2-pad; de macOS- en Linux-varianten hierboven zijn de vertaling die de meeste teams gebruiken. Loop je tegen iets aan dat niet één-op-één vertaalt, stuur dan onderaan even een berichtje via [Mail ons](mailto:info@conduction.nl).
+
+## Stap 1: installeer WSL2 (alleen Windows)
+
+Open **PowerShell als Administrator** — rechtsklik op de Start-knop, kies "Terminal (Admin)" of "PowerShell (Admin)" — en draai dan:
+
+```powershell
+wsl --install -d Ubuntu-24.04
+```
+
+Herstart je machine als daarom wordt gevraagd. Na de reboot rondt Ubuntu zijn eerste setup af en vraagt om een Linux-username en -wachtwoord. Kies een username die je onthoudt; het wachtwoord is het `sudo`-wachtwoord voor je Ubuntu-installatie.
+
+Verifieer in PowerShell:
+
+```powershell
+wsl --version
+wsl -l -v
+```
+
+Je hoort `Ubuntu-24.04` draaiend op WSL versie 2 te zien.
+
+> **Geen reboot? Herstart Ubuntu via `wsl --shutdown` in PowerShell en open de Ubuntu-app opnieuw.** Dat lost negen van de tien "hij wil gewoon niet starten"-problemen op.
+
+## Stap 2: installeer Docker Desktop
+
+Download **Docker Desktop voor Windows** van [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/) en installeer het. Na de installatie:
+
+1. Open Docker Desktop > **Settings** > **Resources** > **WSL Integration**.
+2. Schakel de integratie met je **Ubuntu-24.04**-distro in.
+3. Klik op **Apply & Restart**.
+
+Open je Ubuntu-terminal (Start-menu → **Ubuntu**) en verifieer:
+
+```bash
+docker --version
+docker compose version
+```
+
+Beide moeten een versie-string teruggeven. Meldt `docker --version` "command not found" binnen WSL, dan is de WSL-integratie niet toegepast — sluit Docker Desktop volledig af (rechtsklik op het tray-icoon → Quit) en start het opnieuw.
+
+## Stap 3: installeer VS Code
+
+Download **Visual Studio Code** van [code.visualstudio.com](https://code.visualstudio.com/) en installeer het op Windows (niet binnen WSL).
+
+Verbind het daarna met WSL:
+
+1. Open VS Code.
+2. `Ctrl+Shift+X` om Extensions te openen, installeer **WSL** (`ms-vscode-remote.remote-wsl`) aan de **Windows-kant**. Deze moet echt op Windows staan, niet in WSL.
+3. `Ctrl+Shift+P` > **"WSL: Connect to WSL"**.
+4. Kies **Ubuntu-24.04**.
+
+VS Code installeert zijn server-component automatisch binnen WSL. Vanaf nu draait elke VS Code-terminal binnen WSL.
+
+## Stap 4: installeer VS Code-extensies
+
+Installeer in het WSL-gekoppelde VS Code-venster deze extensies. Het makkelijkst gaat dat vanaf de WSL-terminal:
+
+```bash
+code --install-extension anthropic.claude-code
+code --install-extension ms-azuretools.vscode-docker
+code --install-extension bmewburn.vscode-intelephense
+code --install-extension vue.volar
+code --install-extension dbaeumer.vscode-eslint
+code --install-extension ms-python.python
+code --install-extension eamodio.gitlens
+code --install-extension redhat.vscode-yaml
+code --install-extension github.vscode-github-actions
+```
+
+Daarmee dek je de verplichte + aanbevolen set voor een Conduction-project. Zie [workstation-setup.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md#4-install-vs-code-extensions) voor de optionele.
+
+## Stap 5: installeer Node (via nvm)
+
+Al het Node-werk gebeurt **binnen WSL**, nooit aan de Windows-kant. Gebruik `nvm` zodat je per project van versie kunt wisselen zonder sudo:
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+source ~/.bashrc
+nvm install 20
+nvm alias default 20
+```
+
+Verifieer:
+
+```bash
+node --version    # v20.x
+npm --version     # 10.x
+```
+
+> **Waarom Node 20, niet de nieuwste?** Docusaurus 3.x en de OpenSpec-CLI willen allebei Node 20+, en onze canonical [workstation-setup.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md) installeert specifiek Node 20. Blijf bij 20 LTS tot je een reden hebt om dat niet te doen.
+
+## Stap 6: installeer PHP 8.1+ en Composer
+
+```bash
+sudo apt update
+sudo apt install -y php8.1-cli php8.1-xml php8.1-mbstring php8.1-curl php8.1-zip unzip
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+```
+
+Verifieer:
+
+```bash
+php --version       # 8.1+
+composer --version  # 2.x
+```
+
+> **Gebruik phpcs v3, niet v4, als een project erom vraagt.** De CI is op v3 gepind en v4 breekt de gedeelde `phpcs.xml`-config. Probeert een latere `composer install` te upgraden, override dan met `composer require --dev "squizlabs/php_codesniffer:^3.9"`.
+
+## Stap 7: Codeberg-auth (SSH + tea)
+
+Conduction is in mei 2026 verhuisd van `github.com/ConductionNL` naar `codeberg.org/Conduction` — **Codeberg is nu de primaire git-host**, GitHub blijft als secundaire mirror staan. In deze stap zet je twee dingen op: SSH (voor `git clone/push/pull`) en de `tea` CLI (voor PR's, issues, labels via de Codeberg REST-API). Beide blijven over reboots heen werken zodra ze geconfigureerd zijn.
+
+Dit is de condensed walkthrough. De volledige versie, met elke troubleshooting-case en diepere achtergrond, staat in [Codeberg Authentication Setup](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/codeberg-auth-setup.md) in de `.github` repo. Lees die als hieronder iets niet werkt.
+
+### 7a. Genereer een SSH-sleutel en voeg hem toe aan Codeberg
+
+```bash
+ssh-keygen -t ed25519 -C "jouw.naam@conduction.nl" -f ~/.ssh/id_ed25519_codeberg
+```
+
+Geef een passphrase op als hij erom vraagt — `keychain` (volgende stap) zorgt dat je hem in de praktijk nauwelijks intikt, en een passphrase-loze sleutel op schijf is voor iedereen die het bestand kan lezen een complete credential.
+
+Kopieer de **publieke** sleutel (het `.pub`-bestand) naar Codeberg:
+
+```bash
+cat ~/.ssh/id_ed25519_codeberg.pub
+# of pijp direct naar het Windows-klembord vanuit WSL:
+cat ~/.ssh/id_ed25519_codeberg.pub | clip.exe
+```
+
+Ga naar [codeberg.org/user/settings/keys](https://codeberg.org/user/settings/keys) → **Add Key**, plak de hele regel, geef hem een herkenbare naam (bijv. `WSL Ubuntu — <laptop>`), klik **Add Key**.
+
+### 7b. Laat SSH de juiste sleutel kiezen voor Codeberg
+
+```bash
+cat >> ~/.ssh/config <<'EOF'
+
+Host codeberg.org
+  HostName codeberg.org
+  User git
+  IdentityFile ~/.ssh/id_ed25519_codeberg
+  IdentitiesOnly yes
+EOF
+chmod 600 ~/.ssh/config
+```
+
+`chmod 600` is **verplicht** — SSH negeert een config-bestand met ruimere rechten stilzwijgend.
+
+Verifieer:
+
+```bash
+ssh -T git@codeberg.org
+# Hi there, <JouwCodebergUsername>! You've successfully authenticated...
+```
+
+### 7c. Houd de sleutel geladen over shells heen met `keychain`
+
+Zonder `keychain` vraagt elke `git push` opnieuw om de passphrase. Met `keychain` geef je de passphrase één keer per WSL-boot op en elke volgende shell (inclusief Claude Code's Bash-tool) erft de ontgrendelde agent.
+
+```bash
+sudo apt install -y keychain
+cat >> ~/.bashrc <<'EOF'
+
+# Houd een ssh-agent in leven over shells heen, met de Codeberg-sleutel geladen
+eval $(keychain --eval --quiet --agents ssh ~/.ssh/id_ed25519_codeberg)
+EOF
+```
+
+Open een nieuwe terminal — `keychain` vraagt nu eenmalig om de passphrase. Daarna:
+
+```bash
+ssh-add -l
+# 256 SHA256:... jouw.naam@conduction.nl (ED25519)
+```
+
+### 7d. Installeer de `tea` CLI voor PR's, issues en labels
+
+SSH dekt het git-protocol. Alles wat daarbuiten valt (een PR aanmaken, issues lijsten, labels zetten) loopt via de Codeberg REST-API. `tea` is Gitea's officiële CLI — beschouw het als `gh` voor Codeberg.
+
+```bash
+sudo wget -O /usr/local/bin/tea https://dl.gitea.com/tea/0.11.0/tea-0.11.0-linux-amd64
+sudo chmod +x /usr/local/bin/tea
+tea --version
+```
+
+### 7e. Maak een Codeberg API-token en vertel `tea` ervan
+
+Ga naar [codeberg.org/user/settings/applications](https://codeberg.org/user/settings/applications) → **Generate New Token** met deze scopes (vink **write** waar van toepassing): `repository`, `issue`, `user`, `organization`. Zet de geldigheid op 90 dagen; roteer per kwartaal. **Kopieer de token meteen** — Codeberg toont hem maar één keer.
+
+```bash
+tea login add --name codeberg --url https://codeberg.org --token <plak-token-hier>
+tea login list
+# NAME=codeberg  URL=https://codeberg.org  USER=<JouwCodebergUsername>
+```
+
+De token zit vanaf nu in `~/.config/tea/config.yml`; elke `tea`-aanroep hergebruikt hem.
+
+### 7f. Installeer de GitHub CLI (secundair, nog steeds nuttig)
+
+Een handvol repo's leeft nog op GitHub en Hydra's cron-scripts zijn nog niet gemigreerd, dus `gh` blijft in de toolbox:
+
+```bash
+sudo apt install -y gh
+gh auth login   # GitHub.com → HTTPS → Login with a web browser
+```
+
+Gebruikt je werk-GitHub SSO, zorg er dan voor dat je standaardbrowser Edge of Chrome is — Firefox-SSO-callbacks komen soms niet schoon terug.
+
+Verifieer alledrie:
+
+```bash
+ssh -T git@codeberg.org   # → "Hi there, <JouwCodebergUsername>!"
+tea login list            # → rij met NAME=codeberg
+gh auth status            # → groen vinkje + je GitHub-username
+```
+
+## Stap 8: installeer de OpenSpec CLI
+
+Gebruikt door alle `/opsx-*`-skills voor spec-driven development:
+
+```bash
+npm install -g @fission-ai/openspec
+openspec --version
+```
+
+> **Draai GEEN `openspec init`** binnen een Conduction-project — die projecten hebben al een aangepaste `openspec/`-map. `init` draaien overschrijft die.
+
+## Stap 9: installeer de Playwright Chromium-binary
+
+De Playwright MCP-browsers (gebruikt door onze testing-skills) hebben Chromium nodig, eenmalig op deze machine te installeren:
+
+```bash
+npx playwright install chromium
+```
+
+De download is ~300 MB. Draai hem op een stabiele verbinding — niet in de trein.
+
+## Stap 10: alles verifiëren
+
+Een schoon dev-workstation komt zonder fouten door deze checklist heen:
+
+```bash
+node --version            # v20.x
+npm --version             # 10.x
+php --version             # 8.1+
+composer --version        # 2.x
+docker --version          # 24+
+docker compose version    # 2.x
+ssh -T git@codeberg.org   # "Hi there, <JouwCodebergUsername>!"
+tea --version             # 0.11+
+tea login list            # rij met NAME=codeberg
+gh --version              # 2.x
+gh auth status            # groen vinkje + je GitHub-username
+openspec --version        # 1.x
+npx playwright --version  # 1.x
+```
+
+Geeft elk commando een echte versie terug en is `gh auth status` groen, dan ben je klaar met Deel 2. Zo niet, spring dan naar Troubleshooting hieronder.
+
+<Troubleshooting title="Troubleshooting">
+  <TroubleshootingItem symptom="WSL2 wil niet installeren: 'WSL is not supported on this version of Windows'">
+    Je zit waarschijnlijk op Windows 10 zonder de laatste cumulatieve update, of op Home-editie zonder virtualisatie aan. Werk Windows bij, zet daarna <strong>Virtual Machine Platform</strong> en <strong>Windows Subsystem for Linux</strong> aan via <em>Windows-onderdelen in- of uitschakelen</em>. Reboot en probeer opnieuw.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="docker-commando niet gevonden binnen WSL na het installeren van Docker Desktop">
+    De WSL-integratie is niet toegepast. Open Docker Desktop > Settings > Resources > WSL Integration, schakel Ubuntu-24.04 uit en weer aan, klik op Apply & Restart. Open daarna de Ubuntu-terminal opnieuw.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="composer install faalt met 'vendor/ is owned by root'">
+    Gebeurt na de eerste Docker-run in een project — Docker heeft <code>vendor/</code> als root aangemaakt. Twee fixes: (1) <code>sudo chown -R $USER:$USER vendor/</code> en opnieuw draaien, of (2) installeer phpcs globaal met <code>composer global require "squizlabs/php_codesniffer:^3.9"</code> en sla <code>composer install</code> voor nu over.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="gh auth login opent de verkeerde browser en SSO komt niet rond">
+    Gebruikt je werk-GitHub SSO en is Firefox de standaardbrowser, dan komt de callback soms niet schoon terug. Zet Edge of Chrome als standaardbrowser en draai <code>gh auth login --web</code> opnieuw.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="ssh -T git@codeberg.org geeft 'Permission denied (publickey)'">
+    Of je publieke sleutel staat niet op Codeberg, of <code>&#126;/.ssh/config</code> heeft niet <code>chmod 600</code>. Plak <code>&#126;/.ssh/id_ed25519_codeberg.pub</code> opnieuw op <a href="https://codeberg.org/user/settings/keys">codeberg.org/user/settings/keys</a> en draai <code>chmod 600 ~/.ssh/config</code>. Probeer dan opnieuw.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Elke git push vraagt opnieuw om de SSH-passphrase">
+    <code>keychain</code> is niet geïnstalleerd, of de <code>eval $(keychain ...)</code>-regel staat niet in <code>&#126;/.bashrc</code>. Open een verse terminal na het editen van <code>&#126;/.bashrc</code> — <code>keychain</code> draait alleen bij shell-start. Verifieer met <code>ssh-add -l</code>; je hoort de Codeberg-sleutel in de lijst te zien.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="tea pulls create geeft 401 Unauthorized">
+    De token in <code>&#126;/.config/tea/config.yml</code> mist <code>write:repository</code> of <code>write:issue</code>. Genereer de token opnieuw op <a href="https://codeberg.org/user/settings/applications">codeberg.org/user/settings/applications</a> met de juiste scopes (zie Stap 7e) en draai <code>tea login add</code> opnieuw.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="npx playwright install chromium hangt of geeft een timeout">
+    De download is ~300 MB. Op een trage verbinding lijkt het soms vast te zitten. Wacht hem uit, of draai hem op een snellere verbinding. Wil hij écht niet, zet dan <code>HTTPS_PROXY</code> en probeer opnieuw vanaf een netwerk waar de proxy resolvet.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+## Test jezelf
+
+Vijf korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
+
+<div className="tutorial-quiz">
+
+**1. Waarom installeren we Node, PHP en de rest *binnen WSL* in plaats van aan de Windows-kant?**
+
+<Details summary="Hint">
+
+Denk na over welk filesystem de tooling leest en schrijft, en welke shell-scripts de latere stappen draaien.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Omdat elke latere stap — Composer, de OpenSpec-CLI, de `gh`-CLI, de globale Claude safety hooks (Deel 3) — uitgaat van een POSIX-shell en Linux-bestandspaden.
+
+Node of PHP op Windows installeren leidt tot dubbele path-translaties (`\\wsl$\...` ↔ `C:\Users\...`), inconsistente line endings en bash hooks die simpelweg niet draaien. De vuistregel: **alles wat je vanuit een shell draait gaat binnen WSL; editor en Docker Desktop draaien op Windows**.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Het Docker-commando werkt in Windows PowerShell maar niet binnen WSL. Wat is de meest waarschijnlijke oorzaak?**
+
+<Details summary="Hint">
+
+Docker Desktop draait op Windows. Er is een expliciete stap nodig om hem vanuit WSL bereikbaar te maken.
+
+</Details>
+
+<Details summary="Antwoord">
+
+De **WSL Integration** stond niet aan (of is niet toegepast) voor je Ubuntu-distro. Open Docker Desktop > Settings > Resources > WSL Integration, schakel je Ubuntu-distro uit en weer aan, klik op Apply & Restart. Open daarna de Ubuntu-terminal opnieuw.
+
+Helpt dat nog niet, sluit Docker Desktop dan volledig af (rechtsklik op het tray-icoon → Quit) en start het opnieuw. Dat dekt de laatste 10% van de gevallen.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Waarom installeren we de WSL-extensie voor VS Code aan de *Windows-kant*, en de rest aan de *WSL-kant*?**
+
+<Details summary="Hint">
+
+De WSL-extensie doet één specifiek ding dat de andere extensies niet doen.
+
+</Details>
+
+<Details summary="Antwoord">
+
+De **WSL-extensie** is wat VS Code op Windows *koppelt* aan een remote VS Code Server binnen WSL — die stap moet aan de Windows-kant gebeuren. Zodra die verbinding staat, hebben de andere extensies (Claude Code, Volar, ESLint, Intelephense, Docker) toegang nodig tot je code, je `node_modules` en je shell — dus installeer je ze aan de **WSL-kant**, tegen hetzelfde filesystem als je project.
+
+Taal-extensies op Windows installeren terwijl de code in WSL staat geeft je kapotte IntelliSense, trage file watchers en verwarrende path-fouten. Houd de regel simpel: **WSL-extensie op Windows, al het andere binnen WSL.**
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Je `git push` naar een Codeberg-repo hangt twee minuten stil en faalt dan met "Permission denied (publickey)". Wat zijn de twee meest waarschijnlijke oorzaken, en hoe onderscheid je ze?**
+
+<Details summary="Hint">
+
+De één gaat erover of de sleutel *bekend is bij Codeberg*. De ander gaat erover of de sleutel *ontgrendeld is op je machine*. Twee aparte failure modes; twee aparte checks.
+
+</Details>
+
+<Details summary="Antwoord">
+
+De twee failure modes zijn:
+
+1. **De publieke sleutel is niet gekoppeld aan je Codeberg-account.** Diagnose: `cat ~/.ssh/id_ed25519_codeberg.pub` en vergelijk met de sleutels op [codeberg.org/user/settings/keys](https://codeberg.org/user/settings/keys). Staat hij er niet tussen, plak hem erin.
+2. **De sleutel staat op Codeberg, maar geen enkele ssh-agent heeft hem geladen op deze machine.** Diagnose: `ssh-add -l`. Als de output *"The agent has no identities"* is, is `keychain` of niet geïnstalleerd, of draait hij niet in deze shell. Draai eenmalig `keychain ~/.ssh/id_ed25519_codeberg` en open een verse terminal.
+
+In beide gevallen hoort `ssh -T git@codeberg.org` na de fix te antwoorden met *"Hi there, &lt;jouw username&gt;!"* — de meest waterdichte enkele bevestiging dat auth werkt.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. Na de eerste `docker compose up -d` van een Conduction-project faalt `composer install` op de host opeens met `Permission denied` op `vendor/`. Wat is er gebeurd, waarom juist bij de *eerste* Docker-run, en wat is de snelste fix?**
+
+<Details summary="Hint">
+
+Docker-containers draaien standaard als root. Wanneer een container in een bind-mounted directory schrijft, erven de bestanden die ownership op de host.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Wanneer Docker een Conduction-project voor het eerst opstart, schrijft de PHP-container in de bind-mounted `vendor/`-directory — maar de container draait als **root**, dus de resulterende bestanden zijn op het host file system eigendom van `root:root`. Je host-user (`$USER`) kan er niet in schrijven, en `composer install` vanaf de host faalt.
+
+**Waarom juist bij de eerste run:** daarvóór bestond `vendor/` nog niet of was hij schoon. Volgende runs hergebruiken de al-root-owned bestanden, dus de fout blijft staan tot je de ownership fixt.
+
+**Snelste fix:**
+
+```bash
+sudo chown -R $USER:$USER vendor/
+composer install
+```
+
+Alternatief als je geen `sudo` wilt gebruiken: installeer phpcs globaal (`composer global require "squizlabs/php_codesniffer:^3.9"`) en sla de lokale `composer install` voorlopig over. CI gebruikt nog steeds de `composer.json` van het project, dus dit raakt alleen je lokale tooling.
+
+</Details>
+
+</div>
+
+<NextSteps title="Volgende stap" lede="Met de runtimes geïnstalleerd is het tijd om Claude Code zelf op te zetten — en, minstens zo belangrijk, de globale safety hooks.">
+  <NextStep
+    title="Deel 3 — Claude Code installeren en configureren"
+    href="/nl/academy/workstation-tutorial-3-claude-code"
+    description="Installeer Claude Code, log in, installeer de verplichte globale settings en safety hooks. Kort en belangrijk."
+  />
+  <NextStep
+    title="De canonical workstation-setup.md"
+    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/workstation-setup.md"
+    description="Het interne referentiedocument met de uitgebreide versie van elke stap hierboven."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Halverwege vastgelopen?"
+  body="Verlies geen avond aan één kapotte installer. Stuur ons een mail of trek je teamlead aan zijn mouw — vaak is het een fix van vijf minuten zodra iemand met de context meekijkt."
+  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=Workstation%20setup%20tutorial%20deel%202" }}
+/>

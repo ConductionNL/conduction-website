@@ -5,7 +5,7 @@ contentType: tutorial
 authors: [conduction]
 date: 2026-05-22
 summary: With OpenSpec, you stop hand-writing code and start writing context. Markdown specs describe what a feature must do. ADRs at org and app level govern how features hang together. An AI agent (Hydra) reads the spec, applies it, and a sequential quality + review harness validates the result. This tutorial walks the workflow, names the skills, and explains why "configuration over code" is the natural endpoint.
-tags: [App development, Spec-driven, OpenSpec, Hydra, ADR, AI, n8n, Windmill, OpenBuild]
+tags: [App development, Spec-driven, OpenSpec, Hydra, ADR, AI, n8n, Windmill, OpenBuilt]
 apps: [openregister]
 durationMinutes: 25
 ---
@@ -39,7 +39,7 @@ That sounds idealistic until you see it work. Conduction's apps are built this w
   <PrerequisiteItem>Good knowledge of <a href="https://nextcloud-vue.conduction.nl/docs/architecture/app-design-principles/">how we design Nextcloud apps</a> — the chassis, the five atoms, the stacked views.</PrerequisiteItem>
   <PrerequisiteItem>Basic knowledge of the <a href="https://nextcloud-vue.conduction.nl/docs/architecture/manifest/">app manifest</a> and <a href="https://nextcloud-vue.conduction.nl/docs/architecture/schemas-and-registers/">schemas and registers</a> — the two declarative surfaces a spec lands on.</PrerequisiteItem>
   <PrerequisiteItem>Claude, Mistral, Codex, or another LLM tool you can address from your editor or terminal. The workflow is model-agnostic; you bring your own agent.</PrerequisiteItem>
-  <PrerequisiteItem>The OpenSpec skills installed — the <code>{'opsx-*'}</code> family ships in the <a href="https://codeberg.org/Conduction/hydra">ConductionNL/hydra</a> repository. Clone it (or copy its <code>.claude/skills/</code> into your project) so the <code>{'/opsx-*'}</code> commands are available.</PrerequisiteItem>
+  <PrerequisiteItem>The OpenSpec skills installed — the <code>{'opsx-*'}</code> family ships in the <a href="https://codeberg.org/Conduction/hydra">Conduction/hydra</a> repository. Clone it (or copy its <code>.claude/skills/</code> into your project) so the <code>{'/opsx-*'}</code> commands are available.</PrerequisiteItem>
 </Prerequisites>
 
 ## What "spec-driven" really means
@@ -214,9 +214,9 @@ When an object of that schema is created, OpenRegister's `HookExecutor` emits a 
 
 The spec for this fleet-wide consumption pattern lives in Hydra at `openspec/changes/consume-or-workflow-engine-fleet-wide/`. The rule it codifies: **apps SHALL NOT call n8n, Windmill, or any other workflow engine directly via HTTP from PHP service classes**. All workflow execution MUST be triggered via schema hooks wired to OpenRegister's `WorkflowEngineInterface`. Apps that need workflow logic add a hook declaration to the schema register; they never write `curl` code against n8n.
 
-This is what makes **OpenBuild** — Conduction's visual app builder — feasible. A citizen developer drags schemas onto a canvas, points workflow hooks at n8n workflows, and ships a working app **without writing any code at all**. The "code only when you must" promise becomes literal: there is no code in the app to write, because the schema register + n8n workflow + manifest already cover everything an LLM (or a human, or OpenBuild) needs to produce a complete app.
+This is what makes **OpenBuilt** — Conduction's visual app builder — feasible. A citizen developer drags schemas onto a canvas, points workflow hooks at n8n workflows, and ships a working app **without writing any code at all**. The "code only when you must" promise becomes literal: there is no code in the app to write, because the schema register + n8n workflow + manifest already cover everything an LLM (or a human, or OpenBuilt) needs to produce a complete app.
 
-→ [OpenBuild](https://conduction.nl/apps/openbuild) — the visual app builder. Same OpenSpec contract, same schema register, same workflow-engine adapters; just no JSON editor.
+→ [OpenBuilt](https://conduction.nl/apps/openbuilt) — the visual app builder. Same OpenSpec contract, same schema register, same workflow-engine adapters; just no JSON editor.
 
 ## The quality and gatekeeping harness
 
@@ -282,9 +282,9 @@ Pulled together, the whole journey is one pipeline. A feature request comes in; 
 
 ## The endpoint: configuration over code
 
-Spec-driven development collapses, in the limit, to a question of *where the context lives*. You can write the manifest by hand. You can ask an LLM to write it for you. You can drag schemas onto OpenBuild's canvas. Three different surfaces, one identical artifact: a schema register, an app manifest, and a folder of OpenSpec specs + ADRs. All three round-trip; none of them lock you in.
+Spec-driven development collapses, in the limit, to a question of *where the context lives*. You can write the manifest by hand. You can ask an LLM to write it for you. You can drag schemas onto OpenBuilt's canvas. Three different surfaces, one identical artifact: a schema register, an app manifest, and a folder of OpenSpec specs + ADRs. All three round-trip; none of them lock you in.
 
-That's what the matching architecture page at [nextcloud-vue.conduction.nl/docs/architecture/configuration-over-code](https://nextcloud-vue.conduction.nl/docs/architecture/configuration-over-code/) calls "the runtime stays the library's, the sandbox stays the platform's." Spec-driven development is the **method**. Configuration over code is the **consequence**. OpenBuild is the **surface** that makes it accessible to non-engineers and AI agents alike.
+That's what the matching architecture page at [nextcloud-vue.conduction.nl/docs/architecture/configuration-over-code](https://nextcloud-vue.conduction.nl/docs/architecture/configuration-over-code/) calls "the runtime stays the library's, the sandbox stays the platform's." Spec-driven development is the **method**. Configuration over code is the **consequence**. OpenBuilt is the **surface** that makes it accessible to non-engineers and AI agents alike.
 
 The reason this matters now: an LLM with a clean manifest schema, a complete ADR set, and the apply skill can produce a working Conduction app on first try. Not "a starting point." A working app. The narrower we make the contract, the wider we make the authoring surface.
 
@@ -294,7 +294,7 @@ The reason this matters now: an LLM with a clean manifest schema, a complete ADR
   <NextStep title="Read configuration-over-code" href="https://nextcloud-vue.conduction.nl/docs/architecture/configuration-over-code/">
     The companion architecture page on nextcloud-vue.conduction.nl. Shows how the OpenSpec workflow lands in the manifest + schema-register contract at the app layer.
   </NextStep>
-  <NextStep title="Open OpenBuild" href="https://conduction.nl/apps/openbuild">
+  <NextStep title="Open OpenBuilt" href="https://conduction.nl/apps/openbuilt">
     The visual app builder. Same OpenSpec artifacts, no JSON editor. Designed for citizen developers and AI-driven generation.
   </NextStep>
   <NextStep title="Walk a real OpenSpec change" href="https://codeberg.org/Conduction/hydra/src/branch/main/openspec/changes">

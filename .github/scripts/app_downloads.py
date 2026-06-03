@@ -177,6 +177,21 @@ def main():
         "apps": apps,
     }
 
+    # If the existing file has the same payload (everything except the
+    # timestamp), keep its generated_at so reruns with no real change
+    # don't churn the working tree. Hosted CI starts from the committed
+    # stub, so the payload differs there and a fresh timestamp is
+    # written every build.
+    try:
+        with OUTPUT_PATH.open("r") as f:
+            existing = json.load(f)
+        new_payload = {k: v for k, v in output.items() if k != "generated_at"}
+        old_payload = {k: v for k, v in existing.items() if k != "generated_at"}
+        if new_payload == old_payload and existing.get("generated_at"):
+            output["generated_at"] = existing["generated_at"]
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     with OUTPUT_PATH.open("w") as f:
         json.dump(output, f, indent=2, sort_keys=True)

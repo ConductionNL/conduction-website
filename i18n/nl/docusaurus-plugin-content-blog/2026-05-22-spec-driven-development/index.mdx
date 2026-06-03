@@ -5,7 +5,7 @@ contentType: tutorial
 authors: [conduction]
 date: 2026-05-22
 summary: Met OpenSpec stop je met het zelf schrijven van code en begin je met het schrijven van context. Markdown-specs beschrijven wat een feature moet doen. ADR's op organisatie- en app-niveau bepalen hoe features samenhangen. Een AI-agent (Hydra) leest de spec, past die toe, en een sequentiële kwaliteits- en review-harness valideert het resultaat. Deze tutorial loopt door de workflow, benoemt de skills, en legt uit waarom "configuratie boven code" het natuurlijke eindpunt is.
-tags: [App-ontwikkeling, Spec-gedreven, OpenSpec, Hydra, ADR, AI, n8n, Windmill, OpenBuild]
+tags: [App-ontwikkeling, Spec-gedreven, OpenSpec, Hydra, ADR, AI, n8n, Windmill, OpenBuilt]
 apps: [openregister]
 durationMinutes: 25
 ---
@@ -39,7 +39,7 @@ Dat klinkt idealistisch totdat je het in de praktijk ziet werken. De apps van Co
   <PrerequisiteItem>Goede kennis van <a href="https://nextcloud-vue.conduction.nl/docs/architecture/app-design-principles/">hoe wij Nextcloud-apps ontwerpen</a> — het chassis, de vijf atomen, de gestapelde views.</PrerequisiteItem>
   <PrerequisiteItem>Basiskennis van het <a href="https://nextcloud-vue.conduction.nl/docs/architecture/manifest/">app-manifest</a> en <a href="https://nextcloud-vue.conduction.nl/docs/architecture/schemas-and-registers/">schemas en registers</a> — de twee declaratieve oppervlakken waarop een spec landt.</PrerequisiteItem>
   <PrerequisiteItem>Claude, Mistral, Codex, of een andere LLM-tool die je vanuit je editor of terminal kunt aanspreken. De workflow is model-agnostisch; je brengt je eigen agent mee.</PrerequisiteItem>
-  <PrerequisiteItem>De OpenSpec-skills geïnstalleerd — de <code>{'opsx-*'}</code>-familie zit in de <a href="https://codeberg.org/Conduction/hydra">ConductionNL/hydra</a>-repository. Clone die (of kopieer de <code>.claude/skills/</code> naar je project) zodat de <code>{'/opsx-*'}</code>-commando's beschikbaar zijn.</PrerequisiteItem>
+  <PrerequisiteItem>De OpenSpec-skills geïnstalleerd — de <code>{'opsx-*'}</code>-familie zit in de <a href="https://codeberg.org/Conduction/hydra">Conduction/hydra</a>-repository. Clone die (of kopieer de <code>.claude/skills/</code> naar je project) zodat de <code>{'/opsx-*'}</code>-commando's beschikbaar zijn.</PrerequisiteItem>
 </Prerequisites>
 
 ## Wat "spec-gedreven" echt betekent
@@ -214,9 +214,9 @@ Wanneer een object van dat schema wordt aangemaakt, emit OpenRegisters `HookExec
 
 De spec voor dit fleet-brede consumption-patroon leeft in Hydra in `openspec/changes/consume-or-workflow-engine-fleet-wide/`. De regel die hij codificeert: **apps mogen NIET rechtstreeks n8n, Windmill, of welke andere workflow-engine dan ook aanroepen via HTTP vanuit PHP service-klassen**. Alle workflow-executie MOET getriggerd worden via schema-hooks die gekoppeld zijn aan OpenRegisters `WorkflowEngineInterface`. Apps die workflow-logica nodig hebben voegen een hook-declaratie toe aan het schema-register; ze schrijven nooit `curl`-code tegen n8n.
 
-Dit is wat **OpenBuild** — Conductions visuele app-builder — mogelijk maakt. Een citizen developer sleept schemas op een canvas, wijst workflow-hooks naar n8n-workflows aan, en levert een werkende app op **zonder ook maar één regel code te schrijven**. De "code alleen wanneer het moet"-belofte wordt letterlijk: er is geen code in de app om te schrijven, omdat het schema-register + de n8n-workflow + het manifest al alles afdekken wat een LLM (of een mens, of OpenBuild) nodig heeft om een complete app te produceren.
+Dit is wat **OpenBuilt** — Conductions visuele app-builder — mogelijk maakt. Een citizen developer sleept schemas op een canvas, wijst workflow-hooks naar n8n-workflows aan, en levert een werkende app op **zonder ook maar één regel code te schrijven**. De "code alleen wanneer het moet"-belofte wordt letterlijk: er is geen code in de app om te schrijven, omdat het schema-register + de n8n-workflow + het manifest al alles afdekken wat een LLM (of een mens, of OpenBuilt) nodig heeft om een complete app te produceren.
 
-→ [OpenBuild](https://conduction.nl/apps/openbuild) — de visuele app-builder. Hetzelfde OpenSpec-contract, hetzelfde schema-register, dezelfde workflow-engine-adapters; alleen geen JSON-editor.
+→ [OpenBuilt](https://conduction.nl/apps/openbuilt) — de visuele app-builder. Hetzelfde OpenSpec-contract, hetzelfde schema-register, dezelfde workflow-engine-adapters; alleen geen JSON-editor.
 
 ## De kwaliteits- en gatekeeping-harness
 
@@ -282,9 +282,9 @@ Samengevoegd is de hele reis één pipeline. Een feature-aanvraag komt binnen; e
 
 ## Het eindpunt: configuratie boven code
 
-Spec-gedreven ontwikkeling klapt in de limiet ineen tot een vraag over *waar de context leeft*. Je kunt het manifest met de hand schrijven. Je kunt een LLM vragen om het voor je te schrijven. Je kunt schemas op OpenBuilds canvas slepen. Drie verschillende oppervlakken, één identiek artefact: een schema-register, een app-manifest, en een map met OpenSpec-specs + ADR's. Alle drie zijn ze round-trip; geen van drieën sluit je op.
+Spec-gedreven ontwikkeling klapt in de limiet ineen tot een vraag over *waar de context leeft*. Je kunt het manifest met de hand schrijven. Je kunt een LLM vragen om het voor je te schrijven. Je kunt schemas op OpenBuilts canvas slepen. Drie verschillende oppervlakken, één identiek artefact: een schema-register, een app-manifest, en een map met OpenSpec-specs + ADR's. Alle drie zijn ze round-trip; geen van drieën sluit je op.
 
-Dat is wat de bijbehorende architectuurpagina op [nextcloud-vue.conduction.nl/docs/architecture/configuration-over-code](https://nextcloud-vue.conduction.nl/docs/architecture/configuration-over-code/) "de runtime blijft van de library, de sandbox blijft van het platform" noemt. Spec-gedreven ontwikkeling is de **methode**. Configuratie boven code is het **gevolg**. OpenBuild is het **oppervlak** dat het toegankelijk maakt voor zowel niet-engineers als AI-agents.
+Dat is wat de bijbehorende architectuurpagina op [nextcloud-vue.conduction.nl/docs/architecture/configuration-over-code](https://nextcloud-vue.conduction.nl/docs/architecture/configuration-over-code/) "de runtime blijft van de library, de sandbox blijft van het platform" noemt. Spec-gedreven ontwikkeling is de **methode**. Configuratie boven code is het **gevolg**. OpenBuilt is het **oppervlak** dat het toegankelijk maakt voor zowel niet-engineers als AI-agents.
 
 De reden dat dit nu telt: een LLM met een schoon manifest-schema, een complete set ADR's, en de apply-skill kan in één keer een werkende Conduction-app produceren. Niet "een startpunt." Een werkende app. Hoe smaller we het contract maken, hoe breder we het auteursoppervlak maken.
 
@@ -294,7 +294,7 @@ De reden dat dit nu telt: een LLM met een schoon manifest-schema, een complete s
   <NextStep title="Lees configuration-over-code" href="https://nextcloud-vue.conduction.nl/docs/architecture/configuration-over-code/">
     De bijbehorende architectuurpagina op nextcloud-vue.conduction.nl. Laat zien hoe de OpenSpec-workflow landt in het manifest- + schema-register-contract op de app-laag.
   </NextStep>
-  <NextStep title="Open OpenBuild" href="https://conduction.nl/apps/openbuild">
+  <NextStep title="Open OpenBuilt" href="https://conduction.nl/apps/openbuilt">
     De visuele app-builder. Dezelfde OpenSpec-artifacten, geen JSON-editor. Ontworpen voor citizen developers en AI-gedreven generatie.
   </NextStep>
   <NextStep title="Loop een echte OpenSpec-change door" href="https://codeberg.org/Conduction/hydra/src/branch/main/openspec/changes">
