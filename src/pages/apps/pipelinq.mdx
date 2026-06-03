@@ -5,8 +5,10 @@ hide_table_of_contents: true
 ---
 
 import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
+  background="cobalt"
   appId="pipelinq"
   crumb={[{label: 'Apps', href: '/apps'}, 'PipelinQ']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
@@ -14,9 +16,10 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
   locales="NL · EN"
   title="PipelinQ"
   tagline={<>CRM on your <span className="next-blue">Nextcloud</span>. Customers, prospects, deals, quotes. Everything as a typed register, no separate sales database, no second login. Your sales team works where your delivery team already is.</>}
+  intro={<>Pipelinq is an open-source CRM and pipeline-management app for the Nextcloud workspace. It runs a kanban deal-flow with configurable stages, per-team filters via Nextcloud groups, and KPI cards on top. Customers, contacts, and deals are typed OpenRegister schemas with citation-stable IDs and a per-record audit trail. Quotes are generated through DocuDesk templates, and OpenConnector links to accounting systems such as Exact, Twinfield, and AFAS. Released under EUPL-1.2 and maintained by Conduction since 2019.</>}
   primaryCta={{label: 'Install from app store', href: '/install'}}
   secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/pipelinq'}}
-  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/pipelinq'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/pipelinq'}}
   iconColor="var(--c-blue-cobalt)"
   icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>}
   illustration={<AppMock app="pipelinq" />}
@@ -29,7 +32,7 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
         eyebrow="What it does"
         title="Four registers, one pipeline overview."
         align="stack"
-        lede="PipelinQ ships with four pre-defined registers (customers, prospects, deals, quotes) plus a kanban board view for the deal-flow. MyDash on top for the numbers, DocuDesk for quote templates."
+        lede="PipelinQ ships with four pre-defined registers (customers, prospects, deals, quotes) plus a kanban board view for the deal-flow. LaunchPad on top for the numbers, DocuDesk for quote templates."
       />
       <FeatureList>
     <FeatureItem
@@ -66,6 +69,8 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
   </div>
 </Section>
 
+<PartnersForApp slug="pipelinq" />
+
 <RotatingCards
   eyebrow="Three ways PipelinQ earns its place"
   title="Kanban, register-linked, dashboards on top."
@@ -91,9 +96,9 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
       tone: 'workspace',
       eyebrow: 'Sales dashboards',
       title: 'Pipeline value, win rate, quota tracking.',
-      summary: 'MyDash reads the PipelinQ registers directly. Pipeline value per stage, win rate per quarter, quota tracking per rep. Live, no nightly batch.',
-      cta: {label: 'See MyDash', href: '/apps/mydash'},
-      panel: <AppMock app="mydash-bi" />,
+      summary: 'LaunchPad reads the PipelinQ registers directly. Pipeline value per stage, win rate per quarter, quota tracking per rep. Live, no nightly batch.',
+      cta: {label: 'See LaunchPad', href: '/apps/launchpad'},
+      panel: <AppMock app="launchpad-bi" />,
     },
   ]}
 />
@@ -216,9 +221,9 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
   />
   <PairRow>
     <PairCard
-      href="/apps/mydash"
+      href="/apps/launchpad"
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/></svg>}
-      name="MyDash"
+      name="LaunchPad"
       why="Sales dashboards from the PipelinQ registers. Pipeline value per stage, win rate, quota tracking."
     />
     <PairCard

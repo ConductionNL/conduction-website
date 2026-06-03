@@ -1,0 +1,188 @@
+---
+title: OpenWoo, Conduction
+description: OpenWoo — a live publication platform for all government sources on your hosted Nextcloud. Eleven Wet open overheid categories, audit log, citation-stable URLs, no migration.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, Pipeline, PairRow, PairCard, CtaBanner} from '@conduction/docusaurus-preset/components';
+import {PartnersForSolution} from '@site/src/components/PartnersFor';
+
+<DetailHero
+  crumb={[{label: 'Solutions', href: '/solutions'}, 'OpenWoo']}
+  status={{label: 'Production-ready', color: 'var(--c-mint-500)'}}
+  version="Sector: Public"
+  title="OpenWoo. Wet open overheid, by Friday."
+  tagline={<>OpenWoo is a live publication platform for all government sources, running on your hosted <span className="next-blue">Nextcloud</span>. The eleven Woo categories become typed registers, every register publishes through OpenCatalogi, every connector ingests from your DMS. No migration project, no separate front-end to maintain.</>}
+  primaryCta={{label: 'Talk to a partner', href: '/partners'}}
+  secondaryCta={{label: 'Read the docs', href: 'https://openwoo.conduction.nl/'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><path d="M12 3l9 4v5c0 5-4 8-9 9-5-1-9-4-9-9V7l9-4z"/><path d="M9 12l2 2 4-4"/></svg>}
+/>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="The outcome"
+    title="What you get on day one."
+    align="stack"
+    lede="Three apps, one configuration pass. Citizens land at yourmunicipality.nl/woo and search every published category. Your team manages the eleven registers from inside Nextcloud, with the same login they already have."
+  />
+
+  <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>}
+      title="Active disclosure, by category."
+    >
+      Each of the eleven Woo categories becomes a typed register. Records get published the moment they're created; the citizen catalog lights up automatically.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
+      title="Federated, citizen-searchable."
+    >
+      OpenCatalogi indexes every register and exposes the public Woo portal at <strong>yourmunicipality.nl/woo</strong>. Federates to data.overheid.nl out of the box.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>}
+      title="Connector pulls from your DMS."
+    >
+      OpenConnector reads Woo records from your existing case system or DMS via REST, SOAP, or file drops. No glue code, no nightly batch.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
+      title="Audit log, signed and timestamped."
+    >
+      Every publication, edit, withdrawal, and access leaves a tamper-evident trail. The Woo audit evidence you need at audit time is part of the install, not a year-two project.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5 1 6-5.5-3-5.5 3 1-6L3 9l6-1z"/></svg>}
+      title="Citation-stable URLs."
+    >
+      Every published record gets a permanent identifier the moment it's first disclosed. News media, parliamentary questions, and legal dossiers stay live, even after reorganizations or platform migrations.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
+      title="Two minutes to install."
+    >
+      Drop the three apps into your Nextcloud, point the connector at your case system, configure the eleven registers from the supplied profile. Live before lunch.
+    </FeatureItem>
+  </FeatureList>
+</Section>
+
+<PartnersForSolution slug="openwoo" />
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="The pipeline"
+    title="From your DMS to the citizen portal."
+    align="stack"
+    lede="Three apps move documents from your source systems to a public-facing Woo portal. OpenConnector reads from XLNS, Joomla, OpenZaak, RX, or whatever else you run. OpenRegister stores the records. OpenCatalogi makes them searchable. The Open Tilburg UI shows them; open.overheid.nl federates them."
+  />
+  <Pipeline
+    start={{label: 'Sources', items: [
+      {label: 'XLNS',     icon: 'doc'},
+      {label: 'Joomla',   icon: 'doc'},
+      {label: 'OpenZaak', icon: 'db'},
+      {label: 'RX',       icon: 'legacy'},
+    ]}}
+    steps={[
+      {number: '01', kicker: 'Ingest',  name: 'OpenConnector', caption: 'Pulls Woo records from your DMS via REST, SOAP, or file drops.'},
+      {number: '02', kicker: 'Store',   name: 'OpenRegister',  caption: 'One typed register per Woo category. Versioned, audit-logged.'},
+      {number: '03', kicker: 'Present', name: 'OpenCatalogi',  caption: 'Indexes every register. Search, federation, citation-stable URLs.'},
+    ]}
+    end={{label: 'Consumers', items: [
+      {label: 'Open Tilburg portal', icon: 'globe'},
+      {label: 'Residents & journalists', icon: 'person'},
+      {label: 'open.overheid.nl', icon: 'download'},
+    ]}}
+  />
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Built on"
+    title="Three apps, one configuration."
+    align="stack"
+    lede="No bespoke code. Every part of OpenWoo is a Conduction app you can install separately and use for other things."
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/opencatalogi"
+      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
+      name="OpenCatalogi"
+      why="Surfaces every Woo register as a public, searchable catalogue entry at yourmunicipality.nl/woo."
+    />
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>}
+      name="OpenRegister"
+      why="The eleven Woo categories each become a typed register. Schema, audit log, citation-stable IDs come for free."
+    />
+    <PairCard
+      href="/apps/openconnector"
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+      name="OpenConnector"
+      why="Pulls Woo records from your existing case system or DMS via REST, SOAP, or file drops."
+    />
+  </PairRow>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Live in production"
+    title="Twelve municipalities and coalitions."
+    align="stack"
+    lede="Live Woo portals in production or acceptance, the same three-app platform under the hood. Click through to see the real portals."
+  />
+  <div style={{overflowX: 'auto', marginTop: 'var(--space-3)'}}>
+    <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '0.95em'}}>
+      <thead>
+        <tr style={{textAlign: 'left', borderBottom: '1px solid var(--c-grey-200)'}}>
+          <th style={{padding: 'var(--space-2)'}}>Organization</th>
+          <th style={{padding: 'var(--space-2)'}}>Type</th>
+          <th style={{padding: 'var(--space-2)'}}>Woo portal</th>
+          <th style={{padding: 'var(--space-2)'}}>Source</th>
+          <th style={{padding: 'var(--space-2)'}}>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style={{padding: 'var(--space-2)'}}><a href="https://www.noordwijk.nl/" target="_blank" rel="noreferrer">Noordwijk</a></td><td style={{padding: 'var(--space-2)'}}>Municipality</td><td style={{padding: 'var(--space-2)'}}><a href="https://open.noordwijk.nl/" target="_blank" rel="noreferrer">open.noordwijk.nl</a></td><td style={{padding: 'var(--space-2)'}}>Zaaksysteem.nl</td><td style={{padding: 'var(--space-2)'}}>Production</td></tr>
+        <tr><td style={{padding: 'var(--space-2)'}}><a href="https://www.epe.nl/" target="_blank" rel="noreferrer">Epe</a></td><td style={{padding: 'var(--space-2)'}}>Municipality</td><td style={{padding: 'var(--space-2)'}}><a href="https://open.epe.nl/" target="_blank" rel="noreferrer">open.epe.nl</a></td><td style={{padding: 'var(--space-2)'}}>Zaaksysteem.nl</td><td style={{padding: 'var(--space-2)'}}>Production</td></tr>
+        <tr><td style={{padding: 'var(--space-2)'}}><a href="https://www.roosendaal.nl/" target="_blank" rel="noreferrer">Roosendaal</a></td><td style={{padding: 'var(--space-2)'}}>Municipality</td><td style={{padding: 'var(--space-2)'}}><a href="https://open.roosendaal.nl/" target="_blank" rel="noreferrer">open.roosendaal.nl</a></td><td style={{padding: 'var(--space-2)'}}>Zaaksysteem.nl</td><td style={{padding: 'var(--space-2)'}}>Production</td></tr>
+        <tr><td style={{padding: 'var(--space-2)'}}><a href="https://www.zutphen.nl/" target="_blank" rel="noreferrer">Zutphen</a></td><td style={{padding: 'var(--space-2)'}}>Municipality</td><td style={{padding: 'var(--space-2)'}}><a href="https://open.zutphen.nl/" target="_blank" rel="noreferrer">open.zutphen.nl</a></td><td style={{padding: 'var(--space-2)'}}>Zaaksysteem.nl</td><td style={{padding: 'var(--space-2)'}}>Production</td></tr>
+        <tr><td style={{padding: 'var(--space-2)'}}><a href="https://www.tubbergen.nl/" target="_blank" rel="noreferrer">Tubbergen</a></td><td style={{padding: 'var(--space-2)'}}>Municipality</td><td style={{padding: 'var(--space-2)'}}><a href="https://open.tubbergen.nl/" target="_blank" rel="noreferrer">open.tubbergen.nl</a></td><td style={{padding: 'var(--space-2)'}}>Zaaksysteem.nl</td><td style={{padding: 'var(--space-2)'}}>Production</td></tr>
+        <tr><td style={{padding: 'var(--space-2)'}}><a href="https://www.dinkelland.nl/" target="_blank" rel="noreferrer">Dinkelland</a></td><td style={{padding: 'var(--space-2)'}}>Municipality</td><td style={{padding: 'var(--space-2)'}}><a href="https://open.dinkelland.nl/" target="_blank" rel="noreferrer">open.dinkelland.nl</a></td><td style={{padding: 'var(--space-2)'}}>Zaaksysteem.nl</td><td style={{padding: 'var(--space-2)'}}>Production</td></tr>
+        <tr><td style={{padding: 'var(--space-2)'}}><a href="https://www.moerdijk.nl/" target="_blank" rel="noreferrer">Moerdijk</a></td><td style={{padding: 'var(--space-2)'}}>Municipality</td><td style={{padding: 'var(--space-2)'}}><a href="https://open.moerdijk.nl/" target="_blank" rel="noreferrer">open.moerdijk.nl</a></td><td style={{padding: 'var(--space-2)'}}>Zaaksysteem.nl</td><td style={{padding: 'var(--space-2)'}}>Production</td></tr>
+        <tr><td style={{padding: 'var(--space-2)'}}><a href="https://www.gooisemeren.nl/" target="_blank" rel="noreferrer">Gooise Meren</a></td><td style={{padding: 'var(--space-2)'}}>Municipality</td><td style={{padding: 'var(--space-2)'}}><a href="https://open.gooisemeren.nl/" target="_blank" rel="noreferrer">open.gooisemeren.nl</a></td><td style={{padding: 'var(--space-2)'}}>Zaaksysteem.nl</td><td style={{padding: 'var(--space-2)'}}>Production</td></tr>
+        <tr><td style={{padding: 'var(--space-2)'}}><a href="https://www.hofvantwente.nl/" target="_blank" rel="noreferrer">Hof van Twente</a></td><td style={{padding: 'var(--space-2)'}}>Municipality</td><td style={{padding: 'var(--space-2)'}}><a href="https://open.hofvantwente.nl/" target="_blank" rel="noreferrer">open.hofvantwente.nl</a></td><td style={{padding: 'var(--space-2)'}}>Zaaksysteem.nl</td><td style={{padding: 'var(--space-2)'}}>Production</td></tr>
+        <tr><td style={{padding: 'var(--space-2)'}}><a href="https://www.gouda.nl/" target="_blank" rel="noreferrer">Gouda</a></td><td style={{padding: 'var(--space-2)'}}>Municipality</td><td style={{padding: 'var(--space-2)'}}><a href="https://open.gouda.nl/" target="_blank" rel="noreferrer">open.gouda.nl</a></td><td style={{padding: 'var(--space-2)'}}>Zaaksysteem.nl</td><td style={{padding: 'var(--space-2)'}}>Production</td></tr>
+        <tr><td style={{padding: 'var(--space-2)'}}><a href="https://www.tilburg.nl/" target="_blank" rel="noreferrer">Tilburg</a></td><td style={{padding: 'var(--space-2)'}}>Municipality</td><td style={{padding: 'var(--space-2)'}}><a href="https://open.tilburg.nl/" target="_blank" rel="noreferrer">open.tilburg.nl</a></td><td style={{padding: 'var(--space-2)'}}>Zaaksysteem.nl · Sharepoint · RXMission · Notubiz</td><td style={{padding: 'var(--space-2)'}}>Production</td></tr>
+        <tr><td style={{padding: 'var(--space-2)'}}><a href="https://www.dinkelland.nl/noaberkracht-dinkelland-tubbergen" target="_blank" rel="noreferrer">Noaberkracht</a></td><td style={{padding: 'var(--space-2)'}}>Coalition</td><td style={{padding: 'var(--space-2)'}}><a href="https://open.noaberkracht.nl/" target="_blank" rel="noreferrer">open.noaberkracht.nl</a></td><td style={{padding: 'var(--space-2)'}}>Zaaksysteem.nl</td><td style={{padding: 'var(--space-2)'}}>Production</td></tr>
+        <tr><td style={{padding: 'var(--space-2)'}}><a href="https://www.gemeentehw.nl/" target="_blank" rel="noreferrer">Hoeksche Waard</a></td><td style={{padding: 'var(--space-2)'}}>Municipality</td><td style={{padding: 'var(--space-2)'}}><a href="https://hoekschewaard.accept.openwoo.app/" target="_blank" rel="noreferrer">hoekschewaard.accept.openwoo.app</a></td><td style={{padding: 'var(--space-2)'}}>DECOS</td><td style={{padding: 'var(--space-2)'}}>Acceptance</td></tr>
+        <tr><td style={{padding: 'var(--space-2)'}}><a href="https://www.helmond.nl/" target="_blank" rel="noreferrer">Helmond</a></td><td style={{padding: 'var(--space-2)'}}>Municipality</td><td style={{padding: 'var(--space-2)'}}><a href="https://helmond.accept.openwoo.app/" target="_blank" rel="noreferrer">helmond.accept.openwoo.app</a></td><td style={{padding: 'var(--space-2)'}}>Djuma</td><td style={{padding: 'var(--space-2)'}}>Acceptance</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p style={{marginTop: 'var(--space-3)', fontSize: '0.92em', color: 'var(--c-grey-600)'}}>
+    Early 2024 successfully tested with KOOP and WooGle. For every new deployment: talk to a partner or install yourself from the Nextcloud app store.
+  </p>
+</Section>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Community"
+    title="Monthly OpenWoo community meetings."
+    align="stack"
+    lede="Every month the OpenWoo community gathers — vendors, municipalities, KOOP. Two years of recorded sessions plus startup tutorials are in the Academy."
+  />
+  <div style={{display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 'var(--space-3)'}}>
+    <a href="/academy/?app=openwoo" style={{padding: '12px 20px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md)', textDecoration: 'none', fontWeight: 600}}>OpenWoo in Academy</a>
+    <a href="https://openwoo.conduction.nl/" target="_blank" rel="noreferrer" style={{padding: '12px 20px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md)', textDecoration: 'none', fontWeight: 600}}>Technical documentation</a>
+  </div>
+</Section>
+
+<CtaBanner
+  title="OpenWoo. Wet open overheid, by Friday."
+  lede={<>Three apps, one configuration. Talk to a partner if you'd rather we run the rollout, or install yourself from the <span className="next-blue">Nextcloud</span> app store and follow the recipe.</>}
+  primaryCta={{label: 'Talk to a partner', href: '/partners'}}
+  secondaryCta={{label: 'Read the docs', href: 'https://openwoo.conduction.nl/'}}
+/>

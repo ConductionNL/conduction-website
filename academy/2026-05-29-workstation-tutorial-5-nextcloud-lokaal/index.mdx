@@ -1,0 +1,236 @@
+---
+slug: workstation-tutorial-5-nextcloud-lokaal
+title: "Workstation Setup tutorial series — Part 5: Run Nextcloud locally"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-29
+summary: A working Conduction workstation needs a Nextcloud you can test against. That tutorial already exists — this short module frames it as the last install step before you're production-ready, and tells you which apps to install once Nextcloud is up. Fifth of six short modules.
+tags: [Workstation, Nextcloud, Docker, Tutorial series]
+apps: []
+durationMinutes: 5
+series: workstation-tutorial
+partNumber: 5
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+A workstation without a Nextcloud is half a workstation. Nearly every other tutorial in the academy assumes you have one running on `localhost:8080`. The good news: a dedicated tutorial already covers this end to end. This module is a short bridge that explains *why* you do it now, *which* Conduction apps to install once it's up, and *how* this part connects to the rest of the series.
+
+{/* truncate */}
+
+<Outcomes title="What you'll deliver">
+  <Outcome>A Nextcloud running on <code>http://localhost:8080</code> with an admin account you control.</Outcome>
+  <Outcome>The Conduction apps you need — OpenRegister and OpenConnector at minimum — cloned into <code>nextcloud-docker-dev/apps-extra/</code> and enabled in the running Nextcloud.</Outcome>
+  <Outcome>A clear idea of when to use a fresh install (the next OpenSpec change) and when to keep the existing one (continuing yesterday's work).</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem><a href="/academy/workstation-tutorial-4-mcp-server">Part 4</a> done — Docker is running, the MCP browser pool is connected.</PrerequisiteItem>
+  <PrerequisiteItem>About half an hour, mostly Docker pulling images.</PrerequisiteItem>
+</Prerequisites>
+
+## You need a working Nextcloud — here's how
+
+Already have one running on `http://localhost:8080`? Skip ahead to [Clone the Conduction apps into apps-extra](#clone-the-conduction-apps-into-apps-extra). Otherwise pick the route that matches what you'll actually do with it:
+
+**Primary — `nextcloud-docker-dev` + `apps-extra/`.** What most Conduction developers use day-to-day. Clone the upstream [`nextcloud/nextcloud-docker-dev`](https://github.com/nextcloud/nextcloud-docker-dev) repo somewhere convenient (e.g. `~/nextcloud-docker-dev`), drop the Conduction app repos into its `apps-extra/` subfolder (the compose mounts that path into the Nextcloud container at `/var/www/html/apps-extra`), then from the `nextcloud-docker-dev/` root run:
+
+```bash
+docker compose up nextcloud proxy
+```
+
+Code changes in your cloned app repos show up in the running Nextcloud without rebuilding the image — that's the point of the `apps-extra/` mount.
+
+**Beginner-friendly demo — [Run Nextcloud locally with Docker](/academy/nextcloud-lokaal-draaien).** A 30-minute walkthrough that pastes a standalone `docker-compose.yml` into a fresh folder. Aimed at someone who has never used Docker or a terminal. Good for a first run-through; not the layout you'll use day-to-day for actual app development (the standalone compose doesn't have an `apps-extra/` mount, so you can't iterate on Conduction app code that way).
+
+> **Alternative compose with profiles — optional, extra.** The Conduction [`openregister`](https://codeberg.org/Conduction/openregister) repo also ships its own `docker-compose.yml` with `--profile` flags (`ai`, `ui`, `exapps`, `solr`, `ollama`, `openproject`, `xwiki`, `openzaak`, `openklant`, and more) — documented in [`docs/claude/docker.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/docker.md). Useful when you need those heavier services, but not required for the workstation chain and not what most Conduction devs run day-to-day. Stick with `nextcloud-docker-dev` for now.
+
+The rest of this part is the **Conduction-dev-flow context** — which apps to clone into `apps-extra/`, and the reset workflow.
+
+## Clone the Conduction apps into apps-extra
+
+In the `nextcloud-docker-dev` flow you don't install Conduction apps from the Nextcloud app store — you `git clone` them into `apps-extra/` so they live on your filesystem and your edits show up in the container.
+
+Inside `nextcloud-docker-dev/apps-extra/`, clone at minimum:
+
+```bash
+cd ~/nextcloud-docker-dev/apps-extra
+git clone git@codeberg.org:Conduction/openregister.git
+git clone git@codeberg.org:Conduction/openconnector.git
+```
+
+- **OpenRegister** — the schema-backed object store every Conduction app reads and writes through. Without it, nothing else works.
+- **OpenConnector** — the integration layer for inbound and outbound flows (forms, webhooks, sync, periodic jobs).
+
+A third app shows up in many tutorials — clone when you need it:
+
+```bash
+git clone git@codeberg.org:Conduction/opencatalogi.git
+```
+
+- **OpenCatalogi** — makes every register searchable as a public catalogue and federates to `data.overheid.nl`.
+
+After cloning and running `docker compose up nextcloud proxy`, enable each app inside the running Nextcloud — either through the admin UI's Apps page (under **Your apps** → **Disabled apps**) or with `occ app:enable <appid>` against the Nextcloud container.
+
+A note on naming: **OpenWoo** is a *solution* built on OpenRegister and OpenCatalogi, not a separate Nextcloud app or repo — there's no `Conduction/openwoo` to clone. The Woo tutorials use OpenRegister (and usually OpenCatalogi) and import a Woo register into them.
+
+You don't need to clone every Conduction app. Clone what the tutorial you're following asks for and ignore the rest until you need it.
+
+> **Did the canonical tutorial first?** The [Run Nextcloud locally with Docker](/academy/nextcloud-lokaal-draaien) tutorial installs OpenRegister, OpenCatalogi, and OpenConnector from the Nextcloud **app store**. That works for reading and demos, but the installed apps are immutable production builds — not your local code. Switch to the `apps-extra/` flow before you start writing app code.
+
+## Fresh install or keep the existing one?
+
+A question that comes up a lot once you've used the local Nextcloud for a while:
+
+- **Keep it** when continuing on the same change. Schemas you imported yesterday, test objects you created — all still there. Most of the time you keep it.
+- **Reset it** when a tutorial says *"start from a clean Nextcloud"*. That's almost always the case for the **Build an App tutorial** series, and for any tutorial that imports schemas from scratch.
+
+To reset, run from your `nextcloud-docker-dev/` directory:
+
+```bash
+docker compose down -v
+docker compose up nextcloud proxy
+```
+
+`-v` removes the volumes, so all Nextcloud state — admin account, app config, registers, files — goes with it. The images stay cached so the next start is fast.
+
+> **Later — `clean-env` skill from Hydra.** Once you have the [`hydra`](https://codeberg.org/Conduction/hydra) repo cloned (later in the academy chain, not now), the [`clean-env` Claude skill](https://codeberg.org/Conduction/hydra/src/branch/main/.claude/skills/clean-env) wraps the reset + re-enables the core Conduction apps in one step. Optional and extra; the plain `docker compose down -v` above is all this tutorial needs.
+
+The cleanup is fast — not a slow Windows-style "uninstall and reinstall". Don't be precious about your local state.
+
+## How this fits in the workstation chain
+
+A quick recap before Part 6:
+
+1. Part 1 — **what** you install, and why.
+2. Part 2 — **runtimes** and CLIs (WSL2, Docker, Node, PHP, `gh`, OpenSpec, Playwright).
+3. Part 3 — **Claude Code** and the mandatory safety hooks.
+4. Part 4 — **MCP browser pool** so Claude can drive a browser for testing.
+5. Part 5 — **Nextcloud** so there's something to drive *against*.
+6. Part 6 — **what now?** — a map of the next tutorials.
+
+After this part your workstation is *complete*. The tools are installed, Claude is wired up with safety, the browsers can drive the UI, and Nextcloud is running with the apps you need. Part 6 is the lap of honour.
+
+## Test yourself
+
+Four short questions to check that this part landed. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. Why is Nextcloud locally the *last* install step rather than an earlier one?**
+
+<Details summary="Hint">
+
+It's not about installation order being arbitrary — it's about what each earlier part gives you.
+
+</Details>
+
+<Details summary="Answer">
+
+Because the earlier parts deliver the toolchain — Docker (Part 2), Claude Code (Part 3), the browser pool (Part 4) — that you need to *use* the local Nextcloud productively. Installing Nextcloud first would give you a working server with no AI assistant, no automated tests, and no easy way to inspect it from VS Code.
+
+By the time you reach Part 5, every other tool is in place. Bringing up Nextcloud is the moment your workstation starts to feel like a *workstation*, not a pile of installers.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. OpenRegister and OpenConnector are the two apps you start with. What kind of Conduction work could you do with *only* OpenRegister — and what would you suddenly be unable to do without OpenConnector?**
+
+<Details summary="Hint">
+
+OpenRegister is the schema-backed object store. OpenConnector is the integration layer. Think about which of those a typical Conduction tutorial actually touches.
+
+</Details>
+
+<Details summary="Answer">
+
+With **only OpenRegister**, you can:
+
+- Create registers and define schemas (the *what does this data look like* layer).
+- Create, update, and query objects via OpenRegister's API.
+- Attach files to objects (the [Upload files to a Woo publication](/academy/woo-bestanden-uploaden) tutorial only needs OpenRegister).
+
+Without **OpenConnector**, you can't:
+
+- Receive data from an external source (forms, webhooks, scheduled imports).
+- Push data out to PLOOI, an open-overheid.nl endpoint, or any external system.
+- Build any tutorial that uses a public form → Conduction app flow ([Build an App tutorial](/academy/build-an-app-tutorial-0-three-paths) needs OpenConnector for the public-form step).
+
+The shorter version: **OpenRegister stores; OpenConnector moves**. If the tutorial only reads/writes data inside Nextcloud, OpenRegister alone is enough. As soon as data crosses the boundary, you need OpenConnector.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. When do you reset the local Nextcloud, and when do you keep the existing state?**
+
+<Details summary="Hint">
+
+The two answers map cleanly: same change → keep, new tutorial demanding a clean state → reset.
+
+</Details>
+
+<Details summary="Answer">
+
+- **Keep it** when continuing on the same change. Yesterday's schemas, test objects, and config are still in the volumes — and you usually want them.
+- **Reset it** when a tutorial says *"start from a clean Nextcloud"*. The Build an App tutorial series usually does. Reset with `docker compose down -v && docker compose up nextcloud proxy` from your `nextcloud-docker-dev/` directory — about 30 seconds.
+
+The reset is cheap. Don't hesitate to use it when the tutorial calls for it; trying to "make do" with a dirty environment costs more time than the reset itself.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. You stopped halfway through Build an App tutorial Part 3 yesterday — your local Nextcloud has a half-built PetStore calendar app and a register full of test pets and orders. Today you're starting fresh on the [Set up a Woo register](/academy/woo-register-opzetten) tutorial. Do you reset Nextcloud first, or keep it as-is?**
+
+<Details summary="Hint">
+
+Which of the two tutorials assumes a clean Nextcloud? And what's the cost of *not* resetting if it does?
+
+</Details>
+
+<Details summary="Answer">
+
+**Reset.** The Woo register tutorial assumes a clean Nextcloud — it imports the canonical Woo TOOI schemas into OpenRegister. The PetStore schemas (`pet`, `category`, `order`) and the test data from Part 3 don't strictly collide with Woo, but yesterday's clutter sits in the same OpenRegister UI and you'll be scrolling past it every time. Cleaner to start fresh.
+
+The reset is cheap: `docker compose down -v` (from your `nextcloud-docker-dev/` directory) drops the volumes, then `docker compose up nextcloud proxy` brings it back up — about 30 seconds total. Yesterday's state is gone, but yesterday's state was a half-finished exercise you weren't going to resume mid-tutorial anyway.
+
+The reverse case — you stopped halfway through Build an App tutorial Part 3 yesterday and are *continuing* with Part 4 today — is when you **keep** the state. Your in-progress register is still there and you'd lose 20 minutes recreating it.
+
+The rule of thumb: **same tutorial → keep, different tutorial → reset.**
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="Your workstation is complete. Time for the lap of honour — what you do next now that you can actually build.">
+  <NextStep
+    title="Part 6 — Done, what now?"
+    href="/academy/workstation-tutorial-6-klaar-wat-nu"
+    description="The map of the next tutorials: OpenSpec, Claude Skills, Build an App, Hydra. Where to go for what kind of work."
+  />
+  <NextStep
+    title="Run Nextcloud locally with Docker"
+    href="/academy/nextcloud-lokaal-draaien"
+    description="The full step-by-step Nextcloud install — screenshots, troubleshooting, cleanup. Read it once."
+  />
+  <NextStep
+    title="The canonical docker.md"
+    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/docker.md"
+    description="Internal reference with the full Docker profile list and example compose commands."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Nextcloud refusing to start?"
+  body="Almost always a port conflict (something else on :8080) or a stale Docker volume. Send us the output of docker compose ps and we'll spot it quickly."
+  cta={{ label: "Email us", href: "mailto:info@conduction.nl?subject=Workstation%20setup%20tutorial%20part%205" }}
+/>

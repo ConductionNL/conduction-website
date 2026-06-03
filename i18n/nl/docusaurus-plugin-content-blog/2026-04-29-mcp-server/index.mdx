@@ -1,0 +1,38 @@
+---
+slug: mcp-server
+title: De Conduction MCP-server opzetten
+contentType: guide
+authors: [conduction]
+date: 2026-04-29
+summary: Richt Claude of een andere MCP-aware client op OpenRegister en schrijf je eerste MCP-gedreven query.
+tags: [AI & LLMs, MCP, OpenRegister]
+apps: [openregister]
+durationMinutes: 8
+---
+
+Een korte walk-through van de Model Context Protocol-server die we voor OpenRegister meeleveren. Placeholder terwijl we de volledige versie schrijven.
+
+{/* truncate */}
+
+> **Bezig met de Workstation Setup-leerlijn?** [Deel 4 — De MCP-server aansluiten](/nl/academy/workstation-tutorial-4-mcp-server) zet eerst de Playwright-browserpool op. Deze tutorial voegt de OpenRegister MCP-server toe aan dezelfde `.mcp.json`.
+
+## Voor je begint
+
+Je hebt nodig:
+
+- Een draaiende OpenRegister met minimaal één register en schema
+- Claude Code, Claude Desktop, of een andere MCP-aware client
+- De MCP-server draaiend op `http://localhost:8080/index.php/apps/openregister/mcp`
+
+## De client koppelen
+
+Voeg het OpenRegister MCP-endpoint toe aan de config van je client. De server biedt:
+
+- `register.list`, `register.get`
+- `schema.list`, `schema.get`
+- `object.search`, `object.get`, `object.create`
+- `audit.read` voor read-only toegang tot het audit trail
+
+## Wat je kunt vragen
+
+Eenmaal gekoppeld kan de assistent vragen beantwoorden als "laat me alle WOO-documenten uit 2024 zien met categorie-2-redacties" zonder dat je de query met de hand schrijft.

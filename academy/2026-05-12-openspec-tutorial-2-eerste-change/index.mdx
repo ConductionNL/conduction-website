@@ -1,0 +1,508 @@
+---
+slug: openspec-tutorial-2-eerste-change
+title: "OpenSpec tutorial series — Part 2: Your first OpenSpec change"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-12
+summary: From empty folder to validated OpenSpec change. We start with /opsx-new, write a spec-delta with a requirement plus scenario, let /opsx-ff generate the rest, and validate the whole thing. Second of two short modules.
+tags: [OpenSpec, Spec-first, Tutorial series, Workflow, Claude Code]
+apps: []
+durationMinutes: 22
+series: openspec-tutorial
+partNumber: 2
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+Time to see OpenSpec in action. In this part you'll create your **first real change** inside a Conduction project — from empty folder, through a spec-delta with a requirement and scenario, to a validated proposal ready for implementation. We do that with the Claude Code skills [`/opsx-new`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md) and [`/opsx-ff`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md).
+
+{/* truncate */}
+
+<Outcomes title="What you'll deliver">
+  <Outcome>An understanding of where <code>/opsx-explore</code> sits in the pipeline and when you reach for it (optional pre-spec exploration).</Outcome>
+  <Outcome>A working change in <code>openspec/changes/&lt;name&gt;/</code>, on its own feature branch.</Outcome>
+  <Outcome>All four artefacts — proposal, spec-delta, design, tasks — in the right dependency order, both by hand and via <code>/opsx-ff</code>.</Outcome>
+  <Outcome>A validated spec-delta that passes <code>openspec validate --strict</code> and is ready to open as a PR.</Outcome>
+  <Outcome>An overview of what happens after the spec: <code>/opsx-plan-to-issues</code>, <code>/opsx-apply</code> (implementation), <code>/opsx-verify</code> (review) and <code>/opsx-archive</code>.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you'll need">
+  <PrerequisiteItem>Part 1 read through — <a href="/academy/openspec-tutorial-1-wat-is-openspec">What is OpenSpec?</a> — so that you know what a spec, requirement, scenario and change are.</PrerequisiteItem>
+  <PrerequisiteItem>Claude Code installed and working in your project folder. If you don't have that yet, start with the <a href="/academy/workstation-tutorial-1-wat-installeer-je">Workstation Setup tutorial series</a> — Part 3 wires up Claude Code with the mandatory safety hooks.</PrerequisiteItem>
+  <PrerequisiteItem>A checked-out Conduction repo you can poke around in — for example <a href="https://codeberg.org/Conduction/openregister">openregister</a>. We work in a new branch, so you won't lose anything.</PrerequisiteItem>
+  <PrerequisiteItem>Basic Git: create a branch, commit, push.</PrerequisiteItem>
+</Prerequisites>
+
+## The example we'll work with
+
+To keep things concrete, we'll add one feature to an imaginary publication register: **a full-text search across publication titles and content**. Small enough to do in one tutorial, big enough to touch every artefact.
+
+Working in your own repo? Just replace "publication-search" with your own change name in every step. The steps themselves don't change.
+
+## Step 0: explore with `/opsx-explore` (optional)
+
+Already know exactly what you want to build? Skip this step and jump to Step 1. Unsure about scope, approach, or whether the feature even belongs in this app? Then start with:
+
+```
+/opsx-explore
+```
+
+`/opsx-explore` is the **Pre-spec phase** from the [command reference](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-explore): it produces **no artefacts**, it thinks alongside you. Claude explores the codebase, asks about your intent, weighs alternative approaches, and points out the unknowns that are still floating around. It's a conversation — not a file on disk.
+
+Good moments to reach for `/opsx-explore`:
+
+- *"Does this fit in this app, or is it a separate capability?"*
+- *"Which existing spec does this touch?"*
+- *"What's the simplest way to build this?"*
+
+Not for `/opsx-explore`: a feature you've already built twice before in a different app. Then go straight to `/opsx-new`.
+
+> **For the tutorial.** The `add-publication-search` example is deliberately simple — we skip `/opsx-explore`. Remember it for your own, more complex changes.
+
+## Step 1: a dedicated branch
+
+A change always sits on its own feature branch. Don't work on `development` directly:
+
+```bash
+cd /path/to/openregister
+git checkout development
+git pull
+git checkout -b feature/add-publication-search
+```
+
+The branch name follows the `feature/<change-name>` pattern — handy for reviewers to see which spec it belongs to. In the fully automated [Hydra flow](https://codeberg.org/Conduction/.github/src/branch/main/docs/hydra/README.md) that becomes `feature/<issue-number>/<change-name>` once `/opsx-plan-to-issues` (Step 10) has created a tracking issue. For this tutorial we'll stick with the short pattern.
+
+## Step 2: an empty change with `/opsx-new`
+
+Open Claude Code inside the repo folder and run:
+
+```
+/opsx-new add-publication-search
+```
+
+That creates the skeleton:
+
+```
+openspec/changes/add-publication-search/
+└── .openspec.yaml
+```
+
+`.openspec.yaml` holds the metadata (schema version, creation date). The folder is otherwise empty — that's what we'll fill in next.
+
+> **Naming rule.** Use kebab-case (`add-publication-search`, not `AddPublicationSearch` or `add_publication_search`). The change name becomes a GitHub issue label, so keep it readable and short.
+
+## Step 3: the two routes — `/opsx-ff` versus by hand
+
+From here there are two ways to fill in the change:
+
+| Route | When | What it does |
+| --- | --- | --- |
+| **Automated** — `/opsx-ff` | You know what you want to build and want a complete first draft fast. | Generates proposal, specs, design and tasks in one run — in this dependency order. Then you read back and adjust. |
+| **Step by step** — by hand or `/opsx-continue` | You want to pause and think between artefacts. | You write (or generate) the proposal first, then the spec-delta, then design, and only then the tasks. |
+
+In production you'll often grab `/opsx-ff` for a rough draft and adjust from there — that's the **canonical path** from the Conduction docs (`/opsx-ff` → `/opsx-apply` → `/opsx-verify`). In this tutorial we do it step by step by hand — that gives the best feel for what each artefact actually is. At Step 7 we show what `/opsx-ff` would do for you in one go.
+
+> **Dependency order from the [command reference](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-continue):** `proposal` (root) → `specs` + `design` (both depend on proposal) → `tasks` (depends on both specs and design). We follow that order below.
+
+## Step 4: `proposal.md` — the why and the what
+
+The first artefact is the **proposal**: why are you making this change, and what changes at a high level? In human language, for reviewers who don't know the feature yet.
+
+Create `openspec/changes/add-publication-search/proposal.md`:
+
+```markdown
+# Proposal: add-publication-search
+
+## Why
+Users of the publication register can currently only search by exact
+publication ID. A search across titles and content is the most
+requested feature in last month's support tickets.
+
+## What
+- Full-text search via PostgreSQL `tsvector`
+- One new API endpoint: `GET /api/publications/search?q=...`
+- Results sorted by relevance score
+
+## Out of scope
+- Filters (by organisation, period, status)
+- Suggestions / autocomplete
+- Advanced queries (AND/OR, wildcards)
+```
+
+The proposal sits at the top of the dependency chain — every other artefact refers back to it implicitly. So keep it short and clear; details belong in `design.md` (Step 6), not here.
+
+## Step 5: the spec-delta — the heart of the change
+
+The **spec-delta** is the central artefact. It is not a full spec; it is only what changes relative to the main spec. Three kinds of changes:
+
+- **ADDED** — new requirements
+- **MODIFIED** — existing requirements that change
+- **REMOVED** — requirements that go away
+
+We add a requirement to the hypothetical `publications` capability. Create the file:
+
+```
+openspec/changes/add-publication-search/specs/publications/spec.md
+```
+
+And fill it with:
+
+```markdown
+# publications — Delta
+
+## ADDED Requirements
+
+### REQ-001: Full-text search
+The system MUST support full-text search across publication titles and
+publication content using PostgreSQL's `tsvector`.
+
+#### Scenario: Search query returns matching publications
+- GIVEN publications with titles "Climate Report 2026" and "Budget Overview 2026"
+- WHEN a user searches for "climate"
+- THEN the results MUST contain "Climate Report 2026"
+- AND the results MUST NOT contain "Budget Overview 2026"
+- AND the results MUST be sorted by relevance score
+
+#### Scenario: Empty query returns a clean error
+- GIVEN a user on the search page
+- WHEN the search query is empty
+- THEN the system MUST return HTTP 400
+- AND the response MUST contain the error `query parameter required`
+```
+
+Three things that can go wrong here:
+
+- **Four hashes for a scenario.** `#### Scenario:` (four), not `###` (three). The parser doesn't recognise `###` as a scenario — no error, just silently skipped.
+- **MUST / MAY / SHOULD.** Use [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) words deliberately. A reviewer reads "MAY" and knows it's optional.
+- **No implementation talk.** No classes, controllers or table names. Those go in `design.md` (Step 6). The spec describes *behaviour*.
+
+## Step 6: `design.md` and `tasks.md`
+
+With proposal and spec-delta in place, the last two artefacts are quick work.
+
+**`design.md`** — the *how*, technical. Here you *do* mention classes, tables and controllers — everything that doesn't belong in the spec:
+
+````markdown
+# Design: add-publication-search
+
+## Approach
+We use PostgreSQL's native `tsvector` and `tsquery`, no
+external search engine. Sufficient for the current publication
+volume (< 100k rows) and keeps the stack simple.
+
+## Schema change
+A generated column `search_vector` on the `publications` table:
+
+```sql
+ALTER TABLE publications
+  ADD COLUMN search_vector tsvector
+  GENERATED ALWAYS AS (
+    setweight(to_tsvector('dutch', coalesce(title, '')), 'A') ||
+    setweight(to_tsvector('dutch', coalesce(content, '')), 'B')
+  ) STORED;
+
+CREATE INDEX idx_publications_search ON publications USING GIN (search_vector);
+```
+
+## Endpoint
+New: `GET /api/publications/search`
+- Query parameter: `q` (required, non-empty)
+- Response: paginated list, sorted by `ts_rank`
+````
+
+**`tasks.md`** — the implementation checklist. Comes last because it depends on both the spec and the design:
+
+```markdown
+# Tasks: add-publication-search
+
+- [ ] Task 1 — Migration: `search_vector` column + GIN index on `publications`
+- [ ] Task 2 — Backend: new `SearchController::search()` with `tsquery` translation
+- [ ] Task 3 — Backend: 400 on empty or missing `q`
+- [ ] Task 4 — Tests: PHPUnit for both scenarios from REQ-001
+- [ ] Task 5 — API documentation: endpoint included in OpenAPI spec
+- [ ] Task 6 — README update: mention in the feature list
+```
+
+Tasks are small and concrete — 15-30 minutes of work each. Tasks that feel too big are a sign you still need to split them. Good task breakdown directly drives how smoothly `/opsx-apply` (Step 10) will move through your change later.
+
+> **Optional extra artefacts.** Beyond the four standard artefacts, OpenSpec has a few optional ones: `discovery.md` (open questions you hit during research), `contract.md` (cross-project API contracts), `migration.md` (data migration between schema versions), and `test-plan.md` (test classification for `/opsx-apply-loop`). For a first change you usually don't need them — see the [command reference](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-continue) for the full dependency chain.
+
+## Step 7: or all at once with `/opsx-ff`
+
+For anyone who'd rather start with a single command: after running `/opsx-new add-publication-search`, you can just say:
+
+```
+/opsx-ff
+```
+
+Claude Code asks a few questions first ("what should the change do?", "which model do you want to use?") and then generates the proposal, the specs/, the design and the tasks in one run — in **the same dependency order** we walked through by hand above. Fast, and in our experience good enough as a starting point to adjust from.
+
+When to reach for `/opsx-ff`: for changes where you already have a clear picture and mostly want to save typing. Per [`spec-driven-development.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/WayOfWork/spec-driven-development.md), **`/opsx-ff` → `/opsx-apply` → `/opsx-verify`** is the canonical path for most changes.
+
+When not to: when there are architectural choices you want to think through step by step — then [`/opsx-continue`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-continue) earns its keep (it generates the next artefact after review and any adjustment). Or, for the brainstorm upfront, [`/opsx-explore`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-explore) (see Step 0) — that creates nothing yet, but thinks with you.
+
+## Step 8: validate
+
+At the spec level you run the OpenSpec CLI:
+
+```bash
+openspec validate --strict
+```
+
+That's a **terminal command**, not a slash-command (see the [command reference](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#openspec-cli-commands)). With `--strict` warnings are treated as errors. The validator checks, among other things:
+
+- Scenarios use **four** hashes (`####`), not three — the most common OpenSpec mistake, otherwise silently skipped by the parser.
+- Requirements use RFC 2119 keywords (MUST / MAY / SHOULD).
+- ADDED / MODIFIED / REMOVED sections are well-formed.
+- No empty or incomplete artefacts.
+
+If validate comes back green, your spec-delta is ready to commit + PR. If it comes back red, the findings are spelled out — almost always a forgotten hash or a typo in a keyword.
+
+## Step 9: commit and PR
+
+```bash
+git add openspec/changes/add-publication-search/
+git commit -m "spec: add-publication-search proposal + delta"
+git push -u origin feature/add-publication-search
+
+gh pr create --base development \
+  --title "spec: add-publication-search" \
+  --body "First OpenSpec change — specs only, no implementation."
+```
+
+In a spec-first workflow you merge this spec-PR separately before implementation; the review then focuses on whether the spec is correct — not whether the code works, because there's no code yet. After that come the next phases — see Step 10 (implementation) and Step 11 (verify and archive).
+
+> **Spec + implementation in one PR?** Also fine — especially for small, obvious changes. The spec-only-first pattern above mainly pays off when reviewers want to sign off the spec before code exists.
+
+## Step 10: implementation
+
+With the spec merged, the spec is done — now the code. Two skills walk you through it, in order:
+
+### `/opsx-plan-to-issues` — tasks become GitHub issues
+
+```
+/opsx-plan-to-issues
+```
+
+This reads `tasks.md` and creates:
+
+- A **tracking issue** (the "epic") with a complete checkbox list.
+- **One GitHub issue per task**, with acceptance criteria, a `spec_ref` pointing at the relevant spec section, and the files that will likely be touched.
+- A `plan.json` in the change folder linking all issue numbers together.
+
+From now on the change is on the project board — visible to the team. Optional `--trigger-label <label>` (e.g. `--trigger-label wilco-ready-to-build`) immediately sets the Hydra build label on every issue.
+
+### `/opsx-apply` — build against the spec
+
+```
+/opsx-apply
+```
+
+`/opsx-apply` runs the **Build phase**: picks the next open task from `plan.json`, reads **only** the relevant spec section (via `spec_ref` — minimal context, no "AI amnesia"), implements backend + UI + tests, runs those tests, ticks the task off in `tasks.md` and on the GitHub issue, and repeats until everything is in place.
+
+The skill automatically loads every company-wide ADR from [`hydra/openspec/architecture/`](https://codeberg.org/Conduction/hydra/src/branch/main/openspec/architecture) along the way — hard constraints on the implementation (data layer, API patterns, frontend conventions, security, i18n).
+
+Per [`spec-driven-development.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/WayOfWork/spec-driven-development.md), this is the canonical path: **most changes only need `/opsx-ff` → `/opsx-apply` → `/opsx-verify`**.
+
+**Hands-off alternative.** [`/opsx-apply-loop`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-apply-loop) runs `apply` → `verify` inside an isolated Docker container (max 5 iterations), optionally with tests, and archives after. Or use Hydra itself: label the tracking issue `ready-to-build`, and [Hydra](https://codeberg.org/Conduction/.github/src/branch/main/docs/hydra/README.md) picks it up via the container pipeline and produces a draft PR.
+
+## Step 11: verify and archive
+
+Once the implementation is in place — every task in `tasks.md` ticked off and the code in `development` — you run `/opsx-verify`:
+
+```
+/opsx-verify
+```
+
+This is the **Review phase**. Where `openspec validate` (Step 8) checked whether the **spec** is syntactically right, `/opsx-verify` checks whether the **code** actually delivers what the spec promises. Five checks:
+
+- **Completeness** — every task ticked off and every requirement implemented.
+- **Correctness** — the implementation matches the spec's intent.
+- **Coherence** — design decisions are visible in the code.
+- **Test coverage** — new PHP services/controllers have a test file; new Vue components likewise.
+- **Documentation** — new features and endpoints are written up in README or `docs/`.
+
+Findings come in three flavours: **CRITICAL** (must be fixed before archive), **WARNING** (should be fixed) and **SUGGESTION** (nice to have). Verify also offers to fix the issues it found immediately and re-run itself.
+
+Only once verify is green do you run:
+
+```
+/opsx-archive
+```
+
+`/opsx-archive` does five things:
+
+1. Re-checks artefact and task completeness.
+2. Syncs the delta into the main spec via [`/opsx-sync`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-sync) (if that hasn't happened yet).
+3. Moves the folder to `openspec/changes/archive/YYYY-MM-DD-<name>/`.
+4. Updates `CHANGELOG.md` (completed tasks become version entries).
+5. Creates or updates `docs/features/<change-name>.md` and the feature overview in `docs/features/README.md`.
+
+After that, your change is history.
+
+> **Run `/opsx-sync` separately? Usually not needed.** `/opsx-archive` handles the sync itself — that's step 2 above. The added value of `/opsx-sync` standalone is **timing**: you want the main spec updated *before* you archive. For example, to share the changed rules with another team early, hold an interim spec review, or update the spec while implementation is still going. The skill cleanly merges the ADDED / MODIFIED / REMOVED / RENAMED sections into the main spec (only what's in the delta changes — existing scenarios stay put). You can still run `/opsx-archive` later; it then skips step 2.
+
+<Troubleshooting title="Troubleshooting">
+  <TroubleshootingItem symptom="openspec validate reports 'no scenarios found' for a requirement">
+    Count to four: <code>#### Scenario:</code> — not <code>###</code>, no bold. The parser silently skips scenarios with three hashes, so <code>openspec validate</code> only sees the symptom (a requirement without scenarios). The most common OpenSpec mistake.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="My change folder has no .openspec.yaml">
+    You probably created the folder by hand instead of using <code>/opsx-new</code>. Delete the folder and run <code>/opsx-new &lt;name&gt;</code> again — the tooling creates the skeleton including the metadata.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Reviewer says: this requirement is too implementation-specific">
+    Read it back: are you naming controllers, classes or table names in <code>specs/</code>? Move those into <code>design.md</code>. The spec only describes <em>externally observable behaviour</em>.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="I want to change something in an existing spec but don't know how">
+    Use a <strong>MODIFIED Requirements</strong> section in your spec-delta. Mention what the previous behaviour was — for example <em>(Previously: sessions expired after 30 minutes.)</em>. That lets reviewers follow the change.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+## Test yourself
+
+Five short questions to check that this part landed. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. Which command do you use to start a new empty change, and what's in the folder right after that step?**
+
+<Details summary="Hint">
+
+One command, one name in kebab-case. Right after, the folder is virtually empty except for a single metadata file.
+
+</Details>
+
+<Details summary="Answer">
+
+**`/opsx-new <name>`** with the change name in kebab-case (e.g. `add-publication-search` — not `AddPublicationSearch` or `add_publication_search`). The change name also becomes a GitHub issue label, so keep it short and readable.
+
+Right after the step, the folder contains:
+
+```
+openspec/changes/<name>/
+└── .openspec.yaml
+```
+
+One file — `.openspec.yaml` with metadata (schema version, creation date). Otherwise empty; proposal, delta, design and tasks come later.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. What's the difference between `/opsx-ff` and writing artefacts by hand, and when do you pick which?**
+
+<Details summary="Hint">
+
+Speed vs. control. One delivers everything in one run; the other lets you review and adjust per artefact.
+
+</Details>
+
+<Details summary="Answer">
+
+- **`/opsx-ff`** ("fast-forward") — generates proposal, specs, design and tasks in one run after a few setup questions. Pick it when you already have a clear picture and want to save typing.
+- **By hand or `/opsx-continue`** — you write (or generate) per artefact, read back, sharpen, and only then move on. Pick this when there are architectural choices you want to think through at each step. `/opsx-explore` sits one step earlier still: it creates nothing yet, but thinks with you in the brainstorm.
+
+In practice: often `/opsx-ff` for a rough draft and then adjust by hand.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. What are the three kinds of delta sections you can write in a spec-delta, and what does each do?**
+
+<Details summary="Hint">
+
+Three uppercase words, each a verb for what they do to requirements.
+
+</Details>
+
+<Details summary="Answer">
+
+- **ADDED Requirements** — new requirements that aren't in the main spec yet.
+- **MODIFIED Requirements** — existing requirements that change. Note what the previous behaviour was — for example *(Previously: sessions expired after 30 minutes.)* — so reviewers can follow the change.
+- **REMOVED Requirements** — requirements that go away.
+
+On archive, ADDED rules move into the main spec, MODIFIED ones overwrite their predecessors, and REMOVED ones disappear.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Which command checks your spec before commit, and which command later checks whether the implementation actually delivers the spec?**
+
+<Details summary="Hint">
+
+Two different roles — one is an OpenSpec CLI that looks at **spec syntax**, one is a Claude Code skill that looks at **code-vs-spec**.
+
+</Details>
+
+<Details summary="Answer">
+
+- **Before commit**: `openspec validate --strict`. The OpenSpec CLI (terminal command, no slash). Checks that the delta is syntactically correct — four hashes for scenarios, RFC 2119 keywords, ADDED/MODIFIED/REMOVED shape, no empty artefacts. With `--strict`, warnings are also treated as errors.
+- **After implementation**: `/opsx-verify`. A Claude Code skill that runs the **Review** phase — every task ticked off, code in `development` — and checks whether the code actually delivers what the spec promises. Five checks: **completeness**, **correctness**, **coherence**, **test coverage** and **documentation**. Findings come in **CRITICAL** / **WARNING** / **SUGGESTION**.
+
+One checks whether the spec is **correctly written**, the other whether the code **actually delivers** the spec. The most common spec-syntax mistake — three hashes instead of four for a scenario — is silently skipped by the parser, so `openspec validate` only sees the symptom (a requirement without scenarios). "Count to four" stays the first reflex.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. When is a change ready to be archived, and which command do you run?**
+
+<Details summary="Hint">
+
+Four conditions: tasks, code in development, delta in main spec, and folder moved. The last one you don't do by hand.
+
+</Details>
+
+<Details summary="Answer">
+
+A change is ready to be archived when:
+
+1. Every task in `tasks.md` is ticked off.
+2. The implementation is in `development` (PR merged).
+3. The spec-delta has been synced into the main spec at `openspec/specs/`.
+4. The folder has been moved to `openspec/changes/archive/YYYY-MM-DD-<name>/`.
+
+Steps 3 and 4 you don't do by hand — run **`/opsx-archive`**. It re-checks that every task is done, syncs the delta via `/opsx-sync`, and moves the folder with the date in front. After that your change is history.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="Your first change is in. A few logical follow-ups:">
+  <NextStep
+    title="Part 1 — What is OpenSpec?"
+    href="/academy/openspec-tutorial-1-wat-is-openspec"
+    description="Re-read the spec-vs-change distinction — useful when you're bringing a colleague along into this workflow."
+  />
+  <NextStep
+    title="Hydra tutorial series — from spec to code"
+    href="/academy/hydra-tutorial-1-wat-is-hydra"
+    description="How does an OpenSpec change move on to a PR with code automatically? Our AI pipeline does that work."
+  />
+  <NextStep
+    title="The official OpenSpec convention"
+    href="https://openspec.dev"
+    description="The source convention we build on top of, with all the naming and the rules."
+  />
+  <NextStep
+    title="The full OpenSpec command list"
+    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md"
+    description="Every /opsx-* command in one place: new, ff, continue, explore, apply, verify, sync, archive."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Questions or feedback?"
+  body="Talk to your team lead or buddy, or ask in #openspec on Slack. Issues with this tutorial go on its GitHub issue."
+  cta={{ label: "Email us", href: "mailto:info@conduction.nl?subject=OpenSpec%20learning%20track%20part%202" }}
+/>

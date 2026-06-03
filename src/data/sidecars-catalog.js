@@ -27,7 +27,7 @@ const PRESENTATION = {
   },
   openzaak: {
     name: 'OpenZaak',
-    tagline: 'Sidecar for the OpenZaak case-management API. Koppelvlakken voor ZGW, vanuit Nextcloud.',
+    tagline: 'Sidecar for the OpenZaak case-management API. ZGW interfaces, from inside Nextcloud.',
     href: '/sidecars/openzaak',
     categories: ['Registers'],
     icon: <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>,

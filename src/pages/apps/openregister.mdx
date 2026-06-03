@@ -4,9 +4,11 @@ description: Schema-driven object store with audit trail. The data foundation un
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, McpToolShelf, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, CtaBanner, AppMock, WidgetMock, SidebarMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, McpToolShelf, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
+  background="cobalt"
   appId="openregister"
   crumb={[{label: 'Apps', href: '/apps'}, 'OpenRegister']}
   status={{label: 'Stable', color: 'var(--c-mint-500)'}}
@@ -14,9 +16,10 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
   locales="NL · EN"
   title="OpenRegister"
   tagline={<>Schemas, registers, structured data objects. The typed-data backbone underneath every other Conduction app, and the install you reach for first.</>}
+  intro={<>OpenRegister is an open-source data register app for the Nextcloud workspace. It stores domain-specific objects (client records, social-security entries, custom registers) validated against JSON Schema, with full version history, audit trails, soft deletion, and object-level locking. Schemas can be authored by hand or imported from Schema.org and the Dutch GGM (Gemeentelijk Gegevensmodel), and objects persist into Nextcloud, MySQL, PostgreSQL, or MongoDB without changing application logic. Released under EUPL-1.2 and maintained by Conduction since 2019.</>}
   primaryCta={{label: 'Install from app store', href: '/install'}}
   secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/openregister'}}
-  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/openregister'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/openregister'}}
   iconColor="var(--c-blue-cobalt)"
   icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>}
   illustration={<AppMock app="openregister" />}
@@ -79,6 +82,8 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
   </div>
 </Section>
 
+<PartnersForApp slug="openregister" />
+
 <RotatingCards
   eyebrow="Three ways OpenRegister earns its place"
   title="Schema-first, ingest-anywhere, visualised by default."
@@ -103,10 +108,10 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
     {
       tone: 'workspace',
       eyebrow: 'Visualised by default',
-      title: 'Every register is a MyDash data source.',
-      summary: 'MyDash reads the schemas directly. Drop a chart on a board, point it at a register, and the columns are typed. No BI database, no separate login.',
-      cta: {label: 'See MyDash', href: '/apps/mydash'},
-      panel: <AppMock app="mydash-bi" />,
+      title: 'Every register is a LaunchPad data source.',
+      summary: 'LaunchPad reads the schemas directly. Drop a chart on a board, point it at a register, and the columns are typed. No BI database, no separate login.',
+      cta: {label: 'See LaunchPad', href: '/apps/launchpad'},
+      panel: <AppMock app="launchpad-bi" />,
     },
   ]}
 />
@@ -172,111 +177,78 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
 
 <div id="integrations" />
 <Showcase
-  eyebrow="How OpenRegister plugs into the workspace"
-  title="Typed data, surfaced everywhere."
-  lede="Five integration paths that turn registers into the system of record across Mail, Files, workflow tools, knowledge bases, and AI assistants."
+  eyebrow="Integrations"
+  title="Apps that truly work together."
+  lede="OpenRegister is what turns an office suite into a workspace. Every Nextcloud app on the install can read and write the same registers, and every register surfaces what lives in those apps. The integration runs on three levels at once: sidebar tabs that show linked records, dashboard widgets on every user's home screen, and a shared service layer that lets one app call another's data without anyone copy-pasting between tabs."
   layout="side"
-  defaultOpen="mail-files"
+  defaultOpen="data-everywhere"
   items={[
     {
-      id: 'mail-files',
-      title: 'Mail and Files',
-      summary: 'Open an email or a file and the sidebar shows every register row that references it. One click jumps to the row, another links the email or file back to a different row. The register stays the system of record; the workspace stays where the work happens.',
-      cta: {label: 'See the integration guide', href: 'https://docs.conduction.nl/openregister/mail-files'},
-      panel: <AppMock app="openregister" />,
-    },
-    {
-      id: 'windmill-n8n',
-      title: 'Windmill and n8n',
-      summary: 'Trigger workflows on register events. New row, schema change, validation failure, archive transition: each one fires a webhook your Windmill or n8n flow can consume. Outcomes write back to the row.',
-      cta: {label: 'See the workflow examples', href: 'https://docs.conduction.nl/openregister/windmill-n8n'},
-      panel: <AppMock app="openconnector" />,
-    },
-    {
-      id: 'xwiki',
-      title: 'XWiki',
-      summary: 'Embed a live register query into any XWiki page through OpenConnector. Procedure docs stay current automatically. The article and the data live one click apart.',
-      cta: {label: 'See the XWiki integration', href: 'https://docs.conduction.nl/openregister/xwiki'},
-      panel: <AppMock app="opencatalogi" />,
-    },
-    {
-      id: 'llms',
-      title: 'LLMs (Claude, Mistral, Ollama)',
-      summary: 'Plain-language search across every register. The LLM rewrites your question into a structured query, OpenRegister returns typed rows with citation-stable IDs. Claude and Mistral run as cloud adapters through OpenConnector; Ollama runs as a sidecar on your own hardware. Every call audits.',
-      cta: {label: 'See the semantic-search adapter', href: 'https://docs.conduction.nl/openregister/llm-search'},
-      panel: <AgentTrace
-        lines={[
-          {kind: 'tool',  text: 'openregister - search (MCP)(query: "open Woo cases',
-                          },
-          {kind: 'continuation', text: 'past their deadline in maart 2026")'},
-          {kind: 'note',  bullet: 'info', text: 'Rewriting natural language to a typed query', muted: '(claude-sonnet-4-6)'},
-          {kind: 'note',  bullet: 'done', text: 'Returned 14 register rows with citation IDs'},
-          {kind: 'status', text: 'Synthesising answer'},
+      id: 'data-everywhere',
+      title: 'Files, mail, and shares stay with the record.',
+      summary: "Every object in a register gets an auto-created folder. Drop files into it, write notes against the record, tag rows from the same workspace taxonomy your files use. Add a mail to a project and your colleagues see it without anyone forwarding. When someone shares one of those files in Nextcloud, the share is visible on the record. The case file is part of the workspace, not a parallel storage to keep in sync.",
+      cta: {label: 'See the integration guide', href: 'https://openregister.conduction.nl/docs/Integrations/leaf-system'},
+      panel: <MockScene
+        width={680}
+        height={420}
+        items={[
+          {type: 'sidebar', kind: 'openregister-metadata',  x: 200, y: 10,  size: 'md', z: 1},
+          {type: 'widget',  kind: 'nextcloud-mail',         x: 0,   y: 0,   size: 'sm', z: 2},
+          {type: 'widget',  kind: 'nextcloud-files',        x: 0,   y: 230, size: 'sm', z: 2},
+          {type: 'widget',  kind: 'openregister-activity',  x: 460, y: 60,  size: 'sm', z: 0},
         ]}
-        cursor
-        mode="audit log on (every query recorded)"
       />,
     },
     {
-      id: 'presidio',
-      title: 'Presidio (PII redaction)',
-      summary: 'Microsoft Presidio detects personal data in any register row or attached document. DocuDesk runs it before publication; OpenConnector runs it before forwarding to a cloud LLM. The register keeps the source, the outside world only sees the redacted version.',
-      cta: {label: 'See the redaction pipeline', href: 'https://docs.conduction.nl/openregister/presidio'},
-      panel: <AppMock app="docudesk" />,
+      id: 'groupware',
+      title: 'Your CRM uses your real contacts and calendar.',
+      summary: "When a CRM app needs contacts, it reads Nextcloud Contacts; when it needs an agenda, it writes to Nextcloud Calendar. Open a lead, see the meetings about it. Click a contact, jump straight into a Talk conversation. Mail threads link back to the case automatically. One Nextcloud login covers all of it, and nobody maintains a second address book.",
+      cta: {label: 'See the groupware integrations', href: 'https://openregister.conduction.nl/docs/Integrations/calendar'},
+      panel: <AppMock app="openconnector" />
+    },
+    {
+      id: 'project-knowledge',
+      title: 'Project knowledge, attached to the project.',
+      summary: "Bookmarks become regulatory references on a case. Collectives wiki pages become the team's working memory on the project. Maps mark the site visits. Photos carry signed, geo-tagged evidence. The project stops being a folder of PDFs and becomes a live reference workspace where new colleagues can catch up without an hour of forwarding threads.",
+      cta: {label: 'See the knowledge integrations', href: 'https://openregister.conduction.nl/docs/Integrations/collectives'},
+      panel: <AppMock app="opencatalogi" />,
+    },
+    {
+      id: 'workflow-from-anywhere',
+      title: 'Open a ticket or lead straight from a Talk message.',
+      summary: "Workflow apps call into registers and registers call back. A Talk message becomes a ticket without leaving the conversation. A public Forms intake writes typed rows the team can act on. An NC Flow rule fires when a case archives. Hours, budget, polls, and KPIs all track against the same typed data the case is built on. Every app gets the data layer; every app contributes back to it.",
+      cta: {label: 'See the workflow integrations', href: 'https://openregister.conduction.nl/docs/Integrations/flow'},
+      panel: <AgentTrace
+        lines={[
+          {kind: 'tool',  text: 'openregister - integration.flow (NC Flow)(rule:',
+                          },
+          {kind: 'continuation', text: '"on case.archived fire retention webhook")'},
+          {kind: 'note',  bullet: 'info', text: 'Triggered by schema event archived=true'},
+          {kind: 'note',  bullet: 'done', text: 'Retention rule recorded against the case'},
+          {kind: 'status', text: 'Audit entry written, citation-stable'},
+        ]}
+        cursor
+        mode="audit log on (every integration call recorded)"
+      />,
+    },
+    {
+      id: 'beyond-the-workspace',
+      title: 'Outside systems, in the same fabric.',
+      summary: "OpenConnector reaches XWiki for runbooks, OpenProject for work packages, Windmill and n8n for automation, Presidio for PII redaction, and any LLM (Claude, Mistral, Ollama) for plain-language search across registers. The outside app stays its own app, but the workspace treats its data as a first-class part of the record. Write your own integration with the scaffold script and it shows up wherever the app is installed.",
+      cta: {label: 'See the external integrations', href: 'https://openregister.conduction.nl/docs/Integrations/xwiki'},
+      panel: <MockScene
+        width={680}
+        height={420}
+        items={[
+          {type: 'sidebar', kind: 'openconnector-run-detail', x: 220, y: 10,  size: 'md', z: 1},
+          {type: 'widget',  kind: 'openregister-activity',    x: 0,   y: 0,   size: 'sm', z: 2},
+          {type: 'widget',  kind: 'openconnector-runs',       x: 0,   y: 230, size: 'sm', z: 2},
+          {type: 'widget',  kind: 'procest-werkvoorraad',     x: 480, y: 80,  size: 'sm', z: 0},
+        ]}
+      />,
     },
   ]}
 />
-
-<Section id="leaves" anchor="leaves">
-  <SectionHead
-    eyebrow="The 24 workspace leaves"
-    title="One sidebar tab per Nextcloud app you already run."
-    lede="OpenRegister surfaces every linked entity from the surrounding Nextcloud workspace on the object's detail page. Six built-ins ship with the install; the other 18 light up when you enable the underlying app. Each leaf is documented end-to-end in the product docs."
-  />
-
-  <FeatureGrid
-    legend
-    items={[
-      {group: 'Core (ships with every install)'},
-      {label: 'Files', tip: "Files attached to the object's auto-created folder. Drag-drop in Nextcloud Files, list them inline on the object detail page.", href: 'https://openregister.conduction.nl/docs/Integrations/leaf-system', status: 'stable'},
-      {label: 'Notes', tip: 'Free-form notes the team writes against the record. Markdown, signed by the author, scoped to the object.', href: 'https://openregister.conduction.nl/docs/Integrations/leaf-system', status: 'stable'},
-      {label: 'Tags', tip: 'System tags applied to the object. Same tag pool as files, cross-references the workspace taxonomy.', href: 'https://openregister.conduction.nl/docs/Integrations/leaf-system', status: 'stable'},
-      {label: 'Tasks', tip: "CalDAV VTODO tasks linked to the record. Due dates and assignees live in the user's own task app.", href: 'https://openregister.conduction.nl/docs/Integrations/leaf-system', status: 'stable'},
-      {label: 'Audit trail', tip: 'Every read, write, and schema change leaves a signed, citation-stable entry. WOO and BIO compliance evidence ships with the install.', href: 'https://openregister.conduction.nl/docs/Integrations/leaf-system', status: 'stable'},
-      {label: 'Shares', tip: "Nextcloud shares created against the object's files. Surfaces who has access, when, and why.", href: 'https://openregister.conduction.nl/docs/Integrations/leaf-system', status: 'stable'},
-
-      {group: 'Communication (lights up with NC Calendar / Contacts / Mail / Talk)'},
-      {label: 'Calendar', tip: "CalDAV events linked to the record. Meet-about-this-case in one click, agenda stays in the user's own calendar.", href: 'https://openregister.conduction.nl/docs/Integrations/calendar', status: 'stable'},
-      {label: 'Contacts', tip: 'CardDAV contacts associated with the record. Customer, vendor, citizen, every party lives in NC Contacts.', href: 'https://openregister.conduction.nl/docs/Integrations/contacts', status: 'stable'},
-      {label: 'Email', tip: 'Mail messages linked to the record. Subject, sender, date. Click through to NC Mail to reply.', href: 'https://openregister.conduction.nl/docs/Integrations/email', status: 'stable'},
-      {label: 'Talk', tip: "NC Talk conversations carrying the record's discussions. Calls, chat history, screen-shares, all in NC Talk, surfaced on the record.", href: 'https://openregister.conduction.nl/docs/Integrations/talk', status: 'stable'},
-
-      {group: 'Knowledge & documents (NC Bookmarks / Collectives / Maps / Photos)'},
-      {label: 'Bookmarks', tip: 'NC Bookmarks tagged with the record. Reference URLs, regulatory sources, partner sites, all one tag away from the case.', href: 'https://openregister.conduction.nl/docs/Integrations/bookmarks', status: 'stable'},
-      {label: 'Collectives', tip: 'NC Collectives pages, the team wiki for the case. Markdown, versioned, with a marker in the slug.', href: 'https://openregister.conduction.nl/docs/Integrations/collectives', status: 'stable'},
-      {label: 'Maps', tip: "NC Maps favorites with the record's coordinates. Site visits, asset locations, on-the-ground evidence.", href: 'https://openregister.conduction.nl/docs/Integrations/maps', status: 'stable'},
-      {label: 'Photos', tip: 'NC Photos albums tied to the record. Photo evidence, signed timestamps, geo-tagged.', href: 'https://openregister.conduction.nl/docs/Integrations/photos', status: 'stable'},
-
-      {group: 'Workflow (NC Activity / Analytics / Cospend / Deck / Flow / Forms / Polls / TimeManager)'},
-      {label: 'Activity', tip: 'Nextcloud activity stream filtered to the record. Who touched the file, who shared what, when.', href: 'https://openregister.conduction.nl/docs/Integrations/activity', status: 'stable'},
-      {label: 'Analytics', tip: 'NC Analytics reports linked to the record. Charts and KPIs that reference the same data the case is built on.', href: 'https://openregister.conduction.nl/docs/Integrations/analytics', status: 'stable'},
-      {label: 'Cospend', tip: 'NC Cospend projects, budget and expense tracking attached to the case.', href: 'https://openregister.conduction.nl/docs/Integrations/cospend', status: 'stable'},
-      {label: 'Deck', tip: 'NC Deck cards linked to the record. Per-case kanban without leaving the case.', href: 'https://openregister.conduction.nl/docs/Integrations/deck', status: 'stable'},
-      {label: 'Flow', tip: "NC Workflow Engine rules referencing the record's schema. Automate notifications, retention, escalations.", href: 'https://openregister.conduction.nl/docs/Integrations/flow', status: 'stable'},
-      {label: 'Forms', tip: 'NC Forms responses linked to the record. Citizen submissions, survey results, intake forms.', href: 'https://openregister.conduction.nl/docs/Integrations/forms', status: 'stable'},
-      {label: 'Polls', tip: 'NC Polls scheduled around the record. Stakeholder check-ins, decision tracking.', href: 'https://openregister.conduction.nl/docs/Integrations/polls', status: 'stable'},
-      {label: 'Time tracker', tip: 'NC TimeManager projects with hours logged against the record. Billable evidence per case.', href: 'https://openregister.conduction.nl/docs/Integrations/time-tracker', status: 'stable'},
-
-      {group: 'External (via OpenConnector)'},
-      {label: 'XWiki', tip: 'XWiki pages linked through OpenConnector. Knowledge-base articles, runbooks, procedure docs from outside Nextcloud, surfaced inside it.', href: 'https://openregister.conduction.nl/docs/Integrations/xwiki', status: 'stable'},
-      {label: 'OpenProject', tip: 'OpenProject work packages linked through OpenConnector. Project-management workflows from outside the workspace, surfaced on the record.', href: 'https://openregister.conduction.nl/docs/Integrations/openproject', status: 'stable'},
-    ]}
-  />
-
-  <div style={{textAlign: 'center', marginTop: 'var(--space-6)', color: 'var(--color-text-muted)', fontSize: '0.95em'}}>
-    All 24 leaves use the same <a href="https://openregister.conduction.nl/docs/Integrations/pluggable-integration-registry">pluggable integration registry</a>. Add your own with the leaf-scaffold script and it appears on every register the moment you install your app.
-  </div>
-</Section>
 
 <McpToolShelf
   eyebrow="AI chat tools"
@@ -340,9 +312,9 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
       why="Fills your registers from existing systems, REST, SOAP, file drops, message queues, without writing glue code."
     />
     <PairCard
-      href="/apps/mydash"
+      href="/apps/launchpad"
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
-      name="MyDash"
+      name="LaunchPad"
       why="Builds dashboards directly off your registers. No separate BI tool, no extra login, no ETL."
     />
   </PairRow>
@@ -371,7 +343,7 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
       {group: 'Integrations'},
       {label: 'OpenCatalogi indexing', tip: 'OpenCatalogi indexes every register as a searchable public catalogue entry.', status: 'stable'},
       {label: 'OpenConnector ingest', tip: 'OpenConnector ingests data into registers from REST, SOAP, file drops, message queues.', status: 'stable'},
-      {label: 'MyDash dashboards', tip: 'MyDash builds dashboards directly off your registers. No ETL, no separate BI tool.', status: 'stable'},
+      {label: 'LaunchPad dashboards', tip: 'LaunchPad builds dashboards directly off your registers. No ETL, no separate BI tool.', status: 'stable'},
       {label: 'DocuDesk template fields', tip: 'DocuDesk reads register fields straight into document templates and signs the result.', status: 'stable'},
       {label: 'NLDS profile pack', tip: 'Twelve NLDS profile packs ship in the install: BAG, BRO, BRP, KvK, RGBZ, ZTC, etc.', status: 'beta'},
       {label: 'Federated registers', tip: 'Cross-instance register federation over signed manifests.', status: 'soon'},

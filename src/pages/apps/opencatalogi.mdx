@@ -5,8 +5,10 @@ hide_table_of_contents: true
 ---
 
 import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, Pipeline, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
+  background="cobalt"
   appId="opencatalogi"
   crumb={[{label: 'Apps', href: '/apps'}, 'OpenCatalogi']}
   status={{label: 'Stable', color: 'var(--c-mint-500)'}}
@@ -14,9 +16,10 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
   locales="NL · EN"
   title="OpenCatalogi"
   tagline={<>The public-facing software, dataset, and API catalogue. Drops into your <span className="next-blue">Nextcloud</span>, surfaces every register as a searchable entry, federates to data.overheid.nl out of the box.</>}
+  intro={<>OpenCatalogi is an open-source publication catalog app for the Nextcloud workspace. It lets government bodies publish, index, and share catalogs of software, services, and data through a single user interface, and ingests metadata from GitHub, GitLab, and external APIs via PublicCode.yml. The app supports WOO compliance (Public Access to Government Information Act) and standardized organization profiles, making public-sector information discoverable to citizens, businesses, and other agencies. Released under EUPL-1.2 and maintained by Conduction since 2019.</>}
   primaryCta={{label: 'Install from app store', href: '/install'}}
   secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/opencatalogi'}}
-  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/opencatalogi'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/opencatalogi'}}
   iconColor="var(--c-blue-cobalt)"
   icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
   illustration={<AppMock app="opencatalogi" />}
@@ -72,6 +75,8 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
   </div>
 </Section>
 
+<PartnersForApp slug="opencatalogi" />
+
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="How it works"
@@ -85,7 +90,7 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
       {number: '01', kicker: 'Ingest', name: 'OpenConnector', caption: 'Pull data in from existing systems via REST, SOAP, file drops.'},
       {number: '02', kicker: 'Validate', name: 'OpenRegister', caption: 'Schema validates every write. Citation-stable IDs assigned.'},
       {number: '03', kicker: 'Surface', name: 'OpenCatalogi', caption: 'Federated public catalogue. Search, filter, share.'},
-      {number: '04', kicker: 'Render', name: 'MyDash', caption: 'Optional dashboards and reports for the team.'},
+      {number: '04', kicker: 'Render', name: 'LaunchPad', caption: 'Optional dashboards and reports for the team.'},
     ]}
     end={{label: 'Consumers', items: ['Citizens', 'Partners', 'API clients', 'Auditors']}}
   />
@@ -116,9 +121,9 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
       tone: 'workspace',
       eyebrow: 'Dashboard-ready',
       title: 'What you publish, you can chart.',
-      summary: 'MyDash reads the same registers OpenCatalogi indexes. Publish a dataset and a graph of it shows up on the dashboard the same morning.',
-      cta: {label: 'See MyDash', href: '/apps/mydash'},
-      panel: <AppMock app="mydash-bi" />,
+      summary: 'LaunchPad reads the same registers OpenCatalogi indexes. Publish a dataset and a graph of it shows up on the dashboard the same morning.',
+      cta: {label: 'See LaunchPad', href: '/apps/launchpad'},
+      panel: <AppMock app="launchpad-bi" />,
     },
   ]}
 />
@@ -211,7 +216,7 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
       title: 'LLMs (Claude, Mistral, Ollama)',
       summary: 'Ask the catalogue in plain language. The LLM resolves your question to a federated query, returns datasets with citation-stable IDs, and explains why each one matched. Helpful when the catalogue gets to thousands of items.',
       cta: {label: 'See the semantic search', href: 'https://docs.conduction.nl/opencatalogi/llm-search'},
-      panel: <AppMock app="mydash-bi" />,
+      panel: <AppMock app="launchpad-bi" />,
     },
   ]}
 />

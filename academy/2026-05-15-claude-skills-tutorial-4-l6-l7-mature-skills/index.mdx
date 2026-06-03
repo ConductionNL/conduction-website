@@ -1,0 +1,346 @@
+---
+slug: claude-skills-tutorial-4-l6-l7-mature-skills
+title: "Claude Skills tutorial series — Part 4: From measured to learning and orchestrating (L6 → L7)"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-15
+summary: How do you go beyond L5? L6 puts a learnings loop on your skill, L7 turns it into an orchestrator that steers sub-agents. Plus a look at the skill-level-overview dashboard that lets you scan your whole skill library for maturity at a glance. Fourth of four short modules.
+tags: [Claude, Claude Code, Skills, AI, Maturity, Tutorial series]
+apps: []
+durationMinutes: 18
+series: claude-skills-tutorial
+partNumber: 4
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+In part 3 you took a skill from "feels right" to "measurably right" — Maturity Level 5. For most skills that's enough. But for a handful of skills you use daily, or that steer other skills, you want to go further: a skill that **learns from its own executions** (L6), and a skill that **steers other agents** inside a larger workflow (L7). This fourth part shows how you get there — and how the Hydra dashboard lets you monitor your whole skill library for maturity at once.
+
+{/* truncate */}
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>What a learnings loop is, and how a <code>learnings.md</code> + capture step makes your skill a little smarter on every execution (L6).</Outcome>
+  <Outcome>The two-stage buffer (<code>learning-candidates.md</code> → <code>learnings.md</code> → <code>SKILL.md</code>) and when you consolidate.</Outcome>
+  <Outcome>How a skill becomes an orchestrator: spawning sub-agents, workflow chains, hand-offs, fan-out/fan-in patterns (L7).</Outcome>
+  <Outcome>The difference between <em>structural</em> L7 and <em>mature</em> L7 — and why you need both.</Outcome>
+  <Outcome>The <code>skill-level-overview.html</code> dashboard and the <code>update-skill-overview.sh</code> script that show your whole skill library live by maturity.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>Parts 1, 2 and 3 read — especially part 3, because L6 and L7 build directly on L5 measurement.</PrerequisiteItem>
+  <PrerequisiteItem>A skill you've used intensively for at least a few weeks. L6 without real execution history is an empty shell.</PrerequisiteItem>
+  <PrerequisiteItem>For L7: a use case where you can parallelise work, or one that breaks down into a chain of skills.</PrerequisiteItem>
+</Prerequisites>
+
+## Recap: the 7 levels, and where we are now
+
+| Level | What it adds |
+|---|---|
+| L1–L4 | Anatomy, golden rule, foundations, business context |
+| **L5** | 3+ evals, trigger tests, baseline — *part 3* |
+| **L6** | `learnings.md` + capture step, periodic consolidation — *this part* |
+| **L7** | Orchestrates sub-agents or sits in a workflow chain — *this part* |
+
+Important: levels are **cumulative in criteria** but not always in practice. A skill can have an L7 architecture (spawns eight parallel agents) without having L5 evals — that's called *structural L7, maturity L4*. The architecture is there, the self-knowledge isn't. For real L7 you need L1 through L6 alongside it.
+
+## Level 6: Self-Improvement — skills that learn from their executions
+
+An L5 skill is measured, but static. Each execution runs disconnected from the previous one; what you learned last week, the skill forgets tomorrow. **L6 solves that with a learnings loop**:
+
+```
+Execution  →  capture observations  →  learnings.md  →  consolidation  →  SKILL.md rules
+                                          ↑                              │
+                                          └──────────────────────────────┘
+```
+
+### The ingredients
+
+Three things make a skill L6-mature:
+
+1. A **`learnings.md`** in the skill folder.
+2. A **"Capture Learnings" step** at the end of `SKILL.md` — Claude is explicitly asked at the end of every execution whether anything in the run stood out that could help a future run.
+3. A **consolidation rhythm** — typically at 80–100 entries you look back, remove outdated rules, merge duplicates, and promote validated principles into guardrails inside `SKILL.md` itself.
+
+### The format of `learnings.md`
+
+Each entry is **dated and atomic** (one insight per bullet). The file has five fixed sections:
+
+```markdown
+# Learnings — create-pr
+
+## Patterns That Work
+- 2026-03-15: Branch protection op `main` vraagt status checks — altijd eerst verifiëren dat ze bestaan.
+- 2026-03-20: GitHub issue-nummer in PR-titel verbetert traceability.
+
+## Mistakes to Avoid
+- 2026-03-18: NIET een PR maken met uncommitted changes — onduidelijk wat er meegaat.
+- 2026-03-22: composer.lock-conflict → lokaal `composer update` draaien, niet één kant accepteren.
+
+## Domain Knowledge
+- 2026-03-19: Conduction-repos gebruiken `development` als primaire integratie-branch, niet `main`.
+
+## Open Questions
+- Moeten PRs reviewers auto-assignen via CODEOWNERS?
+
+## Consolidated Principles
+- (gepromoot na 3+ bevestigingen)
+- Draai altijd `composer check:strict` vóór PR-aanmaak — vangt 90% van review-feedback af.
+```
+
+### The "Capture Learnings" step in `SKILL.md`
+
+`learnings.md` doesn't fill itself — Claude only does that if you ask explicitly. The way to ask is a fixed step, all the way at the bottom of `SKILL.md`, after every execution step and before the guardrails. Below is an example as it sits in Conduction's `create-pr` skill — short, with the five sections stated up front so Claude doesn't forget them:
+
+```markdown
+## Capture Learnings
+
+After execution, review what happened and append new observations to
+[learnings.md](learnings.md) under the appropriate section:
+
+- **Patterns That Work** — approaches that produced good results
+- **Mistakes to Avoid** — errors encountered and how they were resolved
+- **Domain Knowledge** — facts discovered during this run
+- **Open Questions** — unresolved items for future investigation
+
+Each entry must include today's date. One insight per bullet.
+**Skip if nothing new was learned** — do NOT invent learnings to fill the section.
+```
+
+Three things to notice:
+
+1. **It's a step, not a suggestion.** By formatting it as a `## Capture Learnings` section, it sits in the same "do this" mode as the other numbered steps. A non-committal sentence like "remember to write something down if you feel like it" gets skipped by Claude often.
+2. **"Skip if nothing new was learned"** is crucial. Without that rule, Claude *always* produces something — pseudo-insights like "the skill executed successfully". That's exactly the kind of noise that quickly pollutes `learnings.md` and eats your context budget on every run.
+3. **Spell out the intent per section** — not just the name. "Patterns That Work" alone triggers generic content; "approaches that produced good results" steers Claude into focused observational behaviour.
+
+Variant for skills with a container/headless mode: add a table at the top of `SKILL.md` that explicitly says the Capture Learnings step is skipped in headless mode (a container filesystem is disposable — writing to `learnings.md` is wasted). The `opsx-apply` skill does it like this:
+
+```markdown
+| Step | Interactive mode | Headless mode (CI) |
+|---|---|---|
+| Capture Learnings | Append to `learnings.md` | **Skip** — container filesystem is disposable |
+```
+
+### The two-stage buffer (strongly recommended)
+
+The naive pattern — writing *every* observation directly into `learnings.md` — fills the file with noise fast. A teammate reported something that "felt off" but on reflection was a coincidental fluctuation; now it's there, and Claude reads it on every run.
+
+The fix is a **two-stage buffer**:
+
+```
+learning-candidates.md  →  (promotion criteria met?)  →  learnings.md  →  SKILL.md rules
+        ↓ (no)
+   removed after 30 days
+```
+
+Promotion criteria are deliberately strict:
+- Observation confirmed at least **3 times** in separate executions, **or**
+- Observation fixes a **measured eval failure** from part 3.
+
+That keeps `learnings.md` clean and stops context budget being wasted on one-off coincidences.
+
+### When do you consolidate?
+
+Around ~80–100 entries `learnings.md` itself becomes a context load. That's when you trigger a consolidation round:
+
+1. **Outdated?** — remove (the bug has been patched, the rule no longer applies).
+2. **Duplicates?** — merge into one sharper bullet.
+3. **Cross-cutting pattern?** — promote to the "Consolidated Principles" section.
+4. **Validated principle?** — write it as a guardrail or step directly into `SKILL.md`, and remove the loose observations that led to it from `learnings.md`.
+
+<HexCard title="L6 in one line">
+  An L6 skill has a <code>learnings.md</code> with dated, atomic entries; <code>SKILL.md</code> ends with a "Capture Learnings" step; and you consolidate periodically so principles turn into rules.
+</HexCard>
+
+## Level 7: AI Workforce — skills that steer other agents
+
+L7 isn't a "better skill" — it's a **different kind of skill**. An L7 skill doesn't produce output itself; it **coordinates** a team of sub-agents, or sits inside a chain of skills that hand off to each other.
+
+### Criteria (on top of L6)
+
+- **Spawns sub-agents** (parallel workers) **or** is itself invoked by a parent skill.
+- Sits in a **defined workflow chain** with explicit hand-off points:
+  ```
+  opsx-new → opsx-ff → opsx-plan-to-issues → opsx-apply → opsx-verify → opsx-archive
+  ```
+- **Passes context forward** to the next skill (shows "Next step: run `/opsx-verify`").
+- Uses **isolated execution contexts** where needed (git worktrees, Docker, sandbox).
+- Has **autonomy** within a defined scope — not everything asks for confirmation.
+- Does **parallel work** (eight agents at once, fan-out/fan-in).
+
+### Orchestration patterns in Hydra
+
+| Pattern | Example in Hydra | Description |
+|---|---|---|
+| **Pipeline** | `opsx-pipeline` | Full lifecycle for 1+ changes in parallel via subagents |
+| **Fan-out/Fan-in** | `test-counsel`, `feature-counsel` | Spawn N agents in parallel, then one synthesis |
+| **Sequential Chain** | `opsx-new → … → opsx-archive` | Every skill hands off to the next |
+| **Autonomous Loop** | `opsx-apply-loop` | Runs an apply→verify cycle with retry, auto-archive |
+| **Multi-perspective** | `test-app` | Six specialised test agents simultaneously |
+
+### Structural L7 ≠ mature L7
+
+It's tempting to stand up an orchestrator and call your work done. But if that orchestrator has no evals (L5) and no learnings loop (L6), you have a **complex machine without self-knowledge**. It *does* a lot; you don't know how well.
+
+That's called *structural L7, maturity L4*. The problem: once it fails, no one knows *where* in the chain things went wrong, and the error repeats tomorrow. For real L7 you need to close the L5 and L6 gaps — measure the chain as a whole and at the hand-off points, and let the orchestrator capture observations itself.
+
+<HexCard title="L7 in one line">
+  An L7 skill orchestrates others — but only when it's also measured (L5) and learning (L6) is it really mature; until then it's architecture without self-reflection.
+</HexCard>
+
+## Monitoring the whole library: the skill-level-overview dashboard
+
+Taking one skill to L6 or L7 is manageable. But once you have a library of ten, twenty, or (as in Hydra) ~70 skills, you want to see at a glance which skill sits at which level — and which ones are sliding back.
+
+For that, the Conduction skill toolchain ships two files under `.claude/skills/`:
+
+- **`skill-level-overview.html`** — a local, static HTML dashboard. One table per skill: current maturity (green dots), target maturity (badge), `SKILL.md` line count (coloured: green ≤200, yellow around 450, red >500), and orange rings for "structurally present but not yet mature". Sortable by column. You open it locally — `xdg-open` on Linux, `open` on macOS, or double-click in the file explorer.
+- **`update-skill-overview.sh`** — a bash script that scans every skill folder, detects structural markers (frontmatter present, guardrails, evals with enough trigger tests, dated learnings, agent spawns), and writes the HTML back up to date. One `./update-skill-overview.sh` and your dashboard is correct again.
+
+### What the script does automatically
+
+The script detects:
+
+| Level | What the script measures |
+|---|---|
+| **L1** | Frontmatter present, numbered steps, guardrail sections or directives, `name:` matches the folder name |
+| **L2** | `SKILL.md` ≤500 lines and `description:` is filled |
+| **L3** | Proven patterns + `examples/` or `references/` or `templates/` present |
+| **L4** | **NEVER automatic** — you have to confirm manually (domain knowledge is human work) |
+| **L5** | `evals/evals.json` with 3+ scenarios, 10+ should-trigger, 10+ should-not-trigger, `last_validated` filled, plus `grading.json` and `timing.json` |
+| **L6** | `learnings.md` with dated entries + "Capture Learnings" step in `SKILL.md` |
+| **L7** | References to `Agent tool`, `subagent`, or `Task agents` in `SKILL.md` |
+
+A key design choice: **L4 is never set automatically**. Domain knowledge isn't detectable from file structure — only you can say whether a skill really knows your business. The script shouts for attention when L1–L3 are in place but L4 isn't confirmed yet.
+
+### How to set this up for your own project
+
+The canonical `skill-level-overview.html` + `update-skill-overview.sh` live in Conduction's internal skill toolchain. Two paths to get going with it yourself:
+
+- **Ask for the files** — email us via the CTA at the bottom of this page; we're happy to share the current version with customers and partners as a starting point. After that it's `cp` to `<your-repo>/.claude/skills/` and run `bash .claude/skills/update-skill-overview.sh`.
+- **Build it yourself** — the measurement rules in the table above are all you need. A few hours of bash and a simple HTML table template will already give you a working v1.
+
+A natural place to run the script: before a release tag, in a pre-commit hook on the skills folder, or as a weekly cron. That way you see drift (a skill that grows to 520 lines and therefore loses L2) immediately.
+
+<HexCard title="Rule of thumb: weekly scan + per-skill consolidation">
+  Run <code>update-skill-overview.sh</code> weekly; consolidate <code>learnings.md</code> per skill ad hoc around ~80 entries. The dashboard tells you which skill is up next.
+</HexCard>
+
+## Test yourself
+
+Four short questions to check whether you got this part. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. Why a two-stage buffer instead of writing directly into `learnings.md`?**
+
+<Details summary="Hint">
+
+What happens if *every* fleeting observation gets stored permanently right away?
+
+</Details>
+
+<Details summary="Answer">
+
+Because direct writes pollute `learnings.md` fast with one-off coincidences, error diagnoses that later turned out to be different, or observations that were only relevant to one specific context. Each of those then gets read on every execution and eats your context budget.
+
+The two-stage buffer (`learning-candidates.md` → `learnings.md`) inserts a filter: only observations that have been confirmed at least 3 times, or that fix a measured eval failure, get promoted. The rest drops off after 30 days. The result: `learnings.md` keeps high-signal entries, and at consolidation time you have real patterns to promote into `SKILL.md` guardrails.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. What's the difference between "structural L7" and "mature L7", and why does it matter?**
+
+<Details summary="Hint">
+
+A skill can be architecturally complex without ever having been measured or having learned anything.
+
+</Details>
+
+<Details summary="Answer">
+
+- **Structural L7** means the skill has *the architecture* of orchestration: spawns subagents, sits in a chain, does hand-offs, runs in parallel.
+- **Mature L7** means that architecture has *also* been measured (L5) and improves itself (L6).
+
+A "structural L7, maturity L4" skill is a complex machine without self-knowledge. It *does* a lot — you don't know how well. Once it fails, it's unclear *where* in the chain things went wrong, and the error repeats tomorrow.
+
+The distinction matters because orchestrators have a big blast radius: they start multiple agents, take multiple actions, touch multiple files. If you don't have evals (L5) and learnings (L6) alongside that, you scale failures just as hard as successes.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Why does `update-skill-overview.sh` never set L4 automatically?**
+
+<Details summary="Hint">
+
+What sets L4 apart from L1, L2, L3, L5, L6 and L7 in terms of what's detectable?
+
+</Details>
+
+<Details summary="Answer">
+
+Because L4 — "Personalization / Domain Knowledge" — means the skill contains your business-specific knowledge (ADRs, naming conventions, business rules, "we use `development` as our primary branch"). That isn't detectable from file structure, line counts, or frontmatter fields.
+
+L1 through L3 are structural (frontmatter, guardrails, examples — a script can see them). L5 through L7 are structural or behaviour-related in ways that show up in files (evals JSON, learnings.md, agent calls).
+
+But L4 requires a human to say: "yes, this skill knows *our* codebase, not just generic best practices." That's why the script calls loudly for your input as soon as L1–L3 are achieved but L4 isn't confirmed yet. Until that moment the skill stays at M3, even when structurally higher levels are already present.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. A teammate has a skill that spawns six test agents in parallel but has no evals and no `learnings.md`. What would you suggest — add more orchestration first, or something else first?**
+
+<Details summary="Hint">
+
+Think about the difference between architecture and self-knowledge.
+
+</Details>
+
+<Details summary="Answer">
+
+First: **not more orchestration**. This skill is structural L7, maturity L4 — the architecture is in place, but there's no measurement (L5) and no learning behaviour (L6). Adding more parallelism or more chain skills only enlarges the blast radius.
+
+The right order:
+
+1. **L5 first** — write 3+ eval scenarios for the whole chain and the hand-off points. Only then do you know whether the six parallel agents aren't fighting each other or doubling work.
+2. **L6 next** — add a `learnings.md` where the orchestrator records which patterns between agents work and which don't (e.g. "when agent A and B both touch the same file, conflict X arises").
+3. **Only then L7 expansion** — once the chain is measured and learning, you can expand it safely (more agents, longer chain, autonomous loop).
+
+Rule of thumb: orchestration without measurement is unjustified scaling. First know whether the chain works, then grow it.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="You've now seen the full spectrum: from anatomy to orchestration, plus the dashboard to monitor your whole library. These are good next steps.">
+  <NextStep
+    title="Hydra tutorial series — Part 4: Skills inside the Hydra pipeline"
+    href="/academy/hydra-tutorial-4-skills"
+    description="See how ~70 skills run together in four families inside a real agentic CI/CD pipeline. Internal track for Conduction colleagues."
+  />
+  <NextStep
+    title="Previous step — Skill evals (L5)"
+    href="/academy/claude-skills-tutorial-3-skill-evals"
+    description="Back to the measurement foundation — useful to re-read before you switch L6 on for a skill."
+  />
+  <NextStep
+    title="Conduction docs — Writing Skills (full reference)"
+    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/writing-skills.md"
+    description="The canonical 7-level maturity framework doc this track is based on."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Setting up an orchestrator for your team?"
+  body="L7 skills are what Hydra itself runs on. Want to spar about whether your use case deserves an orchestrator, or how to build a learnings loop into your existing skill? Send us an email."
+  cta={{ label: "Email Conduction", href: "mailto:info@conduction.nl?subject=Claude%20Skills%20learning%20track%20part%204" }}
+/>

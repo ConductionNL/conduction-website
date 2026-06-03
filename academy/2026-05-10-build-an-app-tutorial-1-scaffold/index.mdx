@@ -1,0 +1,228 @@
+---
+slug: build-an-app-tutorial-1-scaffold
+title: "Build a Nextcloud app on the Conduction stack — Part 1: Scaffold"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-10
+summary: Clone the Conduction app template, rename it to PetStore, build, enable, and see the canonical app chassis. The first hands-on part of the nine-part app-building series, using the OpenAPI Pet Store as the running domain.
+tags: [App development, Nextcloud, OpenRegister, nextcloud-vue, Tutorial series]
+apps: [openregister]
+durationMinutes: 20
+series: build-an-app-tutorial
+partNumber: 1
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+  AppMock,
+  Troubleshooting,
+  TroubleshootingItem,
+} from '@conduction/docusaurus-preset/components';
+
+This is **Part 1 of the app-building tutorial series**, the hands-on chassis lap. If you haven't read [Part 0: Three paths, one curriculum](/academy/build-an-app-tutorial-0-three-paths) yet, that's the orientation that explains *why* we build on this stack rather than raw Nextcloud, and how the manifest and `@conduction/nextcloud-vue` work as two intertwined surfaces. Part 1 picks up after that decision is made.
+
+You'll build **PetStore**, a Nextcloud app on top of the OpenAPI Pet Store domain (pets, orders, categories, tags) on the full Conduction Nextcloud stack. The end product: add pets to the store, place orders, see order ship-dates in your Nextcloud Calendar, and surface category-specific care guides from xWiki right next to each pet. Every piece reuses what `@conduction/nextcloud-vue` and OpenRegister already give you for free.
+
+In Part 1 you scaffold the app, rename it, build it, and see the canonical app chassis on screen. No data, no integrations yet. We get the bones right first.
+
+{/* truncate */}
+
+<Outcomes title="What you'll have at the end of Part 1">
+  <Outcome>A working <strong>PetStore</strong> app installed in your local Nextcloud, navigable from the app shelf.</Outcome>
+  <Outcome>A clear mental model of the canonical Conduction app <strong>chassis</strong>: topbar, left navigation, main column, page header, sidebar.</Outcome>
+  <Outcome>Confidence with the <strong>nextcloud-app-template</strong> rename ritual: <code>id</code>, namespace, the few files you have to touch, the rest you can leave for later.</Outcome>
+  <Outcome>A clean foundation for Part 2, where the chassis starts holding real data.</Outcome>
+</Outcomes>
+
+## What we're building, across the series
+
+| Part | Title | Adds |
+|---|---|---|
+| 0 | [Three paths, one curriculum](/academy/build-an-app-tutorial-0-three-paths) | The orientation lap. Which path to pick and why |
+| 1 | Scaffold (you're here) | Empty app shell, chassis visible, navigable |
+| 2 | [Schemas + manifest](/academy/build-an-app-tutorial-2-schemas-manifest) | Pet, order, category schemas, full CRUD, dashboard |
+| 3 | [Schema-driven integrations](/academy/build-an-app-tutorial-3-calendar) | Order ship-dates appear in NC Calendar via the OpenRegister calendar provider |
+| 4 | [External knowledge + ship](/academy/build-an-app-tutorial-4-knowledge-and-ship) | xWiki care-guides via OpenConnector, sidebar tab, package, publish |
+| 5 | [Advanced manifest features](/academy/build-an-app-tutorial-5-advanced-manifest) | actionToggles, fieldWidgets, public-mode pages, the other page types |
+| 6 | [Integrate](/academy/build-an-app-tutorial-6-integrate) | Cross-register reads, OpenConnector source/sync, two-way webhook back into OR |
+| 7 | [The nc-vue component library](/academy/build-an-app-tutorial-7-nc-vue) | Capability-driven tour: forms, dialogs, status, filtering, composables, theming |
+| 8 | [Document and showcase](/academy/build-an-app-tutorial-8-document-and-showcase) | Stand up a docs site for the app you built, with screen mocks + Playwright capture |
+
+Same shape, two repos:
+
+- **App source:** [`Conduction/petstore`](https://codeberg.org/Conduction/petstore). The actual Nextcloud app you're forking from the template.
+- **Tutorial source:** [`Conduction/conduction-website`](https://codeberg.org/Conduction/conduction-website). The post you're reading right now.
+
+:::note Repo creation
+At the time of writing, `Conduction/petstore` is the canonical reference repo for this tutorial. If it doesn't exist yet on Codeberg, fork from the template into your own org as shown in Step 1; the tutorial body uses `petstore` throughout as the example slug.
+:::
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>A running Nextcloud (28+) with admin access. If you don't have one, follow <a href="/academy/nextcloud-lokaal-draaien">Nextcloud lokaal draaien met Docker</a> first.</PrerequisiteItem>
+  <PrerequisiteItem><strong>OpenRegister</strong> installed and enabled in that Nextcloud (Apps → search "OpenRegister" → Download).</PrerequisiteItem>
+  <PrerequisiteItem>Node.js 20+ and PHP 8.1+ on your host, plus Composer and the GitHub CLI (<code>gh</code>). The template ships with PHPCS, Psalm, PHPStan, and ESLint configs ready to go.</PrerequisiteItem>
+  <PrerequisiteItem>A GitHub or Codeberg account so you can fork the template into your own org (or <code>Conduction</code> if you have access).</PrerequisiteItem>
+</Prerequisites>
+
+## Step 1: Use the template
+
+[`Conduction/nextcloud-app-template`](https://codeberg.org/Conduction/nextcloud-app-template) is a repository template. The "Use this template" button on Codeberg (or GitHub's mirror) gives you a fresh repo with the full starter kit: Vue 2 + Pinia frontend, PHP backend, OpenRegister wiring, quality pipeline, OpenSpec scaffolding, CI workflows.
+
+```bash title="Pick a name. We're calling ours petstore."
+gh repo create ConductionNL/petstore \
+  --template ConductionNL/nextcloud-app-template \
+  --public \
+  --description "Pet store: pets, orders, categories on the Conduction stack"
+```
+
+Then clone it next to your other Nextcloud apps. Most workspaces keep them in a single `apps-extra/` directory the dev container mounts.
+
+```bash
+cd /path/to/your/nextcloud/workspace/apps-extra
+git clone https://codeberg.org/Conduction/petstore.git
+cd petstore
+```
+
+You now have a directory with the full template content under the new name. Nothing inside has been renamed yet. The directory is `petstore/`, but every file still says `app-template`, `AppTemplate`, `OCA\AppTemplate`. Step 2 fixes that.
+
+## Step 2: Rename the app
+
+Nextcloud requires three identifiers to line up:
+
+- The directory name (`petstore/`) ✅ already
+- The `<id>` in `appinfo/info.xml`
+- The PHP namespace (`OCA\AppTemplate` → `OCA\PetStore`)
+
+Plus a handful of supporting files reference the old id. The full list is small enough to do by hand, and doing it by hand is the right move. Project memory: **never use `sed` or scripted edits on code files**. Use a real editor with project-aware refactoring, or just read each file once before you change it.
+
+### 2a. The boot-critical files
+
+These are the ones that prevent Nextcloud from booting the app at all. Edit each with `Find & replace all` in your editor (`AppTemplate` → `PetStore` and `app-template` → `petstore`):
+
+| File | Replace |
+|---|---|
+| `appinfo/info.xml` | `<id>`, `<name>`, `<namespace>`, `<navigation>`, `<settings>` paths |
+| `composer.json` | `name`, `description`, the `psr-4` autoload prefix |
+| `package.json` | `name` |
+| `webpack.config.js` | the `appId` constant |
+| `templates/index.php` and `templates/settings/admin.php` | `OCA\AppTemplate` → `OCA\PetStore`, the `data-*` element id |
+| `lib/AppInfo/Application.php` | namespace, `APP_ID` constant, docblock |
+| Every other PHP file in `lib/` | `namespace OCA\AppTemplate\…` → `namespace OCA\PetStore\…`, every `use OCA\AppTemplate\…` import, every docblock |
+| `appinfo/routes.php` | docblock only |
+| Every Vue file in `src/` | the `t('app-template', '…')` translation namespace becomes `t('petstore', '…')` |
+| `src/router/index.js` | `generateUrl('/apps/app-template')` → `generateUrl('/apps/petstore')` |
+| `src/store/store.js`, `src/store/modules/settings.js` | `'/apps/app-template/api/settings'` → `'/apps/petstore/api/settings'`, fallback register slug |
+| `src/settings.js` | `loadTranslations('app-template', …)` and the `#app-template-settings` mount selector |
+| `lib/Settings/app_template_register.json` | rename to `lib/Settings/petstore_register.json` AND change the `"app": "app-template"` field inside it to `"app": "petstore"` (it's easy to miss after the file rename) |
+| `appinfo/info.xml` `<repair-steps>` block | the template already ships this block. Update the FQNs inside from `OCA\AppTemplate\Repair\InitializeSettings` and `InitializeActions` to the `OCA\PetStore\Repair\…` equivalents |
+| `appinfo/info.xml` `<settings>` block | update the `<admin>OCA\AppTemplate\Settings\AdminSettings</admin>` FQN to the `OCA\PetStore\…` equivalent |
+
+### 2b. The "you can do later" files
+
+Tests (`tests/Unit/AppTemplateTest.php`, the integration Postman collection), `phpcs.xml` / `phpmd.xml` / `REUSE.toml` headers, `README.md`, and the `.github/` or `.forgejo/` workflow inputs. They reference the template id in metadata only; the app boots fine without them touched. Fix them when you set up CI.
+
+### 2c. One Nextcloud-version compatibility nip
+
+The template's `lib/AppInfo/Application.php` also registers the repair step at runtime, in addition to the `<repair-steps>` block you updated in 2a:
+
+```php title="lib/AppInfo/Application.php. The duplicate runtime registration"
+$context->registerRepairStep(InitializeSettings::class);
+```
+
+`registerRepairStep()` is missing from `IRegistrationContext` on a few Nextcloud builds (you'll see `Call to undefined method` in `nextcloud.log`). Since `appinfo/info.xml` already has the equivalent `<repair-steps>` block, the runtime registration is redundant. Drop the `registerRepairStep()` line and the `use OCA\PetStore\Repair\InitializeSettings;` import from `lib/AppInfo/Application.php`.
+
+## Step 3: Build and enable
+
+The template ships its build output uncommitted. So the first thing to do in a fresh clone is install dependencies and build the JS bundles, otherwise the app UI is just a blank `<div id="content">`.
+
+```bash
+composer install --no-dev
+composer dump-autoload
+npm install
+npm run build
+```
+
+:::tip Don't use `--legacy-peer-deps`
+A plain `npm install` resolves the template's peer dependencies cleanly and the build succeeds out of the box. `--legacy-peer-deps` skips peer resolution, which has two bad consequences: webpack-vue-config's peers (`sass`, `node-polyfill-webpack-plugin`, `terser-webpack-plugin`, `vue-loader`) silently don't install and the build fails with `Cannot find module 'node-polyfill-webpack-plugin'`, AND the resolved transitive dependency graph leaves webpack's module-concatenation optimisation confused on the `@nextcloud/axios` ESM bundle (`Cannot read properties of undefined (reading 'module')`). Skip the flag.
+:::
+
+Then make sure your Nextcloud container can see the directory. In a typical Docker setup the `apps-extra/` host directory is mounted at `/var/www/html/custom_apps/` in the container; if your compose file uses one bind mount per app, add a line for `petstore` and restart. Otherwise:
+
+```bash title="Quick path: tar + copy + chown (excludes node_modules to keep the transfer small)"
+tar --exclude=node_modules --exclude=vendor -czf /tmp/petstore.tgz petstore/
+docker cp /tmp/petstore.tgz nextcloud:/tmp/petstore.tgz
+docker exec -u root nextcloud bash -c 'cd /var/www/html/custom_apps && tar xzf /tmp/petstore.tgz && chown -R www-data:www-data petstore && rm /tmp/petstore.tgz'
+```
+
+:::tip Why tar + cp instead of `docker cp ./petstore …` directly
+A fresh `node_modules/` can be 400+ MB. A direct `docker cp` on the whole directory takes minutes per iteration and silently hangs without progress output. The container doesn't need `node_modules/` because Nextcloud only serves the built `js/` bundle. Tar with the excludes keeps each rebuild cycle under 10 seconds.
+:::
+
+Now enable:
+
+```bash
+docker exec nextcloud php occ app:enable petstore
+```
+
+You should see (the version comes from `appinfo/info.xml`, usually `0.1.x` on a fresh template):
+
+```
+petstore 0.1.2 enabled
+```
+
+Open `http://localhost:8080/apps/petstore/` and log in. You see a placeholder dashboard with sample KPI cards, two empty panels, three nav items (Dashboard / Items / Documentation) and a Settings entry pinned to the bottom of the rail. That's the chassis.
+
+## The chassis: the whole point of Part 1
+
+Every Conduction app (PetStore, OpenRegister, OpenCatalogi, Procest, LaunchPad, the dozen others) looks the same way on first sight. Same five structural pieces, same place, same behaviour. That recognisability is what `@conduction/nextcloud-vue` enforces: a user who learnt one app navigates the next one without docs.
+
+The chassis is **one shape, five atoms**, the same five structural pieces in the same place, app after app.
+
+<AppMock app="launchpad" caption />
+
+The diagram above shows the LaunchPad reference (one of the canonical fleet variants) with the chassis you just enabled rendered in design tokens. Your fresh PetStore install lays out the same way: topbar, left nav, main column with a page header, optional right sidebar.
+
+In Part 2 you'll learn how `manifest.json` plus a JSON schema fills these atoms with real data. The placeholder `Items` nav entry, the empty dashboard, and the "article" schema you saw on screen will all become **pets**, **orders**, and a real inventory dashboard, without you laying out a single atom by hand.
+
+## Troubleshooting
+
+<Troubleshooting>
+  <TroubleshootingItem problem="App UI is a blank rectangle">
+    The <code>js/</code> build output is not committed. Run <code>npm run build</code> before you enable the app, or after every frontend change. The blank-rectangle symptom always means "the bundle is missing".
+  </TroubleshootingItem>
+  <TroubleshootingItem problem="`Could not download app petstore` when running occ app:enable">
+    Nextcloud requires the directory name to exactly match the <code>&lt;id&gt;</code> in <code>appinfo/info.xml</code>. If you cloned the repo under a different name, either rename the directory or add a relative symlink: <code>ln -s your-clone-name ../petstore</code>.
+  </TroubleshootingItem>
+  <TroubleshootingItem problem="`Call to undefined method ...registerRepairStep()` in nextcloud.log">
+    Step 2c covers this. The fix is to move the repair-step registration from <code>lib/AppInfo/Application.php</code> into <code>appinfo/info.xml</code>'s <code>&lt;repair-steps&gt;</code> block.
+  </TroubleshootingItem>
+  <TroubleshootingItem problem="`Class not found` after the rename">
+    Run <code>composer dump-autoload</code> from the app directory. PHP's classmap caches the old <code>OCA\AppTemplate</code> map until you regenerate it.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+## What's next
+
+<NextSteps>
+  <NextStep
+    title="Part 2: Schemas + manifest"
+    href="/academy/build-an-app-tutorial-2-schemas-manifest"
+    description="Define the pet, order, and category schemas in OpenRegister. Wire them into a manifest.json that CnAppRoot reads. Watch CnIndexPage / CnDetailPage / CnDashboardPage render full CRUD with no glue code."
+  />
+  <NextStep
+    title="The component reference"
+    href="https://nextcloud-vue.conduction.nl/docs/components/"
+    description="Browse every Cn* component the library ships. Live playgrounds, prop tables, slot reference."
+  />
+  <NextStep
+    title="App design principles"
+    href="https://nextcloud-vue.conduction.nl/docs/architecture/app-design-principles/"
+    description="Read the architecture story behind the chassis and the five atoms, the same visual you saw above, with the full design rationale."
+  />
+</NextSteps>

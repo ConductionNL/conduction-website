@@ -1,0 +1,346 @@
+---
+slug: claude-skills-tutorial-3-skill-evals
+title: "Claude Skills leerlijn — Deel 3: Skill-evals — meten of je skill werkt"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-15
+summary: Van een skill die "goed voelt" naar een skill die gemeten goed werkt. Test-scenario's schrijven, baseline-meting, trigger-tests, en de eval-runner van /skill-creator. Derde van vier korte modules.
+tags: [Claude, Claude Code, Skills, AI, Evals, Tutorial series]
+apps: []
+durationMinutes: 15
+series: claude-skills-tutorial
+partNumber: 3
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+Je hebt nu een werkende skill — maar werkt hij ook écht goed? En blijft hij goed werken als Claude zelf een upgrade krijgt of als je de skill aanpast? Dit derde, optionele deel laat zien hoe je een skill systematisch evalueert: test-scenario's, trigger-tests, een baseline-meting, en de eval-runner die `/skill-creator` voor je inricht. Dit is de stap van Maturity Level 4 ("voelt goed") naar Level 5 ("gemeten goed").
+
+{/* truncate */}
+
+<Outcomes title="Wat je leert in dit deel">
+  <Outcome>Waarom skills die alleen "goed voelen" blinde vlekken hebben, en wat een baseline-meting daaraan toevoegt.</Outcome>
+  <Outcome>Het <code>evals/evals.json</code>-formaat schrijven: prompts, expectations, trigger-tests.</Outcome>
+  <Outcome>De eval-runner van <code>/skill-creator</code> draaien en de uitkomst lezen (<code>timing.json</code>, <code>grading.json</code>).</Outcome>
+  <Outcome>Wanneer een skill genoeg evals heeft om Maturity Level 5 te claimen — en wanneer je verder moet naar Level 6.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Deel 1 en 2 doorgenomen, en idealiter een eigen werkende skill om te evalueren (de <code>git-status-summary</code> uit deel 2 werkt prima als oefenobject).</PrerequisiteItem>
+  <PrerequisiteItem>De <code>skill-creator</code> skill geïnstalleerd — de eval-runner zit daarin verstopt.</PrerequisiteItem>
+  <PrerequisiteItem>Een paar concrete scenario's waarin jouw skill is gebruikt of zou worden gebruikt — anders kun je geen realistische evals schrijven.</PrerequisiteItem>
+</Prerequisites>
+
+## Waarom meten? De 7 maturity-niveaus, kort
+
+Skills doorlopen zeven volwassenheidsniveaus, elk bovenop het vorige. Je hoeft niet alles te bouwen — een eenvoudig hulpmiddel hoeft niet voorbij L3 te komen. Maar voor skills die kritisch zijn (hele pipelines, gates, dagelijkse workflows) wil je verder dan "voelt goed":
+
+| Level | Wat erbij komt | Voor wie |
+|---|---|---|
+| **L1** Anatomy | `SKILL.md` met frontmatter, genummerde stappen, guardrails | Iedereen |
+| **L2** Golden Rule | Optimale `description`, progressive disclosure, &lt;500 regels | Iedereen die wil dat de skill goed triggert |
+| **L3** Foundations | Gebouwd op proven patterns, met `examples/` of `references/` | Skills die meer dan een quick utility zijn |
+| **L4** Personalisation | Bevat business-specifieke kennis (jouw ADRs, standaarden, domein) | Conduction-specifieke skills |
+| **L5** Measurement | Heeft 3+ evals, trigger-tests, en `last_validated` is gezet | **Hier zit dit deel** |
+| **L6** Self-improvement | Houdt `learnings.md` bij, consolideert periodiek | Skills die je intensief gebruikt |
+| **L7** Workforce | Orkestreert sub-agents of zit in een workflow-keten | Hydra-achtige pipelines |
+
+Dit deel brengt je van L4 naar L5. Onderzoek toont aan dat ~80% van community-skills de output *slechter* maakt; de 20% die werkt is gebouwd door domein-experts mét iteratieve evaluatie. Meten is wat het verschil maakt.
+
+## Het probleem: wat je niet meet, weet je niet
+
+Een skill die "goed voelt" maar nooit gemeten is, kan drie verborgen problemen hebben:
+
+1. **Geen baseline** — je weet niet of de skill beter is dan Claude zonder skill. Misschien voegt hij niets toe.
+2. **Onbekende auto-triggering** — je hebt 'm twee keer met succes met `/` aangeroepen, maar Claude pikt 'm in normale gesprekken nooit op. Of juist veel te vaak.
+3. **Regressie na een edit** — je tweakt de `description` om scenario A te fixen en breekt onbedoeld scenario B.
+
+Evals lossen alle drie op.
+
+## De drie soorten meting
+
+| Meting | Antwoordt op de vraag | Output |
+|---|---|---|
+| **Eval scenarios** | Doet de skill wat hij moet doen op realistische prompts? | `grading.json` — pass/fail per scenario |
+| **Trigger tests** | Triggert hij wel/niet automatisch zoals bedoeld? | `should_trigger` / `should_not_trigger` slagings-percentage |
+| **Baseline** | Is de skill beter dan Claude zonder skill? | Een vergelijking naast elkaar |
+
+Je hebt alle drie nodig voor een schone L5-claim.
+
+## Het `evals.json`-formaat
+
+Maak in je skill-folder een subfolder `evals/` aan met daarin `evals.json`:
+
+```json
+{
+  "skill_name": "git-status-summary",
+  "version": "1.0.0",
+  "created": "2026-05-15",
+  "last_validated": null,
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Geef een overzicht van wat er in mijn working tree is veranderd",
+      "expected_output": "Summary grouped by staged / unstaged / untracked with file paths",
+      "files": [],
+      "expectations": [
+        "uses the three-group format from SKILL.md",
+        "calls git status --porcelain, not the plain git status",
+        "shows file path AND change type per line",
+        "omits empty groups"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "What's currently staged for commit?",
+      "expected_output": "Only the Staged group is shown when nothing else has changes",
+      "files": [],
+      "expectations": [
+        "shows Staged group with correct file count",
+        "does not invent files not in git status",
+        "does not run git add or any write commands"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Show me my git status",
+      "expected_output": "Triggers the skill and produces the canonical three-group summary",
+      "files": [],
+      "expectations": [
+        "skill auto-activates on this prompt",
+        "produces full three-group format even if some groups are empty (they should be omitted)"
+      ]
+    }
+  ],
+  "trigger_tests": {
+    "should_trigger": [
+      "Wat is er veranderd in mijn working tree?",
+      "Show me my git status",
+      "Geef me een overzicht van staged en unstaged",
+      "What files are currently modified?",
+      "Summarise my working tree",
+      "Is er nog iets onveranderd dat ik vergeten ben te committen?",
+      "What's the state of my repo right now?",
+      "Welke files staan er klaar voor commit?",
+      "Give me a working tree status overview",
+      "Hoe ziet mijn git-tree er nu uit?"
+    ],
+    "should_not_trigger": [
+      "Show me the diff for src/App.vue",
+      "Commit my changes",
+      "Push to the remote branch",
+      "What does git rebase do?",
+      "Explain the difference between git merge and rebase",
+      "Help me write a commit message",
+      "Run git log for me",
+      "How do I resolve this merge conflict?",
+      "Pull the latest changes from main",
+      "What is a feature branch?"
+    ]
+  }
+}
+```
+
+Drie stukken om op te merken:
+
+1. **3+ evals zijn het minimum** voor L5. Schrijf ze vanuit realistisch gebruik — wat zou een teamgenoot écht intypen?
+2. **10+ should-trigger en 10+ should-not-trigger** prompts. Saaier om te schrijven dan je denkt, maar onmisbaar — dit is waar over-eagerness en blinde vlekken zichtbaar worden.
+3. **`last_validated: null`** — dit veld zet de runner zelf wanneer hij draait. Zolang het `null` is, telt je skill nog niet als gemeten.
+
+## De eval-runner draaien
+
+`/skill-creator` heeft een ingebouwde eval-runner. Open een Claude-sessie in een repo met je skill en typ:
+
+```
+/skill-creator
+```
+
+Zeg in je eerste prompt iets als: *"Ik wil de evals draaien voor mijn `git-status-summary` skill."* `/skill-creator` herkent dat je in de evaluatie-fase zit en doet vier dingen:
+
+1. **Spawnt parallel twee subagents** — eentje met toegang tot je skill, eentje zonder (baseline).
+2. **Draait elke eval-prompt** in beide contexten, registreert tokens en duur in `timing.json`.
+3. **Toetst de output tegen je `expectations`** en schrijft pass/fail naar `grading.json`.
+4. **Opent een lokale benchmark-viewer** waar je beide kanten visueel kunt vergelijken.
+
+Na de run vind je in `evals/`:
+
+```
+evals/
+├── evals.json        ← jouw scenario's
+├── timing.json       ← per scenario: tokens + duur, met- en zonder-skill
+├── grading.json      ← per scenario: assertion pass/fail + bewijs
+└── (eventueel) trigger-results.json
+```
+
+Voor de L5-claim heb je álledrie nodig: `evals.json` (geschreven door jou), `timing.json` (de runner heeft daadwerkelijk gedraaid, geen statische read-only simulatie), én `grading.json` (assertions zijn gescoord). Vergeet ook niet `last_validated` bij te werken in `evals.json` zelf.
+
+## De resultaten lezen
+
+Drie vragen om jezelf te stellen bij elk eval-rapport:
+
+### 1. Slaagt de skill alle expectations?
+
+Open `grading.json` en kijk welke `expectations` `pass: false` opleveren. Elk failed-item is een concreet verbeterpunt: ofwel mist je `SKILL.md` instructie, ofwel zijn de stappen niet specifiek genoeg, ofwel triggert er een edge case die je niet beschreven hebt.
+
+### 2. Is de skill beter dan baseline?
+
+Vergelijk de met-skill output naast de zonder-skill output in de benchmark-viewer. Twee uitkomsten zijn rode vlaggen:
+
+- **Skill = baseline** — beide produceren ongeveer hetzelfde. Je skill voegt niets toe, behalve misschien wat formattering. Overweeg of het de moeite waard is om hem te hebben.
+- **Skill < baseline** — Claude zonder skill is *beter*. Dit gebeurt vaker dan je denkt; de skill kan over-prescriptief zijn, of in conflict met wat Claude al goed kan. Vereenvoudig de skill of trek 'm in.
+
+### 3. Hoe scoren je trigger-tests?
+
+De runner draait elke `should_trigger` en `should_not_trigger` prompt in een verse context en checkt of de skill (auto-)laadt. Streef naar 90%+ op beide kanten. Onder de 80%? Iterate op de description.
+
+> **Realiteitscheck:** meerdere bronnen rapporteren ~50% auto-activatie zelfs voor goede skills, omdat Claude een vast contextbudget heeft voor skill-descriptions. Bij grote skill-libraries is auto-trigger inherent minder betrouwbaar dan expliciet `/<naam>` typen. Een lage score betekent niet altijd "skill is slecht" — soms is "skill is te één van vele". Eval-resultaten lees je in context.
+
+## Iteratie-cyclus
+
+Eén ronde evals draaien is alleen maar het begin. Het patroon:
+
+```
+schrijf evals → run → lees resultaten → identificeer 1 zwakte → fix → re-run
+```
+
+Eén verbetering per ronde — niet vier tegelijk. Anders weet je achteraf niet welke fix welk verschil maakte.
+
+<HexCard title="Vuistregel: 1 fix per cycle">
+  Identificeer één specifieke zwakte uit de benchmark-viewer (één gefaalde expectation, of één trigger-test die de verkeerde kant op ging). Pas de <code>SKILL.md</code> alleen op dát punt aan. Draai opnieuw. Pas dan ga je door naar de volgende zwakte.
+</HexCard>
+
+## Wanneer is een skill "gemeten genoeg"?
+
+Voor L5-claim heb je minimaal:
+
+- ✅ 3+ evals in `evals.json`
+- ✅ 10+ should-trigger + 10+ should-not-trigger prompts
+- ✅ `last_validated` is gevuld (niet `null`)
+- ✅ Zowel `timing.json` als `grading.json` aanwezig (bewijs dat de runner gedraaid heeft, niet alleen een read-only beoordeling)
+- ✅ Een baseline-meting (skill vs. zonder skill)
+- ✅ Minstens één iteratie-cycle doorlopen op basis van eval-resultaten
+
+Klopt dat allemaal? Dan kun je de skill als L5-mature labellen. Wil je verder — en voor skills die je dagelijks gebruikt of die andere skills aansturen wil je dat — dan komt L6 (`learnings.md` met capture-loop) en uiteindelijk L7 (multi-agent orchestratie). [Deel 4 van de leerlijn](/nl/academy/claude-skills-tutorial-4-l6-l7-mature-skills) loopt die laatste twee niveaus door, plus het dashboard waarmee je je hele skill-library tegelijk op maturity bewaakt. Voor ~80% van de skills is L5 het natuurlijke eindpunt; deel 4 is voor de skills die dat niet zijn.
+
+## Test jezelf
+
+Vier korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
+
+<div className="tutorial-quiz">
+
+**1. Waarom is een baseline-meting belangrijk bij skill-evals?**
+
+<Details summary="Hint">
+
+Een skill kan slagen op al je expectations en tóch geen waarde toevoegen. Wat zou je daarvoor moeten weten?
+
+</Details>
+
+<Details summary="Antwoord">
+
+Omdat een skill die alle expectations haalt, nog steeds **niets kan toevoegen ten opzichte van Claude zonder skill**. Of erger: Claude zonder skill kan beter zijn (over-prescriptieve skills knellen Claude's eigen oordeel).
+
+De baseline draait elke eval-prompt twee keer: eenmaal met toegang tot je skill, eenmaal zonder. Pas dan kun je zeggen "deze skill maakt verschil X". Zonder baseline meet je alleen of de skill consistent is — niet of hij waardevol is.
+
+Drie mogelijke uitkomsten bij baseline-vergelijk:
+
+- **Skill > baseline** → de skill verdient zijn plek.
+- **Skill ≈ baseline** → twijfelgeval. Overweeg of de winst (formattering, consistentie) opweegt tegen de context-cost.
+- **Skill < baseline** → skill weghalen of fundamenteel herzien.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Wat is het verschil tussen `evals` en `trigger_tests` in `evals.json`?**
+
+<Details summary="Hint">
+
+Eén meet of de skill goed werk levert. De andere meet of hij überhaupt op het juiste moment opduikt.
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **`evals`** meet **kwaliteit van uitvoering**: gegeven dat de skill is geladen, doet hij wat hij moet doen? Drie expectations per scenario, getoetst tegen de output. Score: hoeveel expectations slagen?
+- **`trigger_tests`** meet **auto-activatie**: pikt Claude de skill automatisch op bij relevante prompts (`should_trigger`), en blijft hij weg bij niet-relevante prompts (`should_not_trigger`)?
+
+Een skill kan perfect scoren op `evals` maar slecht op `trigger_tests` — dan werkt hij goed *als* je `/<naam>` typt, maar pikt Claude hem nooit zelf op. Andersom: een skill kan altijd triggeren maar slechte output leveren — dan trekt hij ongevraagd aan tafel zonder waarde toe te voegen.
+
+Je hebt beide nodig voor L5.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Welke twee bestanden bewijzen dat de eval-runner echt gedraaid heeft, en waarom allebei?**
+
+<Details summary="Hint">
+
+Een statische beoordeling van je `evals.json` is niet voldoende — je hebt bewijs nodig dat er code is uitgevoerd én dat er resultaten zijn gescoord.
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **`timing.json`** bewijst **uitvoering**: per scenario staat hierin hoeveel tokens er zijn gebruikt en hoe lang de run duurde. Dat kan alleen na werkelijke executie — een read-only simulatie kan dit veld niet vullen.
+- **`grading.json`** bewijst **beoordeling**: pass/fail per expectation, met bewijs. Dit is de daadwerkelijke score van je skill.
+
+`grading.json` alleen is niet genoeg — die zou je theoretisch kunnen genereren door een statische read van `SKILL.md` en `evals.json`. Pas met `timing.json` erbij heb je hard bewijs dat de runner ook echt heeft gedraaid.
+
+In de Conduction-skill-check is dit precies waar het script L5 op valideert: beide bestanden moeten bestaan, plus `last_validated` mag niet `null` zijn.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Je hebt evals gedraaid en één expectation faalt consistent. Wat is je volgende stap — en wat juist niet?**
+
+<Details summary="Hint">
+
+Niet hagelschot fixen. Wat is de meest leerzame manier om te iteren?
+
+</Details>
+
+<Details summary="Antwoord">
+
+**Wel doen:** identificeer die ene gefaalde expectation, lees in de benchmark-viewer wat de skill in plaats daarvan deed, en pas één specifiek stuk van `SKILL.md` aan (een stap, een guardrail, of een output-voorbeeld). Draai daarna opnieuw — pas dan ga je verder met de volgende zwakte.
+
+**Niet doen:** vier tegelijk fixen, of meteen de `description` overhoop halen omdat "er iets niet goed gaat". Bij meerdere wijzigingen tegelijk weet je niet welke iets bijdroeg. Bij een description-herziening verschuif je auto-triggering en je executie-gedrag tegelijkertijd — onmogelijk om uit elkaar te halen.
+
+Vuistregel: één eval-cyclus = één hypothese = één fix. Saai? Misschien. Maar je leert er sneller van dan van "alles ineens" pogingen.
+
+</Details>
+
+</div>
+
+<NextSteps title="Volgende stap" lede="Dit was deel 3 — je weet nu hoe je een skill systematisch meet en verbetert. Voor de skills die je écht intensief gebruikt is er nog een vervolg.">
+  <NextStep
+    title="Deel 4 — Van gemeten naar lerend en orkestrerend (L6 → L7)"
+    href="/nl/academy/claude-skills-tutorial-4-l6-l7-mature-skills"
+    description="L6 (learnings-loop) en L7 (sub-agent orkestratie), plus het skill-level-overview dashboard waarmee je je hele library tegelijk bewaakt."
+  />
+  <NextStep
+    title="Vorige stap — Je eerste skill schrijven"
+    href="/nl/academy/claude-skills-tutorial-2-je-eerste-skill"
+    description="De praktische module met /skill-creator, frontmatter en lokaal testen."
+  />
+  <NextStep
+    title="Conduction-docs over skill-evals"
+    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/skill-evals.md"
+    description="Verdiepende referentie met het volledige evals.json-schema en de runner-protocol-details."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Klaar om een skill voor je team te schrijven?"
+  body="Of wil je weten of een use-case skill-waardig is? We sparren graag mee. Stuur ons een mail met je voorgestelde use-case en we geven een eerste reactie."
+  cta={{ label: "Mail Conduction", href: "mailto:info@conduction.nl?subject=Claude%20Skills%20leerlijn%20deel%203" }}
+/>
