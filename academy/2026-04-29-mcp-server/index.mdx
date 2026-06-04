@@ -224,6 +224,9 @@ The audit trail isn't a separate MCP tool — it's served as object history thro
   <TroubleshootingItem symptom="A background agent fails with `tool call denied` for `mcp__openregister__objects`">
     Your <code>.claude/settings.json</code> is missing the openregister allow rule. Confirm the <code>permissions.allow</code> array contains <code>"mcp__openregister"</code> (covers all tools) or the specific tool name, then reload.
   </TroubleshootingItem>
+  <TroubleshootingItem symptom="The server shows Connected but a tool call returns a server-side error ('Unknown tool …', a PHP stack trace, etc.)">
+    The wiring is fine — the failure is upstream in OpenRegister. Pull your <code>apps-extra/openregister</code> checkout to its latest, re-run <code>occ upgrade</code>, and retry. If it still fails, the Nextcloud logs usually surface the real exception: <code>docker compose -f /path/to/nextcloud-docker-dev/docker-compose.yml logs nextcloud | grep -i openregister | tail -50</code>.
+  </TroubleshootingItem>
   <TroubleshootingItem symptom="The variable expansion doesn't work — the panel says the entry is invalid JSON">
     <code>{'${OPENREGISTER_BASIC_AUTH}'}</code> only expands if the variable is set when Claude Code starts. If you can't keep it in <code>~/.bashrc</code>, use the default-value form <code>{'${OPENREGISTER_BASIC_AUTH:-not-set}'}</code> so the entry parses; the server will then fail with a clearer auth error instead of a JSON one.
   </TroubleshootingItem>
