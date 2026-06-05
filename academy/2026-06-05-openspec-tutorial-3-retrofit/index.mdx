@@ -1,10 +1,10 @@
 ---
 slug: openspec-tutorial-3-retrofit
-title: "OpenSpec tutorial series — Part 3: Retrofit an existing codebase"
+title: "OpenSpec tutorial series — Part 3 (optional): Retrofit an existing codebase"
 contentType: tutorial
 authors: [conduction]
 date: 2026-06-05
-summary: How to bring an app that predates OpenSpec under the spec ↔ code annotation convention. Audit with /opsx-coverage-scan, annotate Bucket 1 with /opsx-annotate, draft missing requirements with /opsx-reverse-spec. Third part of the OpenSpec series.
+summary: Optional, situational follow-up to Parts 1 + 2. Only relevant if you need to bring an older app — built before OpenSpec — up to the current spec ↔ code convention. Reference playbook for the /opsx-coverage-scan, /opsx-annotate and /opsx-reverse-spec skills.
 tags: [OpenSpec, Spec-first, Tutorial series, Retrofit, Legacy, Claude Code]
 apps: []
 durationMinutes: 35
@@ -15,9 +15,13 @@ partNumber: 3
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
 import Details from '@theme/Details';
 
-In Part 1 and Part 2 you wrote a brand-new change in a project that was already spec-first. In real life most of our apps **predate** OpenSpec — they have working code, but no `openspec/specs/`, and certainly no `@spec` tags pointing from code to a requirement. This third part is about **closing that gap**: bringing an existing app under the OpenSpec convention with three retrofit skills. We work through the [retrofit playbook](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/retrofit.md) end to end.
+**Heads up — this is an optional, situational tutorial.** Most developers will never need to run a retrofit. Day-to-day work in a Conduction app — writing changes, implementing tasks, opening PRs — doesn't touch any of the commands below. You can finish Parts 1 + 2 and go straight to the [Hydra series](/academy/hydra-tutorial-1-wat-is-hydra) or the [Claude skills series](/academy/claude-skills-tutorial-1-wat-zijn-claude-skills) without losing anything.
+
+This part is only relevant in one specific case: **an older Conduction app needs to be brought up to date with the current OpenSpec convention after the fact**. A small number of our apps were built before `openspec/specs/` and the `@spec`-tag convention existed — they have working code, but no specs and no annotations pointing from code to requirements. *If* one of those apps ever has to be brought into line with the convention, this is the playbook for it. We work through the [retrofit playbook](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/retrofit.md) end to end.
 
 {/* truncate */}
+
+> **Discuss with your team lead before you start.** A retrofit is real work — not a side-quest you run after lunch. The full pass on a medium-sized app easily takes hours of wall-clock time and a serious chunk of Claude tokens (often the cost of a normal feature change, sometimes more, especially if Bucket 2 turns out to be large and `/opsx-reverse-spec` has to run on many clusters). The retrofit playbook explicitly lists a [roll-out order across our apps](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/retrofit.md#roll-out-order) for exactly this reason: not every app is next, and not every app needs it now. Don't run a retrofit on your own initiative — confirm with your team lead or product owner first whether this app is the right candidate, what budget is available, and which apps are higher priority. Then start at Step 1.
 
 <Outcomes title="What you'll learn in this part">
   <Outcome>What <strong>spec-coverage</strong> is, and how the audit report buckets every method into one of six states.</Outcome>

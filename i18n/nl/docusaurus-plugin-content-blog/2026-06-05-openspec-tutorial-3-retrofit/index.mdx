@@ -1,10 +1,10 @@
 ---
 slug: openspec-tutorial-3-retrofit
-title: "OpenSpec leerlijn — Deel 3: Retrofit een bestaande codebase"
+title: "OpenSpec leerlijn — Deel 3 (optioneel): Retrofit een bestaande codebase"
 contentType: tutorial
 authors: [conduction]
 date: 2026-06-05
-summary: Hoe je een app die ouder is dan OpenSpec alsnog onder de spec ↔ code annotatie-conventie brengt. Audit met /opsx-coverage-scan, annoteer Bucket 1 met /opsx-annotate, draft ontbrekende requirements met /opsx-reverse-spec. Derde deel van de OpenSpec-leerlijn.
+summary: Optioneel, situationeel vervolg op Deel 1 + 2. Alleen relevant als een oudere app — gebouwd vóór OpenSpec — alsnog onder de huidige spec ↔ code-conventie gebracht moet worden. Naslagwerk voor de skills /opsx-coverage-scan, /opsx-annotate en /opsx-reverse-spec.
 tags: [OpenSpec, Spec-first, Tutorial series, Retrofit, Legacy, Claude Code]
 apps: []
 durationMinutes: 35
@@ -15,9 +15,13 @@ partNumber: 3
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
 import Details from '@theme/Details';
 
-In Deel 1 en Deel 2 schreef je een nieuwe change in een project dat al spec-first was. In de praktijk zijn de meeste van onze apps **ouder** dan OpenSpec — ze hebben werkende code, maar geen `openspec/specs/`, en al helemaal geen `@spec`-tags die vanuit code terug wijzen naar een requirement. Dit derde deel gaat over **dat gat dichten**: een bestaande app onder de OpenSpec-conventie brengen met drie retrofit-skills. We lopen de [retrofit-playbook](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/retrofit.md) van begin tot eind door.
+**Let op — dit is een optionele, situationele tutorial.** De meeste developers zullen nooit een retrofit hoeven draaien. Het dagelijkse werk in een Conduction-app — changes schrijven, tasks implementeren, PRs openen — raakt geen van de commando's hieronder. Je kunt Deel 1 + 2 afronden en direct doorgaan naar de [Hydra-leerlijn](/nl/academy/hydra-tutorial-1-wat-is-hydra) of de [Claude skills-leerlijn](/nl/academy/claude-skills-tutorial-1-wat-zijn-claude-skills) zonder iets te missen.
+
+Dit deel is alleen relevant in één specifiek geval: **een oudere Conduction-app moet alsnog onder de huidige OpenSpec-conventie gebracht worden**. Een klein aantal van onze apps is gebouwd voordat `openspec/specs/` en de `@spec`-tag-conventie bestonden — ze hebben werkende code, maar geen specs en geen annotaties die vanuit code terug wijzen naar requirements. *Als* zo'n app ooit in lijn met de conventie gebracht moet worden, is dit de playbook ervoor. We lopen de [retrofit-playbook](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/retrofit.md) van begin tot eind door.
 
 {/* truncate */}
+
+> **Overleg eerst met je team lead voordat je begint.** Een retrofit is echt werk — geen losse opdracht die je tussendoor doet. De volledige pass op een middelgrote app kost al snel uren wandkloktijd en een flinke hoeveelheid Claude-tokens (vaak de kosten van een gewone feature-change, soms meer — zeker als Bucket 2 groot uitvalt en `/opsx-reverse-spec` op veel clusters moet draaien). De retrofit-playbook noemt expliciet een [roll-out-volgorde over onze apps](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/retrofit.md#roll-out-order) precies om die reden: niet elke app is nu aan de beurt, en niet elke app heeft het nu nodig. Draai geen retrofit op eigen initiatief — stem eerst met je team lead of product owner af of deze app de juiste kandidaat is, welk budget er is, en welke apps hogere prioriteit hebben. Daarna start je bij Stap 1.
 
 <Outcomes title="Wat je leert in dit deel">
   <Outcome>Wat <strong>spec-coverage</strong> is en hoe het auditrapport elke methode in een van zes buckets indeelt.</Outcome>
