@@ -1,0 +1,444 @@
+---
+slug: openspec-tutorial-3-retrofit
+title: "OpenSpec tutorial series — Part 3: Retrofit an existing codebase"
+contentType: tutorial
+authors: [conduction]
+date: 2026-06-05
+summary: How to bring an app that predates OpenSpec under the spec ↔ code annotation convention. Audit with /opsx-coverage-scan, annotate Bucket 1 with /opsx-annotate, draft missing requirements with /opsx-reverse-spec. Third part of the OpenSpec series.
+tags: [OpenSpec, Spec-first, Tutorial series, Retrofit, Legacy, Claude Code]
+apps: []
+durationMinutes: 35
+series: openspec-tutorial
+partNumber: 3
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+In Part 1 and Part 2 you wrote a brand-new change in a project that was already spec-first. In real life most of our apps **predate** OpenSpec — they have working code, but no `openspec/specs/`, and certainly no `@spec` tags pointing from code to a requirement. This third part is about **closing that gap**: bringing an existing app under the OpenSpec convention with three retrofit skills. We work through the [retrofit playbook](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/retrofit.md) end to end.
+
+{/* truncate */}
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>What <strong>spec-coverage</strong> is, and how the audit report buckets every method into one of six states.</Outcome>
+  <Outcome>The three retrofit skills — <code>/opsx-coverage-scan</code>, <code>/opsx-annotate</code>, <code>/opsx-reverse-spec</code> — and the order to run them in.</Outcome>
+  <Outcome>What a <strong>ghost change</strong> is, why retrofit needs one, and how it differs from a regular feature change.</Outcome>
+  <Outcome>How to derive new requirements from existing code with <code>/opsx-reverse-spec --extend</code> versus <code>--cluster</code>.</Outcome>
+  <Outcome>How to recognise when a retrofit is done — the App Mode of <code>/opsx-verify</code>.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you'll need">
+  <PrerequisiteItem>Part 1 — <a href="/academy/openspec-tutorial-1-wat-is-openspec">What is OpenSpec?</a> — for the spec / requirement / scenario / change vocabulary.</PrerequisiteItem>
+  <PrerequisiteItem>Part 2 — <a href="/academy/openspec-tutorial-2-eerste-change">Your first OpenSpec change</a> — so the <code>/opsx-*</code> command shape isn't new to you.</PrerequisiteItem>
+  <PrerequisiteItem>A Conduction app that <strong>already has at least one</strong> <code>openspec/specs/&lt;capability&gt;/spec.md</code>. If the app has no specs at all yet, run <code>/app-explore</code> and <code>/app-design</code> first — retrofit can't bucket code against requirements that don't exist.</PrerequisiteItem>
+  <PrerequisiteItem>A clean working tree on the branch that carries the specs (usually <code>development</code>, but a few apps like <code>decidesk</code> keep specs on <code>beta</code> — check first). The retrofit skills refuse a dirty tree.</PrerequisiteItem>
+  <PrerequisiteItem>Claude Code installed and configured — see the <a href="/academy/workstation-tutorial-3-claude-code">Workstation Setup tutorial</a>, Part 3.</PrerequisiteItem>
+</Prerequisites>
+
+## Why retrofit?
+
+Almost every Conduction app was built **before** the spec ↔ code annotation convention from [ADR-003](https://codeberg.org/Conduction/hydra/src/branch/main/openspec/architecture/adr-003-backend.md). That convention says: every PHP file's main docblock and every public method's docblock carries one or more `@spec openspec/changes/<change-name>/tasks.md#task-N` tags pointing at the task(s) it implements.
+
+Apps you build spec-first via `/opsx-apply` get those tags **for free** — the builder writes the tag while it writes the code. Apps that already exist need a **one-time retrofit pass**, otherwise `/opsx-verify` (Part 2, Step 11) falls back to fragile keyword matching: every audit becomes a guessing game, every refactor a coin flip.
+
+Retrofit gives you three things at once:
+
+1. **Traceability** — for every method you can answer: *which requirement does this implement?*
+2. **An honest gap list** — code without a REQ, REQs without code, and ADR violations are all surfaced in one report.
+3. **An entry point for Specter** — the spec dashboards across all our apps fill up properly only when the cohort flags are set right (which retrofit does).
+
+> **Retrofit is not "writing the spec you should have written"**. It captures **observed behaviour**, not original intent. Lossy by design. We accept that — a noisy map is more useful than no map at all, and you can review it later.
+
+## Three skills, in order
+
+| Skill | What it does | Writes |
+| --- | --- | --- |
+| [`/opsx-coverage-scan`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-coverage-scan) | **Audit only.** Buckets every code unit into one of six categories. | `openspec/coverage-report.md` + `.json` sidecar |
+| [`/opsx-annotate`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-annotate) | Adds `@spec` tags to every Bucket 1 method via a **ghost change**. | Annotation-only PR |
+| [`/opsx-reverse-spec`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-reverse-spec) | Drafts REQs for a Bucket 2 cluster via a ghost change, then annotates. | One spec PR per cluster |
+
+Run them in **exactly this order**. The audit is the contract between the three: annotate reads its report to know what to tag, and reverse-spec reads it to know which clusters still need a home. Don't skip the audit — and don't run annotate on a stale report.
+
+## What is a ghost change?
+
+Legacy code was never written against a change, so there is no `tasks.md#task-N` for `@spec` to point at. Retrofit bridges the gap with **ghost changes**.
+
+A ghost change has the same shape as a normal OpenSpec change — proposal, spec-delta (sometimes empty), tasks, eventually archived — but it exists **purely as an anchor** for `@spec` annotations. Naming convention: `retrofit-{YYYY-MM-DD}-{descriptor}` so it sorts chronologically with non-retrofit changes.
+
+<HexCard title="Annotate ghost">
+  Created by <code>/opsx-annotate</code>. Empty spec delta, one task per Bucket 1 REQ. Anchor for the <code>@spec</code> tags on existing code.
+</HexCard>
+
+<HexCard title="Reverse-spec ghost">
+  Created by <code>/opsx-reverse-spec</code>. Has a real spec delta — the new REQs the skill drafted by reading the code — plus one task per new REQ, plus the annotations on the methods.
+</HexCard>
+
+<HexCard title="Doc-only ghost">
+  Less common. Annotations only, no new REQs — for example when a cluster turns out to map to REQs that already live in *other* capabilities. The proposal must say "no new REQs" explicitly.
+</HexCard>
+
+Once archived, the path `openspec/changes/archive/<ghost-name>/tasks.md#task-N` keeps resolving as a textual reference. `@spec` doesn't follow live lookups, so the annotations stay valid forever.
+
+> **How is a retrofit-change different from a regular feature-change?** A regular change starts from intent (*"I want to add full-text search"*) and ends in code. A retrofit ghost change starts from code (*"this method already does X"*) and ends in a documented anchor. Same artefacts on disk, opposite direction of arrow.
+
+## Step 1: prep the app
+
+Before the first scan:
+
+```bash
+cd /path/to/openregister
+git checkout development        # or 'beta' for apps that keep specs there
+git pull
+git status                       # MUST be clean
+```
+
+Optional but recommended — create `.opsx-ignore` in the app root for paths you deliberately don't want scanned (vendor code, generated files, deliberately-unspec'd internal tools). One glob per line, `#` for comments. See [openregister/.opsx-ignore](https://codeberg.org/Conduction/openregister/src/branch/development/.opsx-ignore) for a worked example.
+
+Specter prereq (one-time, idempotent):
+
+```bash
+python3 concurrentie-analyse/scripts/migrate_app_specs_retrofit.py
+```
+
+That adds the `retrofit`, `retrofit_extensions` and `spec_hash` columns to the `app_specs` table. Without those columns `/opsx-reverse-spec` will refuse to sync.
+
+## Step 2: scan with `/opsx-coverage-scan`
+
+In Claude Code, in the app folder:
+
+```
+/opsx-coverage-scan openregister
+```
+
+This runs **read-only**. No `@spec` tags are written, no specs change, no commits. The skill walks every PHP file, identifies each public method, and tries to match it against an existing REQ in `openspec/specs/`. The output is two files:
+
+- `openspec/coverage-report.md` — human-readable
+- `openspec/coverage-report.json` — parseable sidecar, consumed by the next two skills
+
+Open the markdown report. It contains a header, six bucket sections, and two meta-sections.
+
+## Step 3: read the report — the six buckets
+
+The whole retrofit pivots on these buckets, so it's worth knowing them by heart.
+
+<HexCard title="Bucket 1 — Map to existing REQ">
+  Method maps cleanly to a REQ-ID in <code>openspec/specs/</code>. High confidence (≥ 0.85) is auto-annotated; medium (0.70–0.85) is flagged <code>NEEDS-REVIEW</code>.
+</HexCard>
+
+<HexCard title="Bucket 2a — Capability exists, REQ missing">
+  File belongs to a known capability, but the observed behaviour is <strong>not covered</strong> by any current REQ. <code>/opsx-reverse-spec --extend</code> drafts the missing REQ.
+</HexCard>
+
+<HexCard title="Bucket 2b — No capability at all">
+  File doesn't belong to any current capability. <code>/opsx-reverse-spec --cluster</code> drafts a whole new spec.
+</HexCard>
+
+<HexCard title="Bucket 3a — REQ orphaned, history match">
+  REQ has no current code but git history shows matching keywords in removed lines. <strong>Probably broken</strong>. Triage manually.
+</HexCard>
+
+<HexCard title="Bucket 3b — REQ orphaned, no trace">
+  REQ has no code and no historical trace either. <strong>Never implemented</strong>. Mark <code>status: deferred</code> in spec.md or remove the REQ.
+</HexCard>
+
+<HexCard title="Bucket 4 — ADR conformance">
+  Missing license header, hardcoded strings, anything ADR-003 flags. Non-blocking, but worth a follow-up issue.
+</HexCard>
+
+Plus two meta-buckets the report lists but that need **no retrofit action**:
+
+- **`annotated`** — methods that already carry `@spec` tags. Re-runs of the scan should grow this bucket and shrink Bucket 1.
+- **`plumbing`** — framework glue, empty constructors, listener dispatch, thin controllers. Never carries `@spec`.
+
+**Read the report manually before proceeding.** The scan is heuristic — wrong Bucket 1 entries produce wrong annotations downstream that are then much harder to undo than to prevent.
+
+## Step 4: annotate Bucket 1 with `/opsx-annotate`
+
+Once you trust the report:
+
+```
+/opsx-annotate openregister
+```
+
+What the skill does, in order:
+
+1. Creates a ghost change `retrofit-{YYYY-MM-DD}-annotate-openregister/` with an empty spec delta and one task per REQ in Bucket 1.
+2. Walks every Bucket 1 file + method and adds `@spec openspec/changes/retrofit-{date}-annotate-openregister/tasks.md#task-N` to the docblock.
+3. Archives the ghost change immediately (it never needs review on its own).
+4. Updates `.git-blame-ignore-revs` so the annotation commit doesn't drown `git blame`.
+5. Opens an **annotation-only PR**.
+
+A few things to know:
+
+- **Idempotent.** Re-running with no code changes produces no new annotations. If a dated ghost change already exists for today, the skill asks whether to reuse it or open a fresh one. Running it again next week creates a new dated ghost change.
+- **Annotation-only PR.** The diff only adds docblock comments. Reviewers don't need to read it line by line — they need to spot-check the matches against the report.
+- **PHPCS rejecting the tag order?** Stop. **Fix the PHPCS config, never reorder the tags.** The ADR-003 + [hydra-gate-spdx](https://codeberg.org/Conduction/hydra/src/branch/main/.claude/skills/hydra-gate-spdx/SKILL.md) format is fixed.
+- **`.git-blame-ignore-revs` only works locally if developers enable it once:** `git config blame.ignoreRevsFile .git-blame-ignore-revs`. The skill suggests this but won't run it for you.
+
+## Step 5: reverse-spec Bucket 2 entries — one cluster at a time
+
+This is where the real work happens. For every Bucket 2 entry in the report, one run:
+
+```
+# Bucket 2a — extend an existing capability
+/opsx-reverse-spec openregister --extend admin-settings
+
+# Bucket 2b — mint a brand-new capability
+/opsx-reverse-spec openregister --cluster app-lifecycle
+```
+
+What the skill does, per run:
+
+1. Reads the cluster's code.
+2. **Drafts REQs** describing the observed behaviour (capped at **5 REQs per run** — if the cluster needs more, split it into smaller clusters and run again).
+3. Creates a ghost change with the spec delta + one task per new REQ.
+4. Invokes `/opsx-ff` to fill in `design.md` (so reviewers see *how*, not just *what*).
+5. **Annotates** the cluster's methods inline (does not call `/opsx-annotate` — that would create a parallel ghost change).
+6. Runs `python3 concurrentie-analyse/scripts/sync_spec_content.py openregister` to register the spec with Specter.
+7. Archives the ghost change.
+8. Opens **one PR per run**.
+
+> **Bias toward `--extend`.** Extending an existing capability is cheaper for the reviewer than minting a new one — same vocabulary, same boundary. Only reach for `--cluster` when the cluster is genuinely new behaviour territory that no current capability covers.
+
+Each PR is its own review cycle because the REQ language is the review surface. Reviewers focus on: *do these REQs describe what the code actually does?* Not: *is the code correct?* (The code already lives; correctness is downstream.)
+
+### Documentation-only retrofits
+
+Sometimes a Bucket 2 cluster turns out to need **no new REQs** at all. Three sub-patterns:
+
+| Pattern | When | Example |
+| --- | --- | --- |
+| **Cross-capability annotation patch** | Cluster's methods map to existing REQs in *other* capabilities. | `retrofit-{date}-b2b-crossrefs` — 33 tasks pointing across 15 sibling capabilities. |
+| **Private-helper inheritance** | Scanner couldn't follow the call chain into private helpers. | `retrofit-{date}-schema-hooks` — 7 private helpers inherit parent annotate tasks. |
+| **Scanner misclassification cleanup** | Scanner placed methods under the wrong capability. | `retrofit-{date}-tenant-isolation-audit` — methods re-routed to their actual capabilities. |
+
+In all three cases the ghost change has no `specs/` folder, and the proposal must say "no new REQs" / "no new REQs needed" / "behaviors are fully covered" **explicitly**. App Mode (Step 7) reads that phrase to detect the pattern.
+
+## Step 6: address Buckets 3 and 4
+
+These are not part of the retrofit *per se*, but they fall out of the same report and should not be left lying around.
+
+- **Bucket 3a** — REQ orphaned with history match: open **separate PRs** to fix or remove the broken code. Don't bundle with annotation PRs.
+- **Bucket 3b** — REQ orphaned with no trace: one PR that marks each REQ `status: deferred` in `spec.md` or removes it outright. Either way, document the decision in the PR body.
+- **Bucket 4** — ADR conformance: open one follow-up issue *"ADR cleanup pass — see `openspec/coverage-report.md` Bucket 4"* and address in a separate cycle.
+
+## Step 7: confirm the retrofit is done with App Mode
+
+When you think you're done:
+
+```
+/opsx-verify --app openregister
+```
+
+This is the **App Mode** of `/opsx-verify` — the canonical retrofit DoD audit. It walks every retrofit ghost change under `openregister/openspec/changes/archive/retrofit-*`, scans for dangling `@spec` paths, audits the cohort frontmatter, and prints a single pass/fail report.
+
+> **Don't use plain `/opsx-verify <change-name>` for this.** That mode verifies a single (active) change against `openspec status` and won't see archived retrofit changes at all.
+
+A retrofit is done when App Mode shows ✅ on every row of:
+
+- Retrofit ghost changes — all archived
+- Tasks completion — every retrofit's tasks all `[x]`
+- Dangling `@spec` paths — 0
+- Symlinks under `openspec/changes/` — 0
+- Naming convention — every retrofit folder matches `retrofit-{YYYY-MM-DD}-{descriptor}`
+- Cohort frontmatter — every retrofitted capability carries `retrofit:` or `retrofit_extensions:` on its master spec, in block-YAML form with bare REQ-IDs
+- Frontmatter format — block YAML, no inline lists, no full-text values
+
+Plus the workflow items App Mode doesn't check (you do, by hand):
+
+- Annotation-only PR + per-cluster reverse-spec PRs all merged
+- Bucket 3 issues triaged
+- Bucket 4 follow-up issue opened
+- One final `sync_spec_content.py openregister` so Specter's cohort columns are populated for every retrofitted capability
+
+<Troubleshooting title="Troubleshooting">
+  <TroubleshootingItem symptom="/opsx-annotate refuses to run — 'dirty working tree'">
+    The retrofit skills refuse a dirty tree on purpose: an annotation pass touches hundreds of files, and you really don't want to mix that with unrelated edits. Stash or commit your other changes first.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="PHPCS rejects the @spec tag order in the docblock">
+    Do <strong>not</strong> reorder the tag. The ADR-003 + hydra-gate-spdx format is fixed across all apps. Fix the PHPCS config (usually by allowing the tag in the right slot). A misordered tag here will diverge every other app that gets retrofitted later.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="/opsx-reverse-spec wants to draft more than 5 REQs in one run">
+    The 5-per-run cap is deliberate — a reviewer can't seriously read more than ~5 new REQs at once. Split the cluster into smaller clusters and run the skill again per piece.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Specter doesn't show the new retrofit spec after a reverse-spec run">
+    Check that <code>sync_spec_content.py</code> ran without error during the skill — and that the <code>migrate_app_specs_retrofit.py</code> migration was applied beforehand. The skill calls sync synchronously; a silent skip means the migration is missing.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="A private helper has no @spec but its public caller does">
+    That's by design. Private helpers <strong>inherit</strong> their caller's REQ in Pass B of the scan. If the parent is annotated and the helper is not, re-scan and re-annotate — the second pass should pick it up.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="App Mode reports a dangling @spec path">
+    Most often a typo in the ghost change name (the path mismatches the folder on disk). Fix the path in the docblock and re-run App Mode. If the ghost change itself was renamed after annotation, that's a hard rule violation — restore the original name.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+## Test yourself
+
+Five questions to check that this part landed. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. What are the three retrofit skills, and in what order do you run them?**
+
+<Details summary="Hint">
+
+Audit first, then annotations on the easy matches, then drafting new REQs for the hard ones.
+
+</Details>
+
+<Details summary="Answer">
+
+In this exact order:
+
+1. **`/opsx-coverage-scan {app}`** — audits the app and writes `openspec/coverage-report.md` + `.json`. Read-only.
+2. **`/opsx-annotate {app}`** — adds `@spec` tags to every Bucket 1 method via a ghost change. Annotation-only PR.
+3. **`/opsx-reverse-spec {app} --extend <capability>`** or **`--cluster <name>`** — drafts new REQs for one Bucket 2 entry per run, then annotates the cluster's methods. One PR per cluster.
+
+Don't skip the audit and don't run annotate on a stale report — the report is the contract between the three skills.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. What is spec-coverage, and which six buckets does `/opsx-coverage-scan` use to measure it?**
+
+<Details summary="Hint">
+
+It's a per-method classification. Two of the buckets are about code-without-REQ, two are about REQ-without-code, one is about clean matches, one is about ADR violations.
+
+</Details>
+
+<Details summary="Answer">
+
+**Spec-coverage** is the percentage of an app's public methods that map onto an explicit OpenSpec requirement — *traceability*, not test coverage. `/opsx-coverage-scan` measures it by bucketing every method into one of six categories:
+
+- **1** — Method maps to an existing REQ. High confidence ≥ 0.85, or `NEEDS-REVIEW` 0.70–0.85.
+- **2a** — File belongs to an existing capability but the behaviour is *not* covered by any current REQ.
+- **2b** — File belongs to no current capability.
+- **3a** — REQ orphaned, history shows matching keywords in removed lines — probably broken code.
+- **3b** — REQ orphaned, no historical trace — never implemented.
+- **4** — ADR conformance findings (missing license header, hardcoded strings, …).
+
+Plus two meta-buckets the report lists but that need no action: **`annotated`** (already tagged) and **`plumbing`** (framework glue, never tagged).
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. What is a "ghost change", and how does a retrofit-change differ from a normal feature-change?**
+
+<Details summary="Hint">
+
+Same artefacts on disk, opposite direction of arrow.
+
+</Details>
+
+<Details summary="Answer">
+
+A **ghost change** has the same shape as a normal OpenSpec change — proposal, spec-delta (sometimes empty), tasks, eventually archived — but exists **purely as an anchor for `@spec` annotations** on legacy code. Naming: `retrofit-{YYYY-MM-DD}-{descriptor}`.
+
+The difference with a feature-change:
+
+- A **feature-change** starts from *intent* (*"I want to add full-text search"*) and ends in *code*. The spec is written before the code.
+- A **retrofit ghost change** starts from *code that already exists* and ends in a *documented anchor*. The "spec" captures observed behaviour, not original intent — lossy by design.
+
+Same four artefacts on disk; opposite direction of arrow. Once archived, the textual path `openspec/changes/archive/<ghost>/tasks.md#task-N` keeps resolving forever, so the `@spec` tags stay valid.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. The report shows a method in Bucket 2a. Which command do you run, and why is that different from Bucket 2b?**
+
+<Details summary="Hint">
+
+Both are "code without a REQ", but one has a home capability and the other doesn't.
+
+</Details>
+
+<Details summary="Answer">
+
+**For Bucket 2a — extend the existing capability:**
+
+```
+/opsx-reverse-spec {app} --extend <capability>
+```
+
+The file already belongs to a known capability. `/opsx-reverse-spec --extend` drafts the missing REQs *inside* that capability, keeping the boundary stable.
+
+**For Bucket 2b — mint a new capability:**
+
+```
+/opsx-reverse-spec {app} --cluster <new-name>
+```
+
+The file belongs to no current capability. `/opsx-reverse-spec --cluster` drafts a whole new spec.
+
+**Bias toward `--extend`** — extending is cheaper than minting (same vocabulary, same boundary). Only use `--cluster` when the cluster is genuinely new behaviour territory.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. How do you confirm a retrofit is done, and which command is the wrong one to use for that?**
+
+<Details summary="Hint">
+
+There are two modes of `/opsx-verify` — one for a single active change, one for the whole app.
+
+</Details>
+
+<Details summary="Answer">
+
+Run **App Mode** of verify:
+
+```
+/opsx-verify --app {app}
+```
+
+App Mode is the canonical retrofit DoD audit. It walks every ghost change under `{app}/openspec/changes/archive/retrofit-*`, scans for dangling `@spec` paths, audits cohort frontmatter, validates the naming convention, and prints one pass/fail report.
+
+**Don't use plain `/opsx-verify <change-name>`** — that mode verifies a single (active) change against `openspec status` and *won't see archived retrofit changes at all*.
+
+A retrofit is done when App Mode is ✅ on every row (ghost changes archived, tasks all `[x]`, zero dangling `@spec` paths, naming convention matched, cohort frontmatter set in block YAML) **and** the workflow items App Mode doesn't check are also done: the PRs merged, Bucket 3 issues triaged, Bucket 4 follow-up issue opened, and a final `sync_spec_content.py` run.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="With the retrofit playbook in your hands, two follow-ups make sense:">
+  <NextStep
+    title="Part 2 — Your first OpenSpec change"
+    href="/academy/openspec-tutorial-2-eerste-change"
+    description="Now that you know how an existing app is brought under OpenSpec, refresh the canonical /opsx-ff → /opsx-apply → /opsx-verify path for new changes."
+  />
+  <NextStep
+    title="The Hydra tutorial series — from spec to code"
+    href="/academy/hydra-tutorial-1-wat-is-hydra"
+    description="A retrofitted app is now ready to be driven by Hydra. Six short modules on how the AI pipeline turns a labelled tracking issue into a draft PR."
+  />
+  <NextStep
+    title="Claude skills tutorial series"
+    href="/academy/claude-skills-tutorial-1-wat-zijn-claude-skills"
+    description="All three retrofit skills are Claude Code skills. Want to know how a skill is built and evaluated? Start here."
+  />
+  <NextStep
+    title="The retrofit playbook in full"
+    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/retrofit.md"
+    description="The source document this tutorial draws on — every gotcha, the roll-out order across apps, and the prerequisites for Python ExApps."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Stuck on a retrofit?"
+  body="Talk to your team lead or buddy, or ask in #openspec on Slack. Issues with this tutorial go on its GitHub issue."
+  cta={{ label: "Email us", href: "mailto:info@conduction.nl?subject=OpenSpec%20learning%20track%20part%203" }}
+/>
