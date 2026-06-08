@@ -69,7 +69,7 @@ Now the MCP discovery call:
 curl -sS http://nextcloud.local/index.php/apps/openregister/api/mcp/v1/discover | head -c 400
 ```
 
-You should get a JSON document listing the capability areas the server advertises (registers, schemas, objects, audit, …). If you get an HTML login page back instead, your local Nextcloud is up but the OpenRegister app isn't enabled — fix that with:
+You should get a JSON document listing the capability areas the server advertises (registers, schemas, objects, …). If you get an HTML login page back instead, your local Nextcloud is up but the OpenRegister app isn't enabled — fix that with:
 
 ```bash
 docker compose -f /path/to/nextcloud-docker-dev/docker-compose.yml exec -u www-data nextcloud php occ app:enable openregister
@@ -196,7 +196,7 @@ At time of writing the tools are:
 | --- | --- | --- |
 | `registers` | `list`, `get`, `create`, `update`, `delete` | Top-level data containers. |
 | `schemas` | `list`, `get`, `create`, `update`, `delete` | JSON Schema definitions inside a register. |
-| `objects` | `list`, `get`, `create`, `update`, `delete` | Objects validated against a schema, stored in a register. All actions require both `registerId` and `schemaId`. |
+| `objects` | `list`, `get`, `create`, `update`, `delete` | Objects validated against a schema, stored in a register. All actions require both `register` and `schema` (integer IDs). |
 
 And the resources (read-only, addressable via `@openregister:openregister://…`):
 
@@ -204,10 +204,10 @@ And the resources (read-only, addressable via `@openregister:openregister://…`
 | --- | --- |
 | `openregister://registers` | All registers. |
 | `openregister://schemas` | All schemas. |
-| `openregister://objects/{registerId}/{schemaId}` | All objects in one register + schema combination. |
+| `openregister://objects/{register}/{schema}` | All objects in one register + schema combination. |
 | `openregister://registers/{id}` | One register by ID. |
 | `openregister://schemas/{id}` | One schema by ID. |
-| `openregister://objects/{registerId}/{schemaId}/{uuid}` | One object by composite key. |
+| `openregister://objects/{register}/{schema}/{id}` | One object by composite key. |
 
 The audit trail isn't a separate MCP tool — it's served as object history through the same `objects` family. Ask Claude for "the audit trail of object X" and it picks the right call.
 

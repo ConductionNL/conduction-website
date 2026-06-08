@@ -69,7 +69,7 @@ Daarna de MCP-discovery-call:
 curl -sS http://nextcloud.local/index.php/apps/openregister/api/mcp/v1/discover | head -c 400
 ```
 
-Je krijgt een JSON-document terug met de capability-gebieden die de server adverteert (registers, schemas, objects, audit, …). Krijg je in plaats daarvan een HTML-loginpagina, dan draait je lokale Nextcloud wel maar is de OpenRegister-app niet geactiveerd — fix dat met:
+Je krijgt een JSON-document terug met de capability-gebieden die de server adverteert (registers, schemas, objects, …). Krijg je in plaats daarvan een HTML-loginpagina, dan draait je lokale Nextcloud wel maar is de OpenRegister-app niet geactiveerd — fix dat met:
 
 ```bash
 docker compose -f /pad/naar/nextcloud-docker-dev/docker-compose.yml exec -u www-data nextcloud php occ app:enable openregister
@@ -196,7 +196,7 @@ Op het moment van schrijven zijn de tools:
 | --- | --- | --- |
 | `registers` | `list`, `get`, `create`, `update`, `delete` | Top-level datacontainers. |
 | `schemas` | `list`, `get`, `create`, `update`, `delete` | JSON Schema-definities binnen een register. |
-| `objects` | `list`, `get`, `create`, `update`, `delete` | Objecten gevalideerd tegen een schema, opgeslagen in een register. Alle acties vereisen zowel `registerId` als `schemaId`. |
+| `objects` | `list`, `get`, `create`, `update`, `delete` | Objecten gevalideerd tegen een schema, opgeslagen in een register. Alle acties vereisen zowel `register` als `schema` (integer-ID's). |
 
 En de resources (read-only, aanspreekbaar via `@openregister:openregister://…`):
 
@@ -204,10 +204,10 @@ En de resources (read-only, aanspreekbaar via `@openregister:openregister://…`
 | --- | --- |
 | `openregister://registers` | Alle registers. |
 | `openregister://schemas` | Alle schema's. |
-| `openregister://objects/{registerId}/{schemaId}` | Alle objecten in één register + schema-combinatie. |
+| `openregister://objects/{register}/{schema}` | Alle objecten in één register + schema-combinatie. |
 | `openregister://registers/{id}` | Eén register op ID. |
 | `openregister://schemas/{id}` | Eén schema op ID. |
-| `openregister://objects/{registerId}/{schemaId}/{uuid}` | Eén object op samengestelde sleutel. |
+| `openregister://objects/{register}/{schema}/{id}` | Eén object op samengestelde sleutel. |
 
 De audit-trail is geen aparte MCP-tool — hij wordt geserveerd als object-historie door dezelfde `objects`-familie. Vraag Claude om "de audit-trail van object X" en hij kiest de juiste call.
 
