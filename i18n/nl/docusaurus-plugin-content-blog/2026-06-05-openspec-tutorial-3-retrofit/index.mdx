@@ -35,7 +35,7 @@ Dit deel is alleen relevant in één specifiek geval: **een oudere Conduction-ap
   <PrerequisiteItem>Deel 1 — <a href="/nl/academy/openspec-tutorial-1-wat-is-openspec">Wat is OpenSpec?</a> — voor de woordenschat spec / requirement / scenario / change.</PrerequisiteItem>
   <PrerequisiteItem>Deel 2 — <a href="/nl/academy/openspec-tutorial-2-eerste-change">Je eerste OpenSpec change</a> — zodat de vorm van de <code>/opsx-*</code>-commando's geen verrassing meer is.</PrerequisiteItem>
   <PrerequisiteItem>Een Conduction-app die <strong>al minstens één</strong> <code>openspec/specs/&lt;capability&gt;/spec.md</code> heeft. Heeft de app nog helemaal geen specs, draai dan eerst <code>/app-explore</code> en <code>/app-design</code> — retrofit kan code niet bucket-en tegen requirements die er niet zijn.</PrerequisiteItem>
-  <PrerequisiteItem>Een schone working tree op de branch waar de specs staan (meestal <code>development</code>, maar een paar apps zoals <code>decidesk</code> houden de specs op <code>beta</code> — check eerst). De retrofit-skills weigeren een vuile tree.</PrerequisiteItem>
+  <PrerequisiteItem>Je staat op de branch waar de specs staan (meestal <code>development</code>, maar een paar apps zoals <code>decidesk</code> houden de specs op <code>beta</code> — check eerst). <code>/opsx-coverage-scan</code> (Stap 1) tolereert een vuile tree omdat hij alleen <code>openspec/coverage-report.&#123;md,json&#125;</code> schrijft; <code>/opsx-annotate</code> en <code>/opsx-reverse-spec</code> (Stap 4 en 5) weigeren er één, dus reken erop dat je voor die stappen je losse werk committet of stasht.</PrerequisiteItem>
   <PrerequisiteItem>Claude Code geïnstalleerd en geconfigureerd — zie de <a href="/nl/academy/workstation-tutorial-3-claude-code">Workstation Setup-leerlijn</a>, deel 3.</PrerequisiteItem>
 </Prerequisites>
 
@@ -168,7 +168,7 @@ Wat de skill in volgorde doet:
 
 1. Maakt een ghost change `retrofit-{JJJJ-MM-DD}-annotate-openregister/` met een lege spec-delta en één task per REQ in Bucket 1.
 2. Loopt elk Bucket 1-bestand + -methode af en voegt `@spec openspec/changes/retrofit-{datum}-annotate-openregister/tasks.md#task-N` toe aan het docblock.
-3. Archiveert de ghost change direct (hij hoeft op zichzelf nooit gereviewd te worden).
+3. Archiveert de ghost change voordat de PR opent (hij hoeft geen eigen review-ronde te krijgen).
 4. Update `.git-blame-ignore-revs` zodat de annotatie-commit `git blame` niet kapot maakt.
 5. Opent een **annotatie-only PR**.
 
@@ -256,8 +256,8 @@ Plus de workflow-items die App Mode níet checkt (die doe je zelf):
 - Eén afsluitende `sync_spec_content.py openregister` zodat Specter's cohort-kolommen voor elke retrofitted capability gevuld zijn
 
 <Troubleshooting title="Troubleshooting">
-  <TroubleshootingItem symptom="/opsx-annotate weigert te draaien — 'dirty working tree'">
-    De retrofit-skills weigeren een vuile tree met opzet: een annotatie-pass raakt honderden bestanden en je wil dat niet mengen met andere edits. Stash of commit je andere wijzigingen eerst.
+  <TroubleshootingItem symptom="/opsx-annotate of /opsx-reverse-spec weigert te draaien — 'dirty working tree'">
+    <code>/opsx-annotate</code> en <code>/opsx-reverse-spec</code> weigeren een vuile tree met opzet: een annotatie-pass raakt honderden bestanden en een reverse-spec-run herschrijft spec.md, en je wil geen van beide mengen met andere edits. Stash of commit je andere wijzigingen eerst. (<code>/opsx-coverage-scan</code> in Stap 1 heeft deze beperking niet — die schrijft alleen naar <code>openspec/coverage-report.&#123;md,json&#125;</code>.)
   </TroubleshootingItem>
   <TroubleshootingItem symptom="PHPCS weigert de @spec-tag-volgorde in het docblock">
     Herorder de tag <strong>niet</strong>. Het ADR-003 + hydra-gate-spdx-formaat ligt vast over alle apps heen. Fix de PHPCS-config (meestal door de tag in de juiste slot toe te staan). Hier afwijken laat elke andere app die later wordt geretrofit divergeren.
@@ -443,6 +443,6 @@ Een retrofit is klaar als App Mode op elke regel ✅ geeft (ghost changes gearch
 
 <ContactCta
   title="Vastgelopen op een retrofit?"
-  body="Praat met je team lead of buddy, of vraag het in #openspec op Slack. Issues met deze tutorial gaan op de GitHub-issue."
+  body="Praat met je team lead of buddy, of vraag het in #openspec op Slack. Issues met deze tutorial gaan op de Codeberg-issue."
   cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=OpenSpec%20leerlijn%20deel%203" }}
 />

@@ -35,7 +35,7 @@ This part is only relevant in one specific case: **an older Conduction app needs
   <PrerequisiteItem>Part 1 — <a href="/academy/openspec-tutorial-1-wat-is-openspec">What is OpenSpec?</a> — for the spec / requirement / scenario / change vocabulary.</PrerequisiteItem>
   <PrerequisiteItem>Part 2 — <a href="/academy/openspec-tutorial-2-eerste-change">Your first OpenSpec change</a> — so the <code>/opsx-*</code> command shape isn't new to you.</PrerequisiteItem>
   <PrerequisiteItem>A Conduction app that <strong>already has at least one</strong> <code>openspec/specs/&lt;capability&gt;/spec.md</code>. If the app has no specs at all yet, run <code>/app-explore</code> and <code>/app-design</code> first — retrofit can't bucket code against requirements that don't exist.</PrerequisiteItem>
-  <PrerequisiteItem>A clean working tree on the branch that carries the specs (usually <code>development</code>, but a few apps like <code>decidesk</code> keep specs on <code>beta</code> — check first). The retrofit skills refuse a dirty tree.</PrerequisiteItem>
+  <PrerequisiteItem>You're on the branch that carries the specs (usually <code>development</code>, but a few apps like <code>decidesk</code> keep specs on <code>beta</code> — check first). <code>/opsx-coverage-scan</code> (Step 1) tolerates a dirty tree because it only writes to <code>openspec/coverage-report.&#123;md,json&#125;</code>; <code>/opsx-annotate</code> and <code>/opsx-reverse-spec</code> (Steps 4 and 5) refuse one, so plan to commit or stash unrelated work before you reach those.</PrerequisiteItem>
   <PrerequisiteItem>Claude Code installed and configured — see the <a href="/academy/workstation-tutorial-3-claude-code">Workstation Setup tutorial</a>, Part 3.</PrerequisiteItem>
 </Prerequisites>
 
@@ -168,7 +168,7 @@ What the skill does, in order:
 
 1. Creates a ghost change `retrofit-{YYYY-MM-DD}-annotate-openregister/` with an empty spec delta and one task per REQ in Bucket 1.
 2. Walks every Bucket 1 file + method and adds `@spec openspec/changes/retrofit-{date}-annotate-openregister/tasks.md#task-N` to the docblock.
-3. Archives the ghost change immediately (it never needs review on its own).
+3. Archives the ghost change before opening the PR (it never needs a separate review cycle).
 4. Updates `.git-blame-ignore-revs` so the annotation commit doesn't drown `git blame`.
 5. Opens an **annotation-only PR**.
 
@@ -256,8 +256,8 @@ Plus the workflow items App Mode doesn't check (you do, by hand):
 - One final `sync_spec_content.py openregister` so Specter's cohort columns are populated for every retrofitted capability
 
 <Troubleshooting title="Troubleshooting">
-  <TroubleshootingItem symptom="/opsx-annotate refuses to run — 'dirty working tree'">
-    The retrofit skills refuse a dirty tree on purpose: an annotation pass touches hundreds of files, and you really don't want to mix that with unrelated edits. Stash or commit your other changes first.
+  <TroubleshootingItem symptom="/opsx-annotate or /opsx-reverse-spec refuses to run — 'dirty working tree'">
+    <code>/opsx-annotate</code> and <code>/opsx-reverse-spec</code> refuse a dirty tree on purpose: an annotation pass touches hundreds of files and a reverse-spec run rewrites spec.md, and you really don't want to mix either with unrelated edits. Stash or commit your other changes first. (<code>/opsx-coverage-scan</code> at Step 1 doesn't have this constraint — it only writes to <code>openspec/coverage-report.&#123;md,json&#125;</code>.)
   </TroubleshootingItem>
   <TroubleshootingItem symptom="PHPCS rejects the @spec tag order in the docblock">
     Do <strong>not</strong> reorder the tag. The ADR-003 + hydra-gate-spdx format is fixed across all apps. Fix the PHPCS config (usually by allowing the tag in the right slot). A misordered tag here will diverge every other app that gets retrofitted later.
@@ -443,6 +443,6 @@ A retrofit is done when App Mode is ✅ on every row (ghost changes archived, ta
 
 <ContactCta
   title="Stuck on a retrofit?"
-  body="Talk to your team lead or buddy, or ask in #openspec on Slack. Issues with this tutorial go on its GitHub issue."
+  body="Talk to your team lead or buddy, or ask in #openspec on Slack. Issues with this tutorial go on its Codeberg issue."
   cta={{ label: "Email us", href: "mailto:info@conduction.nl?subject=OpenSpec%20learning%20track%20part%203" }}
 />
