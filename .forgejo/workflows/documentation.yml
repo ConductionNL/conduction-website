@@ -1,0 +1,31 @@
+name: Publish docs
+
+on:
+  push:
+    branches: [documentation, main, development]
+  pull_request:
+    branches: [documentation, main]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * *"
+
+jobs:
+  build:
+    uses: Conduction/.github/.forgejo/workflows/documentation-build.yml@main
+    with:
+      # The Docusaurus build for this site lives at the repo root
+      # (not under docs/ like the product-page repos), since this IS
+      # the docs build itself rather than docs alongside an app.
+      # Override the centralized workflow's `source-folder` default
+      # ("docs") to point at the repo root, otherwise `cd docs` fails
+      # and the Cloudflare deploy is skipped.
+      source-folder: .
+    secrets: inherit
+
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request'
+    uses: Conduction/.github/.forgejo/workflows/documentation-deploy.yml@main
+    with:
+      cf-project-name: conduction-website-docs
+    secrets: inherit
