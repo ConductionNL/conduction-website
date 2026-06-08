@@ -1,24 +1,18 @@
 name: Publish docs
 
+# Docs deploy ONLY from the dedicated `documentation` branch — decoupled from main/development
+# so doc edits never trigger releases and code releases never trigger doc builds. No cron.
 on:
   push:
-    branches: [documentation, main, development]
+    branches: [documentation]
   pull_request:
-    branches: [documentation, main]
+    branches: [documentation]
   workflow_dispatch:
-  schedule:
-    - cron: "0 4 * * *"
 
 jobs:
   build:
     uses: Conduction/.github/.forgejo/workflows/documentation-build.yml@main
     with:
-      # The Docusaurus build for this site lives at the repo root
-      # (not under docs/ like the product-page repos), since this IS
-      # the docs build itself rather than docs alongside an app.
-      # Override the centralized workflow's `source-folder` default
-      # ("docs") to point at the repo root, otherwise `cd docs` fails
-      # and the Cloudflare deploy is skipped.
       source-folder: .
     secrets: inherit
 
