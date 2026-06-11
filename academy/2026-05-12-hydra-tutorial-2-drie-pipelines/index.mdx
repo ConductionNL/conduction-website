@@ -1,5 +1,5 @@
 ---
-slug: hydra-tutorial-2-drie-pipelines
+slug: hydra-tutorial-2-three-pipelines
 title: "Hydra tutorial series — Part 2: The three pipelines"
 contentType: tutorial
 authors: [conduction]
@@ -28,7 +28,7 @@ In part 1 you saw that Hydra has four personas. In this part we look at the **pi
 
 <Prerequisites title="What you need">
   <PrerequisiteItem>
-    Part 1 read: <a href="/academy/hydra-tutorial-1-wat-is-hydra">What is Hydra?</a>
+    Part 1 read: <a href="/academy/hydra-tutorial-1-what-is-hydra">What is Hydra?</a>
   </PrerequisiteItem>
   <PrerequisiteItem>A notion of what labels on a GitHub issue are and how you add them.</PrerequisiteItem>
 </Prerequisites>
@@ -54,7 +54,7 @@ decision:
 
 The pipeline has one important rule: **every outcome after review is terminal**. Hydra doesn't automatically fix in a loop. If it succeeds in one run, great. If not, the issue lands on `needs-input` and a human has to decide the next step. More on that in part 6.
 
-## Pipeline 1: Build (Al Gorithm, Haiku)
+## Pipeline 1: Build (Al Gorithm, Sonnet)
 
 The builder receives the change, a clean clone of the target repo, and a turn budget. No review history, no feedback from earlier runs. He implements the tasks from `tasks.md`, runs the quality suite, opens a draft PR.
 
@@ -63,11 +63,11 @@ Order within the build phase:
 1. **Implementation** — reads `proposal.md`, `design.md` and `tasks.md` from `openspec/changes/<slug>/` in the target repo, writes code.
 2. **Quality checks** — PHPCS, PHPMD, Psalm, PHPStan, ESLint, Stylelint, `composer audit`, `npm audit`.
 3. **PHPUnit + Newman** — backend and API tests.
-4. **Browser tests** — Playwright MCP walks through the UI.
+4. **Browser tests** — Playwright MCP walks through the UI on the host (see part 4 for how this differs from the `@e2e` gate).
 5. **`fix-quality` / `fix-browser`** — if checks go red, Al Gorithm gets one or two attempts to mechanically repair. This is a *pre-review* fixup, not a review loop.
 6. **Verdict** — `build:pass` (PR has been opened) or `build:fail` (broken build, `needs-input`).
 
-Important: Al Gorithm runs on **Haiku**. Reason from part 1: he follows patterns, he doesn't judge. By putting him on Haiku we keep the Sonnet budget free for the reviewers.
+Important: Al Gorithm runs on **Sonnet** by default, with **Haiku** as a cheaper fallback under budget pressure (configurable via `HYDRA_BUILDER_MODEL`). An earlier design ran the builder on Haiku by default — but Haiku was caught skipping quality gates, so the default was raised to Sonnet. See the history note in [part 1](/academy/hydra-tutorial-1-what-is-hydra).
 
 <HexCard title="What does the builder not see?">
   No reviews, no verdict history, no labels other than his own <code>build:*</code>. So he doesn't know that an earlier reviewer rejected something — that feedback only reaches him through an explicit <code>retry:queued</code> cycle (see below).
@@ -120,6 +120,10 @@ With both reviews in, Hydra has three options:
 ## Labels: one source of truth
 
 Hydra is **stateless**. The whole state machine lives on the issue labels on GitHub. The supervisor (the daemon) reads the labels every few seconds and decides what to do. If a container crashes, the supervisor looks at the labels again and picks up where it left off.
+
+<HexCard title="Supervisor vs orchestrator — two different things">
+  These names get used interchangeably, but they're distinct. The <strong>supervisor</strong> (<code>scripts/hydra-supervisor.sh</code>) is the long-running daemon: it maintains a pool of slots (5 by default, <code>POOL_SIZE</code>), polls the forge for labelled issues every <code>IDLE_POLL_INTERVAL</code> seconds (60 by default), and fills a free slot the moment a worker finishes. The <strong>orchestrator</strong> (<code>scripts/orchestrate.sh</code>) is what the supervisor <em>launches into each slot</em>: it picks up one issue, reads its current label to decide the stage, runs that one stage in the right container, persists the result, advances the label, and exits. Supervisor = the pool manager that never stops; orchestrator = the one-shot per-stage runner. Slots are tracked as lock files under <code>/tmp/hydra-slots/</code>, and each gets its own isolated Nextcloud port and workspace so several builds run in parallel without colliding.
+</HexCard>
 
 Per stage there are four possible states: `:queued`, `:running`, `:pass`, `:fail`. They always live **on the issue, never on the PR.** That's a deliberate choice: the issue is the unit of work, the PR is an artefact of a build cycle.
 
@@ -238,7 +242,7 @@ Rule of thumb: always cheapest first — `gh pr update-branch` → `retry:queued
   />
   <NextStep
     title="Previous step — What is Hydra?"
-    href="/academy/hydra-tutorial-1-wat-is-hydra"
+    href="/academy/hydra-tutorial-1-what-is-hydra"
     description="A short recap of the why and the four personas."
   />
   <NextStep

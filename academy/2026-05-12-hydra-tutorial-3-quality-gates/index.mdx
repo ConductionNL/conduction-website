@@ -7,7 +7,7 @@ date: 2026-05-12
 summary: What are Hydra's mechanical quality gates, why do they deliberately NOT rely on AI judgement, and what do you do when a gate misfires? The third of six short modules.
 tags: [Hydra, Gates, Quality, Tutorial series]
 apps: []
-durationMinutes: 12
+durationMinutes: 14
 series: hydra-tutorial
 partNumber: 3
 ---
@@ -20,14 +20,15 @@ In part 2 you saw that the three personas are backed up by **mechanical quality 
 {/* truncate */}
 
 <Outcomes title="What you'll learn in this part">
-  <Outcome>The two kinds of gates: <strong>generic</strong> code-quality tools and Hydra-specific <strong><code>hydra-gate-*</code></strong> skills.</Outcome>
+  <Outcome>The two kinds of gates: <strong>generic</strong> code-quality tools and the <strong>22 Hydra-specific <code>hydra-gate-*</code></strong> checks.</Outcome>
   <Outcome>Why mechanical checks alongside AI review are strictly necessary (and not "AI will sort that out").</Outcome>
+  <Outcome>How the <strong>traceability gates</strong> (gate-16 <code>spec-coverage</code> + gate-19 <code>e2e-coverage</code>) tie code and tests back to the spec.</Outcome>
   <Outcome>How to recognise a false-positive gate and what the right fix is.</Outcome>
   <Outcome>What ADR-020 means: <strong>gates run on the PR diff.</strong></Outcome>
 </Outcomes>
 
 <Prerequisites title="What you need">
-  <PrerequisiteItem>Parts 1 and 2 read: <a href="/academy/hydra-tutorial-1-wat-is-hydra">What is Hydra?</a> and <a href="/academy/hydra-tutorial-2-drie-pipelines">The three pipelines</a>.</PrerequisiteItem>
+  <PrerequisiteItem>Parts 1 and 2 read: <a href="/academy/hydra-tutorial-1-what-is-hydra">What is Hydra?</a> and <a href="/academy/hydra-tutorial-2-three-pipelines">The three pipelines</a>.</PrerequisiteItem>
   <PrerequisiteItem>Basic understanding of what a linter is and what a static analyser is.</PrerequisiteItem>
 </Prerequisites>
 
@@ -64,26 +65,51 @@ Each check is red or green. One red check → `build:fail` (in the pre-review ph
 
 ## Category 2: Hydra-specific gates
 
-On top of the generic tools, Hydra has **its own set of `hydra-gate-*` skills** for things that are Conduction-specific. They live in `hydra/.claude/skills/`. The current set is 14 skills: one dispatcher that calls the other 13 mechanical gates one after another.
+On top of the generic tools, Hydra has **its own set of `hydra-gate-*` skills** for things that are Conduction-specific. They live in `hydra/.claude/skills/`, but the single source of truth is the shell script [`scripts/run-hydra-gates.sh`](https://codeberg.org/Conduction/hydra/src/branch/main/scripts/run-hydra-gates.sh). One dispatcher skill — `hydra-gates` — runs all of them one after another and produces a single pass/fail summary. The last line of a clean run reads:
 
-| Gate | What it checks |
-|---|---|
-| `hydra-gates` | Dispatcher: calls the 13 gates below one after another and produces one pass/fail summary. |
-| `hydra-gate-spdx` | Every new PHP file has an EUPL-1.2 SPDX header. |
-| `hydra-gate-forbidden-patterns` | No `dd(`, `var_dump`, `dump(`, `console.log` left behind. |
-| `hydra-gate-composer-audit` | Mirror of the generic composer audit, for the reviewer's mandatory block. |
-| `hydra-gate-stub-scan` | No empty stub methods with TODOs left behind. |
-| `hydra-gate-route-auth` | Every route in `appinfo/routes.php` has explicit auth annotations. |
-| `hydra-gate-orphan-auth` | No `@AuthorizedAdminSetting` on an endpoint that doesn't exist. |
-| `hydra-gate-unsafe-auth-resolver` | Auth resolvers don't allow a claim bypass. |
-| `hydra-gate-semantic-auth` | Authorisation logic matches the route's purpose semantically. |
-| `hydra-gate-admin-router` | Admin routes use the admin router and not the regular one. |
-| `hydra-gate-no-admin-idor` | No Insecure Direct Object Reference on admin endpoints. |
-| `hydra-gate-modal-isolation` | Modal components isolate state correctly. |
-| `hydra-gate-nc-input-labels` | Nextcloud `<NcTextField>` components have `<label>` linkage. |
-| `hydra-gate-initial-state` | No `initialState` leaks to the client without deliberate exposure. |
+```text
+[hydra-gates] ALL 22 GATES GREEN
+```
 
-A large share of these were born out of incidents: a gate arises in response to a bug that slipped through all earlier checks. `hydra-gate-stub-scan`, for example, came out of the [`decidesk-44-45` retrospective](https://codeberg.org/Conduction/hydra/src/branch/main/docs/retrospectives/decidesk-44-45-phase-g.md), where a builder delivered a method that just did `return null;` with a TODO. PHPCS swallowed it, PHPUnit had no test for it, code review read it as "in scope", and it broke in production.
+That's the current count: **22 gates**, numbered `gate-1` through `gate-22`. (Earlier versions of this tutorial listed 13 — the set has roughly doubled since, as new incidents produced new gates. When in doubt, the script is authoritative, not this table.)
+
+| # | Gate | What it checks |
+|---|---|---|
+| 1 | `spdx-headers` | Every `lib/**/*.php` file carries an EUPL-1.2 SPDX licence header. |
+| 2 | `forbidden-patterns` | No `var_dump` / `die` / `error_log` / `print_r` / `dd` / `dump` left behind in `lib/`. |
+| 3 | `stub-scan` | No "In a complete implementation" stubs, empty `run()` bodies, or auth methods that accept a caller-identity argument but never use it. |
+| 4 | `composer-audit` | No known CVEs or advisories in the `composer.lock` dependency tree. |
+| 5 | `route-auth` | Every controller method in `appinfo/routes.php` declares its auth posture (`#[PublicPage]` / `#[NoAdminRequired]` / `#[NoCSRFRequired]` / `#[AuthorizedAdminSetting]`). |
+| 6 | `orphan-auth` | Public `is*`/`requires*`/`validate*`/`authorize*`/`check*`/`ensure*`/`verify*`/`assert*` methods have at least one caller — no dead auth code. |
+| 7 | `no-admin-idor` | Every `#[NoAdminRequired]` method has a per-object or admin authorization guard in its body (blocks IDOR). |
+| 8 | `unsafe-auth-resolver` | No `catch (\Throwable) { return null; }` fail-open pattern in auth / permission / role resolvers. |
+| 9 | `semantic-auth` | The auth annotation **matches** the method body's actual authorization requirement (not just syntactically present). |
+| 10 | `initial-state` | Frontend uses `loadState()` from `@nextcloud/initial-state`, never `getElementById(...).dataset.*`. |
+| 11 | `admin-router` | Admin-settings Vue components are NOT registered as in-app vue-router routes (they render via `AdminSettings.php`). |
+| 12 | `nc-input-labels` | Every `<NcSelect>` declares an `inputLabel` or `ariaLabelCombobox` (WCAG 2.1 AA). |
+| 13 | `modal-isolation` | `<NcModal>` / `<NcDialog>` markup lives in its own `src/modals/` or `src/dialogs/` file, never inline in a parent. |
+| 14 | `route-reachability` | Every `Response`-returning controller method is registered in `appinfo/routes.php`, and every route resolves to an existing method. |
+| 15 | `dashboard-antipattern` | No dashboard-in-dashboard (`<CnDashboardPage>`) nesting. |
+| 16 | `spec-coverage` | Every changed public/protected + frontend method carries `@spec openspec/...` or `@spec exclude <reason>` (diff-scoped, ADR-020). |
+| 17 | `redundant-controller` | No pass-through CRUD methods that just wrap OpenRegister's `ObjectService` (ADR-022 — apps consume abstractions). |
+| 18 | `notification-dialect` | Register files use the canonical `x-openregister-notifications` dialect (ADR-031); the legacy dialect FAILs, imperative dispatch WARNs. |
+| 19 | `e2e-coverage` | Every Scenario added/changed in an openspec spec is referenced by a Playwright test via `@e2e`, or carries `@e2e exclude <reason>` (diff-scoped, ADR-020). |
+| 20 | `or-objectservice-api` | No calls to fabricated `ObjectService` methods — only `find` / `findAll` / `saveObject` / `createObject` / `updateObject` / `deleteObject` exist. |
+| 21 | `conflict-markers` | No unresolved git merge markers (`<<<<<<<`, `=======`, `>>>>>>>`) committed. |
+| 22 | `manifest-validation` | `src/manifest.json` validates against the `@conduction/nextcloud-vue` schema (ADR-024). |
+
+A large share of these were born out of incidents: a gate arises in response to a bug that slipped through all earlier checks. `stub-scan` (gate-3), for example, came out of the [`decidesk-44-45` retrospective](https://codeberg.org/Conduction/hydra/src/branch/main/docs/retrospectives/decidesk-44-45-phase-g.md), where a builder delivered a method that just did `return null;` with a TODO. PHPCS swallowed it, PHPUnit had no test for it, code review read it as "in scope", and it broke in production. The set grows; it never shrinks silently.
+
+## Gate-19: where specs meet the browser
+
+Two gates in the list above don't check *style* or *security* — they check **traceability**, and they're the mechanical heart of spec-driven development:
+
+- **`spec-coverage` (gate-16)** enforces the *backward* link: every method you add or change must point at the requirement it implements with a `@spec openspec/...` annotation.
+- **`e2e-coverage` (gate-19)** enforces the *forward* link: every Scenario you add or change in an OpenSpec spec must be exercised by a Playwright test, tied back with an `@e2e` annotation — or explicitly excused with `@e2e exclude <reason>` (for pure-backend behaviour, which belongs in Newman or PHPUnit instead).
+
+Together they make the loop auditable in both directions: **scenario → `@e2e` → Playwright test**, and **code → `@spec` → requirement**. A builder can't quietly ship a feature that isn't specified, and can't quietly leave a specified UI scenario untested. Both gates are diff-scoped (ADR-020), so legacy debt in untouched files never blocks a PR.
+
+The exact annotation mechanics — how a `#### Scenario:` heading becomes a slug, the long vs. short `@e2e` forms, and the three exclusion scopes — live in the OpenSpec series: [From scenario to Playwright test](/academy/openspec-tutorial-4-scenario-to-playwright). That's the page to read if you want to understand *why* this is a safe sandbox for AI rather than free-for-all "vibe coding".
 
 ## ADR-020: gate scope is the PR diff
 
@@ -226,7 +252,7 @@ The **quality recheck** reruns all mechanical gates on the final PR state to mak
   />
   <NextStep
     title="Previous step — The three pipelines"
-    href="/academy/hydra-tutorial-2-drie-pipelines"
+    href="/academy/hydra-tutorial-2-three-pipelines"
     description="A short recap of the label state machine."
   />
   <NextStep
