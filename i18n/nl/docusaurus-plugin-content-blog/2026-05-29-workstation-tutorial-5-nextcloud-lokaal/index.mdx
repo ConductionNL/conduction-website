@@ -1,5 +1,5 @@
 ---
-slug: workstation-tutorial-5-nextcloud-lokaal
+slug: workstation-tutorial-5-nextcloud-locally
 title: "Workstation Setup leerlijn — Deel 5: Nextcloud lokaal draaien"
 contentType: tutorial
 authors: [conduction]
@@ -42,7 +42,7 @@ docker compose up nextcloud proxy
 
 Codewijzigingen in je gekloonde app-repo's verschijnen meteen in de draaiende Nextcloud zonder rebuild — dat is het hele punt van de `apps-extra/`-mount.
 
-**Beginner-vriendelijke demo — [Nextcloud lokaal draaien met Docker](/nl/academy/nextcloud-lokaal-draaien).** Een walk-through van 30 minuten die een standalone `docker-compose.yml` in een verse map plakt. Bedoeld voor wie nog nooit Docker of een terminal heeft gebruikt. Prima voor een eerste rondje, maar niet de layout die je dagelijks gebruikt voor échte app-ontwikkeling (de standalone compose heeft geen `apps-extra/`-mount, dus je kunt niet itereren op Conduction-app-code in die opzet).
+**Beginner-vriendelijke demo — [Nextcloud lokaal draaien met Docker](/nl/academy/run-nextcloud-locally).** Een walk-through van 30 minuten die een standalone `docker-compose.yml` in een verse map plakt. Bedoeld voor wie nog nooit Docker of een terminal heeft gebruikt. Prima voor een eerste rondje, maar niet de layout die je dagelijks gebruikt voor échte app-ontwikkeling (de standalone compose heeft geen `apps-extra/`-mount, dus je kunt niet itereren op Conduction-app-code in die opzet).
 
 > **Alternatieve compose met profielen — optioneel, extra.** De Conduction [`openregister`](https://codeberg.org/Conduction/openregister)-repo levert ook een eigen `docker-compose.yml` met `--profile`-flags (`ai`, `ui`, `exapps`, `solr`, `ollama`, `openproject`, `xwiki`, `openzaak`, `openklant`, en meer) — beschreven in [`docs/claude/docker.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/docker.md). Handig als je die zwaardere diensten nodig hebt, maar niet vereist voor de workstation-keten en niet wat de meeste Conduction-devs dagelijks draaien. Blijf voor nu bij `nextcloud-docker-dev`.
 
@@ -77,7 +77,7 @@ Een opmerking over namen: **OpenWoo** is een *oplossing* gebouwd op OpenRegister
 
 Je hoeft niet elke Conduction-app te clonen. Clone wat de tutorial die je volgt vraagt en negeer de rest tot je hem nodig hebt.
 
-> **Heb je eerst de canonical tutorial gedaan?** De [Nextcloud lokaal draaien met Docker](/nl/academy/nextcloud-lokaal-draaien)-tutorial installeert OpenRegister, OpenCatalogi en OpenConnector vanuit de Nextcloud **app store**. Dat werkt prima om te lezen en demo's te doen, maar de geïnstalleerde apps zijn immutable production builds — niet jouw lokale code. Schakel over naar de `apps-extra/`-flow zodra je app-code begint te schrijven.
+> **Heb je eerst de canonical tutorial gedaan?** De [Nextcloud lokaal draaien met Docker](/nl/academy/run-nextcloud-locally)-tutorial installeert OpenRegister, OpenCatalogi en OpenConnector vanuit de Nextcloud **app store**. Dat werkt prima om te lezen en demo's te doen, maar de geïnstalleerde apps zijn immutable production builds — niet jouw lokale code. Schakel over naar de `apps-extra/`-flow zodra je app-code begint te schrijven.
 
 ## Verse installatie of de bestaande aanhouden?
 
@@ -152,7 +152,7 @@ Met **alleen OpenRegister** kun je:
 
 - Registers aanmaken en schema's definiëren (de *hoe ziet deze data eruit*-laag).
 - Objecten aanmaken, bijwerken en bevragen via de API van OpenRegister.
-- Bestanden koppelen aan objecten (de tutorial [Bestanden uploaden bij een Woo-publicatie](/nl/academy/woo-bestanden-uploaden) heeft alleen OpenRegister nodig).
+- Bestanden koppelen aan objecten (de tutorial [Bestanden uploaden bij een Woo-publicatie](/nl/academy/woo-upload-files) heeft alleen OpenRegister nodig).
 
 Zonder **OpenConnector** kun je niet:
 
@@ -189,7 +189,7 @@ De reset is goedkoop. Aarzel niet om hem te gebruiken als de tutorial erom vraag
 
 <div className="tutorial-quiz">
 
-**4. Je bent gisteren halverwege Build an App tutorial Deel 3 gestopt — je lokale Nextcloud heeft een half afgebouwde PetStore-kalender-app en een register vol test-pets en orders. Vandaag begin je met een schone lei aan de [Woo-register opzetten](/nl/academy/woo-register-opzetten)-tutorial. Reset je Nextcloud eerst, of laat je het zoals het is?**
+**4. Je bent gisteren halverwege Build an App tutorial Deel 3 gestopt — je lokale Nextcloud heeft een half afgebouwde PetStore-kalender-app en een register vol test-pets en orders. Vandaag begin je met een schone lei aan de [Woo-register opzetten](/nl/academy/woo-set-up-register)-tutorial. Reset je Nextcloud eerst, of laat je het zoals het is?**
 
 <Details summary="Hint">
 
@@ -214,12 +214,12 @@ De vuistregel: **zelfde tutorial → aanhouden, andere tutorial → resetten.**
 <NextSteps title="Volgende stap" lede="Je workstation is compleet. Tijd voor de ereronde — wat je nu gaat doen, nu je écht kunt bouwen.">
   <NextStep
     title="Deel 6 — Klaar — wat nu?"
-    href="/nl/academy/workstation-tutorial-6-klaar-wat-nu"
+    href="/nl/academy/workstation-tutorial-6-done-what-next"
     description="De kaart van de volgende tutorials: OpenSpec, Claude Skills, Build an App, Hydra. Waar je heen gaat voor welk soort werk."
   />
   <NextStep
     title="Nextcloud lokaal draaien met Docker"
-    href="/nl/academy/nextcloud-lokaal-draaien"
+    href="/nl/academy/run-nextcloud-locally"
     description="De volledige stap-voor-stap Nextcloud-installatie — screenshots, probleemoplossing, opruimen. Lees hem één keer."
   />
   <NextStep

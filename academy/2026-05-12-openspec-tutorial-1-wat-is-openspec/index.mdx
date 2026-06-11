@@ -1,10 +1,10 @@
 ---
-slug: openspec-tutorial-1-wat-is-openspec
+slug: openspec-tutorial-1-what-is-openspec
 title: "OpenSpec tutorial series — Part 1: What is OpenSpec?"
 contentType: tutorial
 authors: [conduction]
 date: 2026-05-12
-summary: A short introduction to OpenSpec, the spec-first framework underneath almost every Conduction project. What a spec is, what a change is, and why we write things down before we build them. First of two short modules.
+summary: A short introduction to OpenSpec, the spec-first framework underneath almost every Conduction project. What a spec is, what a change is, and why we write things down before we build them. First of three short modules.
 tags: [OpenSpec, Spec-first, Tutorial series, Documentation]
 apps: []
 durationMinutes: 12
@@ -17,6 +17,18 @@ import Details from '@theme/Details';
 
 [OpenSpec](https://openspec.dev) is a lightweight framework for **spec-driven development**: first write down what a feature should do, only then write the code. In this twelve-minute module you'll learn what OpenSpec is, which concepts it builds on, and why we use it underneath almost every Conduction project. By the end you're ready for Part 2, where you'll actually write your first change.
 
+> Want the bigger picture first? For where this idea comes from and why it matters more in an AI world, start with [Part 0: Why spec-first](/academy/openspec-tutorial-0-why-spec-first). This part dives straight into the concepts.
+
+**Your starting point.** You don't need to build anything special to follow along. Just clone any Conduction app and read along in its `openspec/` folder:
+
+```bash
+git clone https://codeberg.org/Conduction/openregister.git
+cd openregister && git checkout development
+ls openspec/          # specs/, changes/, changes/archive/
+```
+
+`development` is the branch active work happens on. We won't change anything in this part — we're just looking.
+
 {/* truncate */}
 
 <Outcomes title="What you'll learn in this part">
@@ -28,7 +40,7 @@ import Details from '@theme/Details';
 
 <Prerequisites title="What you'll need">
   <PrerequisiteItem>Basic Git and Markdown. We write specs in <code>.md</code> files that live in your repo.</PrerequisiteItem>
-  <PrerequisiteItem>A working dev machine. Don't have one yet? Start with the <a href="/academy/workstation-tutorial-1-wat-installeer-je">Workstation Setup tutorial series</a> (six short modules, one evening).</PrerequisiteItem>
+  <PrerequisiteItem>A working dev machine. Don't have one yet? Start with the <a href="/academy/workstation-tutorial-1-what-to-install">Workstation Setup tutorial series</a> (six short modules, one evening).</PrerequisiteItem>
   <PrerequisiteItem>Access to a Conduction project to poke around in — any app like <a href="https://codeberg.org/Conduction/openregister">openregister</a> or <a href="https://codeberg.org/Conduction/opencatalogi">opencatalogi</a> will do.</PrerequisiteItem>
 </Prerequisites>
 
@@ -43,7 +55,7 @@ No Confluence page drifting out of sync with the code. No Jira ticket only you u
 In practice, writing code is faster than coming up with a spec. So why the extra step?
 
 1. **Surface assumptions early.** What looks like one feature often turns out to be four features at once. By writing the scenarios first, you spot gaps and contradictions *before* the code is written — not after, in a PR review.
-2. **Make AI agents productive.** Our [Hydra pipeline](/academy/hydra-tutorial-1-wat-is-hydra) builds code from specs. The sharper the spec, the less course-correction afterwards. The same rule applies to a human teammate picking up a handover.
+2. **Make AI agents productive.** Our [Hydra pipeline](/academy/hydra-tutorial-1-what-is-hydra) builds code from specs. The sharper the spec, the less course-correction afterwards. The same rule applies to a human teammate picking up a handover.
 3. **An audit trail that doesn't lie.** Every change lives in its own folder with a proposal, a spec-delta, a design and a task list. Six months later you can still see exactly what was decided and why.
 4. **One source for reviewers.** The reviewer sees the spec-delta and the code side by side. Does the code match the spec? Not "what did the developer mean", but "what does it say".
 
@@ -341,18 +353,23 @@ For everything in between — a new feature, a breaking change, a refactor that 
 <NextSteps title="Next step" lede="Now that you know the concepts, in Part 2 we write a real change from beginning to end.">
   <NextStep
     title="Part 2 — Your first OpenSpec change"
-    href="/academy/openspec-tutorial-2-eerste-change"
+    href="/academy/openspec-tutorial-2-first-change"
     description="Create a change with /opsx-new, write a spec-delta with requirements and scenarios, generate a task list, and validate the whole thing."
   />
   <NextStep
-    title="The Hydra tutorial series"
-    href="/academy/hydra-tutorial-1-wat-is-hydra"
-    description="Want to see how our AI pipeline turns an OpenSpec change into code? Read how Hydra automates the handover."
+    title="Part 3 — ADRs, the standing context"
+    href="/academy/openspec-tutorial-3-adrs"
+    description="The 'how' every spec sits on: company-wide vs per-app architecture decisions."
   />
   <NextStep
-    title="OpenSpec official"
-    href="https://openspec.dev"
-    description="The official OpenSpec site with the source convention we build on top of."
+    title="Part 4 — From scenario to Playwright test"
+    href="/academy/openspec-tutorial-4-scenario-to-playwright"
+    description="How scenarios become e2e tests, and why the whole thing is a safe sandbox for AI."
+  />
+  <NextStep
+    title="The Hydra tutorial series"
+    href="/academy/hydra-tutorial-1-what-is-hydra"
+    description="Want to see how our AI pipeline turns an OpenSpec change into code? Read how Hydra automates the handover."
   />
 </NextSteps>
 

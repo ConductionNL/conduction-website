@@ -16,7 +16,7 @@ import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep,
 import Details from '@theme/Details';
 
 :::tip New to Claude Skills in general?
-This part dives straight into the **Hydra-specific** skill families. If you'd rather first learn what a Claude Skill even is, how the frontmatter works, and when you'd write one yourself, take the public [Claude Skills tutorial series](/academy/claude-skills-tutorial-1-wat-zijn-claude-skills) (three short modules, ~40 minutes). From here on we assume you know the basics.
+This part dives straight into the **Hydra-specific** skill families. If you'd rather first learn what a Claude Skill even is, how the frontmatter works, and when you'd write one yourself, take the public [Claude Skills tutorial series](/academy/claude-skills-tutorial-1-what-are-claude-skills) (three short modules, ~40 minutes). From here on we assume you know the basics.
 :::
 
 The previous parts were about *what* Hydra does. This part is about *how*: the **skills** that let the personas do their job. By the end you'll know which skills the automated pipeline (the "Hydra factory") runs and which ones you call yourself as a human, you'll know the five families, and you'll be able to judge when a new skill is worth writing.
@@ -68,12 +68,12 @@ Every pipeline container has its own, limited set of skills baked into its Docke
 | Container | Persona | Skills in image | Main function |
 |---|---|---|---|
 | **Builder** | Al Gorithm | **All** `.claude/skills/*` + all vendor skills | Implements tasks; primarily `opsx-apply`. Has the other opsx skills on hand for context during verification, finding fits again, and fixing after a quality fail. |
-| **Reviewer** | Juan Claude | `hydra-gates` + 13 `hydra-gate-*` skills + vendor `code-review` | Mandatory hydra-gates check + deeper code review via the Anthropic community skill. |
-| **Security** | Clyde Barcode | `hydra-gates` + 13 `hydra-gate-*` skills + vendor `trailofbits` + vendor `owasp` | Mandatory hydra-gates + SAST (Semgrep) + OWASP top 10 checklists. |
-| **Applier** | Axel Plier | **No skills** | Applies small, deterministic fixes purely through its `CLAUDE.md` — no skill layer needed. |
+| **Reviewer** | Juan Claude | `hydra-gates` + the `hydra-gate-*` skills + vendor `code-review` | Mandatory hydra-gates check + deeper code review via the Anthropic community skill. |
+| **Security** | Clyde Barcode | `hydra-gates` + the `hydra-gate-*` skills + vendor `trailofbits` + vendor `owasp` | Mandatory hydra-gates + SAST (Semgrep) + OWASP top 10 checklists. |
+| **Applier** | Axel Plier | **No skills, no write tools** (Read + Bash only) | Reads the final diff and both review verdicts and returns one binary answer — `pass` or `not`. It applies **no** fixes; it's a go/no-go gate, not an editor. |
 | **Browser UI Tester** | (sonnet, headless) | One skill: `hydra-ui-test` | Logs in, navigates the live app via Playwright MCP, delivers verdict JSON. |
 
-On top of that, **`scripts/run-hydra-gates.sh`** runs all **14** hydra-gates mechanically in every container — independent of which skill files are in the image. The skill files serve Claude as documentation when fixing; the script does the detection.
+On top of that, **`scripts/run-hydra-gates.sh`** runs all **22** hydra-gates mechanically in every container, independent of which skill files are in the image. The skill files serve Claude as documentation when fixing; the script does the detection.
 
 ### What the factory **doesn't** do — for humans on the CLI
 
@@ -113,28 +113,26 @@ The OPSX skills implement the Conduction workflow for OpenSpec changes — from 
 | `opsx-annotate` | ⌨️ | Applies `@spec` PHPDoc tags after a coverage scan. |
 | `opsx-reverse-spec` | ⌨️ | Reverse-engineers a spec from existing code. |
 
-### Family 2: Quality + security gates (`hydra-gate-*`, 14 skills)
+Sixteen skills is a lot. In practice you reach for one of a handful, and the choice follows a simple decision aid:
 
-The parent skill **`hydra-gates`** is a dispatcher that calls all gates together. The script engine under the hood (`scripts/run-hydra-gates.sh`) runs all 14 gates in every container; the skill files serve Claude as reference material when fixing a failure.
+- **Starting fresh and sure of the feature?** → `opsx-ff` (one pass to all artefacts), then `opsx-plan-to-issues`.
+- **Starting fresh but unsure of scope/approach?** → `opsx-explore` first, then `opsx-new` and `opsx-continue` step by step.
+- **New repo with no OpenSpec yet?** → `opsx-onboard`.
+- **Legacy code with no specs?** → `opsx-coverage-scan` → `opsx-reverse-spec` / `opsx-annotate`.
+- **Change is written, want it built locally without the full factory?** → `opsx-apply-loop` (one change) or `opsx-pipeline` (several in parallel).
+- **Inside the factory** the builder only ever runs `opsx-apply`, `opsx-verify` and `opsx-archive` — the rest are human-driven preparation.
 
-| Gate skill | What it detects |
-|---|---|
-| `hydra-gates` (dispatcher) | Calls all 14 gates in sequence, delivers pass/fail summary. |
-| `hydra-gate-spdx` | Missing `@license`/`@copyright` headers on PHP/Vue files. |
-| `hydra-gate-forbidden-patterns` | Debug calls (`var_dump`, `console.log`), TODOs in production code, hardcoded secrets. |
-| `hydra-gate-stub-scan` | Stub methods that `return null;` or do nothing — no test, no logic. |
-| `hydra-gate-composer-audit` | `composer audit` with vulnerabilities in dependencies. |
-| `hydra-gate-route-auth` | `routes.php` without an auth attribute where one belongs. |
-| `hydra-gate-orphan-auth` | Auth checks in methods that are never called (orphaned). |
-| `hydra-gate-no-admin-idor` | `Application::APP_ID` missing on admin-only methods → IDOR risk. |
-| `hydra-gate-unsafe-auth-resolver` | `catch(\Throwable) { return null; }` around auth logic. |
-| `hydra-gate-semantic-auth` | `#[NoAdminRequired]` on a method that still calls `requireAdmin()`. |
-| `hydra-gate-admin-router` | Admin routes that don't go through the admin router. |
-| `hydra-gate-initial-state` | Frontend `initialState` without serverside hydration. |
-| `hydra-gate-modal-isolation` | Vue modals that teleport outside their container. |
-| `hydra-gate-nc-input-labels` | Nextcloud input components without an attached label (a11y). |
+### Family 2: Quality + security gates (`hydra-gate-*`)
 
-All 14 run **🤖 inside the Hydra factory** (Reviewer + Security containers; Builder also runs them as a post-flight check during fix-quality).
+The parent skill **`hydra-gates`** is a dispatcher that calls every gate together. The script engine under the hood (`scripts/run-hydra-gates.sh`) is the single source of truth, and it currently runs **22 gates** (`gate-1` … `gate-22`) in every container; the per-gate skill files serve Claude as reference material when fixing a failure.
+
+Rather than reproduce the full table here, it lives — accurate and numbered — in [part 3: Quality gates](/academy/hydra-tutorial-3-quality-gates#category-2-hydra-specific-gates). For the skill family it's enough to know the gates split into three rough groups:
+
+- **Hygiene** — `spdx-headers`, `forbidden-patterns`, `stub-scan`, `composer-audit`, `conflict-markers`.
+- **Security & auth** — `route-auth`, `orphan-auth`, `no-admin-idor`, `unsafe-auth-resolver`, `semantic-auth`, `route-reachability`.
+- **Conduction conventions & traceability** — `initial-state`, `admin-router`, `nc-input-labels`, `modal-isolation`, `dashboard-antipattern`, `redundant-controller`, `notification-dialect`, `or-objectservice-api`, `manifest-validation`, and the two traceability gates `spec-coverage` (gate-16) and `e2e-coverage` (gate-19).
+
+All 22 run **🤖 inside the Hydra factory** (Reviewer + Security containers; Builder also runs them as a post-flight check during fix-quality). When a new incident produces a new gate, it's added here and the count grows — so trust the script's `ALL N GATES GREEN` line, not a hard-coded number in any doc.
 
 ### Family 3: Team roles (`team-*`, 7 skills) — **⌨️ humans only**
 
@@ -166,8 +164,14 @@ The largest family by count: around twenty skills that drive agentic browser and
 
 The dispatcher for this family is **`test-counsel`**: it coordinates all eight personas against one feature and delivers a combined report. Same pattern as `hydra-gates` for the quality-gates family.
 
-:::note No overlap with the factory's browser tester
-The Hydra factory has its **own** browser tester (`hydra-ui-test`) that runs in the Browser UI Tester step. That stands **apart** from this `test-*` family. The `test-*` skills are for when you — as a human — want to test a feature before or after the pipeline has touched it. Gates from part 3 run static checks (regex/AST); `test-*` runs the actual application in a browser.
+:::note Three things that all touch the browser — keep them apart
+There are three separate "testing" surfaces and they're easy to confuse:
+
+1. **`hydra-ui-test`** — the factory's own browser tester. Runs on the host (via `scripts/run-browser-tests.sh`, Playwright MCP), logs into the live app, walks the spec's acceptance criteria, and returns a verdict JSON. This is *runtime* proof that the feature works.
+2. **gate-19 (`e2e-coverage`)** — a *static* gate from [part 3](/academy/hydra-tutorial-3-quality-gates). It doesn't run a browser at all; it checks that every spec scenario is *linked* to a Playwright test via an `@e2e` annotation. Coverage bookkeeping, not execution.
+3. **The `test-*` family** — human-driven test suites you run by hand before or after the pipeline.
+
+So: gate-19 checks the *links* exist, `hydra-ui-test` actually *drives* the browser inside the factory, and `test-*` is what *you* run manually. Different jobs.
 :::
 
 ### Family 5: Utility & maintenance (~13 skills) — almost all ⌨️ for humans
@@ -211,7 +215,7 @@ The pragmatic test: write a skill if…
 For a false-positive gate (part 3): you adjust the existing skill, you don't write a new one. For a new class of mistake that you see come by 3x: yes, that earns its own `hydra-gate-*` skill.
 
 <HexCard title="Tip: use /skill-creator">
-  Hydra has a built-in <code>/skill-creator</code> skill that walks you through creating a new skill: scaffold, frontmatter, eval harness, performance measurement. Call it from a Claude session in the hydra repo to start with the right structure instead of building a folder yourself. A full walkthrough lives in <a href="/academy/claude-skills-tutorial-2-je-eerste-skill">part 2 of the Claude Skills tutorial series</a>; measuring and evaluating is covered in <a href="/academy/claude-skills-tutorial-3-skill-evals">part 3</a>.
+  Hydra has a built-in <code>/skill-creator</code> skill that walks you through creating a new skill: scaffold, frontmatter, eval harness, performance measurement. Call it from a Claude session in the hydra repo to start with the right structure instead of building a folder yourself. A full walkthrough lives in <a href="/academy/claude-skills-tutorial-2-your-first-skill">part 2 of the Claude Skills tutorial series</a>; measuring and evaluating is covered in <a href="/academy/claude-skills-tutorial-3-skill-evals">part 3</a>.
 </HexCard>
 
 ## Test yourself
@@ -331,7 +335,7 @@ We keep them separate because:
 <NextSteps title="Next step" lede="In part 5 we get practical: starting a real Hydra run on a real app, including the label-prefix trick for parallel dev runs.">
   <NextStep
     title="Part 5 — Starting a Hydra run on a real app"
-    href="/academy/hydra-tutorial-5-een-hydra-run-starten"
+    href="/academy/hydra-tutorial-5-starting-a-run"
     description="The full recipe: from opening an issue to getting the PR green. With the right config in <code>secrets/.env</code> and the <code>HYDRA_LABEL_PREFIX</code> trick for anyone working alongside fellow devs."
   />
   <NextStep
@@ -346,7 +350,7 @@ We keep them separate because:
   />
   <NextStep
     title="Claude Skills tutorial series (public)"
-    href="/academy/claude-skills-tutorial-1-wat-zijn-claude-skills"
+    href="/academy/claude-skills-tutorial-1-what-are-claude-skills"
     description="A separate, public tutorial series that goes a bit deeper on Claude Skills in general: what they are, how to write one, and how to measure it with evals. Good for the broader background."
   />
 </NextSteps>
