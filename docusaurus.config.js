@@ -224,26 +224,26 @@ module.exports = createConfig({
              (2026-06-11). Parts 1 and 2 were already published, so keep
              inbound links working. Parts 0/3/4 are new and never shipped a
              Dutch slug, so they need no redirect. */
-          {from: '/academy/openspec-tutorial-1-what-is-openspec', to: '/academy/openspec-tutorial-1-what-is-openspec'},
-          {from: '/academy/openspec-tutorial-2-first-change', to: '/academy/openspec-tutorial-2-first-change'},
+          {from: '/academy/openspec-tutorial-1-wat-is-openspec', to: '/academy/openspec-tutorial-1-what-is-openspec'},
+          {from: '/academy/openspec-tutorial-2-eerste-change', to: '/academy/openspec-tutorial-2-first-change'},
           /* Fleet-wide Dutch-to-English academy slug rename (2026-06-11):
              every tutorial slug is now English. Keep the published Dutch
              URLs working. */
-          {from: '/academy/run-nextcloud-locally', to: '/academy/run-nextcloud-locally'},
-          {from: '/academy/woo-upload-files', to: '/academy/woo-upload-files'},
-          {from: '/academy/woo-set-up-register', to: '/academy/woo-set-up-register'},
-          {from: '/academy/publish-to-nextcloud-app-store', to: '/academy/publish-to-nextcloud-app-store'},
-          {from: '/academy/haven-and-haven-plus', to: '/academy/haven-and-haven-plus'},
-          {from: '/academy/hydra-tutorial-1-what-is-hydra', to: '/academy/hydra-tutorial-1-what-is-hydra'},
-          {from: '/academy/hydra-tutorial-2-three-pipelines', to: '/academy/hydra-tutorial-2-three-pipelines'},
-          {from: '/academy/hydra-tutorial-5-starting-a-run', to: '/academy/hydra-tutorial-5-starting-a-run'},
-          {from: '/academy/hydra-tutorial-6-troubleshooting-escalation', to: '/academy/hydra-tutorial-6-troubleshooting-escalation'},
-          {from: '/academy/claude-skills-tutorial-1-what-are-claude-skills', to: '/academy/claude-skills-tutorial-1-what-are-claude-skills'},
-          {from: '/academy/claude-skills-tutorial-2-your-first-skill', to: '/academy/claude-skills-tutorial-2-your-first-skill'},
-          {from: '/academy/workstation-tutorial-1-what-to-install', to: '/academy/workstation-tutorial-1-what-to-install'},
-          {from: '/academy/workstation-tutorial-2-base-setup', to: '/academy/workstation-tutorial-2-base-setup'},
-          {from: '/academy/workstation-tutorial-5-nextcloud-locally', to: '/academy/workstation-tutorial-5-nextcloud-locally'},
-          {from: '/academy/workstation-tutorial-6-done-what-next', to: '/academy/workstation-tutorial-6-done-what-next'},
+          {from: '/academy/nextcloud-lokaal-draaien', to: '/academy/run-nextcloud-locally'},
+          {from: '/academy/woo-bestanden-uploaden', to: '/academy/woo-upload-files'},
+          {from: '/academy/woo-register-opzetten', to: '/academy/woo-set-up-register'},
+          {from: '/academy/nextcloud-app-store-publiceren', to: '/academy/publish-to-nextcloud-app-store'},
+          {from: '/academy/haven-en-kind', to: '/academy/haven-and-haven-plus'},
+          {from: '/academy/hydra-tutorial-1-wat-is-hydra', to: '/academy/hydra-tutorial-1-what-is-hydra'},
+          {from: '/academy/hydra-tutorial-2-drie-pipelines', to: '/academy/hydra-tutorial-2-three-pipelines'},
+          {from: '/academy/hydra-tutorial-5-een-hydra-run-starten', to: '/academy/hydra-tutorial-5-starting-a-run'},
+          {from: '/academy/hydra-tutorial-6-troubleshooting-escalatie', to: '/academy/hydra-tutorial-6-troubleshooting-escalation'},
+          {from: '/academy/claude-skills-tutorial-1-wat-zijn-claude-skills', to: '/academy/claude-skills-tutorial-1-what-are-claude-skills'},
+          {from: '/academy/claude-skills-tutorial-2-je-eerste-skill', to: '/academy/claude-skills-tutorial-2-your-first-skill'},
+          {from: '/academy/workstation-tutorial-1-wat-installeer-je', to: '/academy/workstation-tutorial-1-what-to-install'},
+          {from: '/academy/workstation-tutorial-2-basis-inrichten', to: '/academy/workstation-tutorial-2-base-setup'},
+          {from: '/academy/workstation-tutorial-5-nextcloud-lokaal', to: '/academy/workstation-tutorial-5-nextcloud-locally'},
+          {from: '/academy/workstation-tutorial-6-klaar-wat-nu', to: '/academy/workstation-tutorial-6-done-what-next'},
           /* Old Dutch "about us" slug. The English /about/ route is
              the canonical replacement; NL translation pass will land
              /nl/about/ later. */
