@@ -1,27 +1,28 @@
 ---
 slug: woo-set-up-register
-title: Set up a Woo register in OpenRegister
+title: Set up Woo and DCAT registers in OpenRegister
 contentType: tutorial
 authors: [conduction]
 date: 2026-05-07
-summary: Import the canonical Woo register into OpenRegister. One API call, ten TOOI categories, ready to store publications.
-tags: [Woo, OpenRegister, Publications, TOOI, Open data, Tutorial series]
+summary: Import the canonical Woo register and a DCAT open-data register into OpenRegister, entirely through the user interface.
+tags: [Woo, DCAT, OpenRegister, Publications, TOOI, Open data, Tutorial series]
 apps: [openregister, openwoo]
-durationMinutes: 10
+durationMinutes: 12
 series: woo-tutorial
 partNumber: 1
 ---
 
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, ContactCta} from '@conduction/docusaurus-preset/components';
 
-The [Dutch Open Government Act (Woo)](https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo) requires government bodies to publish documents in eleven information categories. OpenRegister provides the storage model for that. In this tutorial you import the canonical Woo register, with all [TOOI](https://standaarden.overheid.nl/tooi) categories, in a few minutes.
+The [Dutch Open Government Act (Woo)](https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo) asks government bodies to publish documents in set information categories. Open data is published as datasets in the [DCAT-AP-NL](https://data.overheid.nl/dcat-ap-nl) standard. OpenRegister stores both. In this tutorial you import two registers, the Woo register and a DCAT register, using only the OpenRegister interface.
 
 {/* truncate */}
 
 <Outcomes title="What you'll learn">
-  <Outcome>How to create one register with the slug <code>woo</code> in your OpenRegister installation.</Outcome>
-  <Outcome>How to import ten schemas, one per Woo information category.</Outcome>
-  <Outcome>How to set up a working starting point for creating publications and attaching files.</Outcome>
+  <Outcome>How to import the canonical Woo register, with all ten TOOI categories, through the OpenRegister interface.</Outcome>
+  <Outcome>How to import a DCAT register for open-data datasets the same way.</Outcome>
+  <Outcome>How to read what the import created: registers, schemas, and their fields.</Outcome>
+  <Outcome>A working starting point for creating publications, datasets, and attaching files.</Outcome>
 </Outcomes>
 
 The <a href="/academy/woo-upload-files">follow-up tutorial on uploading files</a> builds on this.
@@ -29,105 +30,49 @@ The <a href="/academy/woo-upload-files">follow-up tutorial on uploading files</a
 <Prerequisites title="What you need">
   <PrerequisiteItem>A running Nextcloud with OpenRegister installed. If you do not have that yet, first follow <a href="/academy/run-nextcloud-locally">Run Nextcloud locally with Docker</a>.</PrerequisiteItem>
   <PrerequisiteItem>A user with admin rights, or a user allowed to create registers.</PrerequisiteItem>
-  <PrerequisiteItem><code>curl</code> or a comparable HTTP client.</PrerequisiteItem>
+  <PrerequisiteItem>Open the OpenRegister app from the Nextcloud app menu.</PrerequisiteItem>
 </Prerequisites>
 
-In the examples we use the local dev environment at `http://localhost:8080` with `admin:admin`. Replace those with your own host and credentials.
+## The canonical sources
 
-## The canonical source
+Both registers are published as OpenRegister configuration files, hosted on the [OpenRegister downloads page](https://openregister.conduction.nl/downloads). You do not edit them; you point OpenRegister at the URL and it does the rest.
 
-The Woo register already exists, published by Conduction on GitHub:
-
-```
-https://codeberg.org/Conduction/woo-website/raw/branch/main/website/static/oas/woo_register.json
-```
-
-It is an OpenAPI bundle of 1.0.1, with one register (`woo`) and ten schemas. Each schema contains the [TOOI metadata](https://standaarden.overheid.nl/diwoo/metadata/doc/0.9.1/diwoo-metadata-lijsten_xsd_Simple_Type_diwoo_scw_woo_informatiecategorieen) of one Woo information category:
-
-| Slug | Category |
+| Register | Configuration URL |
 | --- | --- |
-| `vergaderstukken_decentrale_overheden` | Meeting documents of decentralised authorities |
-| `subsidieverplichtingen_anders_dan_met_beschikking` | Subsidy obligations without a decision |
-| `overige_besluiten_van_algemene_strekking` | Other decisions of general scope |
-| `organisatie_en_werkwijze` | Organisation and working methods |
-| `ontwerpen_van_wet_en_regelgeving_met_adviesaanvraag` | Drafts of laws and regulations |
-| `onderzoeksrapporten` | Research reports |
-| `klachtoordelen` | Complaint rulings |
-| `wetten_en_algemeen_verbindende_voorschriften` | Laws and generally binding regulations |
-| `woo_verzoeken_en_besluiten` | Woo requests and decisions |
-| `convenanten` | Covenants |
-| `agendas_en_besluitenlijsten_bestuurscolleges` | Agendas and decision lists of executive boards |
-| `vergaderstukken_staten_generaal` | Meeting documents of the States General |
-| `adviezen` | Advisory reports |
+| Woo | `https://openregister.conduction.nl/oas/woo_register.json` |
+| DCAT | `https://openregister.conduction.nl/oas/dcat_register.json` |
 
-## Step 1: Import the register
+The Woo file holds one register (`woo`) and ten schemas, one per Woo information category, each carrying the [TOOI metadata](https://standaarden.overheid.nl/tooi). The DCAT file holds one register (`dcat`) with a `Dataset` schema aligned to DCAT-AP-NL.
 
-OpenRegister has an `import/url` endpoint that fetches an OpenAPI bundle and converts it in one transaction into register, schemas, and (optionally) seed objects.
+## Step 1: Import the Woo register
 
-```bash
-curl -u admin:admin \
-  -X POST "http://localhost:8080/index.php/apps/openregister/api/configurations/import/url" \
-  -H "OCS-APIRequest: true" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "url": "https://codeberg.org/Conduction/woo-website/raw/branch/main/website/static/oas/woo_register.json"
-  }'
-```
+In OpenRegister, open **Administration → Configurations** in the left menu. Click **Import Configuration**, then choose the **Import from URL** tab. Paste the Woo configuration URL and leave the synchronisation settings on their defaults.
 
-If all goes well, you get back:
+![The Import from URL tab in OpenRegister with the Woo configuration URL filled in](./01-import-from-url.png)
 
-```json
-{
-  "success": true,
-  "message": "Configuration imported successfully from url",
-  "configurationId": 271,
-  "result": {
-    "registersCount": 1,
-    "schemasCount": 10,
-    "objectsCount": 0
-  }
-}
-```
+Click **Import**. OpenRegister fetches the file and, in one transaction, creates the register, its schemas, and any seed objects. A confirmation appears when it finishes.
 
-`registersCount: 1` and `schemasCount: 10` confirm that everything was created. The `configurationId` is what you need later if you want to re-sync the source.
+## Step 2: Import the DCAT register
 
-## Step 2: Verify what was created
+Repeat Step 1 with the DCAT configuration URL. Open **Import Configuration → Import from URL**, paste `https://openregister.conduction.nl/oas/dcat_register.json`, and click **Import**.
 
-Request the list of registers and filter on slug `woo`:
+You now have two registers. Open data and Woo publications live side by side, each in its own register.
 
-```bash
-curl -u admin:admin \
-  "http://localhost:8080/index.php/apps/openregister/api/registers" \
-  -H "OCS-APIRequest: true"
-```
+## Step 3: See what was created
 
-In the response you find an entry like:
+Open **Data → Registers** in the left menu. The Woo register shows its ten TOOI schemas, one per information category.
 
-```json
-{
-  "id": 924,
-  "uuid": "cd44ca36-e3de-4d6f-9af9-abbb49710c83",
-  "slug": "woo",
-  "title": "Woo",
-  "version": "1.0.1",
-  "description": "Woo register with TOOI information categories",
-  "schemas": [1619, 1620, 1621, 1622, 1623, 1624, 1625, 1626, 1627, 1628]
-}
-```
+![The Woo register card in OpenRegister, listing its ten TOOI schemas](./02-woo-register.png)
 
-The `id` is your internal register id (924 in this example, yours may differ). The slug `woo` is stable and you use it in all further API calls.
+The DCAT register shows its single `Dataset` schema.
 
-In the UI you find the register under **Apps -> OpenRegister -> Registers**:
+![The DCAT register card in OpenRegister with its Dataset schema](./03-dcat-register.png)
 
-![The Woo register in the OpenRegister UI, with the ten TOOI schemas in the sidebar](./02-or-woo-register-card.png)
+Each card has an **Actions** menu with **View Details** for a statistics panel: number of objects, files, logs, and schemas per register.
 
-Click **View Details** in the Actions menu of the card for a statistics panel:
+## Step 4: Look at the schemas
 
-![The detail panel with statistics for the Woo register: number of objects, logs, files, and schemas](./04-or-woo-register-detail.png)
-
-## Step 3: Look at the schemas
-
-The TOOI schemas are metadata schemas. Each schema contains seven fields:
+The Woo TOOI schemas are metadata schemas. Each holds the same seven fields:
 
 | Field | Type | Description |
 | --- | --- | --- |
@@ -139,89 +84,39 @@ The TOOI schemas are metadata schemas. Each schema contains seven fields:
 | `tooiThemaUri` | string | Optional theme URI |
 | `values` | array | Free-form key-value pairs |
 
-The `categorieId` and `categorieUri` are `const` in the schema. You do not have to fill them yourself. OpenRegister fills them automatically as soon as you set `tooiCategorieNaam`.
+`tooiCategorieId` and `tooiCategorieUri` are fixed per schema. OpenRegister fills them automatically once you set `tooiCategorieNaam`.
 
-![The Schemas page in OpenRegister](./03-or-tooi-schemas.png)
+The DCAT `Dataset` schema holds the DCAT-AP-NL dataset fields: `title`, `description`, `tags` (keywords), `category` (theme), `license`, `publicatiedatum`, `landingPage`, and `publisher`. A dataset's files become its distributions.
 
-## Step 4: Create your first publication
+To inspect a schema, open **Data → Schemas** and click any schema to see its fields.
 
-Test your register with one publication. We use the category `onderzoeksrapporten`:
+## Step 5: Create your first object
 
-```bash
-curl -u admin:admin \
-  -X POST "http://localhost:8080/index.php/apps/openregister/api/objects/woo/onderzoeksrapporten" \
-  -H "OCS-APIRequest: true" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "tooiCategorieNaam": "onderzoeksrapporten"
-  }'
-```
+Test a register with one object, without leaving the interface.
 
-The response shows, among other things:
+Open **Data → Registers**, open the Woo register, and pick the `onderzoeksrapporten` (Research reports) schema. Click **Add object**, set `tooiCategorieNaam` to `onderzoeksrapporten`, and save. OpenRegister fills in the TOOI id and URI for you and assigns the object a UUID.
 
-```json
-{
-  "id": "3422e6cd-1ba5-478c-b842-8f206f9d7358",
-  "tooiCategorieNaam": "onderzoeksrapporten",
-  "tooiCategorieId": "c_fdaee95e",
-  "tooiCategorieUri": "https://identifier.overheid.nl/tooi/def/thes/kern/c_fdaee95e",
-  "@self": {
-    "register": "924",
-    "schema": "1624",
-    "uri": "http://localhost:8080/apps/openregister/api/objects/924/1624/3422e6cd-...",
-    "owner": "admin",
-    "created": "2026-05-07T05:12:24+00:00"
-  }
-}
-```
+Do the same in the DCAT register: open the `Dataset` schema, click **Add object**, and give it a `title`, a `category`, and a `publicatiedatum`. You now have one Woo publication and one open-data dataset.
 
-OpenRegister filled in the TOOI id and URI itself. The object has a UUID. Remember that UUID. You need it to attach files to this publication.
-
-## Step 5 (optional): Add your own fields
-
-The canonical schemas cover the TOOI metadata, not the content of the publication itself. For title, description, date, and responsible organisation, you create your own additional schema, or extend an existing one.
-
-A minimal extension for `onderzoeksrapporten` looks like this:
-
-```json
-{
-  "title": "Research report publication",
-  "properties": {
-    "titel": { "type": "string", "maxLength": 255 },
-    "omschrijving": { "type": "string", "maxLength": 2000 },
-    "openbaarmakingsdatum": { "type": "string", "format": "date" },
-    "verantwoordelijkeOrganisatie": { "type": "string" }
-  },
-  "required": ["titel", "openbaarmakingsdatum"]
-}
-```
-
-You can create such a schema via `POST /api/schemas` and then add it to the Woo register configuration. Keep it as close as possible to the [DiWoo metadata standard](https://standaarden.overheid.nl/diwoo) so your publications can be picked up by [PLOOI](https://open.overheid.nl) and [woogle.nl](https://woogle.nl) as well.
+Keep the UUIDs in mind. You need them in the next tutorial to attach files.
 
 ## And now
 
 You have:
 
-- A working Woo register with ten TOOI schemas
-- One test publication with a UUID
-- A pattern to add your own fields where needed
+- A Woo register with ten TOOI schemas
+- A DCAT register with a Dataset schema
+- One test publication and one test dataset
+- Everything created through the interface, no command line
 
-In the [follow-up tutorial you attach files to this publication](/academy/woo-upload-files), from a few PDFs to large video files in chunks.
+In the [follow-up tutorial you attach files to a publication](/academy/woo-upload-files), from a few PDFs to large video files.
 
 ## Cleanup
 
-If you want to delete the test register:
-
-```bash
-curl -u admin:admin \
-  -X DELETE "http://localhost:8080/index.php/apps/openregister/api/registers/924" \
-  -H "OCS-APIRequest: true"
-```
-
-This removes the register, all schemas, and all objects. The configuration import itself remains, so you can replay it.
+To remove a register, open **Data → Registers**, open the register's **Actions** menu, and choose **Delete**. This removes the register, its schemas, and its objects. The configuration import remains, so you can replay it later.
 
 <ContactCta
   title="Want to know more?"
-  body="Send us an email. We help you set up your own Woo register in half a day, including publication schemas and connections to existing systems."
+  body="Send us an email. We help you set up your own Woo and open-data registers in half a day, including publication schemas and connections to existing systems."
   cta={{ label: "Email us", href: "mailto:info@conduction.nl?subject=Woo-register" }}
 />
