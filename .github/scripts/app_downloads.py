@@ -258,14 +258,30 @@ def store_summary(store_app):
 # Merge + emit
 # --------------------------------------------------------------------------- #
 def main():
-    print("Collecting GitHub (legacy) download stats...", file=sys.stderr)
-    github = collect_github()
-    print("Collecting Codeberg (live) download stats...", file=sys.stderr)
-    codeberg = collect_codeberg()
+    # A download-stats fetch must never break the docs build. If any upstream
+    # API (GitHub, Codeberg, the Nextcloud store) is unreachable or returns an
+    # error, keep the committed data/app-downloads.json stub and exit cleanly.
+    try:
+        print("Collecting GitHub (legacy) download stats...", file=sys.stderr)
+        github = collect_github()
+        print("Collecting Codeberg (live) download stats...", file=sys.stderr)
+        codeberg = collect_codeberg()
 
-    print("Fetching Nextcloud store catalog...", file=sys.stderr)
-    store_by_id = fetch_store_apps()
-    print(f"  {len(store_by_id)} apps in store", file=sys.stderr)
+        print("Fetching Nextcloud store catalog...", file=sys.stderr)
+        store_by_id = fetch_store_apps()
+        print(f"  {len(store_by_id)} apps in store", file=sys.stderr)
+    except (urllib.error.HTTPError, urllib.error.URLError, OSError) as e:
+        print(
+            f"WARNING: download-stats fetch failed ({e}); keeping existing "
+            f"{OUTPUT_PATH.name} and continuing the build.",
+            file=sys.stderr,
+        )
+        if not OUTPUT_PATH.exists():
+            OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+            with OUTPUT_PATH.open("w") as f:
+                json.dump({"generated_at": None, "totals": {}, "apps": []}, f, indent=2)
+                f.write("\n")
+        return
 
     apps = []
     for app_id in sorted(set(github) | set(codeberg)):
