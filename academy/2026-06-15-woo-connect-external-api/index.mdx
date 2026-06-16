@@ -152,7 +152,7 @@ curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/
   -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
   -d '{ "name": "Pet store to datasets", "sourceId": "<SOURCE_ID>", "sourceType": "api",
         "sourceTargetMapping": "<MAPPING_ID>",
-        "sourceConfig": { "endpoint": "/pet/findByStatus?status=available", "idPosition": "id", "resultsPosition": "body" },
+        "sourceConfig": { "endpoint": "/pet/findByStatus?status=available", "idPosition": "id", "resultsPosition": "_root" },
         "targetType": "register/schema", "targetId": "<REGISTER>/<SCHEMA>" }'
 
 curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/synchronizations/<SYNC_ID>/run" \
