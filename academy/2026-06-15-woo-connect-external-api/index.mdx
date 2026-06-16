@@ -4,7 +4,7 @@ title: Pull external data into your register with OpenConnector
 contentType: tutorial
 authors: [conduction]
 date: 2026-06-15
-summary: Configure a source, a mapping, and a synchronisation in OpenConnector that turn an external API into datasets, on a schedule. With an API appendix for automation.
+summary: Configure a source, a mapping, and a synchronisation in OpenConnector that turn an external API into datasets, on a schedule. Every step has UI, API, and PHP tabs.
 tags: [Woo, DCAT, OpenRegister, OpenConnector, Integration, Synchronisation, Open data, Tutorial series]
 apps: [openregister, openconnector, opencatalogi, openwoo]
 durationMinutes: 22
@@ -14,6 +14,14 @@ partNumber: 4
 
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
 import Details from '@theme/Details';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+:::tip Choose how you work
+Each step below has three tabs — **UI**, **API**, and **PHP** — so you can
+follow the click-path, automate it with `curl`, or call the apps' `OCA\`
+services in code. Pick one and it sticks across every step.
+:::
 
 :::tip Recommended first
 This is Part 4 of the Woo tutorial series. Parts <a href="/academy/woo-set-up-register">1</a>, <a href="/academy/woo-upload-files">2</a> and <a href="/academy/woo-publish-and-harvest-catalog">3</a> set up the registers, the files, and the public catalog this tutorial fills.
@@ -52,11 +60,59 @@ You build all three in the OpenConnector menu in Nextcloud. The dashboard counts
 
 ## Step 1: Register the external API as a source
 
+<Tabs groupId="woo-how">
+<TabItem value="ui" label="UI">
+
 Open **OpenConnector → Sources → Add source**. Give it a name like `Swagger Pet Store`, set the type to `api`, and add a description. Click **Create**.
 
 ![The Create Source form in OpenConnector](./02-oc-source-create.png)
 
 Open the new source from the list and set its **location** to the base URL, `https://petstore3.swagger.io/api/v3`. The Pet Store needs no authentication. Use the source's **Test** action to confirm OpenConnector can reach it; a green result means the connection works.
+
+</TabItem>
+<TabItem value="api" label="API">
+
+Host `http://localhost:8080`, auth `admin:admin`. Create the source, then test connectivity with its id:
+
+```bash
+curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/sources" \
+  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
+  -d '{ "name": "Swagger Pet Store", "type": "api", "location": "https://petstore3.swagger.io/api/v3", "auth": "none", "isEnabled": true }'
+
+curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/sources/test/<SOURCE_ID>" \
+  -H "OCS-APIRequest: true"
+```
+
+</TabItem>
+<TabItem value="php" label="PHP">
+
+A source, mapping, and synchronisation are all OpenRegister objects in the `openconnector` register, so you create them with OpenRegister's `ObjectService` and test reachability with OpenConnector's `CallService`:
+
+```php
+use OCA\OpenRegister\Service\ObjectService;
+use OCA\OpenConnector\Service\CallService;
+
+$objects = \OCP\Server::get(ObjectService::class);
+
+$source = $objects->saveObject(
+    object: [
+        'name'      => 'Swagger Pet Store',
+        'type'      => 'api',
+        'location'  => 'https://petstore3.swagger.io/api/v3',
+        'auth'      => 'none',
+        'isEnabled' => true,
+    ],
+    register: 'openconnector',
+    schema:   'source',
+);
+
+// Confirm OpenConnector can reach it.
+$call     = \OCP\Server::get(CallService::class);
+$response = $call->call($source, '/pet/findByStatus?status=available');
+```
+
+</TabItem>
+</Tabs>
 
 :::note
 For a real source you set the authentication and add credentials on the source. Keep secrets out of any file you commit; OpenConnector stores them encrypted.
@@ -64,7 +120,7 @@ For a real source you set the authentication and add credentials on the source. 
 
 ## Step 2: Write the mapping
 
-A mapping turns one external record into one object in your schema. Open **OpenConnector → Mappings → Add mapping**, give it a name like `Pet to dataset`, and open it. Each target field gets a [Twig](https://twig.symfony.com/) expression that reads from the source record.
+A mapping turns one external record into one object in your schema. Each target field is a [Twig](https://twig.symfony.com/) expression that reads from the source record.
 
 The Pet Store returns pets like this:
 
@@ -83,55 +139,13 @@ Map those fields onto your `Dataset` schema:
 
 The `publicatiedatum` expression sets the publish date to now, so the dataset is public the moment it arrives. This is the field Part 3 keys public visibility on.
 
-Use the mapping's **Test mapping** action to run it against a sample record before you wire it up. It shows the reshaped object, so you know the mapping does what you expect.
+<Tabs groupId="woo-how">
+<TabItem value="ui" label="UI">
 
-## Step 3: Create the synchronisation
+Open **OpenConnector → Mappings → Add mapping**, give it a name like `Pet to dataset`, and open it. Enter each row from the table above as a target field and its Twig expression. Use the mapping's **Test mapping** action to run it against a sample record before you wire it up — it shows the reshaped object, so you know the mapping does what you expect.
 
-The synchronisation ties source, mapping, and target together. Open **OpenConnector → Synchronisations → Add synchronisation**. Name it, set `sourceType` to `api` and `targetType` to `register/schema`, and click **Create**.
-
-![The Create Synchronization form in OpenConnector](./03-oc-synchronisation-create.png)
-
-Open the synchronisation and set:
-
-- **Source**: the Pet Store source from Step 1.
-- **Source endpoint**: `/pet/findByStatus?status=available`, the path appended to the source location.
-- **Results position**: where the list of records sits in the response. The Pet Store returns a bare array, addressed as `body`.
-- **Id position**: `id`, the field that uniquely identifies a record. OpenConnector uses it to avoid duplicates on the next run.
-- **Mapping**: the `Pet to dataset` mapping from Step 2.
-- **Target**: your DCAT register and its `Dataset` schema.
-
-## Step 4: Run it
-
-Run the synchronisation from its detail view with the **Run** action. The result is a log: how many records it read, created, updated, and skipped.
-
-Open your DCAT register in OpenRegister and you see the new datasets. Because the mapping set `publicatiedatum` to now, they are already public. Read them anonymously through the catalog from Part 3 (`/api/publications`). The external records are now datasets, searchable and harvestable.
-
-## Step 5: Schedule it
-
-A synchronisation that runs once is an import. To keep the register current, schedule it. In the synchronisation detail view, set a schedule. OpenConnector creates a background job that runs on the interval you pick.
-
-On the next run, OpenConnector compares each record's id against what it already wrote. New records are created, changed records are updated, and unchanged records are skipped. The register tracks the source without duplicates.
-
-:::warning
-Match the interval to how often the source changes. A daily open-data export does not need an hourly sync. Frequent runs against a slow API waste both sides.
-:::
-
-## Appendix: via the API
-
-Every step above has an API equivalent, for automation and scripted deploys. Host `http://localhost:8080`, auth `admin:admin`.
-
-Create the source, then set its location and test it:
-
-```bash
-curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/sources" \
-  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
-  -d '{ "name": "Swagger Pet Store", "type": "api", "location": "https://petstore3.swagger.io/api/v3", "auth": "none", "isEnabled": true }'
-
-curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/sources/test/<SOURCE_ID>" \
-  -H "OCS-APIRequest: true"
-```
-
-Create the mapping and test it against a sample record:
+</TabItem>
+<TabItem value="api" label="API">
 
 ```bash
 curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/mappings" \
@@ -145,7 +159,58 @@ curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/
   -d '{ "mapping": { "title": "{{ name }}" }, "inputObject": { "name": "Bella" } }'
 ```
 
-Create the synchronisation and run it. Replace `<REGISTER>/<SCHEMA>` with your DCAT register and Dataset schema:
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+use OCA\OpenConnector\Service\MappingService;
+
+$mapping = $objects->saveObject(
+    object: [
+        'name'    => 'Pet to dataset',
+        'mapping' => [
+            'title'           => '{{ name }}',
+            'category'        => '{{ category.name }}',
+            'status'          => 'Published',
+            'publicatiedatum' => '{{ "now"|date("Y-m-d H:i:s") }}',
+        ],
+    ],
+    register: 'openconnector',
+    schema:   'mapping',
+);
+
+// Reshape one sample record to verify the mapping before wiring it up.
+$mapper = \OCP\Server::get(MappingService::class);
+$result = $mapper->executeMapping($mapping, ['name' => 'Bella', 'category' => ['name' => 'Dogs']]);
+```
+
+</TabItem>
+</Tabs>
+
+## Step 3: Create the synchronisation
+
+The synchronisation ties source, mapping, and target together. It needs:
+
+- **Source**: the Pet Store source from Step 1.
+- **Source endpoint**: `/pet/findByStatus?status=available`, the path appended to the source location.
+- **Results position**: where the list of records sits in the response. The Pet Store returns a bare array, addressed as `_root`.
+- **Id position**: `id`, the field that uniquely identifies a record. OpenConnector uses it to avoid duplicates on the next run.
+- **Mapping**: the `Pet to dataset` mapping from Step 2.
+- **Target**: your DCAT register and its `Dataset` schema.
+
+<Tabs groupId="woo-how">
+<TabItem value="ui" label="UI">
+
+Open **OpenConnector → Synchronisations → Add synchronisation**. Name it, set `sourceType` to `api` and `targetType` to `register/schema`, and click **Create**.
+
+![The Create Synchronization form in OpenConnector](./03-oc-synchronisation-create.png)
+
+Open the synchronisation and fill the fields above from the dropdowns.
+
+</TabItem>
+<TabItem value="api" label="API">
+
+Replace `<REGISTER>/<SCHEMA>` with your DCAT register and Dataset schema:
 
 ```bash
 curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/synchronizations" \
@@ -154,12 +219,76 @@ curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/
         "sourceTargetMapping": "<MAPPING_ID>",
         "sourceConfig": { "endpoint": "/pet/findByStatus?status=available", "idPosition": "id", "resultsPosition": "_root" },
         "targetType": "register/schema", "targetId": "<REGISTER>/<SCHEMA>" }'
+```
 
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+$sync = $objects->saveObject(
+    object: [
+        'name'                => 'Pet store to datasets',
+        'sourceId'            => $source->getUuid(),
+        'sourceType'          => 'api',
+        'sourceTargetMapping' => $mapping->getUuid(),
+        'sourceConfig'        => [
+            'endpoint'        => '/pet/findByStatus?status=available',
+            'idPosition'      => 'id',
+            'resultsPosition' => '_root',
+        ],
+        'targetType'          => 'register/schema',
+        'targetId'            => '<REGISTER>/<SCHEMA>',
+    ],
+    register: 'openconnector',
+    schema:   'synchronization',
+);
+```
+
+</TabItem>
+</Tabs>
+
+## Step 4: Run it
+
+<Tabs groupId="woo-how">
+<TabItem value="ui" label="UI">
+
+Run the synchronisation from its detail view with the **Run** action. The result is a log: how many records it read, created, updated, and skipped.
+
+</TabItem>
+<TabItem value="api" label="API">
+
+```bash
 curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/synchronizations/<SYNC_ID>/run" \
   -H "OCS-APIRequest: true"
 ```
 
 The run returns a log like `{ "result": { "objects": { "found": 8, "created": 8 } } }`.
+
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+use OCA\OpenConnector\Service\SynchronizationService;
+
+$syncService = \OCP\Server::get(SynchronizationService::class);
+$log = $syncService->synchronize($sync);
+// $log['result']['objects'] === ['found' => 8, 'created' => 8]
+```
+
+</TabItem>
+</Tabs>
+
+Open your DCAT register in OpenRegister and you see the new datasets. Because the mapping set `publicatiedatum` to now, they are already public. Read them anonymously through the catalog from Part 3 (`/api/publications`). The external records are now datasets, searchable and harvestable.
+
+## Step 5: Schedule it
+
+A synchronisation that runs once is an import. To keep the register current, schedule it. In the synchronisation detail view, set a schedule. OpenConnector registers a background **job** — its `JobTask` cron runs the same `synchronize()` on the interval you pick. Scheduling is its own object, so unlike the steps above it has no one-line API/PHP equivalent; create it from the UI.
+
+On the next run, OpenConnector compares each record's id against what it already wrote. New records are created, changed records are updated, and unchanged records are skipped. The register tracks the source without duplicates.
+
+:::warning
+Match the interval to how often the source changes. A daily open-data export does not need an hourly sync. Frequent runs against a slow API waste both sides.
+:::
 
 ## Test yourself
 
