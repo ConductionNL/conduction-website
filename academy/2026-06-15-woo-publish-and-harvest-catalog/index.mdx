@@ -74,11 +74,37 @@ Read the catalog as an anonymous visitor. Open the public publications endpoint,
 https://your-host/index.php/apps/opencatalogi/api/publications
 ```
 
-You see only the published dataset. The future-dated one is gone.
+You see only the published dataset. The future-dated one is gone:
 
-![Anonymous public search returning only the published dataset](./02-public-search.png)
+```json
+{
+  "results": [
+    {
+      "title": "Energielabels per adres 2026",
+      "description": "Voorlopige energielabels gekoppeld aan BAG-adressen.",
+      "tags": ["energie", "bag", "wonen"],
+      "category": "Economy and finance",
+      "license": "CC0-1.0",
+      "publicatiedatum": "2026-03-01 00:00:00",
+      "status": "Published",
+      "@self": {
+        "id": "5bbd2b06-565f-4d65-9dfe-3b79398acf15",
+        "register": "427",
+        "schema": "1428",
+        "owner": "admin"
+      }
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "pages": 1
+}
+```
 
-Open the same register in OpenRegister as an admin and you see both datasets. The difference between the two is exactly your unpublished datasets. OpenRegister filters them in SQL; they never reach the public response.
+The future-dated "Nog niet openbare dataset" (`publicatiedatum` in 2099) is
+absent: OpenRegister filters it in SQL, so it never reaches the public
+response. Open the same register in OpenRegister as an admin and you see
+both datasets — the difference is exactly your unpublished datasets.
 
 :::warning
 A dataset with an empty `publicatiedatum` is **not** public. The rule needs a date that is now or earlier. If a dataset does not appear in public search, check its `publicatiedatum` first.
@@ -94,9 +120,48 @@ Open the instance feed, anonymously:
 https://your-host/index.php/apps/opencatalogi/api/dcat
 ```
 
-You get a JSON-LD document with the DCAT-AP-NL profile (`data.overheid.nl/dcat-ap-nl/3.0`).
+You get a JSON-LD document with the DCAT-AP-NL profile
+(`data.overheid.nl/dcat-ap-nl/3.0`). Each published dataset becomes a
+`dcat:Dataset` and each attached file a `dcat:Distribution`:
 
-![The DCAT-AP-NL feed served by OpenCatalogi](./03-dcat-feed.png)
+```json
+{
+  "@context": {
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "profile": "https://data.overheid.nl/dcat-ap-nl/3.0"
+  },
+  "@graph": [
+    {
+      "@id": "https://your-host/index.php/apps/opencatalogi/api/dcat",
+      "@type": "dcat:Catalog",
+      "dct:title": "OpenCatalogi",
+      "dcat:dataset": [{ "@id": "https://your-host/.../objects/427/1428/5bbd2b06" }]
+    },
+    {
+      "@id": "https://your-host/.../objects/427/1428/5bbd2b06",
+      "@type": "dcat:Dataset",
+      "dct:title": "Energielabels per adres 2026",
+      "dct:description": "Voorlopige energielabels gekoppeld aan BAG-adressen.",
+      "dcat:keyword": ["energie", "bag", "wonen"],
+      "dcat:theme": { "@id": "http://publications.europa.eu/resource/authority/data-theme/ECON" },
+      "dct:license": "CC0-1.0",
+      "dct:modified": "2026-03-01",
+      "dct:identifier": "5bbd2b06-565f-4d65-9dfe-3b79398acf15",
+      "dcat:landingPage": { "@id": "https://your-host/.../objects/427/1428/5bbd2b06" },
+      "dcat:distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "dct:title": "energielabels-2026.csv",
+          "dcat:downloadURL": { "@id": "https://your-host/.../files/energielabels-2026.csv" },
+          "dcat:mediaType": "text/csv",
+          "dct:format": { "@id": "http://publications.europa.eu/resource/authority/file-type/CSV" }
+        }
+      ]
+    }
+  ]
+}
+```
 
 To publish a single catalog as its own harvestable feed, turn on **DCAT** on the catalog and read its per-catalog endpoint at `/api/catalogs/publications/dcat`. The per-catalog feed lists your published datasets as `dcat:Dataset` nodes and honours the same visibility rule as Step 3.
 
