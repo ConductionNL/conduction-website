@@ -33,6 +33,7 @@ import {
   RelatedPosts,
   Section,
   AppCrossLinks,
+  BlogSeriesNav,
 } from '@conduction/docusaurus-preset/components';
 import styles from './styles.module.css';
 
@@ -158,6 +159,8 @@ function BlogPostPageContent({children}) {
       <div className={`content-detail-body ${styles.body}`}>
         {children}
       </div>
+
+      <BlogSeriesNav />
 
       {Array.isArray(frontMatter.apps) && frontMatter.apps.length > 0 && (
         <div style={{marginTop: 64}}>
