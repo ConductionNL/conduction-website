@@ -40,6 +40,15 @@ Hydra is Conduction's internal **agentic CI/CD platform**: a factory that turns 
   <PrerequisiteItem>Only needed if you want to run Hydra yourself (rather than just read the series): access to the private <a href="https://codeberg.org/Conduction/hydra">Conduction/hydra</a> repo. Ask your team lead.</PrerequisiteItem>
 </Prerequisites>
 
+## The two repos: Hydra vs `.github`
+
+Before we dive in, a quick orientation that will make every later module easier to read. Two Conduction repos come up constantly across the series, and they have **separate jobs**:
+
+- **[`Conduction/hydra`](https://codeberg.org/Conduction/hydra)** *(private)* — the **factory**. Container images, agent personas (Al Gorithm, Juan Claude, Clyde, Axel), orchestration scripts, the `.claude/skills/` catalogue (`hydra-gate-*`, `opsx-*`, `test-*`), OpenSpec changes. Everything that *runs*. Clone it only if you want to run Hydra locally or modify a skill.
+- **[`Conduction/.github`](https://codeberg.org/Conduction/.github)** *(public)* — the **manual**. Developer guides, way-of-work, ISO compliance, the public Hydra one-pager you're (optionally) reading as warm-up, and shared tooling like the global Claude settings. Everything you *read or install once*.
+
+**Hydra is the factory, `.github` is the manual.** Two repos, two purposes, no overlap. The full breakdown lives in [`.github/docs/hydra/README.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/hydra/README.md#hydra-repo-vs-github-repo).
+
 ## In one sentence
 
 Hydra is a **stateless, label-driven pipeline** that turns OpenSpec proposals into feature branches with code, tests, a review history and a PR — ready for human approval.
