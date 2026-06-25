@@ -40,6 +40,24 @@ Hydra is Conductions interne **agentic CI/CD-platform**: een fabriek die OpenSpe
   <PrerequisiteItem>Alleen nodig als je Hydra zelf wilt draaien (i.p.v. de leerlijn lezen): toegang tot de private <a href="https://codeberg.org/Conduction/hydra">Conduction/hydra</a>-repo. Vraag dit aan bij je teamlead.</PrerequisiteItem>
 </Prerequisites>
 
+> **Wil je meelezen in je editor?** Zodra je repo-toegang hebt, kun je Hydra nu alvast clonen zodat je de bestanden waar de leerlijn naar verwijst direct kunt openen:
+>
+> ```bash
+> git clone git@codeberg.org:Conduction/hydra.git
+> cd hydra
+> ```
+>
+> Alleen lezen kan ook prima — de clone wordt pas een harde eis in [Deel 5](/academy/hydra-tutorial-5-starting-a-run), waar je een echte run start.
+
+## De twee repo's: Hydra vs `.github`
+
+Voor we erin duiken: een korte oriëntatie die elke volgende module makkelijker leesbaar maakt. Twee Conduction-repo's komen continu terug in deze leerlijn, en ze hebben **gescheiden taken**:
+
+- **[`Conduction/hydra`](https://codeberg.org/Conduction/hydra)** *(privé)* — de **fabriek**. Container images, agent-personas (Al Gorithm, Juan Claude, Clyde, Axel), orchestration-scripts, de `.claude/skills/`-catalogus (`hydra-gate-*`, `opsx-*`, `test-*`), OpenSpec changes. Alles wat *draait*. Clone alleen als je Hydra lokaal wilt draaien of een skill wilt aanpassen.
+- **[`Conduction/.github`](https://codeberg.org/Conduction/.github)** *(publiek)* — de **handleiding**. Developer-guides, way-of-work, ISO-compliance, de publieke Hydra-1-pager die je (optioneel) als warming-up leest, en gedeelde tooling zoals de globale Claude-settings. Alles wat je *eenmalig leest of installeert*.
+
+**Hydra is de fabriek, `.github` is de handleiding.** Twee repo's, twee doeleinden, geen overlap. De volledige uitsplitsing staat in [`.github/docs/hydra/README.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/hydra/README.md#hydra-repo-vs-github-repo).
+
 ## In één zin
 
 Hydra is een **stateless, label-gedreven pipeline** die OpenSpec-voorstellen verandert in feature branches met code, tests, een review-history en een PR — klaar voor menselijke goedkeuring.
