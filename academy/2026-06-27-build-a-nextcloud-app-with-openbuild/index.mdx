@@ -31,6 +31,7 @@ import step6Img from './images/step6-permissions.png';
 import step7Img from './images/step7-release.png';
 import step8Img from './images/step8-launchpad.png';
 import step9Img from './images/step9-search.png';
+import step10Img from './images/step10-flows-editor.png';
 import flowCalendarImg from './images/flow-calendar.png';
 import step11Img from './images/step11-ai.png';
 
@@ -246,11 +247,21 @@ OpenRegister does this with **flows**: small pieces of business logic declared
 in the register config, right next to your registers and schemas, that hook the
 object lifecycle. No code, no separate automation tool.
 
-A flow lives on a schema under `x-openregister-flows`. It declares a trigger
-(`created`, `updated`, or `deleted`) and a list of actions. Open the `pet`
-schema in OpenBuild's schema editor, switch to its **Configuration** tab, and
-paste this into the flow configuration — the same way you fill in any other
-schema setting. It is configuration, not code:
+A flow declares a trigger (`created`, `updated`, or `deleted`) and a list of
+actions. Build it with the visual editor: open the **edit** menu (the orange
+button) → **Edit flows…**, pick the `pet` schema, choose **"An object is
+created"**, and add two actions — **Add a calendar event** and **Send an
+email** — filling in their fields. Use `{{ name }}`, `{{ species }}` and the
+like to drop the new pet's values into the text. No code.
+
+<figure>
+  <img src={step10Img} alt="The Edit flows editor: the pet schema selected, an 'object is created' trigger, and a calendar-event action with title, description, location, days-from-now and duration fields using {{name}} placeholders" />
+  <figcaption>The visual flow editor (edit menu → Edit flows…): pick a schema, a trigger, and add actions with plain form fields — no JSON by hand.</figcaption>
+</figure>
+
+Behind the form, OpenBuild stores this on the schema as `x-openregister-flows`
+— configuration that travels with the register and that an admin can read or
+change later:
 
 ```json
 "x-openregister-flows": [
