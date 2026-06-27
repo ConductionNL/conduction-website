@@ -21,10 +21,18 @@ import {
   Troubleshooting,
 } from '@conduction/docusaurus-preset/components';
 
-import dashboardImg from './images/dashboard.png';
+import step1Img from './images/step1-create-app.png';
+import step2Img from './images/step2-data-model.png';
+import step3Img from './images/step3-seed-data.png';
 import petsIndexImg from './images/pets-index.png';
 import petDetailImg from './images/pet-detail.png';
+import dashboardImg from './images/dashboard.png';
+import step6Img from './images/step6-permissions.png';
+import step7Img from './images/step7-release.png';
+import step8Img from './images/step8-launchpad.png';
+import step9Img from './images/step9-search.png';
 import flowCalendarImg from './images/flow-calendar.png';
+import step11Img from './images/step11-ai.png';
 
 OpenBuild is the visual builder for Conduction apps. The [three-paths tutorial](/academy/build-an-app-tutorial-0-three-paths) teaches the manifest path by hand: you write `manifest.json` and the `Cn*` components render it. OpenBuild builds that exact same manifest for you through a UI. You point and click, OpenBuild writes the manifest and the OpenRegister schemas behind it, and you get a working Nextcloud app with no repository, no build step, and no deploy.
 
@@ -62,6 +70,11 @@ Once the app exists, open its settings and upload an **icon**. A pet store wants
   OpenBuild created an <code>Application</code> object plus a first <code>ApplicationVersion</code> in OpenRegister. The version holds the manifest you are about to fill in. The icon is a file attached to the application object, the same file mechanism you will use for pet photos in Step 9.
 </HexCard>
 
+<figure>
+  <img src={step1Img} alt="The OpenBuild dashboard with a Create app button and the Pet Store app listed among recent apps" />
+  <figcaption>OpenBuild's dashboard: Create app, then your Pet Store appears in the recent apps list.</figcaption>
+</figure>
+
 ## Step 2: Design the data model
 
 A Pet Store needs more than pets. Open the **schemas** area of your app and create these seven schemas. For each one, add the properties listed, then add the relations.
@@ -84,6 +97,11 @@ OpenRegister resolves a schema by the lower-cased slug. `order` and `category` a
 
 **Verify:** all seven schemas show in the schema list, and the `pet` schema lists `owner`, `category`, and `tags` as relations.
 
+<figure>
+  <img src={step2Img} alt="The Pet Store app detail page showing its OpenRegister register and all seven schemas: Category, Medical record, Order, Owner, Pet, Tag, Visit" />
+  <figcaption>The app's data model: one OpenRegister register holding all seven schemas, with the register and schema list shown on the app's detail page.</figcaption>
+</figure>
+
 ## Step 3: Seed rich demo data
 
 An empty app is hard to judge. Add real-looking content so your dashboard and lists have something to show. Through the app's index pages (Step 4) or the OpenRegister object API, create roughly:
@@ -102,6 +120,11 @@ Good demo data has variety: a sold beagle, an available parakeet, a pending kitt
 </HexCard>
 
 **Verify:** the OpenRegister object count for `pet` reads 10, and a pet object has its `owner`, `category`, and `tags` filled with the UUIDs of the objects you created.
+
+<figure>
+  <img src={step3Img} alt="The Pets list in the running app showing ten seeded pets — Rex, Bella, Whiskers, Luna, Coco, Spike, Max, Mia, Buddy, Sunny — with species, status badges, weight and price" />
+  <figcaption>The seeded data, browsable in the app: ten pets across species, each with a status, weight, and price.</figcaption>
+</figure>
 
 ## Step 4: Build the lists and a rich detail page
 
@@ -155,25 +178,18 @@ The medical records are sensitive. Only a **vets** group should read them, and o
 
 First, the data. As admin, create a Nextcloud group `vets` and put your veterinary users in it. Then open the `medicalRecord` schema's **permissions** and set the read (and create, update, delete) groups to `vets`. OpenRegister now enforces this on every request: a user in `vets` reads medical records, a user outside it reads none, and admins keep full access.
 
-**Verify it for real.** Create one user in `vets` and one outside it, then read the medical records as each:
-
-```bash
-# A vet sees the medical records
-curl -u vetuser:'<password>' -H 'OCS-APIRequest: true' \
-  "https://<host>/apps/openregister/api/objects/<register>/medicalRecord" | jq '.total'
-# -> 5
-
-# A non-vet sees none of them
-curl -u petstaff:'<password>' -H 'OCS-APIRequest: true' \
-  "https://<host>/apps/openregister/api/objects/<register>/medicalRecord" | jq '.total'
-# -> 0
-```
+**Verify it for real.** From Nextcloud's user settings, create one user in the `vets` group and one outside it. Sign in as each and open the Pet Store: the vet sees the medical records and the medical menu, the other staff member sees neither, and an admin always sees everything. Two logins, no code.
 
 With the data locked down, you can now scope the **navigation**: tag the medical menu item (and an optional vet dashboard page) so the app only shows them to the `vets` group. The menu scoping is the presentation layer; the OpenRegister permission above is the wall.
 
 <Troubleshooting>
   <p><strong>The non-vet user also sees zero pets, not just zero medical records.</strong> That is tenant isolation, a separate OpenRegister control: a user only sees objects in an organisation they belong to. Add both users to the app's organisation so the only difference between them is the medical permission.</p>
 </Troubleshooting>
+
+<figure>
+  <img src={step6Img} alt="The Pet Store app detail page's Groups & users panel with a Manage permissions button, showing role-based access to the app and its data" />
+  <figcaption>Access is managed by group and role from the app's Groups &amp; users panel — the same control you use to scope medical records to a vets group.</figcaption>
+</figure>
 
 ## Step 7: Release a production version
 
@@ -185,6 +201,11 @@ To keep working, open a non-production version from the version list and edit th
 
 **Verify:** the version history shows one version marked as production, and opening the app from the app list lands on it.
 
+<figure>
+  <img src={step7Img} alt="The OpenBuild version picker for Pet Store listing Production 0.1.0 and Development versions, with the production version marked" />
+  <figcaption>One production version at a time: the version picker shows Production 0.1.0 alongside the editable Development version.</figcaption>
+</figure>
+
 ## Step 8: Put the store on everyone's LaunchPad
 
 LaunchPad is the personal Nextcloud dashboard. Surface the Pet Store there so it is one glance away. Open LaunchPad, choose **Add custom widget**, pick **Object list**, and point it at the Pet Store production register and the `pet` schema. Add columns for name, species, and status, give it a title, and save.
@@ -195,26 +216,27 @@ LaunchPad is the personal Nextcloud dashboard. Surface the Pet Store there so it
 
 **Verify:** the LaunchPad widget lists your pets with their species and status, and updates when you add a pet.
 
+<figure>
+  <img src={step8Img} alt="LaunchPad personal dashboard with a Pets in the store object-list widget showing pet names, species and status alongside other widgets" />
+  <figcaption>The Pet Store on LaunchPad: a "Pets in the store" object-list widget reads the same register live, with no integration to build.</figcaption>
+</figure>
+
 ## Step 9: Find pets in search, link visits to Calendar, drop files on a pet
 
 Three Nextcloud-native touches finish the app. Each one is a small piece of configuration that hands you a platform feature.
 
 **Search.** In each schema you want findable, turn on the **searchable** flag. OpenRegister exposes those objects to Nextcloud's unified search through one fleet-wide provider, so a pet becomes a result in the top-bar magnifier next to files and messages. You write no search code.
 
-**Calendar (the leaf).** A vet appointment is an event, so it belongs in Calendar. Link each `visit` to a Nextcloud Calendar event:
-
-```bash
-curl -u admin:admin -H 'OCS-APIRequest: true' \
-  -X POST "https://<host>/apps/openregister/api/objects/<register>/visit/<visitId>/events" \
-  -H 'Content-Type: application/json' \
-  -d '{"summary":"Vet visit: Annual check-up (Rex)","dtstart":"2026-06-01T09:30:00","dtend":"2026-06-01T10:00:00","location":"Pet Store Clinic"}'
-```
-
-The visit now appears in the user's Calendar, and the **Related** widget on the visit's detail page lists the appointment. Calendar is the right leaf for an event, the same way knowledge belongs in a wiki and tasks belong in Deck.
+**Calendar (the leaf).** A vet appointment is an event, so it belongs in Calendar. OpenBuild ships a **Calendar** integration for the `visit` schema: open a visit's detail page and use its calendar action to book the appointment, and the next step's flow books a new-pet inspection automatically. Open Nextcloud Calendar and the appointments are there; the **Related** widget on a visit's detail page lists its event. Calendar is the right leaf for an event, the same way knowledge belongs in a wiki and tasks belong in Deck.
 
 **Files.** A pet's detail page carries a **Files** widget. Drop a photo or a vaccination certificate on it and the file attaches to that pet's object in OpenRegister, stored in Nextcloud Files. The data widget keeps the structured fields; the file widget keeps the documents.
 
 **Verify:** searching a pet's name returns it; a vet visit shows in Calendar; a file dropped on a pet appears in that pet's file list.
+
+<figure>
+  <img src={step9Img} alt="Nextcloud unified search for 'Rex' returning rex.jpg under Files and a 'Vet visit: Annual check-up (Rex)' under Events" />
+  <figcaption>One search for "Rex" surfaces both his photo (Files) and his vet appointment (Calendar) — search, Calendar, and Files, all from configuration.</figcaption>
+</figure>
 
 ## Step 10: Add business logic with flows
 
@@ -225,8 +247,10 @@ in the register config, right next to your registers and schemas, that hook the
 object lifecycle. No code, no separate automation tool.
 
 A flow lives on a schema under `x-openregister-flows`. It declares a trigger
-(`created`, `updated`, or `deleted`) and a list of actions. Add this to the
-`pet` schema:
+(`created`, `updated`, or `deleted`) and a list of actions. Open the `pet`
+schema in OpenBuild's schema editor, switch to its **Configuration** tab, and
+paste this into the flow configuration — the same way you fill in any other
+schema setting. It is configuration, not code:
 
 ```json
 "x-openregister-flows": [
@@ -299,6 +323,11 @@ app and talking to an AI about your data become the same activity.
 
 **Verify:** ask your agent to list the virtual apps. It returns your Pet Store.
 Then ask it to add a widget to a page and reload the app; the widget is there.
+
+<figure>
+  <img src={step11Img} alt="The in-app AI assistant panel open beside the Pets list, answering a question about the pets in the store" />
+  <figcaption>OpenBuild also carries an in-app AI assistant. Over MCP, the same authoring tools let an agent build and change the app in conversation.</figcaption>
+</figure>
 
 ## Test yourself
 
