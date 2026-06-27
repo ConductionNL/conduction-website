@@ -259,39 +259,14 @@ like to drop the new pet's values into the text. No code.
   <figcaption>The visual flow editor (edit menu → Edit flows…): pick a schema, a trigger, and add actions with plain form fields — no JSON by hand.</figcaption>
 </figure>
 
-Behind the form, OpenBuild stores this on the schema as `x-openregister-flows`
-— configuration that travels with the register and that an admin can read or
-change later:
+Placeholders like `{{ name }}` and `{{ species }}` are filled from the object
+that triggered the flow. The **calendar event** action puts an agenda task in
+the vet's Nextcloud Calendar; the **email** action sends the notification. Flows
+never break a save: if an action fails it is logged and the others still run.
 
-```json
-"x-openregister-flows": [
-  {
-    "name": "new-pet-vet-inspection",
-    "trigger": "created",
-    "actions": [
-      {
-        "type": "calendar-event",
-        "summary": "Inspect new pet: {{ name }}",
-        "description": "A new {{ species }} named {{ name }} was registered. Please perform an intake inspection.",
-        "location": "Pet Store Clinic",
-        "offsetDays": 1,
-        "durationMinutes": 30
-      },
-      {
-        "type": "email",
-        "to": "vet@petstore.example",
-        "subject": "New pet to inspect: {{ name }}",
-        "body": "A new pet was registered.\n\nName: {{ name }}\nSpecies: {{ species }}\nStatus: {{ status }}\n\nPlease schedule an intake inspection."
-      }
-    ]
-  }
-]
-```
-
-`{{ name }}`, `{{ species }}`, and `{{ status }}` are filled from the object that
-triggered the flow. The `calendar-event` action puts an agenda task in the vet's
-Nextcloud Calendar; the `email` action sends the notification. Flows never break
-a save: if an action fails it is logged and the others still run.
+OpenBuild stores the flow on the schema as configuration that travels with the
+register, so an admin can review or change it later — no developer needed. The
+exact config format lives in the [OpenBuild technical documentation](https://conduction.nl/products/openbuild).
 
 <HexCard title="Why flows live in the register, not in code">
   A flow is configuration, the same shape as a schema or a register. It is
