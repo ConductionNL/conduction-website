@@ -23,6 +23,7 @@ import {
 
 import step1Img from './images/step1-create-app.png';
 import step2Img from './images/step2-data-model.png';
+import step2EditorImg from './images/step2-schema-editor.png';
 import step3Img from './images/step3-seed-data.png';
 import petsIndexImg from './images/pets-index.png';
 import petDetailImg from './images/pet-detail.png';
@@ -34,6 +35,8 @@ import step9Img from './images/step9-search.png';
 import step10Img from './images/step10-flows-editor.png';
 import flowCalendarImg from './images/flow-calendar.png';
 import step11Img from './images/step11-ai.png';
+import step11McpMenuImg from './images/step11-mcp-menu.png';
+import step11McpDetailImg from './images/step11-mcp-detail.png';
 
 OpenBuild is the visual builder for Conduction apps. The [three-paths tutorial](/academy/build-an-app-tutorial-0-three-paths) teaches the manifest path by hand: you write `manifest.json` and the `Cn*` components render it. OpenBuild builds that exact same manifest for you through a UI. You point and click, OpenBuild writes the manifest and the OpenRegister schemas behind it, and you get a working Nextcloud app with no repository, no build step, and no deploy.
 
@@ -91,6 +94,11 @@ A Pet Store needs more than pets. Open the **schemas** area of your app and crea
 | `medicalRecord` | date, diagnosis, treatment, notes, weightKg | pet (to `pet`), visit (to `visit`) |
 
 A relation property is a `string` with `format: uuid` and an `x-openregister-relation` marker pointing at the target schema. OpenBuild's schema editor adds that for you when you pick "relation" as the property type and choose the target.
+
+<figure>
+  <img src={step2EditorImg} alt="The OpenBuild schema editor for the Pet schema: a Title field, Properties / Configuration / Security tabs, and a properties table (name, status, species, sex, dateOfBirth) with an Add property button" />
+  <figcaption>The schema editor (edit menu → Edit data… → a schema): add and type each property on the Properties tab, set composition and relations on Configuration, and group access on Security — no code.</figcaption>
+</figure>
 
 :::warning Watch out for slug collisions
 OpenRegister resolves a schema by the lower-cased slug. `order` and `category` are common slugs that may already exist in another app on your instance. If your `order` page shows the wrong fields, your schema collided with a global one. Reference the schema by its numeric id in the page configuration, or give the pet-store schema a unique slug like `petorder`.
@@ -313,6 +321,22 @@ Then ask it to add a widget to a page and reload the app; the widget is there.
 <figure>
   <img src={step11Img} alt="The in-app AI assistant panel open beside the Pets list, answering a question about the pets in the store" />
   <figcaption>OpenBuild also carries an in-app AI assistant. Over MCP, the same authoring tools let an agent build and change the app in conversation.</figcaption>
+</figure>
+
+These are not mock-ups. The two screenshots below were produced by calling the
+OpenBuild MCP tools directly — no clicking in the UI. First, `Create or update a
+menu item` added a navigation entry:
+
+<figure>
+  <img src={step11McpMenuImg} alt="The Pet Store left navigation showing a new 'Added via MCP' menu item beneath Categories, created by an MCP tool call" />
+  <figcaption>An agent called <code>Create or update a menu item</code> over MCP — the new "Added via MCP" entry appears in the live navigation.</figcaption>
+</figure>
+
+Then `Create or update a page` rewrote the pet detail page's header:
+
+<figure>
+  <img src={step11McpDetailImg} alt="The pet detail page with a header reading 'Pet profile — updated by an AI agent via MCP' and a subtitle noting it was changed by an agent, not by clicking" />
+  <figcaption>The same agent changed the detail page banner with <code>Create or update a page</code> — the page re-renders with the new text on reload.</figcaption>
 </figure>
 
 ## Test yourself
