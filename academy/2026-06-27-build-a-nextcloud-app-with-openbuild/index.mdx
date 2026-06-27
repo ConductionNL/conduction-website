@@ -4,10 +4,10 @@ title: "Build a Nextcloud app with OpenBuild, no code required"
 contentType: tutorial
 authors: [conduction]
 date: 2026-06-27
-summary: Build a complete Pet Store app inside Nextcloud without writing a line of code. You will create the app, design its data model, seed it with demo data, compose a dashboard from every widget type, give a vets group its own medical layer, release a production version, surface the app on the LaunchPad dashboard and in search, link vet visits to Calendar, and drop files onto a pet. OpenBuild is the visual builder for the same manifest the code path teaches; here you author it by clicking, not by editing JSON.
-tags: [App development, OpenBuild, OpenRegister, No-code, Manifest, Tutorial]
+summary: Build a complete Pet Store app inside Nextcloud without writing a line of code. You will create the app, design its data model, seed it with demo data, compose a dashboard from every widget type, give a vets group its own medical layer, release a production version, surface the app on the LaunchPad dashboard and in search, link vet visits to Calendar, drop files onto a pet, add business-logic flows that book a vet inspection and email the vet when a pet is registered, and learn how an AI agent can build the whole app over MCP. OpenBuild is the visual builder for the same manifest the code path teaches; here you author it by clicking, not by editing JSON.
+tags: [App development, OpenBuild, OpenRegister, No-code, Manifest, Flows, MCP, Tutorial]
 apps: [openbuild, openregister]
-durationMinutes: 45
+durationMinutes: 55
 ---
 
 import {
@@ -21,6 +21,11 @@ import {
   Troubleshooting,
 } from '@conduction/docusaurus-preset/components';
 
+import dashboardImg from './images/dashboard.png';
+import petsIndexImg from './images/pets-index.png';
+import petDetailImg from './images/pet-detail.png';
+import flowCalendarImg from './images/flow-calendar.png';
+
 OpenBuild is the visual builder for Conduction apps. The [three-paths tutorial](/academy/build-an-app-tutorial-0-three-paths) teaches the manifest path by hand: you write `manifest.json` and the `Cn*` components render it. OpenBuild builds that exact same manifest for you through a UI. You point and click, OpenBuild writes the manifest and the OpenRegister schemas behind it, and you get a working Nextcloud app with no repository, no build step, and no deploy.
 
 This tutorial builds a **Pet Store with a veterinary layer**, the canonical Conduction sample domain. By the end you have an app your whole organisation can open: a dashboard of live numbers and charts, browsable lists of pets and owners, a rich pet profile page, a vets-only medical section, a released production version, a widget on everyone's LaunchPad, vet appointments in Nextcloud Calendar, and photos attached to each pet. Everything in this tutorial is built in the OpenBuild UI against a real OpenRegister behind it.
@@ -32,6 +37,7 @@ This tutorial builds a **Pet Store with a veterinary layer**, the canonical Cond
   <Outcome>A <strong>dashboard that uses every widget type</strong> OpenBuild offers (header, stats, charts, gauge, delta, object list, image, label, text) bound to live register data.</Outcome>
   <Outcome>A <strong>vets-only medical layer</strong>: a Nextcloud group that alone can read the medical records, enforced by OpenRegister, not by hiding a menu.</Outcome>
   <Outcome>A <strong>released production version</strong> you can iterate on safely, plus the app surfaced on the <strong>LaunchPad dashboard</strong>, in <strong>Calendar</strong> (vet visits), and on each pet's <strong>file drop zone</strong>.</Outcome>
+  <Outcome>A <strong>flow</strong> (business logic in the register config) that, when a pet is created, books a vet inspection task in Calendar and emails the vet, plus the knowledge that an <strong>AI agent can build the whole app over MCP</strong>.</Outcome>
 </Outcomes>
 
 <Prerequisites title="What you need">
@@ -111,12 +117,12 @@ Then build the **Pet detail page**. This is where OpenBuild shines: a detail pag
 - a **related** widget that gathers everything linked to the pet (its owner, its category, its visits and orders).
 
 <figure>
-  <img src="./images/pets-index.png" alt="The Pets index page with a search box, Cards and Table toggle, status badges, weight and price columns" />
+  <img src={petsIndexImg} alt="The Pets index page with a search box, Cards and Table toggle, status badges, weight and price columns" />
   <figcaption>The Pets index page. Columns, search, status badges, and the card/table toggle all come from the schema; you configured none of them by hand.</figcaption>
 </figure>
 
 <figure>
-  <img src="./images/pet-detail.png" alt="A pet detail page with a header banner, a data grid of the pet's properties, and Care, Files and Related sections" />
+  <img src={petDetailImg} alt="A pet detail page with a header banner, a data grid of the pet's properties, and Care, Files and Related sections" />
   <figcaption>Rex's profile: a header, a data grid, and the Files and Related widgets below it.</figcaption>
 </figure>
 
@@ -133,7 +139,7 @@ Add a **dashboard** page and set it as the app's home. A dashboard is a free gri
 Each data widget asks for a register, a schema, and a metric. A revenue stat is `metric: sum` over the `order` schema's `total` field. A "pets by status" donut groups the `pet` schema by its `status` field. A gauge for pets sold counts `pet` where `status = sold` against a static target. None of this is code; it is a form per widget.
 
 <figure>
-  <img src="./images/dashboard.png" alt="The Pet Store dashboard: a header banner, four stat cards (pets, owners, orders, revenue), a donut chart of pets by status, and a line chart of visits over time" />
+  <img src={dashboardImg} alt="The Pet Store dashboard: a header banner, four stat cards (pets, owners, orders, revenue), a donut chart of pets by status, and a line chart of visits over time" />
   <figcaption>The dashboard: header, four KPI cards, a status donut, and a visits-over-time line, all bound to live data.</figcaption>
 </figure>
 
@@ -210,6 +216,90 @@ The visit now appears in the user's Calendar, and the **Related** widget on the 
 
 **Verify:** searching a pet's name returns it; a vet visit shows in Calendar; a file dropped on a pet appears in that pet's file list.
 
+## Step 10: Add business logic with flows
+
+An app is more than data and pages. You want things to happen. When a new pet
+arrives, the vet should get a task to inspect it and an email so they know.
+OpenRegister does this with **flows**: small pieces of business logic declared
+in the register config, right next to your registers and schemas, that hook the
+object lifecycle. No code, no separate automation tool.
+
+A flow lives on a schema under `x-openregister-flows`. It declares a trigger
+(`created`, `updated`, or `deleted`) and a list of actions. Add this to the
+`pet` schema:
+
+```json
+"x-openregister-flows": [
+  {
+    "name": "new-pet-vet-inspection",
+    "trigger": "created",
+    "actions": [
+      {
+        "type": "calendar-event",
+        "summary": "Inspect new pet: {{ name }}",
+        "description": "A new {{ species }} named {{ name }} was registered. Please perform an intake inspection.",
+        "location": "Pet Store Clinic",
+        "offsetDays": 1,
+        "durationMinutes": 30
+      },
+      {
+        "type": "email",
+        "to": "vet@petstore.example",
+        "subject": "New pet to inspect: {{ name }}",
+        "body": "A new pet was registered.\n\nName: {{ name }}\nSpecies: {{ species }}\nStatus: {{ status }}\n\nPlease schedule an intake inspection."
+      }
+    ]
+  }
+]
+```
+
+`{{ name }}`, `{{ species }}`, and `{{ status }}` are filled from the object that
+triggered the flow. The `calendar-event` action puts an agenda task in the vet's
+Nextcloud Calendar; the `email` action sends the notification. Flows never break
+a save: if an action fails it is logged and the others still run.
+
+<HexCard title="Why flows live in the register, not in code">
+  A flow is configuration, the same shape as a schema or a register. It is
+  versioned with the app, it travels with the register, and an admin can read
+  and change it without a developer. The actions reuse Nextcloud's own surfaces
+  (Calendar, Mail, and more), so you inherit them instead of building them.
+</HexCard>
+
+**Verify:** create a new pet. A "Inspect new pet: {name}" agenda task appears in
+the vet's Calendar for the next day, and an email goes out to the vet.
+
+<figure>
+  <img src={flowCalendarImg} alt="Nextcloud Calendar showing vet inspection agenda tasks created automatically when pets were registered" />
+  <figcaption>The flow put vet inspection agenda tasks into Calendar, one per new pet, with no glue code.</figcaption>
+</figure>
+
+## Step 11: Build it by talking to an AI
+
+Everything you did by clicking in this tutorial is also available to an AI agent
+over **MCP** (Model Context Protocol). OpenBuild exposes its authoring surface as
+MCP tools, so you can build an app in conversation: "create an app called Pet
+Store, add a pet schema with these fields, add a Pets index page, put a stat and
+a chart on the dashboard." The agent calls the tools; the app takes shape.
+
+The tools mirror the steps above:
+
+| Tool | What it does |
+|---|---|
+| `createApp` | Create the app and its first version (Step 1) |
+| `upsertSchema` | Create or update a schema (Step 2) |
+| `upsertPage` | Create or update an index, detail, or dashboard page (Steps 4, 5) |
+| `addWidget` | Add a widget to a page (Step 5) |
+| `upsertMenuItem` | Add a navigation entry (Step 4) |
+| `promoteVersion` | Release a production version (Step 7) |
+| `listApps` / `getAppManifest` | Inspect what exists |
+
+Object data, schemas, and registers are reachable through the OpenRegister MCP
+tools as well, so the same agent can seed demo data and read it back. Building an
+app and talking to an AI about your data become the same activity.
+
+**Verify:** ask your agent to list the virtual apps. It returns your Pet Store.
+Then ask it to add a widget to a page and reload the app; the widget is there.
+
 ## Test yourself
 
 You have built the app if all of these are true:
@@ -219,6 +309,8 @@ You have built the app if all of these are true:
 - A user in `vets` reads the medical records; a user outside it reads none.
 - The version history shows one production version.
 - The Pet Store widget shows pets on your LaunchPad, a vet visit shows in Calendar, and a file dropped on a pet sticks.
+- Creating a pet drops a "Inspect new pet" agenda task in the vet's Calendar and emails the vet.
+- An AI agent over MCP can list your apps and add a widget to a page.
 
 ## Where to go from here
 
