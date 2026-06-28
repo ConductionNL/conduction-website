@@ -37,6 +37,17 @@ import flowCalendarImg from './images/flow-calendar.png';
 import step11Img from './images/step11-ai.png';
 import step11McpMenuImg from './images/step11-mcp-menu.png';
 import step11McpDetailImg from './images/step11-mcp-detail.png';
+import editMenuImg from './images/edit-menu.png';
+import editMenuModalImg from './images/edit-menu-modal.png';
+import editPagesModalImg from './images/edit-pages-modal.png';
+import editDataModalImg from './images/edit-data-modal.png';
+import schemaConfigImg from './images/schema-config.png';
+import addWidgetModalImg from './images/add-widget-modal.png';
+import widgetConfigModalImg from './images/widget-config-modal.png';
+import editModeImg from './images/edit-mode.png';
+import editSidebarModalImg from './images/edit-sidebar-modal.png';
+import editActionsModalImg from './images/edit-actions-modal.png';
+import editSettingsModalImg from './images/edit-settings-modal.png';
 
 OpenBuild is the visual builder for Conduction apps. The [three-paths tutorial](/academy/build-an-app-tutorial-0-three-paths) teaches the manifest path by hand: you write `manifest.json` and the `Cn*` components render it. OpenBuild builds that exact same manifest for you through a UI. You point and click, OpenBuild writes the manifest and the OpenRegister schemas behind it, and you get a working Nextcloud app with no repository, no build step, and no deploy.
 
@@ -79,9 +90,51 @@ Once the app exists, open its settings and upload an **icon**. A pet store wants
   <figcaption>OpenBuild's dashboard: Create app, then your Pet Store appears in the recent apps list.</figcaption>
 </figure>
 
+## How you author: the edit menu and edit mode
+
+Everything in this tutorial is built **inside the running app**, through one control. Open your app and look at the top-right of any page: the **orange OpenBuild button**. Click it and a menu drops down — this is your whole authoring surface. You never leave the app to edit it.
+
+<figure>
+  <img src={editMenuImg} alt="The running Pet Store with the orange OpenBuild edit button open, showing the menu: Edit page, Add widget, Edit pages, Edit menu, Edit sidebar, Edit actions, Edit settings, Edit data, Edit flows" />
+  <figcaption>The orange OpenBuild button opens the author menu. Each entry edits one part of the app — and every change is saved straight back into the manifest behind it.</figcaption>
+</figure>
+
+Each entry opens a focused editor, and the rest of this tutorial is really just "open the edit menu, pick the right entry":
+
+- **Edit page** — toggles **edit mode** on the page you are looking at (see below).
+- **Add widget…** — adds a widget to the current dashboard or detail page (enabled only in edit mode).
+- **Edit pages…** — add, rename, re-type, re-route and nest the app's pages (Step 4).
+- **Edit menu…** — add and reorder the left-navigation entries (Step 4).
+- **Edit sidebar… / Edit actions… / Edit settings…** — tailor the current page's right sidebar, its action buttons, and the settings ⚙ foldout ("Tailor the chrome", below).
+- **Edit data…** — create the register and schemas; set each schema's icon and searchable flag (Step 2).
+- **Edit flows…** — add no-code business logic to a schema (Step 10).
+
+### Edit mode, the grid, and the cogs
+
+For pages made of widgets (dashboards and detail pages), choose **Edit page**. The page enters **edit mode**: every widget grows a small **cog** in its corner, and the page becomes a **grid** you can rearrange.
+
+<figure>
+  <img src={editModeImg} alt="The Pet Store dashboard in edit mode: each widget — the banner, the four stat cards, the charts — now shows a small cog icon in its top-right corner" />
+  <figcaption>In edit mode each widget gets a <strong>cog</strong> (configure) in its corner. The dashboard is a 12-column <strong>grid</strong>: drag a widget to move it, drag its edge to resize it; the layout snaps to the grid and is saved with the page.</figcaption>
+</figure>
+
+- **Move / resize:** drag a widget to reposition it, or drag its edges/corners to resize. OpenBuild uses a 12-column grid (GridStack) under the hood, so widgets snap into a tidy layout and never overlap. Your positions are stored on the page.
+- **Configure:** click a widget's **cog** to open its settings (data source, labels, colours, format — see Step 5).
+- **Add:** with edit mode on, use **Add widget…** from the orange menu.
+- **Save / cancel:** the orange button now reads **Save page** (keep your layout) or **Cancel** (discard). Until you save, nothing is committed.
+
+With that one mechanic — orange button → an editor, or Edit page → cogs and a grid — you can build the whole app. The steps below show each editor in turn.
+
 ## Step 2: Design the data model
 
-A Pet Store needs more than pets. Open the **schemas** area of your app and create these seven schemas. For each one, add the properties listed, then add the relations.
+A Pet Store needs more than pets. From the orange menu choose **Edit data…**. This opens the data editor: it shows the app's **register** and its **schemas**, with an **Add schema** button and a pencil to edit each one. (The data editor talks straight to OpenRegister — schemas are real OpenRegister schemas, not an OpenBuild-only construct.)
+
+<figure>
+  <img src={editDataModalImg} alt="The Manage data modal showing the Pet Store register and its seven schemas — Category, Tag, Owner, Pet, Order, Visit, Medical record — each with a property count, an edit pencil and a delete button, plus an Add schema button" />
+  <figcaption>Edit menu → <strong>Edit data…</strong>: the app's register and its schemas. <strong>Add schema</strong> creates a new one; the pencil opens the schema editor.</figcaption>
+</figure>
+
+Create these seven schemas. For each one, add the properties listed, then add the relations.
 
 | Schema | Key properties | Relations |
 |---|---|---|
@@ -97,7 +150,18 @@ A relation property is a `string` with `format: uuid` and an `x-openregister-rel
 
 <figure>
   <img src={step2EditorImg} alt="The OpenBuild schema editor for the Pet schema: a Title field, Properties / Configuration / Security tabs, and a properties table (name, status, species, sex, dateOfBirth) with an Add property button" />
-  <figcaption>The schema editor (edit menu → Edit data… → a schema): add and type each property on the Properties tab, set composition and relations on Configuration, and group access on Security — no code.</figcaption>
+  <figcaption>The schema editor (Edit data… → the pencil on a schema). On the <strong>Properties</strong> tab, <strong>Add property</strong> and pick a type for each field; for a relation choose type "relation" and the target schema and OpenBuild writes the <code>x-openregister-relation</code> marker for you.</figcaption>
+</figure>
+
+The schema editor has three tabs: **Properties** (the fields, above), **Security** (which groups may read/write — you use this in Step 6), and **Configuration**. Open **Configuration** to set the schema's identity and how it behaves across Nextcloud:
+
+- **Icon** — a [Material Design Icon](https://pictogrammers.com/library/mdi/) name (e.g. `Dog` for pets, `Account` for owners). It is shown next to the schema's objects in lists and in Nextcloud's unified search (Step 9).
+- **Searchable** — when on, this schema's objects appear in Nextcloud's top-bar search (Step 9). Turn it on for pets.
+- Description, slug, summary, the object name/image fields, and the composition (`allOf`/`oneOf`/`anyOf`) also live here.
+
+<figure>
+  <img src={schemaConfigImg} alt="The schema editor's Configuration tab showing Description, Slug, an Icon field set to 'Dog', and a 'Searchable (appears in Nextcloud unified search)' toggle turned on" />
+  <figcaption>The schema's <strong>Configuration</strong> tab: set the <strong>Icon</strong> (an MDI name like <code>Dog</code>) and turn on <strong>Searchable</strong> — the two settings that make a pet show, with its icon, in Nextcloud search (Step 9).</figcaption>
 </figure>
 
 :::warning Watch out for slug collisions
@@ -137,11 +201,21 @@ Good demo data has variety: a sold beagle, an available parakeet, a pending kitt
 
 ## Step 4: Build the lists and a rich detail page
 
-Now give the app pages. In the **pages** area, add an **index page** for each schema you want browsable: Pets, Owners, Orders, Appointments (the `visit` schema), Categories. For each index page pick the register, the schema, and the columns to show. The Pets list, for example, shows name, species, status, weight, and price.
+Now give the app pages. From the orange menu choose **Edit pages…**. Click **Add page**, then open the new page's gear to set its **Title**, its **Type** (`Index` for a browsable list, `Detail` for a single object, `Dashboard` for a widget grid), its **Slug**, and its **Route**. Add an **index page** for each schema you want browsable: Pets, Owners, Orders, Appointments (the `visit` schema), Categories. (For an index page you then pick the register, schema, and columns on its own configuration — the Pets list, for example, shows name, species, status, weight, and price.)
 
-Add the index pages to the **menu** so they appear in the left navigation, in the order you want.
+<figure>
+  <img src={editPagesModalImg} alt="The Edit pages modal: a list of pages (Dashboard, Pets, Pet, Owners, Owner, Orders) with drag handles and type labels, the Dashboard page expanded to show Title, Type, Slug and Route fields plus Add sub-page and Delete page" />
+  <figcaption>Edit menu → <strong>Edit pages…</strong>: <strong>Add page</strong>, then the gear opens its Title / Type / Slug / Route. Drag to reorder, or use <strong>Add sub-page</strong> to nest one page under another.</figcaption>
+</figure>
 
-Then build the **Pet detail page**. This is where OpenBuild shines: a detail page is a small grid of widgets bound to one object. For the pet profile, place:
+Now make the pages reachable. Choose **Edit menu…** and click **Add menu item** for each page you want in the left navigation; each entry's gear sets its label, icon and target route, and you can drag entries to reorder them or **Add sub-item** to nest them one level deep.
+
+<figure>
+  <img src={editMenuModalImg} alt="The Edit menu modal: a list of navigation entries (Dashboard, Pets, Owners, Orders, Appointments, Categories) with drag handles, icons, target routes and a per-item gear opened to show Add sub-item and Delete item, plus an Add menu item button" />
+  <figcaption>Edit menu → <strong>Edit menu…</strong>: <strong>Add menu item</strong> adds a navigation entry; the gear gives Add sub-item / Delete; drag the handle to reorder.</figcaption>
+</figure>
+
+Then build the **Pet detail page**. This is where OpenBuild shines: a detail page is a small grid of widgets bound to one object. Open the Pet detail page, choose **Edit page** to enter edit mode, then use **Add widget…** (Step 5 explains the widget form) to place:
 
 - a **header** banner across the top,
 - a **data** widget showing the pet's properties,
@@ -162,13 +236,25 @@ Then build the **Pet detail page**. This is where OpenBuild shines: a detail pag
 
 ## Step 5: Compose a dashboard from every widget
 
-Add a **dashboard** page and set it as the app's home. A dashboard is a free grid you fill with widgets. Use the full set so the store has a real cockpit:
+Add a **dashboard** page (Edit pages… → Add page → Type **Dashboard**) and set it as the app's home. A dashboard is a free grid you fill with widgets. Use the full set so the store has a real cockpit:
 
 <HexCard title="The OpenBuild widget palette">
   <strong>Header</strong> for a titled banner. <strong>Stat</strong> cards for single numbers (pets in catalogue, owners, orders, revenue). <strong>Chart</strong> for distributions and trends (pets by status as a donut, visits over time as a line). <strong>Gauge</strong> for a value against a target (pets sold out of ten). <strong>Delta</strong> for a number with its change. <strong>Stats block</strong> for a labelled count (available pets). <strong>Object list</strong> for a live mini-table (recent pets). <strong>Image</strong>, <strong>label</strong>, and <strong>text</strong> for framing and copy.
 </HexCard>
 
-Each data widget asks for a register, a schema, and a metric. A revenue stat is `metric: sum` over the `order` schema's `total` field. A "pets by status" donut groups the `pet` schema by its `status` field. A gauge for pets sold counts `pet` where `status = sold` against a static target. None of this is code; it is a form per widget.
+**Adding a widget.** With the dashboard in edit mode (orange button → **Edit page**), choose **Add widget…**. Pick a **Widget type** and the form changes to match it: a Stat asks for a data source and a label; a Label asks for text, size and colour; every type ends with an **Appearance** section (show title, background, icon). Click **Add** and the widget drops onto the grid, where you can drag it into place.
+
+<figure>
+  <img src={addWidgetModalImg} alt="The Add Widget modal with a Widget type selector set to Label, type-specific fields (Label text, Font size, Color, Background color, Font weight, Alignment), and an Appearance section with Show title, Custom title, Background and Icon" />
+  <figcaption>Edit mode → <strong>Add widget…</strong>: choose a type, fill its form, set its appearance, <strong>Add</strong>. The form adapts to the widget type you pick.</figcaption>
+</figure>
+
+**Configuring a widget.** Every data widget asks for a register, a schema, and a metric — you set these on the widget's **cog** (visible in edit mode). A revenue stat is aggregation `sum` over the `order` schema's `total` field; a "pets by status" donut groups the `pet` schema by its `status` field; a gauge for pets sold counts `pet` where `status = sold` against a static target. None of this is code; it is a form per widget.
+
+<figure>
+  <img src={widgetConfigModalImg} alt="The Customize widget modal for the Pets stat card: a Data source section (Register, Schema=Pet, Source type=Aggregate, Aggregation=count, Filter), a Display section (Label=Pets, Icon=Dog, Caption, Value color, Icon color) and a Format section (Style, Decimals)" />
+  <figcaption>A widget's <strong>cog</strong> opens its settings: the <strong>Data source</strong> (register, schema, aggregation, filter), the <strong>Display</strong> (label, icon, colours) and the <strong>Format</strong>. This Pets card counts the <code>pet</code> schema and shows the <code>Dog</code> icon.</figcaption>
+</figure>
 
 <figure>
   <img src={dashboardImg} alt="The Pet Store dashboard: a header banner, four stat cards (pets, owners, orders, revenue), a donut chart of pets by status, and a line chart of visits over time" />
@@ -180,6 +266,31 @@ A chart is either **over time** (pick a date field and an interval, like visits 
 :::
 
 **Verify:** open the app. The dashboard shows real numbers (Pets 10, Owners 5, Orders 5, a non-zero Revenue) and the donut renders coloured segments for each status.
+
+## Tailor the page chrome: sidebar, actions, settings
+
+The same orange menu has three more editors for the page "chrome" around your content. Each works like the menu and pages editors — a small modal with **Add…** and a per-row form — and each saves into the manifest.
+
+**Edit sidebar…** toggles a right-hand sidebar on the current page and manages its tabs (label, id, visibility). Use it on a detail page to add, say, an "Activity" or "Notes" tab.
+
+<figure>
+  <img src={editSidebarModalImg} alt="The Edit sidebar modal with a 'Show sidebar on this page' toggle, a Tabs heading and an Add tab button" />
+  <figcaption>Edit menu → <strong>Edit sidebar…</strong>: turn the page's right sidebar on and add tabs with <strong>Add tab</strong>.</figcaption>
+</figure>
+
+**Edit actions…** manages the action buttons in the page header. **Add action** gives each button a **Label**, an **Icon**, a **Type** (e.g. open a page) and a **Target**, with arrows to reorder.
+
+<figure>
+  <img src={editActionsModalImg} alt="The Edit actions modal showing a new action row with Label, Icon, Type (open-page) and Target page id fields, move up/down and delete controls, and an Add action button" />
+  <figcaption>Edit menu → <strong>Edit actions…</strong>: <strong>Add action</strong>, then set its label, icon, type and target. The arrows reorder; the bin removes.</figcaption>
+</figure>
+
+**Edit settings…** builds the settings ⚙ foldout at the bottom of the navigation — extra items plus an optional "Personal settings" entry.
+
+<figure>
+  <img src={editSettingsModalImg} alt="The Edit settings menu modal explaining the items appear in the settings foldout, with a 'No settings items yet' empty state, a Personal settings entry toggle and Foldout label field, and an Add settings item button" />
+  <figcaption>Edit menu → <strong>Edit settings…</strong>: curate the gear ⚙ foldout at the foot of the navigation with <strong>Add settings item</strong>.</figcaption>
+</figure>
 
 ## Step 6: Give the vets their own medical layer
 
