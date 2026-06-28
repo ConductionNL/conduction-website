@@ -26,7 +26,8 @@ import step2Img from './images/step2-data-model.png';
 import step2EditorImg from './images/step2-schema-editor.png';
 import step3Img from './images/step3-seed-data.png';
 import petsIndexImg from './images/pets-index.png';
-import petDetailImg from './images/pet-detail.png';
+import detailAnatomyImg from './images/detail-anatomy.png';
+import agendaListImg from './images/agenda-list.png';
 import dashboardImg from './images/dashboard.png';
 import step6Img from './images/step6-permissions.png';
 import step7Img from './images/step7-release.png';
@@ -215,24 +216,56 @@ Now make the pages reachable. Choose **Edit menu…** and click **Add menu item*
   <figcaption>Edit menu → <strong>Edit menu…</strong>: <strong>Add menu item</strong> adds a navigation entry; the gear gives Add sub-item / Delete; drag the handle to reorder.</figcaption>
 </figure>
 
-Then build the **Pet detail page**. This is where OpenBuild shines: a detail page is a small grid of widgets bound to one object. Open the Pet detail page, choose **Edit page** to enter edit mode, then use **Add widget…** (Step 5 explains the widget form) to place:
-
-- a **header** banner across the top,
-- a **data** widget showing the pet's properties,
-- a **files** widget so staff can drop documents and photos on the pet,
-- a **related** widget that gathers everything linked to the pet (its owner, its category, its visits and orders).
-
 <figure>
   <img src={petsIndexImg} alt="The Pets index page with a search box, Cards and Table toggle, status badges, weight and price columns" />
   <figcaption>The Pets index page. Columns, search, status badges, and the card/table toggle all come from the schema; you configured none of them by hand.</figcaption>
 </figure>
 
+**Verify:** each index page lists its objects, the search box filters them, and the card/table toggle switches layout.
+
+## Build a specialised detail page — where OpenBuild shines
+
+A list gets you *to* an object. The **detail page** is where the work happens, and it is where OpenBuild earns its keep. A detail page is a **grid of widgets bound to one object**, composed exactly like the dashboard: open the page, choose **Edit page** to enter edit mode, then **Add widget…**, drag on the grid, and tune each widget through its **cog** (Step 5). A good detail page is not one generic form — it is a deliberate mix of widgets that fits the domain. That mix is what makes an app feel built for its job, and it is all configuration.
+
+Open a pet from the Pets list to land on its detail page. The pet profile below is four widgets: a header banner, an editable data grid, a files drop zone, and a related-objects panel.
+
 <figure>
-  <img src={petDetailImg} alt="A pet detail page with a header banner, a data grid of the pet's properties, and Care, Files and Related sections" />
-  <figcaption>Rex's profile: a header, a data grid, and the Files and Related widgets below it.</figcaption>
+  <img src={detailAnatomyImg} alt="A pet detail page: a 'Pet profile' header banner, a Data widget showing Category, Date of birth, Description, Microchip, Name, Owner, a photo, Price and Sex, and a Files widget with an Upload File button and drop zone" />
+  <figcaption>A specialised pet detail page: a header banner, a <strong>Data</strong> widget (the editable property grid, photo and all), and a <strong>Files</strong> widget (the drop zone with Upload File) — each added from the widget palette and bound to this one pet.</figcaption>
 </figure>
 
-**Verify:** clicking a pet in the Pets list opens its detail page with the header, the property grid, and the Files and Related sections visible.
+**The widget palette.** In **Add widget…** the **Widget type** dropdown lists everything you can place. For a detail page the workhorses are **Object data** (the property grid), **Files** (a drop zone bound to the object), **Object relations** (everything linked to it), and **Object list** / **Table** (a focused sub-list). Framing widgets — Header banner, Label, Image, Divider, Container — give it structure, and the dashboard data widgets (Statistic, Chart, Gauge) work here too, scoped to the one object.
+
+### A header banner
+
+Add a **Header banner** widget for the title strip ("Pet profile"). It is pure chrome: set its title and background, no data binding. It anchors the page and carries the page actions.
+
+### The data widget — an editable property grid
+
+Add an **Object data** widget and point it at the pet's register and schema. It renders every property as a label/value pair in a grid, and it is **editable in place**: click a value, change it, save — no separate edit form. Use its cog to reorder properties, hide some, change a field's input type, or set a field's column span. This one widget replaces a hand-built form and its validation.
+
+### A file-upload field — the Files widget
+
+Add a **Files** widget so staff can attach photos and certificates to the pet. It renders as a **drop zone with an Upload File button**, bound to this object's folder in Nextcloud Files (visible at the bottom of the page above). Drop a vaccination certificate on it and the file is stored against the pet: structured fields live in the data widget, documents live in the files widget. That is the whole "file-upload field" — one widget, no upload code, no storage to wire.
+
+### A related-objects table — the Object relations widget
+
+Add an **Object relations** widget. It gathers everything linked to the pet — its owner, its category, its tags, its visits and its orders — into grouped, clickable rows, resolving each relation's UUID to the real object's name and icon. It is the cross-link table that turns a detail page into a hub instead of a dead end. There is no query to write: the widget reads the schema's relation properties (and the objects that point back) and lists them.
+
+### A list of agenda items — the Object list / Table widget
+
+Often a detail page needs a **sub-list**: this pet's upcoming visits, this owner's pets, this order's lines. Add an **Object list** (or **Table**) widget, point it at the related schema (`visit`), filter it to the parent object, and sort by date. The very same widget, pointed at the `visit` schema with no parent filter, *is* the standalone **Appointments** page — a clean agenda of vet visits:
+
+<figure>
+  <img src={agendaListImg} alt="The Appointments page: a table of vet visits with relative dates (4 weeks ago, in 4 days, next week), Reason, Vet, a Status badge (completed, scheduled, cancelled) and Cost" />
+  <figcaption>An <strong>Object list</strong> over the <code>visit</code> schema: a list of agenda items with relative dates ("in 4 days", "next week"), the vet, a status badge and the cost. The columns, the relative-date formatting and the status badges all come from the schema.</figcaption>
+</figure>
+
+### Putting it together
+
+Every widget here is added from the same **Add widget…** menu, dragged onto the grid, and tuned through its **cog**. Compose them with intent: a header for identity, a data widget for the facts, a files widget for documents, a relations widget for context, and one focused list for the sub-collection that matters. Five widgets, no code, and the page reads as if it were built for pets specifically — because it was.
+
+**Verify:** clicking a pet opens its detail page with the header, the editable property grid, the Files drop zone, and its related objects; dropping a file on the Files widget attaches it to that pet, and the Appointments page lists every visit with its status.
 
 ## Step 5: Compose a dashboard from every widget
 
