@@ -1,0 +1,654 @@
+---
+slug: build-a-nextcloud-app-with-openbuild
+title: "Build a Nextcloud app with OpenBuild, no code required"
+contentType: tutorial
+authors: [conduction]
+date: 2026-06-27
+summary: Build a complete Pet Store app inside Nextcloud without writing a line of code. You will create the app, design its data model, seed it with demo data, compose a dashboard from every widget type, give a vets group its own medical layer, release a production version, surface the app on the LaunchPad dashboard and in search, link vet visits to Calendar, drop files onto a pet, add business-logic flows that book a vet inspection and email the vet when a pet is registered, and learn how an AI agent can build the whole app over MCP. OpenBuild is the visual builder for the same manifest the code path teaches; here you author it by clicking, not by editing JSON.
+tags: [App development, OpenBuild, OpenRegister, No-code, Manifest, Flows, MCP, Tutorial]
+apps: [openbuild, openregister]
+durationMinutes: 55
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+  Troubleshooting,
+} from '@conduction/docusaurus-preset/components';
+
+import step1Img from './images/step1-create-app.png';
+import step2Img from './images/step2-data-model.png';
+import step2EditorImg from './images/step2-schema-editor.png';
+import step3Img from './images/step3-seed-data.png';
+import petsIndexImg from './images/pets-index.png';
+import detailAnatomyImg from './images/detail-anatomy.png';
+import agendaListImg from './images/agenda-list.png';
+import dashboardImg from './images/dashboard.png';
+import step6Img from './images/step6-permissions.png';
+import step7Img from './images/step7-release.png';
+import step8Img from './images/step8-launchpad.png';
+import step9Img from './images/step9-search.png';
+import step10Img from './images/step10-flows-editor.png';
+import flowCalendarImg from './images/flow-calendar.png';
+import step11McpMenuImg from './images/step11-mcp-menu.png';
+import step11McpDetailImg from './images/step11-mcp-detail.png';
+import editMenuImg from './images/edit-menu.png';
+import editMenuModalImg from './images/edit-menu-modal.png';
+import editPagesModalImg from './images/edit-pages-modal.png';
+import editDataModalImg from './images/edit-data-modal.png';
+import schemaConfigImg from './images/schema-config.png';
+import addWidgetModalImg from './images/add-widget-modal.png';
+import widgetConfigModalImg from './images/widget-config-modal.png';
+import editModeImg from './images/edit-mode.png';
+import editSidebarModalImg from './images/edit-sidebar-modal.png';
+import editActionsModalImg from './images/edit-actions-modal.png';
+import editSettingsModalImg from './images/edit-settings-modal.png';
+import widgetHeaderImg from './images/widget-header.png';
+import widgetDataImg from './images/widget-data.png';
+import widgetFilesImg from './images/widget-files.png';
+import editMenuOnboardingImg from './images/edit-menu-onboarding.png';
+import editSetupModalImg from './images/edit-setup-modal.png';
+import editWalkthroughModalImg from './images/edit-walkthrough-modal.png';
+import editSupportModalImg from './images/edit-support-modal.png';
+import setupWizardImg from './images/setup-wizard.png';
+import walkthroughImg from './images/walkthrough.png';
+import supportDialogImg from './images/support-dialog.png';
+import editSupportButtonsImg from './images/edit-support-buttons.png';
+import sidebarLiveImg from './images/sidebar-live.png';
+import aiCreatesMenuImg from './images/ai-creates-menu.png';
+import actionLiveImg from './images/action-live.png';
+import settingsFoldoutImg from './images/settings-foldout.png';
+import menuItemLiveImg from './images/menu-item-live.png';
+import setupConfigFieldsImg from './images/setup-configfields.png';
+import walkthroughSpotlightImg from './images/walkthrough-spotlight.png';
+
+OpenBuild is the visual builder for Conduction apps. The [three-paths tutorial](/academy/build-an-app-tutorial-0-three-paths) teaches the manifest path by hand: you write `manifest.json` and the `Cn*` components render it. OpenBuild builds that exact same manifest for you through a UI. You point and click, OpenBuild writes the manifest and the OpenRegister schemas behind it, and you get a working Nextcloud app with no repository, no build step, and no deploy.
+
+This tutorial builds a **Pet Store with a veterinary layer**, the canonical Conduction sample domain. By the end you have an app your whole organisation can open: a dashboard of live numbers and charts, browsable lists of pets and owners, a rich pet profile page, a vets-only medical section, a released production version, a widget on everyone's LaunchPad, vet appointments in Nextcloud Calendar, and photos attached to each pet. Everything in this tutorial is built in the OpenBuild UI against a real OpenRegister behind it.
+
+{/* truncate */}
+
+<Outcomes title="What you'll have at the end">
+  <Outcome>A working <strong>Pet Store app</strong> in OpenBuild with its own paw icon, seven schemas, and real relations between them.</Outcome>
+  <Outcome>A <strong>dashboard that uses every widget type</strong> OpenBuild offers (header, stats, charts, gauge, delta, object list, image, label, text) bound to live register data.</Outcome>
+  <Outcome>A <strong>vets-only medical layer</strong>: a Nextcloud group that alone can read the medical records, enforced by OpenRegister, not by hiding a menu.</Outcome>
+  <Outcome>A <strong>released production version</strong> you can iterate on safely, plus the app surfaced on the <strong>LaunchPad dashboard</strong>, in <strong>Calendar</strong> (vet visits), and on each pet's <strong>file drop zone</strong>.</Outcome>
+  <Outcome>A <strong>flow</strong> (business logic in the register config) that, when a pet is created, books a vet inspection task in Calendar and emails the vet, plus the knowledge that an <strong>AI agent can build the whole app over MCP</strong>.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>A Nextcloud instance with <strong>OpenBuild</strong> and <strong>OpenRegister</strong> enabled. Docker Compose from the OpenRegister dev environment is fine.</PrerequisiteItem>
+  <PrerequisiteItem>Admin rights on that instance. You will create a group and two users for the permissions step.</PrerequisiteItem>
+  <PrerequisiteItem>No coding. If you have read the <a href="/academy/build-an-app-tutorial-0-three-paths">three-paths tutorial</a> you will recognise the manifest concepts, but it is not required.</PrerequisiteItem>
+</Prerequisites>
+
+:::tip Recommended first
+If you want to understand what OpenBuild is writing for you under the hood, skim [Part 0: three paths](/academy/build-an-app-tutorial-0-three-paths) first. It explains the manifest and the `nextcloud-vue` component library that OpenBuild drives.
+:::
+
+## Step 1: Create the app and give it a paw
+
+Open **OpenBuild** from the Nextcloud app menu and choose **Create app**. Give it a name (`Pet Store`), a short description, and pick **Virtual** as the type. A virtual app lives entirely in OpenBuild; it has no installed Nextcloud counterpart.
+
+Once the app exists, open its settings and upload an **icon**. A pet store wants a paw. Drop a 24x24 SVG into the light icon slot (and a white version into the dark slot for dark themes). OpenBuild stores the icon against the app and serves it at `/apps/openbuild/icons/pet-store.svg`.
+
+**Verify:** the app appears in the OpenBuild app list with its paw, and opening it shows an empty shell with your app name in the navigation.
+
+<HexCard title="What just happened">
+  OpenBuild created an <code>Application</code> object plus a first <code>ApplicationVersion</code> in OpenRegister. The version holds the manifest you are about to fill in. The icon is a file attached to the application object, the same file mechanism you will use for pet photos in Step 9.
+</HexCard>
+
+<figure>
+  <img src={step1Img} alt="The OpenBuild dashboard with a Create app button and the Pet Store app listed among recent apps" />
+  <figcaption>OpenBuild's dashboard: Create app, then your Pet Store appears in the recent apps list.</figcaption>
+</figure>
+
+## How you author: the edit menu and edit mode
+
+Everything in this tutorial is built **inside the running app**, through one control. Open your app and look at the top-right of any page: the **orange OpenBuild button**. Click it and a menu drops down. This is your whole authoring surface. You never leave the app to edit it.
+
+<figure>
+  <img src={editMenuImg} alt="The running Pet Store with the orange OpenBuild edit button open, showing the menu: Edit page, Add widget, Edit pages, Edit menu, Edit sidebar, Edit actions, Edit settings, Edit data, Edit flows" />
+  <figcaption>The orange OpenBuild button opens the author menu. Each entry edits one part of the app, and every change is saved straight back into the manifest behind it.</figcaption>
+</figure>
+
+Each entry opens a focused editor, and the rest of this tutorial is really just "open the edit menu, pick the right entry":
+
+- **Edit page**: toggles **edit mode** on the page you are looking at (see below).
+- **Add widget…**: adds a widget to the current dashboard or detail page (enabled only in edit mode).
+- **Edit pages…**: add, rename, re-type, re-route and nest the app's pages (Step 4).
+- **Edit menu…**: add and reorder the left-navigation entries (Step 4).
+- **Edit sidebar… / Edit actions… / Edit settings…**: tailor the current page's right sidebar, its action buttons, and the settings ⚙ foldout ("Tailor the chrome", below).
+- **Edit data…**: create the register and schemas; set each schema's icon and searchable flag (Step 2).
+- **Edit flows…**: add no-code business logic to a schema (Step 10).
+
+### Edit mode, the grid, and the cogs
+
+For pages made of widgets (dashboards and detail pages), choose **Edit page**. The page enters **edit mode**: every widget grows a small **cog** in its corner, and the page becomes a **grid** you can rearrange.
+
+<figure>
+  <img src={editModeImg} alt="The Pet Store dashboard in edit mode: each widget (the banner, the four stat cards, the charts) now shows a small cog icon in its top-right corner" />
+  <figcaption>In edit mode each widget gets a <strong>cog</strong> (configure) in its corner. The dashboard is a 12-column <strong>grid</strong>: drag a widget to move it, drag its edge to resize it; the layout snaps to the grid and is saved with the page.</figcaption>
+</figure>
+
+- **Move / resize:** drag a widget to reposition it, or drag its edges/corners to resize. OpenBuild uses a 12-column grid (GridStack) under the hood, so widgets snap into a tidy layout and never overlap. Your positions are stored on the page.
+- **Configure:** click a widget's **cog** to open its settings (data source, labels, colours, format; see Step 5).
+- **Add:** with edit mode on, use **Add widget…** from the orange menu.
+- **Save / cancel:** the orange button now reads **Save page** (keep your layout) or **Cancel** (discard). Until you save, nothing is committed.
+
+With that one mechanic (orange button → an editor, or Edit page → cogs and a grid) you can build the whole app. The steps below show each editor in turn.
+
+## Step 2: Design the data model
+
+A Pet Store needs more than pets. From the orange menu choose **Edit data…**. This opens the data editor: it shows the app's **register** and its **schemas**, with an **Add schema** button and a pencil to edit each one. (The data editor talks straight to OpenRegister: schemas are real OpenRegister schemas, not an OpenBuild-only construct.)
+
+<figure>
+  <img src={editDataModalImg} alt="The Manage data modal showing the Pet Store register and its seven schemas (Category, Tag, Owner, Pet, Order, Visit, Medical record) each with a property count, an edit pencil and a delete button, plus an Add schema button" />
+  <figcaption>Edit menu → <strong>Edit data…</strong>: the app's register and its schemas. <strong>Add schema</strong> creates a new one; the pencil opens the schema editor.</figcaption>
+</figure>
+
+Create these seven schemas. For each one, add the properties listed, then add the relations.
+
+| Schema | Key properties | Relations |
+|---|---|---|
+| `pet` | name, species, status, sex, dateOfBirth, weightKg, microchip, price, photoUrl, description | owner (to `owner`), category (to `category`), tags (to `tag`, many) |
+| `owner` | firstName, lastName, email, phone, address, city | pets (to `pet`, many) |
+| `category` | name, icon, description | |
+| `tag` | name, color | |
+| `order` | orderNumber, quantity, shipDate, status, total, complete | pet (to `pet`), customer (to `owner`) |
+| `visit` | date, reason, vet, status, cost | pet (to `pet`), medicalRecord (to `medicalRecord`) |
+| `medicalRecord` | date, diagnosis, treatment, notes, weightKg | pet (to `pet`), visit (to `visit`) |
+
+A relation property is a `string` with `format: uuid` and an `x-openregister-relation` marker pointing at the target schema. OpenBuild's schema editor adds that for you when you pick "relation" as the property type and choose the target.
+
+<figure>
+  <img src={step2EditorImg} alt="The OpenBuild schema editor for the Pet schema: a Title field, Properties / Configuration / Security tabs, and a properties table (name, status, species, sex, dateOfBirth) with an Add property button" />
+  <figcaption>The schema editor (Edit data… → the pencil on a schema). On the <strong>Properties</strong> tab, <strong>Add property</strong> and pick a type for each field; for a relation choose type "relation" and the target schema and OpenBuild writes the <code>x-openregister-relation</code> marker for you.</figcaption>
+</figure>
+
+The schema editor has three tabs: **Properties** (the fields, above), **Security** (which groups may read/write, used in Step 6), and **Configuration**. Open **Configuration** to set the schema's identity and how it behaves across Nextcloud:
+
+- **Icon**: a [Material Design Icon](https://pictogrammers.com/library/mdi/) name (e.g. `Dog` for pets, `Account` for owners). It is shown next to the schema's objects in lists and in Nextcloud's unified search (Step 9).
+- **Searchable**: when on, this schema's objects appear in Nextcloud's top-bar search (Step 9). Turn it on for pets.
+- Description, slug, summary, the object name/image fields, and the composition (`allOf`/`oneOf`/`anyOf`) also live here.
+
+<figure>
+  <img src={schemaConfigImg} alt="The schema editor's Configuration tab showing Description, Slug, an Icon field set to 'Dog', and a 'Searchable (appears in Nextcloud unified search)' toggle turned on" />
+  <figcaption>The schema's <strong>Configuration</strong> tab: set the <strong>Icon</strong> (an MDI name like <code>Dog</code>) and turn on <strong>Searchable</strong>. These two settings make a pet show, with its icon, in Nextcloud search (Step 9).</figcaption>
+</figure>
+
+:::warning Watch out for slug collisions
+OpenRegister resolves a schema by the lower-cased slug. `order` and `category` are common slugs that may already exist in another app on your instance. If your `order` page shows the wrong fields, your schema collided with a global one. Reference the schema by its numeric id in the page configuration, or give the pet-store schema a unique slug like `petorder`.
+:::
+
+**Verify:** all seven schemas show in the schema list, and the `pet` schema lists `owner`, `category`, and `tags` as relations.
+
+<figure>
+  <img src={step2Img} alt="The Pet Store app detail page showing its OpenRegister register and all seven schemas: Category, Medical record, Order, Owner, Pet, Tag, Visit" />
+  <figcaption>The app's data model: one OpenRegister register holding all seven schemas, with the register and schema list shown on the app's detail page.</figcaption>
+</figure>
+
+## Step 3: Seed rich demo data
+
+An empty app is hard to judge. Add real-looking content so your dashboard and lists have something to show. Through the app's index pages (Step 4) or the OpenRegister object API, create roughly:
+
+- **4 categories** (Dogs, Cats, Birds, Reptiles) and **5 tags** (Friendly, Vaccinated, Neutered, Senior, Puppy).
+- **5 owners** with names, emails, and cities.
+- **10 pets** across the species, each with a status (`available`, `sold`, `pending`), a price, a weight, and an owner, category, and tags.
+- **5 orders** with totals and ship dates, each linked to a pet and a customer.
+- **6 vet visits** with reasons, vets, costs, and statuses, linked to pets.
+- **5 medical records** linked to pets and visits.
+
+Good demo data has variety: a sold beagle, an available parakeet, a pending kitten, a cancelled skin-allergy visit. Variety is what makes the charts in Step 5 worth looking at.
+
+<HexCard title="Pet photos are files, and Nextcloud blocks external images">
+  Nextcloud's content-security policy only loads images from the instance itself (<code>img-src 'self' data: blob:</code>). A photo URL pointing at an external stock-photo site will not render. Upload the photos into Nextcloud Files (or attach them to the pet, Step 9) and point <code>photoUrl</code> at the same-origin path. This is a real constraint, not an OpenBuild limitation.
+</HexCard>
+
+**Verify:** the OpenRegister object count for `pet` reads 10, and a pet object has its `owner`, `category`, and `tags` filled with the UUIDs of the objects you created.
+
+<figure>
+  <img src={step3Img} alt="The Pets list in the running app showing ten seeded pets (Rex, Bella, Whiskers, Luna, Coco, Spike, Max, Mia, Buddy, Sunny) with species, status badges, weight and price" />
+  <figcaption>The seeded data, browsable in the app: ten pets across species, each with a status, weight, and price.</figcaption>
+</figure>
+
+## Step 4: Build the lists and a rich detail page
+
+Now give the app pages. From the orange menu choose **Edit pages…**. Click **Add page**, then open the new page's gear to set its **Title**, its **Type** (`Index` for a browsable list, `Detail` for a single object, `Dashboard` for a widget grid), its **Slug**, and its **Route**. Add an **index page** for each schema you want browsable: Pets, Owners, Orders, Appointments (the `visit` schema), Categories. (For an index page you then pick the register, schema, and columns on its own configuration; the Pets list, for example, shows name, species, status, weight, and price.)
+
+<figure>
+  <img src={editPagesModalImg} alt="The Edit pages modal: a list of pages (Dashboard, Pets, Pet, Owners, Owner, Orders) with drag handles and type labels, the Dashboard page expanded to show Title, Type, Slug and Route fields plus Add sub-page and Delete page" />
+  <figcaption>Edit menu → <strong>Edit pages…</strong>: <strong>Add page</strong>, then the gear opens its Title / Type / Slug / Route. Drag to reorder, or use <strong>Add sub-page</strong> to nest one page under another.</figcaption>
+</figure>
+
+Now make the pages reachable. Choose **Edit menu…** and click **Add menu item** for each page you want in the left navigation; each entry's gear sets its label, icon and target route, and you can drag entries to reorder them or **Add sub-item** to nest them one level deep.
+
+<figure>
+  <img src={editMenuModalImg} alt="The Edit menu modal: a list of navigation entries (Dashboard, Pets, Owners, Orders, Appointments, Categories) with drag handles, icons, target routes and a per-item gear opened to show Add sub-item and Delete item, plus an Add menu item button" />
+  <figcaption>Edit menu → <strong>Edit menu…</strong>: <strong>Add menu item</strong> adds a navigation entry; the gear gives Add sub-item / Delete; drag the handle to reorder.</figcaption>
+</figure>
+
+<figure>
+  <img src={petsIndexImg} alt="The Pets index page with a search box, Cards and Table toggle, status badges, weight and price columns" />
+  <figcaption>The Pets index page. Columns, search, status badges, and the card/table toggle all come from the schema; you configured none of them by hand.</figcaption>
+</figure>
+
+**Verify:** each index page lists its objects, the search box filters them, and the card/table toggle switches layout.
+
+## Build a specialised detail page, where OpenBuild shines
+
+A list gets you *to* an object. The **detail page** is where the work happens, and it is where OpenBuild earns its keep. A detail page is a **grid of widgets bound to one object**, composed exactly like the dashboard: open the page, choose **Edit page** to enter edit mode, then **Add widget…**, drag on the grid, and tune each widget through its **cog** (Step 5). A good detail page is not one generic form. It is a deliberate mix of widgets that fits the domain. That mix is what makes an app feel built for its job, and it is all configuration.
+
+Open a pet from the Pets list to land on its detail page. The pet profile below is four widgets: a header banner, an editable data grid, a files drop zone, and a related-objects panel.
+
+<figure>
+  <img src={detailAnatomyImg} alt="A pet detail page: a 'Pet profile' header banner, a Data widget showing Category, Date of birth, Description, Microchip, Name, Owner, a photo, Price and Sex, and a Files widget with an Upload File button and drop zone" />
+  <figcaption>A specialised pet detail page: a header banner, a <strong>Data</strong> widget (the editable property grid, photo and all), and a <strong>Files</strong> widget (the drop zone with Upload File). Each is added from the widget palette and bound to this one pet.</figcaption>
+</figure>
+
+**The widget palette.** In **Add widget…** the **Widget type** dropdown lists everything you can place. For a detail page the workhorses are **Object data** (the property grid), **Files** (a drop zone bound to the object), **Object relations** (everything linked to it), and **Object list** / **Table** (a focused sub-list). Framing widgets (Header banner, Label, Image, Divider, Container) give it structure, and the dashboard data widgets (Statistic, Chart, Gauge) work here too, scoped to the one object.
+
+### A header banner
+
+Add a **Header banner** widget for the title strip ("Pet profile"). It is pure chrome: set its title and background, no data binding. It anchors the page and carries the page actions.
+
+<figure>
+  <img src={widgetHeaderImg} alt="A header banner widget reading 'Pet profile' as a wide cobalt strip across the top of the detail page" />
+  <figcaption>A <strong>Header banner</strong> widget: a titled strip across the top of the page. Title and background only, no data.</figcaption>
+</figure>
+
+### The data widget: an editable property grid
+
+Add an **Object data** widget and point it at the pet's register and schema. It renders every property as a label/value pair in a grid, and it is **editable in place**: click a value, change it, save. No separate edit form. Use its cog to reorder properties, hide some, change a field's input type, or set a field's column span. This one widget replaces a hand-built form and its validation.
+
+<figure>
+  <img src={widgetDataImg} alt="An Object data widget for Rex: a property grid showing Category, Date of birth, Description, Microchip, Name, Owner, a photo, Price and Sex, with an Actions menu in the header" />
+  <figcaption>The <strong>Object data</strong> widget: every property of one pet as a label/value grid (photo and all), editable in place. The columns come from the schema.</figcaption>
+</figure>
+
+### A file-upload field: the Files widget
+
+Add a **Files** widget so staff can attach photos and certificates to the pet. It renders as a **drop zone with an Upload File button**, bound to this object's folder in Nextcloud Files (visible at the bottom of the page above). Drop a vaccination certificate on it and the file is stored against the pet: structured fields live in the data widget, documents live in the files widget. That is the whole "file-upload field": one widget, no upload code, no storage to wire.
+
+<figure>
+  <img src={widgetFilesImg} alt="A Files widget showing a Root breadcrumb, a 'Search this folder' box, an Upload File button, and an empty drop zone reading 'This folder is empty.'" />
+  <figcaption>The <strong>Files</strong> widget: a drop zone with an <strong>Upload File</strong> button, bound to this pet's folder in Nextcloud Files. Drop a file and it attaches to the pet.</figcaption>
+</figure>
+
+### A related-objects table: the Object relations widget
+
+Add an **Object relations** widget. It gathers everything linked to the pet (its owner, its category, its tags, its visits and its orders) into grouped, clickable rows, resolving each relation's UUID to the real object's name and icon. It is the cross-link table that turns a detail page into a hub instead of a dead end. There is no query to write: the widget reads the schema's relation properties (and the objects that point back) and lists them.
+
+### A list of agenda items: the Object list / Table widget
+
+Often a detail page needs a **sub-list**: this pet's upcoming visits, this owner's pets, this order's lines. Add an **Object list** (or **Table**) widget, point it at the related schema (`visit`), filter it to the parent object, and sort by date. The very same widget, pointed at the `visit` schema with no parent filter, *is* the standalone **Appointments** page, a clean agenda of vet visits:
+
+<figure>
+  <img src={agendaListImg} alt="The Appointments page: a table of vet visits with relative dates (4 weeks ago, in 4 days, next week), Reason, Vet, a Status badge (completed, scheduled, cancelled) and Cost" />
+  <figcaption>An <strong>Object list</strong> over the <code>visit</code> schema: a list of agenda items with relative dates ("in 4 days", "next week"), the vet, a status badge and the cost. The columns, the relative-date formatting and the status badges all come from the schema.</figcaption>
+</figure>
+
+### Putting it together
+
+Every widget here is added from the same **Add widget…** menu, dragged onto the grid, and tuned through its **cog**. Compose them with intent: a header for identity, a data widget for the facts, a files widget for documents, a relations widget for context, and one focused list for the sub-collection that matters. Five widgets, no code, and the page reads as if it were built for pets specifically, because it was.
+
+**Verify:** clicking a pet opens its detail page with the header, the editable property grid, the Files drop zone, and its related objects; dropping a file on the Files widget attaches it to that pet, and the Appointments page lists every visit with its status.
+
+## Step 5: Compose a dashboard from every widget
+
+Add a **dashboard** page (Edit pages… → Add page → Type **Dashboard**) and set it as the app's home. A dashboard is a free grid you fill with widgets. Use the full set so the store has a real cockpit:
+
+<HexCard title="The OpenBuild widget palette">
+  <strong>Header</strong> for a titled banner. <strong>Stat</strong> cards for single numbers (pets in catalogue, owners, orders, revenue). <strong>Chart</strong> for distributions and trends (pets by status as a donut, visits over time as a line). <strong>Gauge</strong> for a value against a target (pets sold out of ten). <strong>Delta</strong> for a number with its change. <strong>Stats block</strong> for a labelled count (available pets). <strong>Object list</strong> for a live mini-table (recent pets). <strong>Image</strong>, <strong>label</strong>, and <strong>text</strong> for framing and copy.
+</HexCard>
+
+**Adding a widget.** With the dashboard in edit mode (orange button → **Edit page**), choose **Add widget…**. Pick a **Widget type** and the form changes to match it: a Stat asks for a data source and a label; a Label asks for text, size and colour; every type ends with an **Appearance** section (show title, background, icon). Click **Add** and the widget drops onto the grid, where you can drag it into place.
+
+<figure>
+  <img src={addWidgetModalImg} alt="The Add Widget modal with a Widget type selector set to Label, type-specific fields (Label text, Font size, Color, Background color, Font weight, Alignment), and an Appearance section with Show title, Custom title, Background and Icon" />
+  <figcaption>Edit mode → <strong>Add widget…</strong>: choose a type, fill its form, set its appearance, <strong>Add</strong>. The form adapts to the widget type you pick.</figcaption>
+</figure>
+
+**Configuring a widget.** Every data widget asks for a register, a schema, and a metric. You set these on the widget's **cog** (visible in edit mode). A revenue stat is aggregation `sum` over the `order` schema's `total` field; a "pets by status" donut groups the `pet` schema by its `status` field; a gauge for pets sold counts `pet` where `status = sold` against a static target. None of this is code; it is a form per widget.
+
+<figure>
+  <img src={widgetConfigModalImg} alt="The Customize widget modal for the Pets stat card: a Data source section (Register, Schema=Pet, Source type=Aggregate, Aggregation=count, Filter), a Display section (Label=Pets, Icon=Dog, Caption, Value color, Icon color) and a Format section (Style, Decimals)" />
+  <figcaption>A widget's <strong>cog</strong> opens its settings: the <strong>Data source</strong> (register, schema, aggregation, filter), the <strong>Display</strong> (label, icon, colours) and the <strong>Format</strong>. This Pets card counts the <code>pet</code> schema and shows the <code>Dog</code> icon.</figcaption>
+</figure>
+
+<figure>
+  <img src={dashboardImg} alt="The Pet Store dashboard: a header banner, four stat cards (pets, owners, orders, revenue), a donut chart of pets by status, and a line chart of visits over time" />
+  <figcaption>The dashboard: header, four KPI cards, a status donut, and a visits-over-time line, all bound to live data.</figcaption>
+</figure>
+
+:::tip Charts have two modes
+A chart is either **over time** (pick a date field and an interval, like visits per month) or **by category** (pick a field to group by, like pets per status). Choose the mode that matches the question you are answering.
+:::
+
+**Verify:** open the app. The dashboard shows real numbers (Pets 10, Owners 5, Orders 5, a non-zero Revenue) and the donut renders coloured segments for each status.
+
+## Tailor the page chrome: sidebar, actions, settings
+
+The same orange menu has three more editors for the page "chrome" around your content. Each works like the menu and pages editors (a small modal with **Add…** and a per-row form) and each saves into the manifest.
+
+**Edit sidebar…** toggles a right-hand sidebar on the current page and manages its tabs. Open it on the Pet detail page, switch **Show sidebar on this page** on, click **Add tab**, name it "Logs", and set its **Content** to **Audit log**. A tab can show object data, metadata, or the audit log; leave content blank for an empty tab you fill later.
+
+<figure>
+  <img src={editSidebarModalImg} alt="The Edit sidebar modal with a 'Show sidebar on this page' toggle and one tab row labelled 'Logs' whose Content select is set to 'Audit log'" />
+  <figcaption>Edit menu → <strong>Edit sidebar…</strong>: add a "Logs" tab and pick its <strong>Content</strong> (here, the audit log).</figcaption>
+</figure>
+
+Click Done, open a pet, and open the sidebar from its header. The "Logs" tab shows the object's real audit trail: who changed what and when, with filters and load-more.
+
+<figure>
+  <img src={sidebarLiveImg} alt="A pet's detail page with the right-hand sidebar open on a 'Logs' tab, showing dated audit-trail entries (create and update events by admin) with Action and User filters" />
+  <figcaption>The configured sidebar, live. The "Logs" tab renders the pet's <strong>audit trail</strong>: real create and update entries, with filters.</figcaption>
+</figure>
+
+**Edit actions…** manages the per-row action menu. **Add action** gives each entry a **Label**, an **Icon**, a **Type** (e.g. open a page) and a **Target**. Add one labelled "Open dashboard" that opens the `dashboard` page.
+
+<figure>
+  <img src={editActionsModalImg} alt="The Edit actions modal showing an action row with Label 'Open dashboard', Icon 'ViewDashboard', Type open-page and Target page id 'dashboard'" />
+  <figcaption>Edit menu → <strong>Edit actions…</strong>: an "Open dashboard" action that opens the dashboard page.</figcaption>
+</figure>
+
+Click Done and open a pet's row actions on the Pets list: "Open dashboard" sits at the top, alongside the built-in View, Edit, Copy and Delete.
+
+<figure>
+  <img src={actionLiveImg} alt="A pet row's actions menu on the Pets list, with 'Open dashboard' as the first item above View, Edit, Copy and Delete" />
+  <figcaption>The action, live. Your "Open dashboard" entry is a working item in every pet's row menu.</figcaption>
+</figure>
+
+**Edit settings…** builds the settings ⚙ foldout at the bottom of the navigation. **Add settings item**, name it "Documentation", and point it at the `dashboard` page (icons and a "Personal settings" entry are optional).
+
+<figure>
+  <img src={editSettingsModalImg} alt="The Edit settings menu modal with one item labelled 'Documentation' targeting a page, plus a 'Personal settings' entry toggle and a Foldout label field" />
+  <figcaption>Edit menu → <strong>Edit settings…</strong>: a "Documentation" item in the gear ⚙ foldout.</figcaption>
+</figure>
+
+Click Done and open the **Settings** foldout at the foot of the navigation: "Documentation" is there, ready to click.
+
+<figure>
+  <img src={settingsFoldoutImg} alt="The Pet Store navigation with the Settings foldout open at the bottom, showing Settings, Personal settings and the configured Documentation item" />
+  <figcaption>The settings foldout, live, with your "Documentation" item.</figcaption>
+</figure>
+
+## Step 6: Give the vets their own medical layer
+
+The medical records are sensitive. Only a **vets** group should read them, and only vets should see the medical part of the app. The important rule: hiding a menu is not security. The data itself must be protected.
+
+First, the data. As admin, create a Nextcloud group `vets` and put your veterinary users in it. Then open the `medicalRecord` schema's **permissions** and set the read (and create, update, delete) groups to `vets`. OpenRegister now enforces this on every request: a user in `vets` reads medical records, a user outside it reads none, and admins keep full access.
+
+**Verify it for real.** From Nextcloud's user settings, create one user in the `vets` group and one outside it. Sign in as each and open the Pet Store: the vet sees the medical records and the medical menu, the other staff member sees neither, and an admin always sees everything. Two logins, no code.
+
+With the data locked down, you can now scope the **navigation**: tag the medical menu item (and an optional vet dashboard page) so the app only shows them to the `vets` group. The menu scoping is the presentation layer; the OpenRegister permission above is the wall.
+
+<Troubleshooting>
+  <p><strong>The non-vet user also sees zero pets, not just zero medical records.</strong> That is tenant isolation, a separate OpenRegister control: a user only sees objects in an organisation they belong to. Add both users to the app's organisation so the only difference between them is the medical permission.</p>
+</Troubleshooting>
+
+<figure>
+  <img src={step6Img} alt="The Pet Store app detail page's Groups & users panel with a Manage permissions button, showing role-based access to the app and its data" />
+  <figcaption>Access is managed by group and role from the app's Groups &amp; users panel. It is the same control you use to scope medical records to a vets group.</figcaption>
+</figure>
+
+## Step 7: Release a production version
+
+You have been building in the open. Before colleagues rely on the app, cut a **production version** so you can keep editing without changing what they see.
+
+OpenBuild versions an app the way OpenRegister versions any object. Open the app's **version history**. The version you have been editing is the draft. Use **release** to mark it as production. From now on there is exactly one production version at a time; "Open app" always opens that one.
+
+To keep working, open a non-production version from the version list and edit there. Your colleagues stay on production until you release again. This is how you separate development from what is live, without a second instance.
+
+**Verify:** the version history shows one version marked as production, and opening the app from the app list lands on it.
+
+<figure>
+  <img src={step7Img} alt="The OpenBuild version picker for Pet Store listing Production 0.1.0 and Development versions, with the production version marked" />
+  <figcaption>One production version at a time: the version picker shows Production 0.1.0 alongside the editable Development version.</figcaption>
+</figure>
+
+## Step 8: Put the store on everyone's LaunchPad
+
+LaunchPad is the personal Nextcloud dashboard. Surface the Pet Store there so it is one glance away. Open LaunchPad, choose **Add custom widget**, pick **Object list**, and point it at the Pet Store production register and the `pet` schema. Add columns for name, species, and status, give it a title, and save.
+
+<HexCard title="Why this works without glue code">
+  LaunchPad's widgets read OpenRegister live at runtime. You give it a register and a schema as plain text, it fetches and renders. The same data your OpenBuild app shows is now on the personal dashboard, with no integration to build.
+</HexCard>
+
+**Verify:** the LaunchPad widget lists your pets with their species and status, and updates when you add a pet.
+
+<figure>
+  <img src={step8Img} alt="LaunchPad personal dashboard with a Pets in the store object-list widget showing pet names, species and status alongside other widgets" />
+  <figcaption>The Pet Store on LaunchPad: a "Pets in the store" object-list widget reads the same register live, with no integration to build.</figcaption>
+</figure>
+
+## Step 9: Find pets in search, link visits to Calendar, drop files on a pet
+
+Three Nextcloud-native touches finish the app. Each one is a small piece of configuration that hands you a platform feature.
+
+**Search.** In each schema you want findable, turn on the **searchable** flag. OpenRegister exposes those objects to Nextcloud's unified search through one fleet-wide provider, so a pet becomes a result in the top-bar magnifier next to files and messages. You write no search code.
+
+**Calendar (the leaf).** A vet appointment is an event, so it belongs in Calendar. OpenBuild ships a **Calendar** integration for the `visit` schema: open a visit's detail page and use its calendar action to book the appointment, and the next step's flow books a new-pet inspection automatically. Open Nextcloud Calendar and the appointments are there; the **Related** widget on a visit's detail page lists its event. Calendar is the right leaf for an event, the same way knowledge belongs in a wiki and tasks belong in Deck.
+
+**Files.** A pet's detail page carries a **Files** widget. Drop a photo or a vaccination certificate on it and the file attaches to that pet's object in OpenRegister, stored in Nextcloud Files. The data widget keeps the structured fields; the file widget keeps the documents.
+
+**Verify:** searching a pet's name returns it; a vet visit shows in Calendar; a file dropped on a pet appears in that pet's file list.
+
+<figure>
+  <img src={step9Img} alt="Nextcloud unified search for 'Rex' returning the Rex pet under Open Register Objects, his rex.jpg under Files, and a 'Vet visit: Annual check-up' under Events" />
+  <figcaption>One search for "Rex" surfaces the pet itself (Open Register Objects), his photo (Files), and his vet appointment (Calendar): the object, search, Calendar, and Files, all from configuration.</figcaption>
+</figure>
+
+## Step 10: Add business logic with flows
+
+An app is more than data and pages. You want things to happen. When a new pet
+arrives, the vet should get a task to inspect it and an email so they know.
+OpenRegister does this with **flows**: small pieces of business logic declared
+in the register config, right next to your registers and schemas, that hook the
+object lifecycle. No code, no separate automation tool.
+
+A flow declares a trigger (`created`, `updated`, or `deleted`) and a list of
+actions. Build it with the visual editor: open the **edit** menu (the orange
+button) → **Edit flows…**, pick the `pet` schema, choose **"An object is
+created"**, and add two actions (**Add a calendar event** and **Send an
+email**), filling in their fields. Use `{{ name }}`, `{{ species }}` and the
+like to drop the new pet's values into the text. No code.
+
+<figure>
+  <img src={step10Img} alt="The Edit flows editor: the pet schema selected, an 'object is created' trigger, and a calendar-event action with title, description, location, days-from-now and duration fields using {{name}} placeholders" />
+  <figcaption>The visual flow editor (edit menu → Edit flows…): pick a schema, a trigger, and add actions with plain form fields. No JSON by hand.</figcaption>
+</figure>
+
+Placeholders like `{{ name }}` and `{{ species }}` are filled from the object
+that triggered the flow. The **calendar event** action puts an agenda task in
+the vet's Nextcloud Calendar; the **email** action sends the notification. Flows
+never break a save: if an action fails it is logged and the others still run.
+
+OpenBuild stores the flow on the schema as configuration that travels with the
+register, so an admin can review or change it later, no developer needed. The
+exact config format lives in the [OpenBuild technical documentation](https://conduction.nl/products/openbuild).
+
+<HexCard title="Why flows live in the register, not in code">
+  A flow is configuration, the same shape as a schema or a register. It is
+  versioned with the app, it travels with the register, and an admin can read
+  and change it without a developer. The actions reuse Nextcloud's own surfaces
+  (Calendar, Mail, and more), so you inherit them instead of building them.
+</HexCard>
+
+**Verify:** create a new pet. A "Inspect new pet: {name}" agenda task appears in
+the vet's Calendar for the next day, and an email goes out to the vet.
+
+<figure>
+  <img src={flowCalendarImg} alt="Nextcloud Calendar showing vet inspection agenda tasks created automatically when pets were registered" />
+  <figcaption>The flow put vet inspection agenda tasks into Calendar, one per new pet, with no glue code.</figcaption>
+</figure>
+
+## Step 11: Build it by talking to an AI
+
+Everything you did by clicking in this tutorial is also available to an AI agent
+over **MCP** (Model Context Protocol). OpenBuild exposes its authoring surface as
+MCP tools, so you can build an app in conversation: "create an app called Pet
+Store, add a pet schema with these fields, add a Pets index page, put a stat and
+a chart on the dashboard." The agent calls the tools; the app takes shape.
+
+The tools mirror the steps above:
+
+| Tool | What it does |
+|---|---|
+| `createApp` | Create the app and its first version (Step 1) |
+| `upsertSchema` | Create or update a schema (Step 2) |
+| `upsertPage` | Create or update an index, detail, or dashboard page (Steps 4, 5) |
+| `addWidget` | Add a widget to a page (Step 5) |
+| `upsertMenuItem` | Add a navigation entry (Step 4) |
+| `promoteVersion` | Release a production version (Step 7) |
+| `listApps` / `getAppManifest` | Inspect what exists |
+
+Object data, schemas, and registers are reachable through the OpenRegister MCP
+tools as well, so the same agent can seed demo data and read it back. Building an
+app and talking to an AI about your data become the same activity.
+
+You do not need an external client for this. OpenRegister carries an **in-app AI assistant** (the chat panel in the app), and apps feed their MCP tools to it through OpenRegister and LLPhant. So you can open the assistant inside your own app and ask it, in plain language, to change the app. Ask it: *"Add a menu item called Built by the assistant that opens the Pets page."* The assistant calls the `openbuild.upsertMenuItem` tool and the entry appears.
+
+<figure>
+  <img src={aiCreatesMenuImg} alt="The in-app AI assistant panel: the user asks to add a menu item called 'Built by the assistant' that opens the Pets page, and the assistant confirms it added the item, with a 'Tool: openbuild_upsertMenuItem' chip showing the MCP tool it called" />
+  <figcaption>The in-app assistant, asked to add a menu item, calls the <code>openbuild.upsertMenuItem</code> MCP tool and confirms. The tool chip shows exactly which tool ran.</figcaption>
+</figure>
+
+It is not just talk: the entry the assistant created appears in the live navigation, between Appointments and Categories.
+
+<figure>
+  <img src={menuItemLiveImg} alt="The Pet Store left navigation with a new 'Built by the assistant' menu item between Appointments and Categories" />
+  <figcaption>The result. The "Built by the assistant" item the assistant added over MCP is now a real entry in the app's navigation.</figcaption>
+</figure>
+
+**Verify:** ask the assistant to list the virtual apps; it returns your Pet Store. Then ask it to add a menu item or a widget and reload the app; it is there.
+
+These are not mock-ups. The two screenshots below were produced by calling the
+OpenBuild MCP tools directly, no clicking in the UI. First, `Create or update a
+menu item` added a navigation entry:
+
+<figure>
+  <img src={step11McpMenuImg} alt="The Pet Store left navigation showing a new 'Added via MCP' menu item beneath Categories, created by an MCP tool call" />
+  <figcaption>An agent called <code>Create or update a menu item</code> over MCP. The new "Added via MCP" entry appears in the live navigation.</figcaption>
+</figure>
+
+Then `Create or update a page` rewrote the pet detail page's header:
+
+<figure>
+  <img src={step11McpDetailImg} alt="The pet detail page with a header reading 'Pet profile, updated by an AI agent via MCP' and a subtitle noting it was changed by an agent, not by clicking" />
+  <figcaption>The same agent changed the detail page banner with <code>Create or update a page</code>. The page re-renders with the new text on reload.</figcaption>
+</figure>
+
+## Onboard your users: setup wizard, walkthrough, and support
+
+Three first-run experiences ship with the app shell: a setup wizard, a guided walkthrough, and a support dialog. You configure all three from the same OpenBuild edit menu you used for pages and widgets. No JSON by hand. Open the orange edit button and pick the one you want.
+
+<figure>
+  <img src={editMenuOnboardingImg} alt="The OpenBuild edit menu open over the Pet Store, showing Edit setup wizard, Edit walkthrough, and Edit support and donation among the other edit options" />
+  <figcaption>The OpenBuild edit menu. <strong>Edit setup wizard</strong>, <strong>Edit walkthrough</strong>, and <strong>Edit support &amp; donation</strong> sit alongside the page, menu, and data editors. Everything about the app is configured from here.</figcaption>
+</figure>
+
+### A setup wizard for first run
+
+The setup wizard runs the first time a user opens the app. Open **Edit setup wizard**, then add a step for each thing the app needs before it is useful. Each step has a title, a body, and a type: a welcome (info), fill-in settings (config fields), a choice, a privileged action the app runs for you (run action), or a summary. Mark a step **required** and the app stays gated until that step is done. Leave it optional and the user can skip ahead and re-run it later from settings.
+
+<figure>
+  <img src={editSetupModalImg} alt="The Edit setup wizard editor with a 'Show the setup wizard' toggle and two steps, each with a title, type select, body, and Required toggle" />
+  <figcaption>The <strong>setup wizard editor</strong>. Add steps, set each one's type, and choose which are required. Here the Pet Store gets a welcome step and a closing summary.</figcaption>
+</figure>
+
+Click Done and the wizard is live. A user opening the Pet Store now sees the steps you wrote, with a progress rail across the top and a required step gating entry until it is done.
+
+<figure>
+  <img src={setupWizardImg} alt="The live Pet Store setup wizard titled 'Set up this app' with a step rail showing 'Welcome to the Pet Store' and 'You are all set', a welcome note, and Cancel and Next buttons" />
+  <figcaption>The same steps, live. The shell renders the <strong>setup wizard</strong> over the app on first run, exactly as configured.</figcaption>
+</figure>
+
+**Ask for information.** A welcome and a summary are nice, but the point of a setup wizard is usually to collect something. Add a step, set its type to **Config fields**, and list the keys to ask for (comma-separated, for example `store_name, contact_email`). The wizard renders a labelled input per key and saves them to the app's config when the user finishes.
+
+<figure>
+  <img src={setupConfigFieldsImg} alt="The live setup wizard on a 'Tell us about your store' step (2 of 3) with two input fields, store_name filled 'Sunnyvale Pet Store' and contact_email filled 'hello@sunnyvalepets.example'" />
+  <figcaption>A <strong>config-fields</strong> step actually asks for input. The keys you listed become labelled fields the wizard collects on first run.</figcaption>
+</figure>
+
+<Troubleshooting>
+  <p><strong>The config step shows "Request failed with status code 404" on a virtual app.</strong> Config-fields write to an app config endpoint that a virtual (unexported) app does not serve, so saving 404s. Keep the step optional while the app is virtual, or use it on an exported app. The fields still render and collect input either way.</p>
+</Troubleshooting>
+
+### A guided walkthrough
+
+The walkthrough is a guided tour: the page dims, the shell spotlights a target, and a coachmark explains the step. Open **Edit walkthrough**, give the tour a title, and pick when it runs (on a user's first visit, or after an app upgrade). Add a step for each stop. Each step has a title, a body, the one task for that step, and an optional CSS selector to spotlight. Leave the target blank for a centred coachmark.
+
+<figure>
+  <img src={editWalkthroughModalImg} alt="The Edit walkthrough editor with a tour title, a 'When it runs' trigger select, and two steps each with a title, body, task, and optional target selector" />
+  <figcaption>The <strong>walkthrough editor</strong>. Set the trigger, then write each step's title, body, and task. The target selector spotlights an element; blank centres the coachmark.</figcaption>
+</figure>
+
+**Targeting an element.** The target is a CSS selector. The shell finds that element on the page, spotlights it, and pins the coachmark next to it. For the Pets nav item you can target the link by its route: `a[href$='/pets']`. To pin a step to a widget or button, grab a selector with your browser's inspector:
+
+- Right-click the element you want to highlight and choose **Inspect**.
+- In the elements panel, look at the highlighted tag for a stable hook: an `id` becomes `#pets-widget`, a `data-` attribute becomes `[data-testid='pets']`, a class becomes `.cn-widget-grid`.
+- Prefer an `id` or a `data-` attribute over a class. Classes change when the design changes; ids and data hooks are stable.
+- Paste that selector into the step's **Target** field. Leave it blank for a centred coachmark with no spotlight.
+
+On first visit the tour runs itself. The user sees your coachmark over the dimmed dashboard, with the task in bold and Skip and Next to move through it.
+
+<figure>
+  <img src={walkthroughImg} alt="The live Pet Store dashboard dimmed, with a coachmark reading 'Welcome aboard, 1 of 2' and the task 'Take a look around the dashboard', plus Skip and Next buttons" />
+  <figcaption>The tour, live. The shell dims the page and shows the <strong>walkthrough</strong> coachmark you wrote, advancing on a real click.</figcaption>
+</figure>
+
+On a step with a target, the shell cuts a hole in the dimmer around that element and pins the coachmark beside it. Here step 2 targets `a[href$='/pets']`, so the **Pets** nav item is spotlit while the rest of the page stays dimmed.
+
+<figure>
+  <img src={walkthroughSpotlightImg} alt="The walkthrough on step 2 of 2 'Add your pets': the Pets navigation item is spotlit (a bright cutout in the dimmer) and the coachmark 'Click Pets in the menu' is pinned next to it" />
+  <figcaption>A targeted step. The CSS selector <code>a[href$='/pets']</code> spotlights the <strong>Pets</strong> nav item; the coachmark points right at it.</figcaption>
+</figure>
+
+### A support and donation dialog
+
+The support dialog is a one-time, dismissible note on first open. Open **Edit support &amp; donation** to write it. The top of the editor sets the dialog title, the body text, and the signature: founder name, founder title, an avatar URL, and an **Upload image** button so you can drop in your own portrait. Every field is pre-filled with the current default, so you change only what you want. One toggle turns the whole note off.
+
+<figure>
+  <img src={editSupportModalImg} alt="The Edit support and donation editor with a dialog-title field, a body field, founder name and title fields, an avatar URL field with an Upload image button, and an avatar link field" />
+  <figcaption>The <strong>support editor</strong>, top half. Title, body, and signature, with an <strong>Upload image</strong> button for the avatar. Leave a field blank to keep the default.</figcaption>
+</figure>
+
+Below that, each of the four buttons has its own block: a show/hide toggle, a label, a link, a style (primary, secondary, or tertiary) and an icon (any MDI name). Turn a button off and it disappears from the dialog, so you can show two buttons or four.
+
+<figure>
+  <img src={editSupportButtonsImg} alt="The support editor's button section, showing per-button blocks for Get support, Suggest a feature and Review on App Store, each with a label, link, a 'Show this button' toggle, a style select and an icon field" />
+  <figcaption>Each button is configurable: label, link, show/hide, style and icon. Here "Get support" is switched off.</figcaption>
+</figure>
+
+A user opening the app sees the note once, with your title, copy, signature, and only the buttons you kept.
+
+<figure>
+  <img src={supportDialogImg} alt="The live support dialog titled 'Support the Pet Store demo' with a founder note from Ruben van der Linde and three buttons: Donate, Suggest a feature and Review on App Store" />
+  <figcaption>The <strong>support dialog</strong>, live. The title, body, signature and three buttons (Get support was turned off) all come from the editor.</figcaption>
+</figure>
+
+## Test yourself
+
+You have built the app if all of these are true:
+
+- Opening the Pet Store shows a dashboard with live numbers and a status donut.
+- The Pets list is browsable and a pet's profile shows its data, files, and related objects.
+- A user in `vets` reads the medical records; a user outside it reads none.
+- The version history shows one production version.
+- The Pet Store widget shows pets on your LaunchPad, a vet visit shows in Calendar, and a file dropped on a pet sticks.
+- Creating a pet drops a "Inspect new pet" agenda task in the vet's Calendar and emails the vet.
+- An AI agent over MCP can list your apps and add a widget to a page.
+
+## Where to go from here
+
+<NextSteps>
+  <NextStep href="/academy/build-an-app-tutorial-0-three-paths">See the manifest OpenBuild wrote for you. Part 0 of the code path explains the same app built by hand, so you can read your own app's JSON.</NextStep>
+  <NextStep href="https://openbuild.conduction.nl/docs/widgets/">Browse the full widget reference to push your dashboard and detail pages further.</NextStep>
+  <NextStep>Rebuild your own domain. Swap pets for cases, products, or requests; the seven-schema, dashboard, permissions, release shape is the same for any register-backed app.</NextStep>
+</NextSteps>
