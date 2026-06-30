@@ -1,321 +1,285 @@
 ---
 slug: woo-connect-external-api
-title: Pull external data into your register with OpenConnector
+title: "Publish open government data end to end: the Woo & DCAT overlay"
 contentType: tutorial
 authors: [conduction]
 date: 2026-06-15
-summary: Configure a source, a mapping, and a synchronisation in OpenConnector that turn an external API into datasets, on a schedule. Every step has UI, API, and PHP tabs.
-tags: [Woo, DCAT, OpenRegister, OpenConnector, Integration, Synchronisation, Open data, Tutorial series]
+summary: Tie the OpenRegister → OpenConnector → OpenCatalogi pipeline into one compliant Woo open-data chain. The three deep tutorials teach each app on a Pet Store; this capstone overlays the Dutch open-government layer on top — the canonical Woo and DCAT registers, an external open-data source mapped to a Dataset, the publicatiedatum publish rule, and a DCAT-AP-NL feed that data.overheid.nl harvests. Grab data from a source, and publish it on a catalog.
+tags: [Woo, DCAT, OpenRegister, OpenConnector, OpenCatalogi, Publications, Open data, Tutorial series]
 apps: [openregister, openconnector, opencatalogi, openwoo]
-durationMinutes: 22
+durationMinutes: 18
 series: woo-tutorial
 partNumber: 4
 ---
 
-import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+  Troubleshooting,
+  ContactCta,
+} from '@conduction/docusaurus-preset/components';
 import Details from '@theme/Details';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-:::tip Choose how you work
-Each step below has three tabs — **UI**, **API**, and **PHP** — so you can
-follow the click-path, automate it with `curl`, or call the apps' `OCA\`
-services in code. Pick one and it sticks across every step.
-:::
+The first three parts of this series set up the registers, the files, and a public catalog for Dutch open-government data. Conduction also has a **three-tutorial pipeline** that teaches the same three apps from the ground up, end to end, on the canonical Pet Store sample:
 
-:::tip Recommended first
-This is Part 4 of the Woo tutorial series. Parts <a href="/academy/woo-set-up-register">1</a>, <a href="/academy/woo-upload-files">2</a> and <a href="/academy/woo-publish-and-harvest-catalog">3</a> set up the registers, the files, and the public catalog this tutorial fills.
-:::
+1. [Model and manage your data with OpenRegister](/academy/model-data-with-openregister) — registers, schemas, relations, objects, search, versioning, permissions.
+2. [Pull external data into your register with OpenConnector](/academy/pull-data-with-openconnector) — a source, a mapping, and a scheduled synchronisation.
+3. [Publish a public catalog with OpenCatalogi](/academy/publish-catalog-with-opencatalogi) — scope a catalog, publish with a date rule, expose a DCAT-AP-NL feed.
 
-So far you entered datasets by hand. In production they come from another system: a case-management API, an open-data source, an existing register. In this tutorial you connect one with OpenConnector, through the interface. You build a source, a mapping, and a synchronisation, then run it. External records become datasets in your register.
+This capstone is the **Woo & DCAT overlay** on that pipeline. Rather than repeat the mechanics, it points you at each deep tutorial and then layers the open-government specifics on top: the canonical registers you import instead of hand-building, the open-data source you map to a `Dataset`, and the DCAT-AP-NL feed that national portals harvest. The shape is identical to the Pet Store chain — *grab data from a source, and publish it on a catalog* — only the domain changes.
 
 {/* truncate */}
 
-<Outcomes title="What you'll learn">
-  <Outcome>How to register an external API as a source in OpenConnector.</Outcome>
-  <Outcome>How to write a mapping that turns external fields into your schema's fields.</Outcome>
-  <Outcome>How to create and run a synchronisation that writes into your register.</Outcome>
-  <Outcome>How to schedule the synchronisation so new records arrive automatically.</Outcome>
+:::tip How this fits together
+Each deep tutorial below stands alone and uses the Pet Store. This page is the bridge: read a deep tutorial for the *how*, then apply the Woo overlay here for the *open-data what*. If you have already followed Parts <a href="/academy/woo-set-up-register">1</a>, <a href="/academy/woo-upload-files">2</a> and <a href="/academy/woo-publish-and-harvest-catalog">3</a>, this ties them into one chain.
+:::
+
+<Outcomes title="What you'll have at the end">
+  <Outcome>A clear map from the generic register → connector → catalog pipeline to a compliant Woo / DCAT-AP-NL open-data chain.</Outcome>
+  <Outcome>An external open-data API registered as a <strong>source</strong> and mapped onto the canonical <code>Dataset</code> schema, publishing on arrival.</Outcome>
+  <Outcome>A catalog scoped to your DCAT register, with the <code>publicatiedatum</code> rule deciding what the public sees.</Outcome>
+  <Outcome>A <strong>DCAT-AP-NL</strong> feed at <code>/api/dcat</code> that <a href="https://data.overheid.nl">data.overheid.nl</a> and <a href="https://data.europa.eu">data.europa.eu</a> can harvest.</Outcome>
 </Outcomes>
 
 <Prerequisites title="What you need">
-  <PrerequisiteItem>A running Nextcloud with OpenRegister, OpenCatalogi <strong>and</strong> OpenConnector installed.</PrerequisiteItem>
-  <PrerequisiteItem>The DCAT register and catalog from <a href="/academy/woo-publish-and-harvest-catalog">Part 3</a>.</PrerequisiteItem>
-  <PrerequisiteItem>A user with admin rights.</PrerequisiteItem>
+  <PrerequisiteItem>A running Nextcloud with <strong>OpenRegister</strong>, <strong>OpenConnector</strong> and <strong>OpenCatalogi</strong> installed.</PrerequisiteItem>
+  <PrerequisiteItem>The DCAT register and catalog from <a href="/academy/woo-publish-and-harvest-catalog">Part 3</a> (or import them as the overlay below describes).</PrerequisiteItem>
+  <PrerequisiteItem>A user with admin rights. Comfort with the three deep tutorials helps, but is not required.</PrerequisiteItem>
 </Prerequisites>
 
-As the external system we use the public [Swagger Pet Store API](https://petstore3.swagger.io/api/v3). It stands in for your real source. The mechanics are identical whether you connect a pet store, a case system, or an open-data portal.
+## The chain at a glance
 
-## The three pieces
+The whole pipeline is three apps in a row. Each generic tutorial teaches one stage on the Pet Store; the Woo overlay swaps the pet domain for the open-data one. Nothing about the mechanics changes.
 
-OpenConnector splits an integration into three objects. You build them in order:
+| Stage | What runs | Learn the mechanics | The Woo / DCAT overlay |
+| --- | --- | --- | --- |
+| **1. Model** | OpenRegister | [Model your data with OpenRegister](/academy/model-data-with-openregister) | Import the canonical **Woo** and **DCAT** registers instead of hand-building a `pet` schema. |
+| **2. Pull** | OpenConnector | [Pull data with OpenConnector](/academy/pull-data-with-openconnector) | Point the source at an **open-data API** and map records onto the `Dataset` schema, publishing on arrival. |
+| **3. Publish** | OpenCatalogi | [Publish a catalog with OpenCatalogi](/academy/publish-catalog-with-opencatalogi) | Scope the catalog to the **DCAT register** and expose a **DCAT-AP-NL** feed for national harvesters. |
 
-1. **Source**: *where* the data comes from. A base URL and how to authenticate.
-2. **Mapping**: *how* a record is reshaped. External fields become your schema's fields.
-3. **Synchronisation**: *what* runs. It pulls from a source endpoint, applies the mapping, and writes into a register and schema.
+<HexCard title="One pipeline, two domains">
+  The Pet Store chain and the Woo chain are the same three objects — a register, a synchronisation, a catalog — wired the same way. A pet schema becomes a <code>Dataset</code> schema; a Swagger pet becomes an open-data record; a "pets in the shop window" catalog becomes a national open-data feed. Learn the chain once on pets, and you can publish any register-backed data, government or not.
+</HexCard>
 
-You build all three in the OpenConnector menu in Nextcloud. The dashboard counts each piece: sources, mappings, synchronisations, contracts, jobs, and endpoints.
+## Overlay 1: the register — import the canonical Woo & DCAT models
+
+The deep [OpenRegister tutorial](/academy/model-data-with-openregister) builds a register and its schemas by hand. For Woo you do not hand-build anything: the **Woo register** (with its ten TOOI information categories) and a **DCAT register** (for open-data `Dataset` objects) are published as OpenRegister configuration files and imported from a URL, exactly as the deep tutorial's final step (export & import configuration) describes.
+
+This is [Part 1 of the Woo series](/academy/woo-set-up-register): open **OpenRegister → Administration → Configurations → Import Configuration → Import from URL** and point it at the canonical configuration. OpenRegister recreates the register, its schemas and their TOOI categories in one transaction.
+
+<HexCard title="Why import, not build">
+  The Woo and DCAT-AP-NL data models are standards, not choices. Importing the canonical configuration means your <code>Dataset</code> schema has the exact fields a harvester expects — <code>title</code>, <code>description</code>, <code>category</code>, <code>license</code>, <code>publicatiedatum</code> — and stays aligned when the standard moves. The import mechanism is the same one the OpenRegister tutorial teaches; you are just consuming a published model instead of authoring your own.
+</HexCard>
+
+**Apply the overlay:** after [Part 1](/academy/woo-set-up-register) you have a DCAT register with a `Dataset` schema, the target for everything below.
+
+## Overlay 2: the source — map an open-data API onto a Dataset
+
+The deep [OpenConnector tutorial](/academy/pull-data-with-openconnector) pulls pets from the Swagger Pet Store into a `pet` schema. The Woo overlay changes only two things: the source is an open-data API, and the mapping targets the `Dataset` schema with one extra field that publishes the record the moment it arrives.
+
+OpenConnector splits every integration into three objects, built in order — exactly as the deep tutorial details:
+
+1. **Source**: *where* the data comes from (a base URL and how to authenticate).
+2. **Mapping**: *how* a record is reshaped (each `Dataset` field is a [Twig](https://twig.symfony.com/) expression over the source record).
+3. **Synchronisation**: *what* runs (it pulls an endpoint, applies the mapping, and writes into the DCAT register on a schedule).
 
 ![The OpenConnector dashboard with Sources, Mappings, and Synchronisations](./01-oc-overview.png)
 
-## Step 1: Register the external API as a source
+### Register the open-data API as a source
 
-<Tabs groupId="woo-how">
-<TabItem value="ui" label="UI">
-
-Open **OpenConnector → Sources → Add source**. Give it a name like `Swagger Pet Store`, set the type to `api`, and add a description. Click **Create**.
+Follow Step 1 of the [deep tutorial](/academy/pull-data-with-openconnector) — **OpenConnector → Sources → Add Source**, set the type to `api` and the location to your open-data API's base URL — then test the connection. For a secured government API you set the authentication on the source; OpenConnector stores the credentials encrypted.
 
 ![The Create Source form in OpenConnector](./02-oc-source-create.png)
 
-Open the new source from the list and set its **location** to the base URL, `https://petstore3.swagger.io/api/v3`. The Pet Store needs no authentication. Use the source's **Test** action to confirm OpenConnector can reach it; a green result means the connection works.
+### Map records onto the Dataset schema
 
-</TabItem>
-<TabItem value="api" label="API">
+The only Woo-specific step. Where the Pet Store mapping produced `{ name, species, status }`, the Woo mapping produces a `Dataset`, and it sets `publicatiedatum` to *now* so the dataset is public the instant it lands — that is the field the catalog keys visibility on (Overlay 3).
 
-Host `http://localhost:8080`, auth `admin:admin`. Create the source, then test connectivity with its id:
-
-```bash
-curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/sources" \
-  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
-  -d '{ "name": "Swagger Pet Store", "type": "api", "location": "https://petstore3.swagger.io/api/v3", "auth": "none", "isEnabled": true }'
-
-curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/sources/test/<SOURCE_ID>" \
-  -H "OCS-APIRequest: true"
-```
-
-</TabItem>
-<TabItem value="php" label="PHP">
-
-A source, mapping, and synchronisation are all OpenRegister objects in the `openconnector` register, so you create them with OpenRegister's `ObjectService` and test reachability with OpenConnector's `CallService`:
-
-```php
-use OCA\OpenRegister\Service\ObjectService;
-use OCA\OpenConnector\Service\CallService;
-
-$objects = \OCP\Server::get(ObjectService::class);
-
-$source = $objects->saveObject(
-    object: [
-        'name'      => 'Swagger Pet Store',
-        'type'      => 'api',
-        'location'  => 'https://petstore3.swagger.io/api/v3',
-        'auth'      => 'none',
-        'isEnabled' => true,
-    ],
-    register: 'openconnector',
-    schema:   'source',
-);
-
-// Confirm OpenConnector can reach it.
-$call     = \OCP\Server::get(CallService::class);
-$response = $call->call($source, '/pet/findByStatus?status=available');
-```
-
-</TabItem>
-</Tabs>
-
-:::note
-For a real source you set the authentication and add credentials on the source. Keep secrets out of any file you commit; OpenConnector stores them encrypted.
-:::
-
-## Step 2: Write the mapping
-
-A mapping turns one external record into one object in your schema. Each target field is a [Twig](https://twig.symfony.com/) expression that reads from the source record.
-
-The Pet Store returns pets like this:
-
-```json
-{ "id": 7, "name": "Bella", "status": "available", "category": { "name": "Dogs" } }
-```
-
-Map those fields onto your `Dataset` schema:
-
-| Dataset field | Expression |
+| `Dataset` field | Twig expression |
 | --- | --- |
 | `title` | `{{ name }}` |
+| `description` | `{{ description }}` |
 | `category` | `{{ category.name }}` |
 | `status` | `Published` |
 | `publicatiedatum` | `{{ "now"\|date("Y-m-d H:i:s") }}` |
 
-The `publicatiedatum` expression sets the publish date to now, so the dataset is public the moment it arrives. This is the field Part 3 keys public visibility on.
+Use the mapping's **Test mapping** action against a sample record before wiring it up, just as the deep tutorial shows, so you can see the reshaped `Dataset` before it writes anything.
+
+### Tie it together and run
+
+Create the synchronisation (source + endpoint + results position + id position + mapping + the DCAT register and `Dataset` schema as the target), then **Run** it. The run reports how many records it found, created, updated and skipped; on a re-run the **id position** deduplicates so the register tracks the source without duplicates.
+
+![The Create Synchronization form in OpenConnector](./03-oc-synchronisation-create.png)
 
 <Tabs groupId="woo-how">
 <TabItem value="ui" label="UI">
 
-Open **OpenConnector → Mappings → Add mapping**, give it a name like `Pet to dataset`, and open it. Enter each row from the table above as a target field and its Twig expression. Use the mapping's **Test mapping** action to run it against a sample record before you wire it up — it shows the reshaped object, so you know the mapping does what you expect.
+Do the click-path in the [deep OpenConnector tutorial](/academy/pull-data-with-openconnector): create the source, write the mapping with the `Dataset` fields above, create the synchronisation pointing at your DCAT register and `Dataset` schema, and run it. The only differences from the pet chain are the source URL, the five mapping rows above, and the target schema.
 
 </TabItem>
 <TabItem value="api" label="API">
 
+The API calls are identical to the deep tutorial's; only the mapping body and the target change. Replace `<DCAT_REGISTER>/<DATASET_SCHEMA>` with your ids:
+
 ```bash
+# Mapping: reshape an open-data record into a Dataset, publishing on arrival
 curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/mappings" \
   -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
-  -d '{ "name": "Pet to dataset", "mapping": {
-        "title": "{{ name }}", "category": "{{ category.name }}", "status": "Published",
+  -d '{ "name": "Source to dataset", "passThrough": false, "mapping": {
+        "title": "{{ name }}", "description": "{{ description }}",
+        "category": "{{ category.name }}", "status": "Published",
         "publicatiedatum": "{{ \"now\"|date(\"Y-m-d H:i:s\") }}" } }'
 
-curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/mappings/test" \
+# Synchronisation: source → mapping → DCAT register/schema
+curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/synchronizations" \
   -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
-  -d '{ "mapping": { "title": "{{ name }}" }, "inputObject": { "name": "Bella" } }'
+  -d '{ "name": "Open data to datasets", "sourceId": "<SOURCE_UUID>", "sourceType": "api",
+        "sourceTargetMapping": "<MAPPING_UUID>",
+        "sourceConfig": { "endpoint": "<ENDPOINT>", "resultsPosition": "_root", "idPosition": "id" },
+        "targetType": "register/schema", "targetId": "<DCAT_REGISTER>/<DATASET_SCHEMA>" }'
 ```
 
 </TabItem>
 <TabItem value="php" label="PHP">
 
 ```php
-use OCA\OpenConnector\Service\MappingService;
+use OCA\OpenRegister\Service\ObjectService;
+use OCA\OpenConnector\Service\SynchronizationService;
+
+$objects = \OCP\Server::get(ObjectService::class);
 
 $mapping = $objects->saveObject(
     object: [
-        'name'    => 'Pet to dataset',
-        'mapping' => [
+        'name'        => 'Source to dataset',
+        'passThrough' => false,
+        'mapping'     => [
             'title'           => '{{ name }}',
+            'description'     => '{{ description }}',
             'category'        => '{{ category.name }}',
             'status'          => 'Published',
             'publicatiedatum' => '{{ "now"|date("Y-m-d H:i:s") }}',
         ],
     ],
-    register: 'openconnector',
-    schema:   'mapping',
+    register: 'openconnector', schema: 'mapping',
 );
-
-// Reshape one sample record to verify the mapping before wiring it up.
-$mapper = \OCP\Server::get(MappingService::class);
-$result = $mapper->executeMapping($mapping, ['name' => 'Bella', 'category' => ['name' => 'Dogs']]);
+// Build the synchronisation against the DCAT register/schema and run it via SynchronizationService,
+// exactly as the deep OpenConnector tutorial shows.
 ```
 
 </TabItem>
 </Tabs>
 
-## Step 3: Create the synchronisation
+<HexCard title="publicatiedatum is the hinge between pull and publish">
+  Setting <code>publicatiedatum</code> to <code>now</code> in the mapping is what makes an imported record public the moment it arrives. It is the same field the catalog's publish rule checks in Overlay 3 — so the two stages meet on this one value. Want a review step before data goes live? Leave <code>publicatiedatum</code> empty in the mapping and set it by hand (or with a flow) once a record is approved.
+</HexCard>
 
-The synchronisation ties source, mapping, and target together. It needs:
+**Apply the overlay:** open the DCAT register in OpenRegister and the imported `Dataset` objects are there, already carrying a `publicatiedatum` of now.
 
-- **Source**: the Pet Store source from Step 1.
-- **Source endpoint**: `/pet/findByStatus?status=available`, the path appended to the source location.
-- **Results position**: where the list of records sits in the response. The Pet Store returns a bare array, addressed as `_root`.
-- **Id position**: `id`, the field that uniquely identifies a record. OpenConnector uses it to avoid duplicates on the next run.
-- **Mapping**: the `Pet to dataset` mapping from Step 2.
-- **Target**: your DCAT register and its `Dataset` schema.
+## Overlay 3: publish — scope the catalog and expose a DCAT-AP-NL feed
 
-<Tabs groupId="woo-how">
-<TabItem value="ui" label="UI">
+The deep [OpenCatalogi tutorial](/academy/publish-catalog-with-opencatalogi) explains the publish model in full: a catalog is a filter (a registers + schemas scope), and visibility is an OpenRegister RBAC rule that grants the `public` group read **only when `publicatiedatum` is at or before now**. There is no "publish" button. The Woo overlay is simply that the catalog scopes to your **DCAT register** and the public reads it as **DCAT-AP-NL**.
 
-Open **OpenConnector → Synchronisations → Add synchronisation**. Name it, set `sourceType` to `api` and `targetType` to `register/schema`, and click **Create**.
+Follow [Part 3 of the Woo series](/academy/woo-publish-and-harvest-catalog) to scope the `publications` catalog to the DCAT register and `Dataset` schema. Then read it as an anonymous visitor — the future-dated and undated datasets stay hidden, exactly as the deep tutorial proves from a logged-out browser:
 
-![The Create Synchronization form in OpenConnector](./03-oc-synchronisation-create.png)
-
-Open the synchronisation and fill the fields above from the dropdowns.
-
-</TabItem>
-<TabItem value="api" label="API">
-
-Replace `<REGISTER>/<SCHEMA>` with your DCAT register and Dataset schema:
-
-```bash
-curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/synchronizations" \
-  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
-  -d '{ "name": "Pet store to datasets", "sourceId": "<SOURCE_ID>", "sourceType": "api",
-        "sourceTargetMapping": "<MAPPING_ID>",
-        "sourceConfig": { "endpoint": "/pet/findByStatus?status=available", "idPosition": "id", "resultsPosition": "_root" },
-        "targetType": "register/schema", "targetId": "<REGISTER>/<SCHEMA>" }'
+```
+https://your-host/index.php/apps/opencatalogi/api/publications
 ```
 
-</TabItem>
-<TabItem value="php" label="PHP">
+### The DCAT-AP-NL feed
 
-```php
-$sync = $objects->saveObject(
-    object: [
-        'name'                => 'Pet store to datasets',
-        'sourceId'            => $source->getUuid(),
-        'sourceType'          => 'api',
-        'sourceTargetMapping' => $mapping->getUuid(),
-        'sourceConfig'        => [
-            'endpoint'        => '/pet/findByStatus?status=available',
-            'idPosition'      => 'id',
-            'resultsPosition' => '_root',
-        ],
-        'targetType'          => 'register/schema',
-        'targetId'            => '<REGISTER>/<SCHEMA>',
-    ],
-    register: 'openconnector',
-    schema:   'synchronization',
-);
+This is the genuinely open-government payoff. [DCAT-AP-NL](https://data.overheid.nl/dcat-ap-nl) is the Dutch profile of the W3C DCAT vocabulary, and it is what `data.overheid.nl` and `data.europa.eu` harvest. OpenCatalogi renders your published datasets as DCAT-AP-NL — each `Dataset` as a `dcat:Dataset`, each attached file (from [Part 2](/academy/woo-upload-files)) as a `dcat:Distribution` — from the same objects, with no extra storage and no new schema. Open the feed anonymously:
+
+```
+https://your-host/index.php/apps/opencatalogi/api/dcat
 ```
 
-</TabItem>
-</Tabs>
+You get a JSON-LD document carrying the `data.overheid.nl/dcat-ap-nl/3.0` profile. Each published dataset becomes a `dcat:Dataset` and each file a `dcat:Distribution`:
 
-## Step 4: Run it
-
-<Tabs groupId="woo-how">
-<TabItem value="ui" label="UI">
-
-Run the synchronisation from its detail view with the **Run** action. The result is a log: how many records it read, created, updated, and skipped.
-
-</TabItem>
-<TabItem value="api" label="API">
-
-```bash
-curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/synchronizations/<SYNC_ID>/run" \
-  -H "OCS-APIRequest: true"
+```json
+{
+  "@context": {
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "profile": "https://data.overheid.nl/dcat-ap-nl/3.0"
+  },
+  "@graph": [
+    {
+      "@id": "https://your-host/index.php/apps/opencatalogi/api/dcat",
+      "@type": "dcat:Catalog",
+      "dct:title": "OpenCatalogi",
+      "dcat:dataset": [{ "@id": "https://your-host/.../objects/427/1428/5bbd2b06" }]
+    },
+    {
+      "@id": "https://your-host/.../objects/427/1428/5bbd2b06",
+      "@type": "dcat:Dataset",
+      "dct:title": "Energielabels per adres 2026",
+      "dct:description": "Voorlopige energielabels gekoppeld aan BAG-adressen.",
+      "dcat:keyword": ["energie", "bag", "wonen"],
+      "dcat:theme": { "@id": "http://publications.europa.eu/resource/authority/data-theme/ECON" },
+      "dct:license": "CC0-1.0",
+      "dct:modified": "2026-03-01",
+      "dct:identifier": "5bbd2b06-565f-4d65-9dfe-3b79398acf15",
+      "dcat:landingPage": { "@id": "https://your-host/.../objects/427/1428/5bbd2b06" },
+      "dcat:distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "dct:title": "energielabels-2026.csv",
+          "dcat:downloadURL": { "@id": "https://your-host/.../files/energielabels-2026.csv" },
+          "dcat:mediaType": "text/csv",
+          "dct:format": { "@id": "http://publications.europa.eu/resource/authority/file-type/CSV" }
+        }
+      ]
+    }
+  ]
+}
 ```
 
-The run returns a log like `{ "result": { "objects": { "found": 8, "created": 8 } } }`.
+To publish a single catalog as its own harvestable feed, enable **DCAT** on the catalog and read its per-catalog endpoint at `/api/catalogs/publications/dcat`. The per-catalog feed lists your published datasets as `dcat:Dataset` nodes and honours the same `publicatiedatum` visibility rule.
 
-</TabItem>
-<TabItem value="php" label="PHP">
-
-```php
-use OCA\OpenConnector\Service\SynchronizationService;
-
-$syncService = \OCP\Server::get(SynchronizationService::class);
-$log = $syncService->synchronize($sync);
-// $log['result']['objects'] === ['found' => 8, 'created' => 8]
-```
-
-</TabItem>
-</Tabs>
-
-Open your DCAT register in OpenRegister and you see the new datasets. Because the mapping set `publicatiedatum` to now, they are already public. Read them anonymously through the catalog from Part 3 (`/api/publications`). The external records are now datasets, searchable and harvestable.
-
-## Step 5: Schedule it
-
-A synchronisation that runs once is an import. To keep the register current, schedule it. In the synchronisation detail view, set a schedule. OpenConnector registers a background **job** — its `JobTask` cron runs the same `synchronize()` on the interval you pick. Scheduling is its own object, so unlike the steps above it has no one-line API/PHP equivalent; create it from the UI.
-
-On the next run, OpenConnector compares each record's id against what it already wrote. New records are created, changed records are updated, and unchanged records are skipped. The register tracks the source without duplicates.
-
-:::warning
-Match the interval to how often the source changes. A daily open-data export does not need an hourly sync. Frequent runs against a slow API waste both sides.
+:::note
+The per-catalog `/dcat` endpoint and the dataset nodes are gated behind a DCAT-harvesting flag on the catalog; the deep [OpenCatalogi tutorial](/academy/publish-catalog-with-opencatalogi#step-4-expose-the-catalog-as-a-dcat-ap-nl-feed) covers this in detail. The public `/api/publications` API needs no flag and is the endpoint to verify against first.
 :::
+
+**Apply the overlay:** a national portal points at your `/api/dcat` (or per-catalog) feed on a schedule and lists your published datasets alongside everyone else's open data. The chain is complete: an external source feeds the register, and the register feeds the open-data web.
 
 ## Test yourself
 
-<Details summary="The synchronisation runs but creates zero objects. Where do you look first?">
+<Details summary="The synchronisation runs but creates zero datasets. Where do you look first?">
 
-The results position. If it does not point at the list of records in the response, OpenConnector finds nothing to process. Open the source endpoint in a browser and check where the array sits.
+The results position. If it does not point at the list of records in the source response, OpenConnector finds nothing to process. Open the source endpoint in a browser and check where the array sits — a bare top-level array is `_root`. The deep OpenConnector tutorial has the full troubleshooting list.
 </Details>
 
-<Details summary="You run the same synchronisation twice. Why are no duplicates created?">
+<Details summary="Datasets import but never show in public search. What did the mapping miss?">
 
-The id position. OpenConnector reads the record's id and matches it against what it already wrote. The second run updates or skips, it does not create again.
+`publicatiedatum`. The catalog's publish rule only shows the `public` group a dataset whose date is now or earlier. Set `publicatiedatum` to now in the mapping (Overlay 2) so records are public on arrival, or set it by hand after a review step.
 </Details>
 
-<Details summary="Records arrive but never show in public search. What did the mapping miss?">
+<Details summary="What does a national portal like data.overheid.nl read — the search API or the DCAT feed?">
 
-`publicatiedatum`. Without a date that is now or earlier, the publish rule from Part 3 hides the dataset from anonymous visitors. Set it in the mapping.
+The DCAT feed. `/api/dcat` and the per-catalog `/dcat` endpoint render your datasets as DCAT-AP-NL, the format harvesters expect. The `/api/publications` search API is for people and applications.
+</Details>
+
+<Details summary="Why import the Woo and DCAT registers instead of building schemas by hand?">
+
+DCAT-AP-NL is a standard. Importing the canonical configuration gives your `Dataset` schema the exact fields a harvester expects and keeps it aligned as the standard evolves. The import mechanism is the same export/import the OpenRegister tutorial teaches.
 </Details>
 
 ## Where to go from here
 
-You have a full chain: an external API feeds your register, a catalog publishes it, and a DCAT-AP-NL feed makes it harvestable. New records flow in on a schedule.
-
-From here you can add a second source, write a richer mapping with conditions, or attach files to each dataset as Part 2 showed. The [OpenConnector documentation](https://openconnector.app) covers sources with authentication, rules, and error handling in depth.
+You have the whole chain: an external API feeds your register, a catalog publishes it, and a DCAT-AP-NL feed makes it harvestable — new records flowing in on a schedule and out to the open-data web. From here, deepen any link in the chain, or rebuild it for your own domain.
 
 <NextSteps>
-  <NextStep title="Part 3: Publish and harvest a catalog with DCAT-AP" href="/academy/woo-publish-and-harvest-catalog" summary="The catalog, publish rule, and DCAT feed that this data flows into." />
-  <NextStep title="Part 2: Upload files to a Woo publication" href="/academy/woo-upload-files" summary="Attach documents to the datasets your synchronisation creates." />
+  <NextStep title="Deep dive: OpenRegister" href="/academy/model-data-with-openregister" summary="Registers, schemas, relations, objects, search, versioning and permissions, end to end." />
+  <NextStep title="Deep dive: OpenConnector" href="/academy/pull-data-with-openconnector" summary="Sources, Twig mappings, synchronisations and scheduling, with id-based deduplication." />
+  <NextStep title="Deep dive: OpenCatalogi" href="/academy/publish-catalog-with-opencatalogi" summary="Catalog scope, the RBAC publish rule, anonymous verification and the DCAT-AP-NL feed." />
+  <NextStep title="Part 3: Publish and harvest a catalog with DCAT-AP" href="/academy/woo-publish-and-harvest-catalog" summary="The catalog, publish rule, and DCAT feed in the Woo domain." />
 </NextSteps>
 
 <ContactCta />
