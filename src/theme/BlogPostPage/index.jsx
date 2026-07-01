@@ -34,7 +34,18 @@ import {
   Section,
   AppCrossLinks,
 } from '@conduction/docusaurus-preset/components';
+import WebinarHero from '@site/src/components/WebinarHero/WebinarHero';
 import styles from './styles.module.css';
+
+/**
+ * Extract a YouTube video id from a watch / youtu.be / embed URL.
+ * Returns null when the URL is missing or not a recognised YouTube link.
+ */
+function youTubeId(url) {
+  if (!url || typeof url !== 'string') return null;
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]{6,})/);
+  return m ? m[1] : null;
+}
 
 function defaultIconFor(contentType) {
   const stroke = {strokeWidth: 1.6, fill: 'none', stroke: 'currentColor'};
@@ -148,12 +159,24 @@ function BlogPostPageContent({children}) {
     },
   };
 
+  const webinarVideoId = frontMatter.contentType === 'webinar'
+    ? youTubeId(frontMatter.videoUrl)
+    : null;
+
   const related = [postMetaToCardProps(prevItem), postMetaToCardProps(nextItem)]
     .filter(Boolean);
 
   return (
     <Section spacing="default">
-      <ContentDetailHero {...heroProps} />
+      {webinarVideoId
+        ? (
+          <WebinarHero
+            {...heroProps}
+            videoEmbedUrl={`https://www.youtube.com/embed/${webinarVideoId}`}
+            videoTitle={heroProps.title}
+          />
+        )
+        : <ContentDetailHero {...heroProps} />}
 
       <div className={`content-detail-body ${styles.body}`}>
         {children}
