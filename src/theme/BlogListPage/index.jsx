@@ -412,11 +412,14 @@ function AcademyLandingInner({items}) {
   };
 
   /* Featured slot picks the most-recent non-module post from the
-     composed list. When the user is in module-focus or series-focus
-     mode we don't surface a Featured tile — the parts list is the
-     focus, and consuming the first item into a featured slot would
-     "hide" one part from the grid. */
-  const featured = !active.module && !active.series && composedItems.length > 0 && !composedItems[0].__module
+     composed list — but only on the fully-unfiltered "Everything" view.
+     Once any filter (type/app/series/module) is active, consuming the
+     first item into a featured tile "hides" one card from the grid and
+     makes the visible count disagree with the filter chip's count
+     (e.g. "Webinars 4" but only 3 cards). In a filtered view every
+     match belongs in the grid. */
+  const anyFilterActive = active.type || active.app || active.series || active.module;
+  const featured = !anyFilterActive && composedItems.length > 0 && !composedItems[0].__module
     ? composedItems[0]
     : null;
   /* In series-focus mode, sort parts by partNumber ascending so the
