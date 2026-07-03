@@ -443,3 +443,19 @@ blockquote {
   white-space: nowrap;
   border: 0;
 }
+
+/* ---------------------------------------------------------------------------
+   Filled brand glyphs must never be stroked.
+   The canonical app logos (AppGlyph from @conduction/docusaurus-preset) are
+   FILLED marks: <svg fill="currentColor"> with filled paths. Several preset
+   icon containers were built for the old stroke placeholders and force
+   `stroke: currentColor; stroke-width: 2` on the svg, which paints a 2px
+   outline over the fill and muddies the mark on /apps, the app detail heroes,
+   AppCrossLinks and /connext. Line icons never set fill="currentColor" on the
+   svg (they rely on the container's fill:none), so this targets only the
+   filled marks. Bridge until the site runs preset >= 3.27.1, which ships the
+   same fix inline on the component.
+   --------------------------------------------------------------------------- */
+svg[fill='currentColor'] {
+  stroke: none !important;
+}
