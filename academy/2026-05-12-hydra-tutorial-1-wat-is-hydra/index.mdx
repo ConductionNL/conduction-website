@@ -1,5 +1,5 @@
 ---
-slug: hydra-tutorial-1-wat-is-hydra
+slug: hydra-tutorial-1-what-is-hydra
 title: "Hydra tutorial series — Part 1: What is Hydra?"
 contentType: tutorial
 authors: [conduction]
@@ -16,11 +16,11 @@ import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep,
 import Details from '@theme/Details';
 
 :::tip Recommended first — the OpenSpec tutorial series
-Hydra runs on OpenSpec changes. If you're not yet familiar with terms like **spec**, **change**, **requirement** and **scenario**, take the [OpenSpec tutorial series](/academy/openspec-tutorial-1-wat-is-openspec) first (parts 1 and 2, roughly 30 minutes together). It will save you a lot of backtracking in the rest of these modules.
+Hydra runs on OpenSpec changes. If you're not yet familiar with terms like **spec**, **change**, **requirement** and **scenario**, take the [OpenSpec tutorial series](/academy/openspec-tutorial-1-what-is-openspec) first (parts 1 and 2, roughly 30 minutes together). It will save you a lot of backtracking in the rest of these modules.
 :::
 
 :::tip Also useful first — the Claude Skills tutorial series
-A large part of Hydra's internals leans on **Claude Skills**: `opsx-*`, `hydra-gate-*`, `team-*`, `test-*`. If you've never written or read a skill, take [part 1 of the Claude Skills tutorial series](/academy/claude-skills-tutorial-1-wat-zijn-claude-skills) first (10 minutes). That makes part 4 of this series — where we open up the skill families inside Hydra — a lot easier to follow.
+A large part of Hydra's internals leans on **Claude Skills**: `opsx-*`, `hydra-gate-*`, `team-*`, `test-*`. If you've never written or read a skill, take [part 1 of the Claude Skills tutorial series](/academy/claude-skills-tutorial-1-what-are-claude-skills) first (10 minutes). That makes part 4 of this series — where we open up the skill families inside Hydra — a lot easier to follow.
 :::
 
 Hydra is Conduction's internal **agentic CI/CD platform**: a factory that turns OpenSpec proposals into reviewed, tested code on a feature branch. This module explains in ten minutes *what* Hydra is, *why* it exists, and how it fits inside our app factory. It is the first part of a six-part series; by the end you're ready for part 2 on the three pipelines.
@@ -40,6 +40,24 @@ Hydra is Conduction's internal **agentic CI/CD platform**: a factory that turns 
   <PrerequisiteItem>Only needed if you want to run Hydra yourself (rather than just read the series): access to the private <a href="https://codeberg.org/Conduction/hydra">Conduction/hydra</a> repo. Ask your team lead.</PrerequisiteItem>
 </Prerequisites>
 
+> **Want to follow along in your editor?** Once you have repo access, clone Hydra now so you can open files referenced in the series as we go:
+>
+> ```bash
+> git clone git@codeberg.org:Conduction/hydra.git
+> cd hydra
+> ```
+>
+> Reading-only is totally fine too — the clone only becomes a hard requirement in [Part 5](/academy/hydra-tutorial-5-starting-a-run), where you actually trigger a run.
+
+## The two repos: Hydra vs `.github`
+
+Before we dive in, a quick orientation that will make every later module easier to read. Two Conduction repos come up constantly across the series, and they have **separate jobs**:
+
+- **[`Conduction/hydra`](https://codeberg.org/Conduction/hydra)** *(private)* — the **factory**. Container images, agent personas (Al Gorithm, Juan Claude, Clyde, Axel), orchestration scripts, the `.claude/skills/` catalogue (`hydra-gate-*`, `opsx-*`, `test-*`), OpenSpec changes. Everything that *runs*. Clone it only if you want to run Hydra locally or modify a skill.
+- **[`Conduction/.github`](https://codeberg.org/Conduction/.github)** *(public)* — the **manual**. Developer guides, way-of-work, ISO compliance, the public Hydra one-pager you're (optionally) reading as warm-up, and shared tooling like the global Claude settings. Everything you *read or install once*.
+
+**Hydra is the factory, `.github` is the manual.** Two repos, two purposes, no overlap. The full breakdown lives in [`.github/docs/hydra/README.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/hydra/README.md#hydra-repo-vs-github-repo).
+
 ## In one sentence
 
 Hydra is a **stateless, label-driven pipeline** that turns OpenSpec proposals into feature branches with code, tests, a review history and a PR — ready for human approval.
@@ -47,6 +65,10 @@ Hydra is a **stateless, label-driven pipeline** that turns OpenSpec proposals in
 Not an "AI assistant that helps the developer", but a **factory**. You throw an OpenSpec change in one end and out the other end rolls a PR that two independent reviewers have looked at.
 
 Concretely: Hydra works on the `openspec/changes/<slug>/` folder — `proposal.md`, `design.md`, `tasks.md` and the spec delta. If those terms are new, take the OpenSpec series first (see tip at the top).
+
+<HexCard title="The contract: how a change enters Hydra">
+  You prepare an OpenSpec change (by hand or with <code>/opsx-ff</code>), then label its tracking issue <strong><code>ready-to-build</code></strong> (or <code>&lt;prefix&gt;-ready-to-build</code> when a label prefix is set). That single label is the entire trigger. The builder then reads <code>design.md</code> (what and why), everything under <code>specs/</code> (acceptance criteria), and <code>tasks.md</code> (the concrete checklist), and implements every unchecked <code>[ ]</code> item. Nothing else starts a build — the label is the contract between OpenSpec and Hydra.
+</HexCard>
 
 ## Why does Hydra exist?
 
@@ -60,7 +82,7 @@ Conduction builds a lot of open-source apps for the Nextcloud workplace. The rhy
 
 Internally, Hydra is built from four ephemeral container personas. Each plays one role, in one container, with scoped credentials and tight turn budgets. You don't have to memorise their names now — they come back in part 2 — but it helps to spot the role pattern early:
 
-<HexCard title="Al Gorithm (builder, Haiku)">
+<HexCard title="Al Gorithm (builder, Sonnet)">
   Builds the code from the change. Never sees reviews. Stops after a fixed turn budget.
 </HexCard>
 
@@ -76,7 +98,9 @@ Internally, Hydra is built from four ephemeral container personas. Each plays on
   Decides binarily: does this pass or not? Reads both reviews and the final code. No fix tools.
 </HexCard>
 
-Important: **Al Gorithm runs on Haiku, the other three on Sonnet** (with Opus as fallback). Reason: building follows patterns and is cheap on Haiku; judgement needs more depth. On Claude Max you have separate Sonnet-only and all-models quotas, so this split stretches the budget.
+Important: **all four personas default to Sonnet**, but with different fallbacks. The builder falls back to **Haiku** (cheaper, for budget pressure); the three judgement roles fall back to **Opus** (deeper, when Sonnet quota is exhausted). The models are configurable per role via `HYDRA_BUILDER_MODEL` / `HYDRA_REVIEWER_MODEL` env vars.
+
+> **History note:** an earlier design ran the builder on **Haiku** by default — building looked like cheap pattern-following. In practice Haiku was caught *skipping quality gates* despite explicit instructions, so the builder's default was raised to Sonnet, with Haiku kept only as a fallback. If you read older docs that say "builder = Haiku", this is why they're out of date.
 
 ## When to use, when not
 
@@ -167,10 +191,10 @@ One persona is deliberately read-only — its role is a binary gate ("does this 
 
 The four personas:
 
-- **Al Gorithm** — builder (Haiku). Writes code.
-- **Juan Claude van Damme** — code reviewer (Sonnet). May push bounded fixes.
-- **Clyde Barcode** — security reviewer (Sonnet). May also push bounded fixes.
-- **Axel Pliér** — applier (Sonnet, **no write access**). Reads the final diff + both reviews and gives one binary answer: `pass: true` or `pass: false`. He judges, he doesn't intervene.
+- **Al Gorithm** — builder (Sonnet, Haiku fallback). Writes code.
+- **Juan Claude van Damme** — code reviewer (Sonnet, Opus fallback). May push bounded fixes.
+- **Clyde Barcode** — security reviewer (Sonnet, Opus fallback). May also push bounded fixes.
+- **Axel Pliér** — applier (Sonnet, **no write access** — Read + Bash only). Reads the final diff + both reviews and gives one binary answer: `pass: true` or `pass: false`. He judges, he doesn't intervene.
 
 </Details>
 
@@ -202,7 +226,7 @@ A few common ones:
 <NextSteps title="Next step" lede="Now that you know what Hydra is, in part 2 we look inside the three pipelines.">
   <NextStep
     title="Part 2 — The three pipelines"
-    href="/academy/hydra-tutorial-2-drie-pipelines"
+    href="/academy/hydra-tutorial-2-three-pipelines"
     description="Build, code review, security review. Who does what, in what order, and how does an issue end up at needs-input or done."
   />
   <NextStep

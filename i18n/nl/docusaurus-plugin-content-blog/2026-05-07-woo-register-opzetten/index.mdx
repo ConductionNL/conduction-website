@@ -1,5 +1,5 @@
 ---
-slug: woo-register-opzetten
+slug: woo-set-up-register
 title: Een Woo-register opzetten in OpenRegister
 contentType: tutorial
 authors: [conduction]
@@ -24,10 +24,10 @@ De [Wet open overheid (Woo)](https://www.rijksoverheid.nl/onderwerpen/wet-open-o
   <Outcome>Een werkend startpunt opzetten om publicaties aan te maken en bestanden te koppelen.</Outcome>
 </Outcomes>
 
-De <a href="/nl/academy/woo-bestanden-uploaden">vervolgtutorial over bestanden uploaden</a> bouwt hierop voort.
+De <a href="/nl/academy/woo-upload-files">vervolgtutorial over bestanden uploaden</a> bouwt hierop voort.
 
 <Prerequisites title="Wat je nodig hebt">
-  <PrerequisiteItem>Een draaiende Nextcloud met OpenRegister geïnstalleerd. Heb je dat nog niet, volg dan eerst <a href="/nl/academy/nextcloud-lokaal-draaien">Nextcloud lokaal draaien met Docker</a>.</PrerequisiteItem>
+  <PrerequisiteItem>Een draaiende Nextcloud met OpenRegister geïnstalleerd. Heb je dat nog niet, volg dan eerst <a href="/nl/academy/run-nextcloud-locally">Nextcloud lokaal draaien met Docker</a>.</PrerequisiteItem>
   <PrerequisiteItem>Een gebruiker met admin-rechten, of een gebruiker die registers mag aanmaken.</PrerequisiteItem>
   <PrerequisiteItem><code>curl</code> of een vergelijkbare HTTP-client.</PrerequisiteItem>
 </Prerequisites>
@@ -36,10 +36,10 @@ In de voorbeelden gebruiken we de lokale dev-omgeving op `http://localhost:8080`
 
 ## De canonieke bron
 
-Het Woo-register bestaat al, gepubliceerd door Conduction op GitHub:
+Het Woo-register bestaat al, gepubliceerd door Conduction op [conduction.nl/oas](https://conduction.nl/oas/):
 
 ```
-https://codeberg.org/Conduction/woo-website/raw/branch/main/website/static/oas/woo_register.json
+https://conduction.nl/oas/woo_register.json
 ```
 
 Het is een OpenAPI-bundel van 1.0.1, met één register (`woo`) en tien schemas. Elk schema bevat de [TOOI-metadata](https://standaarden.overheid.nl/diwoo/metadata/doc/0.9.1/diwoo-metadata-lijsten_xsd_Simple_Type_diwoo_scw_woo_informatiecategorieen) van één Woo-informatiecategorie:
@@ -70,7 +70,7 @@ curl -u admin:admin \
   -H "OCS-APIRequest: true" \
   -H "Content-Type: application/json" \
   -d '{
-    "url": "https://codeberg.org/Conduction/woo-website/raw/branch/main/website/static/oas/woo_register.json"
+    "url": "https://conduction.nl/oas/woo_register.json"
   }'
 ```
 
@@ -206,7 +206,7 @@ Je hebt:
 - Eén testpublicatie met UUID
 - Een patroon om eigen velden toe te voegen waar nodig
 
-In de [vervolgtutorial koppel je bestanden aan deze publicatie](/nl/academy/woo-bestanden-uploaden), van enkele PDF's tot grote videobestanden in chunks.
+In de [vervolgtutorial koppel je bestanden aan deze publicatie](/nl/academy/woo-upload-files), van enkele PDF's tot grote videobestanden in chunks.
 
 ## Opruimen
 

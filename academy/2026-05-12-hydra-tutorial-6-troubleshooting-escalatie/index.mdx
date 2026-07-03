@@ -1,5 +1,5 @@
 ---
-slug: hydra-tutorial-6-troubleshooting-escalatie
+slug: hydra-tutorial-6-troubleshooting-escalation
 title: "Hydra tutorial series — Part 6: Troubleshooting & escalation"
 contentType: tutorial
 authors: [conduction]
@@ -159,6 +159,55 @@ gh api repos/ConductionNL/<app>/contents/openspec/changes/<slug>/pipeline-logs?r
 
 `hydra.json` is your most important source. The `outcome_reason` and `pattern_tags` of the last cycle usually explain in a single line what went wrong.
 
+### Reading hydra.json (schema v2)
+
+The file is written stage-by-stage by `scripts/lib/hydra_record.py` ("record-or-die" — a stage that doesn't persist its record fails the pipeline). The shape you'll be reading is:
+
+```jsonc
+{
+  "schema_version": 2,
+  "spec_slug": "p2-meeting-management",
+  "app": "decidesk",
+  "repo": "https://codeberg.org/Conduction/decidesk",
+  "issue": 15,
+  "depends_on": ["p1-schemas-and-data-model"],
+  "cycles": [
+    {
+      "cycle": 1,
+      "trigger": "build:queued",
+      "outcome": "needs-input",                       // ← the headline
+      "outcome_reason": "phpcs failures persisted after reviewer fixes",
+      "pattern_tags": ["reviewer-skipped-full-suite", // ← recurring-pattern labels
+                       "phpcs-missing-phpdoc-tags"],
+      "stages": [
+        {
+          "stage": "build",                           // build | code-review | security-review | applier
+          "persona": "Al Gorithm",
+          "model": "sonnet",
+          "turns_used": 37, "turns_budget": 40,       // == budget → turn-budget-exhausted
+          "findings": [
+            {
+              "id": "b1", "severity": "CRITICAL",
+              "gate": "spdx-headers",
+              "file": "lib/Service/MeetingService.php", "line": 1,
+              "status": "fixed_in_stage"              // fixed_in_stage | open | fixed_later | wontfix
+            }
+          ],
+          "verdict": "pass"                            // pass | fail | none
+        }
+      ]
+    }
+  ],
+  "totals": { "cycles": 5, "turns_used": 2417, "cost_usd": 1.82 }
+}
+```
+
+Read it top-down: the **last** `cycles[]` entry's `outcome` + `outcome_reason` tell you *what* stopped the pipeline; its `pattern_tags` tell you *whether it's a known recurring shape* (worth a retrospective, not just a retry); and the `stages[].findings[].status` fields tell you which findings were `open` (still broken) versus `fixed_in_stage` (already handled). A finding that's `open` on the last cycle is what a `retry:queued` will hand the builder via `feedback.md`.
+
+<HexCard title="Pattern tags worth recognising">
+  A few common <code>pattern_tags</code> and what they mean: <code>turn-budget-exhausted</code> (a stage hit <code>turns_used == turns_budget</code> — the work was too big for the budget), <code>recheck-caught-new-findings</code> (a reviewer's own fix broke a gate on the post-fix recheck), <code>reviewer-skipped-full-suite</code> (a reviewer ran only a subset of the required gates), <code>label-state-contradiction</code> (both <code>:pass</code> and <code>:fail</code> present), <code>container-crashed-mid-stage</code> (a stage died before persisting). The first three are the ones you'll see most.
+</HexCard>
+
 ## When is "human takes over" simply the right call?
 
 Not every `needs-input` issue deserves an automated fix path. Sometimes the most pragmatic action is: **human takes over, fixes it in a commit on the feature branch, pushes, marks resolved**.
@@ -265,20 +314,25 @@ This says something about the pipeline itself, not about one issue. What kind of
 
 </div>
 
-<NextSteps title="Done — what now?" lede="You've worked through the whole tutorial series. What's sensible next?">
+<NextSteps title="Done — what now?" lede="You've worked through troubleshooting. One module left, plus the wider context:">
+  <NextStep
+    title="Part 7 — CI and deployment"
+    href="/academy/hydra-tutorial-7-ci-and-deployment"
+    description="How Hydra runs unattended: Codeberg/Forgejo Actions triggers, the image registry, credentials, and the three deployment models."
+  />
   <NextStep
     title="Previous step — Starting a Hydra run"
-    href="/academy/hydra-tutorial-5-een-hydra-run-starten"
+    href="/academy/hydra-tutorial-5-starting-a-run"
     description="For the practical config and HYDRA_LABEL_PREFIX explanation."
   />
   <NextStep
     title="OpenSpec tutorial series"
-    href="/academy/openspec-tutorial-1-wat-is-openspec"
+    href="/academy/openspec-tutorial-1-what-is-openspec"
     description="The spec-first foundation Hydra runs on. Useful if you're not yet fluent with proposal, change and spec delta — terms that come back in every retrospective."
   />
   <NextStep
     title="Claude Skills tutorial series"
-    href="/academy/claude-skills-tutorial-1-wat-zijn-claude-skills"
+    href="/academy/claude-skills-tutorial-1-what-are-claude-skills"
     description="Want to add your own skill to the Hydra loop (a new quality gate, a team skill for your own app)? Here you'll learn how."
   />
   <NextStep

@@ -5,7 +5,7 @@ hide_table_of_contents: true
 ---
 
 import {Hero, StatsStrip, AppsPreview, CtaBanner, PairRow, PairCard, Section, SectionHead, Clients, DEFAULT_CLIENTS, PartnerDirectory, CommonGroundPlus, HexRain} from '@conduction/docusaurus-preset/components';
-import {totalDownloads, formatDownloads} from '@conduction/docusaurus-preset/data';
+import {formatDownloads} from '@conduction/docusaurus-preset/data';
 import {usePartners, useBecomePartner, totalPartners} from '@site/src/data/partners-catalog';
 
 export function HomePartnerDirectory() {
@@ -18,7 +18,7 @@ export function HomePartnerDirectory() {
     />
   );
 }
-import {APP_COUNT} from '@site/src/data/apps-catalog';
+import {APP_COUNT, TOTAL_DOWNLOADS} from '@site/src/data/apps-catalog';
 
 {/* Conduction main landing. Public Tech framing: tech to serve people.
     Three doors out: install an app yourself, get it as managed SaaS, or
@@ -43,7 +43,7 @@ import {APP_COUNT} from '@site/src/data/apps-catalog';
   { value: '2 min', label: <>from app store install<br/>to working solution</> },
   { value: '€0', label: <>for the apps,<br/>support is optional</> },
   { value: totalPartners, label: <>certified and partner<br/>implementers</> },
-  { value: formatDownloads(totalDownloads), label: <>downloads,<br/>and counting</> },
+  { value: formatDownloads(TOTAL_DOWNLOADS), label: <>downloads,<br/>and counting</> },
 ]} />
 
 <AppsPreview

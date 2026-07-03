@@ -1,0 +1,403 @@
+---
+slug: publish-to-nextcloud-app-store
+title: Een Nextcloud-app publiceren in de App Store
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-11
+summary: Van nul naar gepubliceerde app in de Nextcloud App Store. CSR aanvragen, signen, registreren, releasen, en de hele release-pijplijn automatiseren via GitHub Actions.
+tags: [Nextcloud, App Store, Publishing, OpenSSL, GitHub Actions, Code signing]
+durationMinutes: 60
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, ContactCta} from '@conduction/docusaurus-preset/components';
+
+Een Nextcloud-app in de [App Store](https://apps.nextcloud.com) zetten is geen knop, maar een keten. Je hebt een certificaat nodig om je code te signen, dat certificaat krijg je via een pull request op een Nextcloud-repo, en pas met dat certificaat mag je je app registreren en releases uploaden. De officiële documentatie beschrijft elke stap, maar verspreid over vier pagina's. Deze tutorial loopt het in één keer door, van licentiekeuze tot een GitHub Action die elke release automatisch publiceert.
+
+{/* truncate */}
+
+<Outcomes title="Wat je leert">
+  <Outcome>Een CSR (certificate signing request) genereren met OpenSSL en indienen via PR op <code>nextcloud/app-certificate-requests</code>.</Outcome>
+  <Outcome>Je app signen met <code>occ integrity:sign-app</code> zodat de Nextcloud-integriteitscheck hem accepteert.</Outcome>
+  <Outcome>De app registreren op <code>apps.nextcloud.com</code> en de eerste release uploaden.</Outcome>
+  <Outcome>Releases automatiseren via GitHub Actions, zodat een <code>git tag</code> de App Store update.</Outcome>
+  <Outcome>Een procedure voor het scenario waarin je je private key kwijtraakt.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Een werkende Nextcloud-app op je laptop. Geen app? Begin bij <a href="/academy/deskdesk-tutorial-1-scaffold">Build a Nextcloud app on the Conduction stack — Part 1: Scaffold</a>.</PrerequisiteItem>
+  <PrerequisiteItem>Een lokale Nextcloud waarop je de app kunt installeren en signen. Zie <a href="/academy/run-nextcloud-locally">Nextcloud lokaal draaien met Docker</a>.</PrerequisiteItem>
+  <PrerequisiteItem>OpenSSL (standaard op macOS en Linux, op Windows via Git Bash of WSL).</PrerequisiteItem>
+  <PrerequisiteItem>Een GitHub-account met <code>gh</code> CLI geconfigureerd.</PrerequisiteItem>
+  <PrerequisiteItem>Toegang tot de <code>occ</code>-CLI van je lokale Nextcloud (binnen Docker via <code>docker compose exec --user www-data nextcloud php occ ...</code>).</PrerequisiteItem>
+</Prerequisites>
+
+In de voorbeelden noemen we de app `myapp`. Vervang dat overal door je eigen app ID. We slaan certificaten op in `~/.nextcloud/certificates/`, dezelfde plek die de officiële release-automation gebruikt.
+
+## Stap 1: Voorbereiding
+
+Drie dingen op orde brengen voor je iets indient.
+
+### 1a. Licentie
+
+De Nextcloud App Store accepteert alleen apps onder een [OSI-goedgekeurde](https://opensource.org/licenses) open-sourcelicentie. In de praktijk is dat **AGPL-3.0-or-later** voor het overgrote deel van het ecosysteem, inclusief alle Conduction-apps. Leg de licentie vast in twee plaatsen:
+
+- Een `LICENSE`-bestand in de repo-root met de volledige tekst.
+- De `<licence>`-tag in `appinfo/info.xml` (let op de Britse spelling, dat is geen typo).
+
+```xml title="appinfo/info.xml"
+<licence>agpl</licence>
+```
+
+### 1b. App ID-regels
+
+Het `<id>` in `appinfo/info.xml` is je identifier in elk Nextcloud-systeem en in de App Store. Een paar harde regels:
+
+- Lowercase, alleen `a-z`, `0-9` en underscores. Geen streepjes, geen hoofdletters.
+- Moet overeenkomen met de naam van de directory in `custom_apps/` en met de PHP-namespace prefix (`OCA\Myapp`).
+- Eenmaal in de App Store geregistreerd kun je hem niet hernoemen; alleen overdragen aan een andere eigenaar.
+
+Kies dus iets dat je drie jaar later nog logisch vindt. `myapp` is alleen oké voor de tutorial.
+
+### 1c. Code checker
+
+Voor je iets richting App Store stuurt, draai de officiële code checker tegen je app. Die controleert dingen die in CI-time stuk zouden gaan: ongeldige `info.xml`, ontbrekende velden, verboden gebruik van private API's.
+
+```bash
+docker compose exec --user www-data nextcloud php occ app:check-code myapp
+```
+
+Errors fix je voor je verder gaat. Warnings mag je negeren, maar reviewers van de App Store kunnen je erop wijzen — beter nu opruimen.
+
+## Stap 2: Account op apps.nextcloud.com
+
+Ga naar [apps.nextcloud.com](https://apps.nextcloud.com), klik **Sign up**, en gebruik bij voorkeur het GitHub-account waaronder de app-repo staat. Bevestig het e-mailadres dat je opgeeft — alle App Store-meldingen (release goedgekeurd, kritieke review-comments) gaan daarheen.
+
+Twee dingen die je meteen wilt instellen:
+
+- **API-token** voor de release-automation. Te vinden op [apps.nextcloud.com/account/token](https://apps.nextcloud.com/account/token). We hebben hem in stap 8 nodig.
+- **Public profile**, met op zijn minst je naam en organisatie. Dat is wat eindgebruikers zien bij de app.
+
+## Stap 3: CSR genereren met OpenSSL
+
+De CSR (certificate signing request) is een onderdeel van een sleutelpaar dat *jij* genereert en waarvan je het publieke deel naar Nextcloud stuurt. Nextcloud signeert dat tot een certificaat (`.crt`) waarmee je je app mag signen. De private key (`.key`) blijft bij jou — als die uitlekt, kan iemand anders fake releases van jouw app uploaden.
+
+Maak een vaste plek voor certificaten en genereer het paar:
+
+```bash
+mkdir -p ~/.nextcloud/certificates
+cd ~/.nextcloud/certificates
+
+openssl req -nodes -newkey rsa:4096 \
+  -keyout myapp.key \
+  -out myapp.csr \
+  -subj "/CN=myapp"
+```
+
+Drie files horen hier eindelijk te ontstaan, maar nu pas twee:
+
+| File | Wat | Geheim? |
+| --- | --- | --- |
+| `myapp.key` | Private key, RSA 4096 | Ja. Niet committen, niet delen. |
+| `myapp.csr` | Certificate signing request | Nee, dit gaat zo naar Nextcloud. |
+| `myapp.crt` | Signed certificate (komt na stap 4) | Nee, publiek. |
+
+Beveilig de key meteen:
+
+```bash
+chmod 600 ~/.nextcloud/certificates/myapp.key
+```
+
+Maak ook nu al een back-up van `myapp.key` op een aparte, vertrouwde plek (password manager, vault, encrypted USB). Als die file weg is, kun je niet meer signen — zie de [verloren-key-procedure](#verloren-key-scenario) onderaan.
+
+## Stap 4: CSR indienen via PR
+
+Het signen door Nextcloud gebeurt via een merge op de publieke repo [`nextcloud/app-certificate-requests`](https://github.com/nextcloud/app-certificate-requests). De structuur is strikt: per app één map met daarin één `.csr` met exact dezelfde naam.
+
+```
+nextcloud/app-certificate-requests/
+└── myapp/
+    └── myapp.csr
+```
+
+Doe het via de CLI of via de GitHub-webinterface — beide werken. Met `gh`:
+
+```bash
+gh repo fork nextcloud/app-certificate-requests --clone
+cd app-certificate-requests
+git checkout -b add-myapp
+
+mkdir myapp
+cp ~/.nextcloud/certificates/myapp.csr myapp/myapp.csr
+
+git add myapp/myapp.csr
+git commit -m "Add CSR for myapp"
+git push -u origin add-myapp
+
+gh pr create \
+  --title "Add CSR for myapp" \
+  --body "Source: https://github.com/your-org/myapp"
+```
+
+De PR-body hoeft niets bijzonders te bevatten. Een link naar de app-source is geen verplichting, wel een courtesy — het scheelt reviewers een zoekslag.
+
+### Wachten en certificate ophalen
+
+Een Nextcloud-maintainer merged de PR meestal binnen een paar werkdagen. Daarna staat het bestand `myapp/myapp.crt` in dezelfde repo, in dezelfde map als jouw CSR. Trek het op:
+
+```bash
+curl -o ~/.nextcloud/certificates/myapp.crt \
+  https://raw.githubusercontent.com/nextcloud/app-certificate-requests/master/myapp/myapp.crt
+
+chmod 644 ~/.nextcloud/certificates/myapp.crt
+```
+
+Verifieer dat het certificaat bij jouw key hoort — beide MD5-hashes moeten gelijk zijn:
+
+```bash
+openssl rsa -modulus -noout -in ~/.nextcloud/certificates/myapp.key | openssl md5
+openssl x509 -modulus -noout -in ~/.nextcloud/certificates/myapp.crt | openssl md5
+```
+
+Als de hashes verschillen, hoort dit certificaat bij een andere key — niet aan jezelf je app proberen te signen, dat faalt sowieso. Open een issue op de cert-repo.
+
+## Stap 5: App signen met `occ integrity:sign-app`
+
+`occ integrity:sign-app` leest je app-directory, berekent SHA-512 hashes per file, signeert het geheel met je private key, en schrijft het resultaat naar `appinfo/signature.json` in de app. Zonder die file weigert de App Store je upload.
+
+Vanuit de root van je lokale Nextcloud (of via `docker compose exec` als je in Docker draait):
+
+```bash
+docker compose exec --user www-data nextcloud php occ integrity:sign-app \
+  --path=/var/www/html/custom_apps/myapp \
+  --privateKey=/path/in/container/to/myapp.key \
+  --certificate=/path/in/container/to/myapp.crt
+```
+
+Drie flags:
+
+- `--path`: de app-directory **inside** de Nextcloud-installatie (`apps/`, `custom_apps/`, of een aangemounte path).
+- `--privateKey`: pad naar je `.key`-file. Als je in Docker werkt, moet die file inside de container zichtbaar zijn — een bind-mount van `~/.nextcloud/certificates` naar `/certs` in `docker-compose.yml` is de simpelste truc.
+- `--certificate`: pad naar je `.crt`-file, idem.
+
+Na een succesvolle run staat er een `appinfo/signature.json` in je app. Die file moet je **committen** naar de app-repo — hij hoort bij de release.
+
+Voor lokale ontwikkeling kun je apps draaien zonder signature.json (Nextcloud klaagt in de logs maar boot ze wel). Voor publicatie is hij verplicht.
+
+## Stap 6: App registreren op de App Store
+
+Eénmalig per app: meld hem aan op de App Store. Daarvoor heb je twee dingen nodig: het complete certificaat en een **signature van de app-id** met je private key.
+
+Genereer de signature van de app-id:
+
+```bash
+echo -n "myapp" | openssl dgst -sha512 \
+  -sign ~/.nextcloud/certificates/myapp.key \
+  | openssl base64
+```
+
+De output is een lange base64-string, allemaal op één regel — kopieer 'm in z'n geheel.
+
+Ga naar [apps.nextcloud.com/developer/apps/new](https://apps.nextcloud.com/developer/apps/new) en vul in:
+
+| Veld | Waarde |
+| --- | --- |
+| **Certificate** | De volledige inhoud van `myapp.crt`, inclusief de `-----BEGIN CERTIFICATE-----` en `-----END CERTIFICATE-----` regels. |
+| **Signature** | De base64-string die je hierboven genereerde. |
+
+Klik **Register**. De backend verifieert: (a) dat het certificaat door Nextcloud is gesigned, (b) dat de signature klopt met de app-id en de public key uit het certificaat. Vanaf nu ben jij eigenaar van de app-id `myapp` op de App Store.
+
+Een app overdragen aan iemand anders kan via [apps.nextcloud.com/account/transfer-apps](https://apps.nextcloud.com/account/transfer-apps) — je ontgrendelt 'm daar, de nieuwe eigenaar registreert opnieuw met hun eigen certificaat en signature.
+
+## Stap 7: Release uploaden
+
+Een release in de App Store is geen file-upload — het is een URL plus een signature. De App Store haalt je tarball zelf op vanaf een publieke URL (typisch een GitHub Release asset), en valideert de signature tegen jouw certificate.
+
+### 7a. Tarball bouwen
+
+Bouw je app zoals voor productie. Voor de meeste Conduction-apps:
+
+```bash
+cd /path/to/your/myapp
+make appstore
+```
+
+Het `Makefile` uit `nextcloud-app-template` schrijft `build/artifacts/appstore/myapp.tar.gz` met daarin de app-directory, gestripped van dev-files (`node_modules/`, `tests/`, `.git/`, et cetera).
+
+### 7b. Tarball publiceren
+
+Upload de tarball naar een publiek bereikbare HTTPS-URL. GitHub Releases is de standaard:
+
+```bash
+gh release create v1.0.0 \
+  build/artifacts/appstore/myapp.tar.gz \
+  --title "v1.0.0" \
+  --notes "First release."
+```
+
+De URL die je nodig hebt heeft de vorm:
+
+```
+https://github.com/your-org/myapp/releases/download/v1.0.0/myapp.tar.gz
+```
+
+### 7c. Signature van de tarball
+
+```bash
+openssl dgst -sha512 \
+  -sign ~/.nextcloud/certificates/myapp.key \
+  build/artifacts/appstore/myapp.tar.gz \
+  | openssl base64
+```
+
+Weer een base64-string op één regel.
+
+### 7d. Release indienen
+
+Via de webinterface ([apps.nextcloud.com/developer/apps/releases/new](https://apps.nextcloud.com/developer/apps/releases/new)):
+
+| Veld | Waarde |
+| --- | --- |
+| **Download** | De GitHub-release-URL. |
+| **Signature** | De base64-signature uit 7c. |
+| **Nightly** | Aan voor pre-releases, uit voor stable. |
+
+Of via de REST API in één commando:
+
+```bash
+curl -X POST \
+  -u "your-username:your-password" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "download": "https://github.com/your-org/myapp/releases/download/v1.0.0/myapp.tar.gz",
+    "signature": "<base64-string-uit-7c>"
+  }' \
+  https://apps.nextcloud.com/api/v1/apps/releases
+```
+
+De App Store fetcht je tarball, controleert de signature, valideert `info.xml`, en — als alles klopt — publiceert hem. Vanaf dat moment is je app zichtbaar in de **Apps**-pagina van elke Nextcloud-installatie.
+
+## Stap 8: Release-automatisering via GitHub Actions
+
+Stap 7 hoef je niet vaker handmatig te doen dan één keer. Daarna laat je een GitHub Action elke `git tag` automatisch tot een release maken én aan de App Store doorgeven.
+
+### 8a. Repository-secrets instellen
+
+In je app-repo, **Settings → Secrets and variables → Actions** (of via `gh`):
+
+```bash
+gh secret set APP_PRIVATE_KEY < ~/.nextcloud/certificates/myapp.key
+gh secret set APP_PUBLIC_CRT  < ~/.nextcloud/certificates/myapp.crt
+gh secret set APPSTORE_TOKEN  # plak de token uit apps.nextcloud.com/account/token
+```
+
+Voor repo's onder de `nextcloud`-organisatie eist het Nextcloud-beleid dat deze secrets in een GitHub **environment** staan (typisch `release`), met manual approval. Voor je eigen org volstaan repository-secrets, maar overweeg ook daar een environment — één klik manual approval voorkomt accidental publishes.
+
+### 8b. Workflow toevoegen
+
+Plaats het volgende als `.github/workflows/appstore-release.yml`:
+
+```yaml title=".github/workflows/appstore-release.yml"
+name: Publish to App Store
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: release          # verwijder als je geen environment gebruikt
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      - name: Build appstore tarball
+        run: make appstore
+
+      - name: Upload tarball to GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" \
+            build/artifacts/appstore/myapp.tar.gz
+
+      - name: Publish to Nextcloud App Store
+        uses: R0Wi/nextcloud-appstore-push-action@v1
+        with:
+          app_name: myapp
+          appstore_token: ${{ secrets.APPSTORE_TOKEN }}
+          download_url: https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/myapp.tar.gz
+          app_private_key: ${{ secrets.APP_PRIVATE_KEY }}
+          nightly: ${{ github.event.release.prerelease }}
+```
+
+Wat de workflow doet, in volgorde:
+
+1. **Checkout** je code op de tag.
+2. **Build** een appstore-tarball (`make appstore` uit `nextcloud-app-template`).
+3. **Upload** de tarball als asset op de GitHub Release.
+4. **Publish**: `R0Wi/nextcloud-appstore-push-action` regenereert de signature met je private key, doet de POST naar `apps.nextcloud.com`, en wacht op de bevestiging.
+
+### 8c. Eerste run
+
+```bash
+git tag v1.0.1
+git push origin v1.0.1
+gh release create v1.0.1 --notes "Patch release."
+```
+
+Op `release: published` start de workflow. Slaagt hij, dan staat v1.0.1 binnen een minuut in de App Store. Faalt hij, dan zie je in de Actions-log precies wat er stuk ging — meestal een verlopen certificate of een typo in de download-URL.
+
+## Probleemoplossing
+
+**`occ integrity:sign-app` faalt met "Certificate is not valid"** — verificatie van key vs. cert overslaan; draai de twee MD5-commando's uit stap 4. Ongelijke hashes? Dan staan key en cert van verschillende paren bij elkaar; haal opnieuw de juiste `.crt` op.
+
+**App Store-upload faalt met "Signature is invalid"** — drie verdachten: (1) je hebt de signature met een andere key gegenereerd dan in het certificaat staat; (2) de tarball is veranderd nadat je signed had (een nieuwe build, ander hash); (3) je base64-string heeft een line-break gekregen tijdens kopiëren. Gebruik `tr -d '\n'` om dat laatste uit te sluiten.
+
+**App Store-upload faalt met "Download URL must be HTTPS"** — controleer dat je geen `http://` URL hebt opgegeven. GitHub Releases is altijd HTTPS, dus dit gebeurt typisch bij een private S3 met een verkeerde URL.
+
+**`integrity:sign-app` zegt "App not found"** — `--path` moet wijzen naar de app-directory zoals Nextcloud die ziet, niet je host-pad. In Docker is dat doorgaans `/var/www/html/custom_apps/myapp` of `/var/www/html/apps/myapp`.
+
+**App verschijnt niet in App Store na succesvolle upload** — de App Store fetcht je tarball asynchroon en logt fouten op je release-detailpagina. Check [apps.nextcloud.com/developer/apps](https://apps.nextcloud.com/developer/apps) voor je app en kijk bij de specifieke release.
+
+**Code checker klaagt over "Private API"** — Nextcloud-server-classes onder `OC\` zijn private; gebruik alleen `OCP\`-interfaces. Refactor de roep, of als het echt niet anders kan, accepteer dat reviewers er commentaar op kunnen geven.
+
+## Verloren key-scenario
+
+Raak je `myapp.key` kwijt — uit een onversleutelde back-up gewist, harde schijf overleden, en geen kopie elders — dan kun je niet meer signen voor je app-id. De procedure:
+
+1. **Nieuwe key + CSR genereren** (stap 3, identieke commando's).
+2. **Nieuwe PR** op `nextcloud/app-certificate-requests`. In de PR-body **expliciet vermelden** dat dit een vervanging is voor een verloren key, en bij voorkeur via je App Store-developer-account een [issue op de cert-repo](https://github.com/nextcloud/app-certificate-requests/issues) openen waarin je de eigendom van de app-id staaft (link naar je app op `apps.nextcloud.com`, vanuit het account dat eigenaar is).
+3. **Wachten op merge**. De maintainers checken dat de aanvragende GitHub-user dezelfde is als de App Store-eigenaar; mismatch betekent afwijzing.
+4. **Nieuwe `.crt` ophalen**, **`APP_PRIVATE_KEY`** en **`APP_PUBLIC_CRT`** secrets in je GitHub-repo bijwerken, en de eerstvolgende release gebruikt de nieuwe key.
+
+Bestaande releases in de App Store blijven werken — die zijn destijds met de oude key gesigned en de App Store heeft de signature al gevalideerd op upload-moment.
+
+De moraal: maak nu een back-up van `~/.nextcloud/certificates/myapp.key`. Twee minuten werk, jaren ellende voorkomen.
+
+## Officiële documentatie
+
+Deze tutorial is een wegwijzer; bij twijfel zijn de Nextcloud-docs leidend.
+
+- [App publishing and maintenance](https://docs.nextcloud.com/server/latest/developer_manual/app_publishing_maintenance/index.html) — overzicht
+- [Code signing](https://docs.nextcloud.com/server/latest/developer_manual/app_publishing_maintenance/code_signing.html) — CSR, certificate, `occ integrity:sign-app`
+- [App Store developer guide](https://nextcloudappstore.readthedocs.io/en/latest/developer.html) — registratie, release-upload, API
+- [`nextcloud/app-certificate-requests`](https://github.com/nextcloud/app-certificate-requests) — de CSR-PR-repo
+- [Release automation](https://docs.nextcloud.com/server/latest/developer_manual/app_publishing_maintenance/release_automation.html) — de GitHub Actions setup
+
+## Volgende stap
+
+Eén release in de App Store is een mijlpaal. Twee zijn een patroon. Plan vooruit:
+
+- **CHANGELOG.md** in je repo bijhouden, zodat elke `gh release create` direct release-notes meekrijgt.
+- **Semver** strikt aanhouden — App Store-gebruikers krijgen ook patch-updates automatisch, dus een breaking change in een patch-release maakt ze terecht boos.
+- **`max-version`** in `info.xml` bijhouden bij elke nieuwe Nextcloud-major; anders verdwijn je app uit de Apps-pagina van nieuwere installs.
+
+<ContactCta
+  title="Vragen over App Store-publicatie?"
+  body="Loopt je CSR-PR vast, of wil je een Conduction-app overgedragen krijgen? Mail ons even, dan denken we mee."
+  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=Nextcloud%20App%20Store%20publicatie" }}
+/>

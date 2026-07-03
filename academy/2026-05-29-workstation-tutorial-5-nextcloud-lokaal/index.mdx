@@ -1,5 +1,5 @@
 ---
-slug: workstation-tutorial-5-nextcloud-lokaal
+slug: workstation-tutorial-5-nextcloud-locally
 title: "Workstation Setup tutorial series — Part 5: Run Nextcloud locally"
 contentType: tutorial
 authors: [conduction]
@@ -42,7 +42,7 @@ docker compose up nextcloud proxy
 
 Code changes in your cloned app repos show up in the running Nextcloud without rebuilding the image — that's the point of the `apps-extra/` mount.
 
-**Beginner-friendly demo — [Run Nextcloud locally with Docker](/academy/nextcloud-lokaal-draaien).** A 30-minute walkthrough that pastes a standalone `docker-compose.yml` into a fresh folder. Aimed at someone who has never used Docker or a terminal. Good for a first run-through; not the layout you'll use day-to-day for actual app development (the standalone compose doesn't have an `apps-extra/` mount, so you can't iterate on Conduction app code that way).
+**Beginner-friendly demo — [Run Nextcloud locally with Docker](/academy/run-nextcloud-locally).** A 30-minute walkthrough that pastes a standalone `docker-compose.yml` into a fresh folder. Aimed at someone who has never used Docker or a terminal. Good for a first run-through; not the layout you'll use day-to-day for actual app development (the standalone compose doesn't have an `apps-extra/` mount, so you can't iterate on Conduction app code that way).
 
 > **Alternative compose with profiles — optional, extra.** The Conduction [`openregister`](https://codeberg.org/Conduction/openregister) repo also ships its own `docker-compose.yml` with `--profile` flags (`ai`, `ui`, `exapps`, `solr`, `ollama`, `openproject`, `xwiki`, `openzaak`, `openklant`, and more) — documented in [`docs/claude/docker.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/docker.md). Useful when you need those heavier services, but not required for the workstation chain and not what most Conduction devs run day-to-day. Stick with `nextcloud-docker-dev` for now.
 
@@ -77,7 +77,7 @@ A note on naming: **OpenWoo** is a *solution* built on OpenRegister and OpenCata
 
 You don't need to clone every Conduction app. Clone what the tutorial you're following asks for and ignore the rest until you need it.
 
-> **Did the canonical tutorial first?** The [Run Nextcloud locally with Docker](/academy/nextcloud-lokaal-draaien) tutorial installs OpenRegister, OpenCatalogi, and OpenConnector from the Nextcloud **app store**. That works for reading and demos, but the installed apps are immutable production builds — not your local code. Switch to the `apps-extra/` flow before you start writing app code.
+> **Did the canonical tutorial first?** The [Run Nextcloud locally with Docker](/academy/run-nextcloud-locally) tutorial installs OpenRegister, OpenCatalogi, and OpenConnector from the Nextcloud **app store**. That works for reading and demos, but the installed apps are immutable production builds — not your local code. Switch to the `apps-extra/` flow before you start writing app code.
 
 ## Fresh install or keep the existing one?
 
@@ -152,7 +152,7 @@ With **only OpenRegister**, you can:
 
 - Create registers and define schemas (the *what does this data look like* layer).
 - Create, update, and query objects via OpenRegister's API.
-- Attach files to objects (the [Upload files to a Woo publication](/academy/woo-bestanden-uploaden) tutorial only needs OpenRegister).
+- Attach files to objects (the [Upload files to a Woo publication](/academy/woo-upload-files) tutorial only needs OpenRegister).
 
 Without **OpenConnector**, you can't:
 
@@ -189,7 +189,7 @@ The reset is cheap. Don't hesitate to use it when the tutorial calls for it; try
 
 <div className="tutorial-quiz">
 
-**4. You stopped halfway through Build an App tutorial Part 3 yesterday — your local Nextcloud has a half-built PetStore calendar app and a register full of test pets and orders. Today you're starting fresh on the [Set up a Woo register](/academy/woo-register-opzetten) tutorial. Do you reset Nextcloud first, or keep it as-is?**
+**4. You stopped halfway through Build an App tutorial Part 3 yesterday — your local Nextcloud has a half-built PetStore calendar app and a register full of test pets and orders. Today you're starting fresh on the [Set up a Woo register](/academy/woo-set-up-register) tutorial. Do you reset Nextcloud first, or keep it as-is?**
 
 <Details summary="Hint">
 
@@ -214,12 +214,12 @@ The rule of thumb: **same tutorial → keep, different tutorial → reset.**
 <NextSteps title="Next step" lede="Your workstation is complete. Time for the lap of honour — what you do next now that you can actually build.">
   <NextStep
     title="Part 6 — Done, what now?"
-    href="/academy/workstation-tutorial-6-klaar-wat-nu"
+    href="/academy/workstation-tutorial-6-done-what-next"
     description="The map of the next tutorials: OpenSpec, Claude Skills, Build an App, Hydra. Where to go for what kind of work."
   />
   <NextStep
     title="Run Nextcloud locally with Docker"
-    href="/academy/nextcloud-lokaal-draaien"
+    href="/academy/run-nextcloud-locally"
     description="The full step-by-step Nextcloud install — screenshots, troubleshooting, cleanup. Read it once."
   />
   <NextStep
