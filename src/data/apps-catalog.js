@@ -23,7 +23,7 @@
  */
 
 import React from 'react';
-import AppGlyph from '@site/src/components/AppGlyph';
+import {AppGlyph} from '@conduction/docusaurus-preset/components';
 import downloadsJson from '../../data/app-downloads.json';
 
 /* Hand-curated display metadata. Keys are the GitHub repo slug
