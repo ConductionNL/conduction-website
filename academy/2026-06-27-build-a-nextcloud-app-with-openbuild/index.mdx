@@ -4,10 +4,10 @@ title: "Build a Nextcloud app with OpenBuild, no code required"
 contentType: tutorial
 authors: [conduction]
 date: 2026-06-27
-summary: Build a complete Pet Store app inside Nextcloud without writing a line of code. You will create the app, design its data model, seed it with demo data, compose a dashboard from every widget type, give a vets group its own medical layer, release a production version, surface the app on the LaunchPad dashboard and in search, link vet visits to Calendar, drop files onto a pet, add business-logic flows that book a vet inspection and email the vet when a pet is registered, and learn how an AI agent can build the whole app over MCP. OpenBuild is the visual builder for the same manifest the code path teaches; here you author it by clicking, not by editing JSON.
-tags: [App development, OpenBuild, OpenRegister, No-code, Manifest, Flows, MCP, Tutorial]
+summary: Build a complete Pet Store app inside Nextcloud without writing a line of code. You will create the app, design its data model, seed it with demo data, compose a dashboard from every widget type, give a vets group its own medical layer, release a production version, publish the app to GitHub and reinstall it from the store, surface the app on the LaunchPad dashboard and in search, link vet visits to Calendar, drop files onto a pet, add business-logic flows that book a vet inspection and email the vet when a pet is registered, and learn how an AI agent can build the whole app over MCP. OpenBuild is the visual builder for the same manifest the code path teaches; here you author it by clicking, not by editing JSON.
+tags: [App development, OpenBuild, OpenRegister, No-code, Manifest, Flows, GitHub, MCP, Tutorial]
 apps: [openbuild, openregister]
-durationMinutes: 55
+durationMinutes: 60
 ---
 
 import {
@@ -66,6 +66,10 @@ import settingsFoldoutImg from './images/settings-foldout.png';
 import menuItemLiveImg from './images/menu-item-live.png';
 import setupConfigFieldsImg from './images/setup-configfields.png';
 import walkthroughSpotlightImg from './images/walkthrough-spotlight.png';
+import githubPublishModalImg from './images/github-publish-modal.png';
+import githubStoreTabImg from './images/github-store-tab.png';
+import githubInstallDialogImg from './images/github-install-dialog.png';
+import githubPermissionsImg from './images/openbuild_githubpermisions.jpg';
 
 OpenBuild is the visual builder for Conduction apps. The [three-paths tutorial](/academy/build-an-app-tutorial-0-three-paths) teaches the manifest path by hand: you write `manifest.json` and the `Cn*` components render it. OpenBuild builds that exact same manifest for you through a UI. You point and click, OpenBuild writes the manifest and the OpenRegister schemas behind it, and you get a working Nextcloud app with no repository, no build step, and no deploy.
 
@@ -411,6 +415,52 @@ To keep working, open a non-production version from the version list and edit th
   <img src={step7Img} alt="The OpenBuild version picker for Pet Store listing Production 0.1.0 and Development versions, with the production version marked" />
   <figcaption>One production version at a time: the version picker shows Production 0.1.0 alongside the editable Development version.</figcaption>
 </figure>
+
+## Publish to GitHub, and reinstall from anywhere
+
+A released app lives on your instance. To hand it to a colleague, move it to another instance, or back it up outside Nextcloud, **publish it to GitHub**. Publishing writes the app as plain files to a repository — `openbuild-app.json` (name, description, type), `manifest.json` (every page, widget, and setting you built by clicking), and `schemas/` (the data model) — and tags the repo with the `openbuild-app` topic. That topic is what the store searches, so a published app is discoverable the moment it exists.
+
+You never paste a token into OpenBuild. You store a GitHub personal access token once, in the **Credentials** pane of the app's user settings; it is kept in Doriath, Nextcloud's encrypted credential vault. When you publish, OpenBuild asks the OpenRegister credential broker to make the GitHub calls on your behalf. The token is injected server-side and never travels to the app or the browser — OpenBuild only ever sees the repository it created.
+
+Create the token as a GitHub **fine-grained** personal access token, scoped to the repositories you want to publish to (or all of them), and grant exactly three repository permissions — nothing more:
+
+- **Administration — Read and write**: lets OpenBuild create the repository and set its `openbuild-app` topic.
+- **Contents — Read and write**: lets it push the app's files and commits.
+- **Metadata — Read-only**: required by GitHub, and what the store's search reads.
+
+No issues, pull-requests, workflows, or account permissions are needed — and the broker's allow-rules deny those anyway, so a token scoped this tightly can do everything OpenBuild needs and nothing it doesn't.
+
+<figure>
+  <img src={githubPermissionsImg} alt="GitHub fine-grained personal access token permissions screen showing Administration set to Read and write, Contents set to Read and write, and Metadata set to Read-only (Required)" />
+  <figcaption>The minimal token: Administration and Contents at Read and write, Metadata at Read-only. That is the whole surface OpenBuild publishing needs.</figcaption>
+</figure>
+
+Open the Pet Store, choose **Actions → GitHub**, pick your GitHub credential, and select **Publish**. OpenBuild creates a public repository, tags it `openbuild-app`, and commits the app in one clean commit. **Pull** does the reverse: it fetches the repository back into a new *draft* version, so a change someone else pushed lands next to your production version for you to review — it never overwrites what is live.
+
+<figure>
+  <img src={githubPublishModalImg} alt="The OpenBuild GitHub panel for an app: a GitHub credential picker with Link repository, Publish, and Pull buttons, and a note that the app is not linked to a repository yet" />
+  <figcaption>Actions → GitHub: pick a credential and Publish. The token stays in Doriath — the broker makes the GitHub call, OpenBuild never sees the secret.</figcaption>
+</figure>
+
+<HexCard title="Why the token never reaches the app">
+  Publishing needs write access to GitHub, but a no-code builder should not hold your access token. So it doesn't. The token lives in Doriath; the OpenRegister credential broker performs each GitHub call (create repo, push commit, set topic) with the token injected at the edge, host-locked to `api.github.com`, and returns only the result. Revoke or rotate the token in one place and every app that used it stops — nothing to clean up inside OpenBuild.
+</HexCard>
+
+Now go to **Store → GitHub**. The store searches GitHub for the `openbuild-app` topic and shows every published app as an installable card — your Pet Store among them. Public apps show up with no credential at all; add your credential to also see your own private repositories.
+
+<figure>
+  <img src={githubStoreTabImg} alt="The OpenBuild store with a GitHub source tab selected, a search box, and a result card for a published app with an Install button" />
+  <figcaption>Store → GitHub: published apps are found by the `openbuild-app` topic and rendered as installable cards, straight from `openbuild-app.json`.</figcaption>
+</figure>
+
+Click **Install**, give the new app a name and slug, and confirm. The store parses the repository and clones it into a fresh local app through the same path as any template — so an installed-from-GitHub app is an ordinary editable OpenBuild app, not a locked import.
+
+<figure>
+  <img src={githubInstallDialogImg} alt="The Install app from GitHub dialog with editable application name and slug fields and an Install button" />
+  <figcaption>Installing from the store clones the repository into a new local app you can edit freely — the full round-trip: build → publish → delete → find in the store → install again.</figcaption>
+</figure>
+
+**Verify:** after publishing, the repository exists on GitHub with `openbuild-app.json`, `manifest.json`, and `schemas/`, and carries the `openbuild-app` topic. Delete the app locally, search **Store → GitHub**, and install it again — you get the same app back, because it now lives in the repository, independent of any one instance.
 
 ## Step 8: Put the store on everyone's LaunchPad
 
