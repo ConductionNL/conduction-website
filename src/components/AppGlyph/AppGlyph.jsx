@@ -35,6 +35,10 @@ const MONOGRAMS = {
   scholiq: 'SK',
   openbuild: 'OB',
   openanonymiser: 'OA',
+  hrmq: 'HR',
+  planix: 'PX',
+  hermiq: 'HQ',
+  portaliq: 'PL',
 };
 
 function monogram(app) {

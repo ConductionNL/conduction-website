@@ -4,15 +4,15 @@ description: Federated data catalogue for apps, datasets, APIs. Public-facing se
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, Pipeline, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, Pipeline, CtaBanner, AppMock, RotatingCards, WidgetShelf, AppCrossLinks} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
   background="cobalt"
   appId="opencatalogi"
   crumb={[{label: 'Apps', href: '/apps'}, 'OpenCatalogi']}
-  status={{label: 'Stable', color: 'var(--c-mint-500)'}}
-  version="v2.4"
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.7"
   locales="NL · EN"
   title="OpenCatalogi"
   tagline={<>The public-facing software, dataset, and API catalogue. Drops into your <span className="next-blue">Nextcloud</span>, surfaces every register as a searchable entry, federates to data.overheid.nl out of the box.</>}
@@ -53,9 +53,9 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         </FeatureItem>
         <FeatureItem
           icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>}
-          title="WOO publication flow."
+          title="Woo publication flow."
         >
-          Eleven Woo-categorieën each get a register; the catalogue surfaces them at jouwgemeente.nl/woo with audit log and retention policies built in.
+          All 17 mandatory Woo (Wet open overheid) information categories get DIWOO sitemaps and robots.txt out of the box, with audit-trail and retention lifecycle built in.
         </FeatureItem>
         <FeatureItem
           icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
@@ -132,8 +132,8 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   lede="Install OpenCatalogi and the home screen tracks what got published, what was searched, and what other gemeenten are federating from you."
   widgets={[
     {
-      title: 'Recent publications',
-      desc: 'Last items added to the public catalogue. Category hex, title, federation status.',
+      title: 'Most-viewed publications',
+      desc: 'Top publications by view count, so you know what the public is actually reading.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {['var(--c-blue-cobalt)', 'var(--c-forest-500)', 'var(--c-lavender-500)', 'var(--c-terracotta-500)', 'var(--c-mint-500)'].map((tone, i) => (
@@ -147,14 +147,14 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       ),
     },
     {
-      title: 'Catalogue stats',
-      desc: 'Three KPIs at a glance: total publications, federated downstream, queries this week.',
+      title: 'Catalogues at a glance',
+      desc: 'Every catalogue on this instance, with its publication count, in one widget.',
       panel: (
         <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6}}>
           {[
             {n: '3.4k', l: 'records', tone: 'var(--c-cobalt-900)'},
-            {n: '12',  l: 'feeders', tone: 'var(--c-mint-500)'},
-            {n: '847', l: 'queries', tone: 'var(--c-orange-knvb)'},
+            {n: '12',  l: 'catalogs', tone: 'var(--c-mint-500)'},
+            {n: '847', l: 'unpublished', tone: 'var(--c-orange-knvb)'},
           ].map((kpi, i) => (
             <div key={i} style={{padding: '8px 6px', background: 'var(--c-cobalt-50)', borderRadius: 'var(--radius-sm)', display: 'flex', flexDirection: 'column', gap: 2}}>
               <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 18, fontWeight: 700, color: kpi.tone}}>{kpi.n}</div>
@@ -165,16 +165,14 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       ),
     },
     {
-      title: 'Federation status',
-      desc: 'Who is consuming your catalogue, who is publishing back. Mint = healthy, orange = retry, red = down.',
+      title: 'Retention review queue',
+      desc: 'Publications whose retention term needs a decision — expiring-soon, review-required, and archived, each linking straight into the filtered list.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {[
-            {tone: 'var(--c-mint-500)',       label: 'data.overheid.nl'},
-            {tone: 'var(--c-mint-500)',       label: 'gemeente Tilburg'},
-            {tone: 'var(--c-orange-knvb)',    label: 'gemeente Almere'},
-            {tone: 'var(--c-mint-500)',       label: 'Forum Standaardisatie'},
-            {tone: 'var(--c-red-vermillion)', label: 'gemeente Hoorn'},
+            {tone: 'var(--c-orange-knvb)',    label: 'Expiring soon (4)'},
+            {tone: 'var(--c-red-vermillion)', label: 'Review required (2)'},
+            {tone: 'var(--c-mint-500)',       label: 'Archived (11)'},
           ].map((row, i) => (
             <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
               <span style={{width: 8, height: 9, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
@@ -184,37 +182,6 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
           ))}
         </div>
       ),
-    },
-  ]}
-/>
-
-<Showcase
-  eyebrow="How OpenCatalogi plugs into the workspace"
-  title="One catalogue, surfaced wherever you ask."
-  lede="Three integration paths that take the published catalogue beyond its own page, into the wiki, the workflow tools, and the AI assistant."
-  layout="side"
-  defaultOpen="xwiki"
-  items={[
-    {
-      id: 'xwiki',
-      title: 'XWiki',
-      summary: 'Embed a live catalogue query inside any wiki page. Procedure docs cite the canonical dataset, not a snapshot. The wiki stays explanatory; the catalogue stays authoritative.',
-      cta: {label: 'See the wiki macro', href: 'https://opencatalogi.conduction.nl/xwiki'},
-      panel: <AppMock app="opencatalogi" />,
-    },
-    {
-      id: 'mail-files',
-      title: 'Mail and Files',
-      summary: 'Find a catalogued dataset without leaving Mail or Files. The sidebar lets you search the federated catalogue, attach a citation-stable URL to the email, drop the dataset reference into a folder.',
-      cta: {label: 'See the sidebar guide', href: 'https://opencatalogi.conduction.nl/mail-files'},
-      panel: <AppMock app="opencatalogi" />,
-    },
-    {
-      id: 'llms',
-      title: 'LLMs (Claude, Mistral, Ollama)',
-      summary: 'Ask the catalogue in plain language. The LLM resolves your question to a federated query, returns datasets with citation-stable IDs, and explains why each one matched. Helpful when the catalogue gets to thousands of items.',
-      cta: {label: 'See the semantic search', href: 'https://opencatalogi.conduction.nl/llm-search'},
-      panel: <AppMock app="launchpad-bi" />,
     },
   ]}
 />
