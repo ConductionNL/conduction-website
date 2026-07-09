@@ -1,0 +1,59 @@
+---
+slug: kicking-big-tech-to-the-curb-nextcloud
+title: "Kicking Big Tech to the curb: Nextcloud for home use, away from Microsoft 365 and Google"
+contentType: blog
+authors: [robert]
+date: 2026-07-05
+summary:
+tags: [Blog, Open source, Government, Sovereignty]
+---
+*— and how I built my own server on a Raspberry Pi, moving my data away from OneDrive, Gmail, Dropbox and much more.*
+
+## Back to Nextcloud
+
+Let me start at the beginning. I've known Nextcloud since around 2019 and started using it around that time too, though mainly for a small foundation. I was certainly enthusiastic, but I hadn't really gotten around to diving deeper into Nextcloud since then.
+
+Since 2024, we at Conduction have started building applications for Nextcloud, and I once again had more time and opportunity to explore the platform. I soon discovered that Nextcloud had been developed much further in the meantime and contains a lot more than when I ran my first instance, from 2019 to 2021.
+
+By now there are integrations with mature open source office suites, Nextcloud has a mature suite for communication (mail, contacts, notes, tasks) and even a video-calling application: Nextcloud Talk.
+
+## My own server: a Raspberry Pi
+
+With all the geopolitical developments, in 2025 I set up a Nextcloud AIO server for my father's accountancy firm. That immediately gave me a testing ground to try out things like Nextcloud Talk and Nextcloud Office.
+
+With that experience, and knowing that my Microsoft 365 subscription would expire at the end of December, I decided to install a personal Nextcloud on a little server of my own. That became a Raspberry Pi 4 I still had lying around, with a 256GB SD card and a 1TB external drive for backups.
+
+The biggest challenge after that was sorting out the data on my OneDrive. Microsoft is so addicted to your data that it stores things in OneDrive to a degree that makes you think: 'I explicitly told you not to do this.' So first a bit of cleaning up: all the screenshots you've ever taken and the save files of a couple of games (what are those even doing in your OneDrive, seriously?) I moved to a local folder. That's a bit of a challenge when an application has a hard-coded storage location, but a few symbolic links[^1] sorted that out too. After that, I could move the real data over to my Nextcloud.
+
+## Mail: away from Gmail
+
+At that point I was also still using Gmail, whose storage was starting to fill up nicely. To replace my mail server, I purchased a mailbox with a domain from Soverin, a Dutch provider of a mail package including DNS. I then pointed that domain to my Nextcloud instance.
+
+About that mail: Soverin's services are simply good. The servers are reliable, and alongside your main address Soverin also provides a pseudonymised address you can leave behind on websites you don't fully trust when it comes to privacy. The integration with Nextcloud Mail is done in no time, and the way it's displayed in Nextcloud is more than fine.
+
+## From office suite to platform
+
+By now I've set up my Nextcloud so that I use not only Office and the groupware suite, but also an app to organise and play my music, a 3D viewer, and even a password manager. My personal Nextcloud is already starting to show clear signs of a platform.
+
+(Hey, where have we heard that before? Oh right, that's exactly what we at Conduction are working hard on.)
+
+## So is everything hunky-dory?
+
+No, of course there are challenges. Some applications really aren't quite there yet.
+
+The password manager I use is, for now, just about good enough for my personal Nextcloud, but it doesn't have the security and power I'd want. The good news: we at Conduction are already working on this. The app Doriath fills exactly the gaps my current app still has.
+
+On top of that, Nextcloud Office (based on Collabora Online) has the annoying quirk that I can't paste images into a document. It might be that Euro-Office is a possible solution for that, but I haven't yet gotten round to checking that out. And I notice that the Raspberry Pi may be just a touch underpowered for heavy work like Office, which makes the environment feel slow at times — of limited use for complex documents and certainly for calls with Talk.
+
+## Looking ahead
+
+Until now Nextcloud was mainly focused on replacing office automation, but recently Nextcloud has also been going all-in on itself as a platform. That led, among other things, to the first Nextcloud App Developer's Day this past Wednesday, which we at Conduction attended as well.
+
+With the energy I felt there, I'm sure we can also overcome the challenges that still remain — and that Nextcloud will end up replacing much more for me than it already does.
+
+With that, Nextcloud is a big step in my journey to say goodbye to Big Tech, but certainly not the last. In a future part of this series, I'll tackle another part of that journey.
+
+Do you have a request or a topic you'd like to read more about? Let me know — and I'll take it along in the series.
+
+## Footnotes
+[^1]: For more information about symbolic links, I'd like to point you to [How To Geek](https://www.howtogeek.com/16226/complete-guide-to-symbolic-links-symlinks-on-windows-or-linux/).
