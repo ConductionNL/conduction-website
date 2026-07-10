@@ -1,10 +1,10 @@
 ---
 title: OpenConnector, Conduction
-description: API gateway for Nextcloud. REST, SOAP, GraphQL, file drops, message queues. Pulls data into typed registers without writing glue code.
+description: API gateway for Nextcloud. REST and SOAP sources, plus Dutch government-standard connectors (PDOK, StUF, DSO, Berichtenbox). Pulls data into typed registers without writing glue code.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AppCrossLinks} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -12,11 +12,11 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   appId="openconnector"
   crumb={[{label: 'Apps', href: '/apps'}, 'OpenConnector']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v1.2"
+  version="v0.2.16"
   locales="NL · EN"
   title="OpenConnector"
-  tagline={<>The integration layer for <span className="next-blue">Nextcloud</span>. REST, SOAP, GraphQL, file drops, message queues. Pulls data from your existing systems into typed registers without writing glue code.</>}
-  intro={<>OpenConnector is an open-source data-synchronization app for the Nextcloud workspace. It connects APIs, databases, file systems, and external services to OpenRegister, transforms payloads through configurable mappings, and schedules automated sync jobs with event and webhook triggers. It also exposes endpoints, consumers, and business rules, so government teams can build integrations without a separate ESB. Released under EUPL-1.2 and maintained by Conduction since 2019.</>}
+  tagline={<>The integration layer for <span className="next-blue">Nextcloud</span>. REST and SOAP sources, plus Dutch government-standard connectors. Pulls data from your existing systems into typed registers without writing glue code.</>}
+  intro={<>OpenConnector is an open-source integration app for the Nextcloud workspace. It connects REST and SOAP sources — including Dutch government-standard adapters for PDOK, StUF-ZKN/BG, DSO/Omgevingsloket, and Berichtenbox — to OpenRegister, transforms payloads through configurable mappings, and schedules automated sync jobs with webhook, cron, or manual triggers. It also exposes endpoints, consumers, and business rules, so government teams can build integrations without a separate ESB. Released under EUPL-1.2 and maintained by Conduction since 2019.</>}
   primaryCta={{label: 'Install from app store', href: '/install'}}
   secondaryCta={{label: 'Read the docs', href: 'https://openconnector.conduction.nl'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/openconnector'}}
@@ -34,9 +34,9 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       />
       <FeatureList>
     <FeatureItem
-          title="Six protocols, one config UI."
+          title="REST and SOAP, one config UI."
     >
-      REST, SOAP, GraphQL, file drops (FTP / SFTP), message queues (RabbitMQ / Kafka), and database connectors (MySQL / PostgreSQL / MSSQL). Same configuration shape across all of them.
+      Configure a source once — REST/JSON, XML, or SOAP — with shared authentication (API key, OAuth, JWT, username/password) and rate limiting. Same configuration shape across all of them.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
@@ -52,9 +52,9 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
-      title="Audit log per record."
+      title="Audit trail per record."
     >
-      Every connector run leaves a tamper-evident trail: source, target, fields touched, conflicts resolved. WOO and BIO compliance evidence shipped with the install.
+      Every processed record keeps an audit trail — source, target, fields touched — surfaced on the object and queryable through the endpoint's audit-trail route.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
@@ -81,9 +81,9 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   cards={[
     {
       tone: 'lavender',
-      eyebrow: 'Any source',
-      title: 'REST, SOAP, GraphQL, file drops, message queues.',
-      summary: 'OpenConnector pulls from whatever your existing systems speak. Configure a source, point at a target register, and the data flows. No middleware, no glue code.',
+      eyebrow: 'REST, SOAP, and Dutch gov standards',
+      title: 'PDOK, StUF, DSO, Berichtenbox — built in.',
+      summary: 'OpenConnector pulls from REST and SOAP sources, with adapters for PDOK Locatieserver, StUF-ZKN/BG, DSO/Omgevingsloket, and Berichtenbox. Configure a source, point at a target register, and the data flows. No middleware, no glue code.',
       cta: {label: 'See the connector', href: '/apps/openconnector'},
       panel: <AppMock app="openconnector" />,
     },
@@ -182,41 +182,31 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <Showcase
   eyebrow="How OpenConnector plugs into the workspace"
-  title="The bridge from anywhere to your registers."
-  lede="OpenConnector is itself an integration plane. These are the three integrations users meet most often: routing email and files, talking to workflow engines, and calling LLM providers."
+  title="Built for Dutch government integrations."
+  lede="OpenConnector ships adapters for the standards Dutch municipalities actually run, plus the operational plumbing — dead-letter capture and a rule pipeline — that keeps an integration reliable."
   layout="side"
-  defaultOpen="mail-files"
+  defaultOpen="gov-standards"
   items={[
     {
-      id: 'mail-files',
-      title: 'Mail and Files',
-      summary: 'Route inbound email into the right register; route outbound documents from a register through Mail. The Mail and Files sidebars show pipeline status when an item is part of an active flow.',
-      cta: {label: 'See the routing guide', href: 'https://openconnector.conduction.nl/mail-files'},
+      id: 'gov-standards',
+      title: 'PDOK, StUF-ZKN/BG, DSO, Berichtenbox',
+      summary: 'Purpose-built adapters normalize PDOK Locatieserver lookups into OpenRegister address objects, speak StUF-ZKN/BG XML for municipal back-office systems, talk to DSO/Omgevingsloket, and connect to Berichtenbox for government mail.',
+      cta: {label: 'See the connector docs', href: 'https://openconnector.conduction.nl'},
       panel: <AppMock app="openconnector" />,
     },
     {
-      id: 'windmill-n8n',
-      title: 'Windmill and n8n',
-      summary: 'OpenConnector is the bridge that lets workflow engines talk to your registers. Both directions: events out, instructions in. Windmill or n8n becomes the script engine your registers can call without leaving the typed-data world.',
-      cta: {label: 'See the workflow examples', href: 'https://openconnector.conduction.nl/windmill-n8n'},
+      id: 'dead-letter',
+      title: 'Dead-letter capture and replay',
+      summary: 'Failed event deliveries land in a dead-letter queue instead of disappearing. Inspect the failure, retry it, or discard it with an audited operator stamp — a background job also retries automatically on a backoff schedule.',
+      cta: {label: 'See event handling', href: 'https://openconnector.conduction.nl'},
       panel: <AppMock app="openconnector" />,
     },
     {
-      id: 'llms',
-      title: 'LLMs (Claude, Mistral, Ollama, OpenAI)',
-      summary: 'One adapter, every LLM provider. Switch from Claude to Mistral to a self-hosted Ollama by changing one config line. Audit log on every call, redaction before send, prompt caching where the provider supports it.',
-      cta: {label: 'See the LLM adapters', href: 'https://openconnector.conduction.nl/llm-adapters'},
-      panel: <AgentTrace
-        lines={[
-          {kind: 'note',  bullet: 'done', text: 'Adapter lookup', muted: '(provider: claude-sonnet-4-6)'},
-          {kind: 'tool',  text: 'openconnector - llm_call (provider: claude,'},
-          {kind: 'continuation', text: 'cache: "5min", redact: ["bsn", "dob"])'},
-          {kind: 'note',  bullet: 'info', text: 'Cache hit, prompt cached this morning'},
-          {kind: 'status', text: 'Streaming response'},
-        ]}
-        cursor
-        mode="audit log on (every call recorded)"
-      />,
+      id: 'rule-pipeline',
+      title: 'Endpoint rule pipeline',
+      summary: 'Endpoints run condition checks and before/after rules before data reaches a register or an external source — validate, transform, or reject a request without touching PHP.',
+      cta: {label: 'See the rules editor', href: 'https://openconnector.conduction.nl'},
+      panel: <AppMock app="openconnector" />,
     },
   ]}
 />

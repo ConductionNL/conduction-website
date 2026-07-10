@@ -97,6 +97,13 @@ const PRESENTATION = {
     categories: ['Processes'],
     icon: <AppGlyph app="procest" />,
   },
+  planix: {
+    name: 'Planix',
+    tagline: 'Flow-based kanban project and task management. Boards, backlog, and time tracking for dev and IT teams.',
+    href: '/apps/planix',
+    categories: ['Processes'],
+    icon: <AppGlyph app="planix" />,
+  },
   decidesk: {
     name: 'DeciDesk',
     tagline: 'Decision-support and board management. Agenda, dossiers, motions, voting, audit.',
@@ -146,6 +153,13 @@ const PRESENTATION = {
     categories: ['Processes'],
     icon: <AppGlyph app="openbuild" />,
   },
+  hrmq: {
+    name: 'HRMQ',
+    tagline: 'Open-source HR and payroll administration. Timesheets, expense claims, and a labour-law and wage-tax compliance rule engine.',
+    href: '/apps/hrmq',
+    categories: ['Processes'],
+    icon: <AppGlyph app="hrmq" />,
+  },
   doriath: {
     name: 'Doriath',
     tagline: 'Self-hosted password and secrets vault. Per-user, per-team, audited. In development.',
@@ -159,6 +173,20 @@ const PRESENTATION = {
     href: '/apps/app-versions',
     categories: ['Data'],
     icon: <AppGlyph app="app-versions" />,
+  },
+  portaliq: {
+    name: 'Portaliq',
+    tagline: 'One shared external portal for clients and suppliers. White-label, built on OpenRegister.',
+    href: '/apps/portaliq',
+    categories: ['Processes'],
+    icon: <AppGlyph app="portaliq" />,
+  },
+  hermiq: {
+    name: 'Hermiq',
+    tagline: 'Schedule autonomous AI agents with human approval gates. Runs delivered to Nextcloud Talk.',
+    href: '/apps/hermiq',
+    categories: ['AI'],
+    icon: <AppGlyph app="hermiq" />,
   },
 };
 

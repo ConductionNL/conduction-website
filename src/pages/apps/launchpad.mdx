@@ -1,6 +1,6 @@
 ---
 title: LaunchPad, Conduction
-description: Personal and team dashboards built on your Nextcloud registers. No separate BI tool, no extra login.
+description: Drag-and-drop dashboards for Nextcloud with templates, a widget library, role-based access, and dashboard sharing.
 hide_table_of_contents: true
 ---
 
@@ -12,11 +12,11 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   appId="launchpad"
   crumb={[{label: 'Apps', href: '/apps'}, 'LaunchPad']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.9"
+  version="v1.0.5"
   locales="NL · EN"
   title="LaunchPad"
-  tagline={<>Personal and team dashboards, built directly on your <span className="next-blue">Nextcloud</span>. No separate BI tool, no extra login, no ETL. Whatever you have in <span className="next-blue">Nextcloud</span>, you can visualise in LaunchPad.</>}
-  intro={<>LaunchPad is an open-source dashboard app for the Nextcloud workspace. It lets each user compose multiple personal dashboards from drag-and-drop widgets and shortcut tiles on a responsive GridStack canvas, and supports both the v1 and v2 Nextcloud Dashboard widget APIs out of the box. Administrators can ship pre-configured templates to user groups, pin compulsory widgets, and set conditional visibility rules based on group, time of day, or date range. Released under EUPL-1.2 and maintained by Conduction since 2019.</>}
+  tagline={<>Drag-and-drop dashboards for your <span className="next-blue">Nextcloud</span> team, built from templates, tiles, and every widget your workspace already has.</>}
+  intro={<>LaunchPad is an open-source dashboard app for the Nextcloud workspace. Each user composes multiple personal dashboards from drag-and-drop widgets and shortcut tiles on a flexible grid, and every existing Nextcloud dashboard widget works out of the box. Administrators can roll out pre-configured templates to user groups with permission levels and compulsory widgets, set conditional visibility rules by group, time of day, or date, and restrict which widget types a group may add. Released under EUPL-1.2 and maintained by Conduction.</>}
   primaryCta={{label: 'Install from app store', href: '/install'}}
   secondaryCta={{label: 'Read the docs', href: 'https://launchpad.conduction.nl'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/launchpad'}}
@@ -30,38 +30,38 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         eyebrow="What it does"
         title="Drag, drop, dashboard."
         align="stack"
-        lede="LaunchPad reads your registers, your time tracking, your invoicing. Drag chart types onto a board, save, share with the team. Role-based access uses the Nextcloud groups your team is already in."
+        lede="Build a dashboard from tiles, text, files, people, calendars, and every native Nextcloud widget. Save it, share it with the team. Role-based access uses the Nextcloud groups your team is already in."
       />
       <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/></svg>}
-      title="Dashboards from registers, no ETL."
+      title="A grid, not a form."
     >
-      LaunchPad reads directly from OpenRegister via REST and GraphQL. No separate BI database, no nightly batch, dashboards stay live.
+      Position and resize widgets freely on a flexible drag-and-drop grid. Build as many personal dashboards as you like and switch between them.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>}
-      title="Ten chart types out of the box."
+      title="A widget library, not a blank canvas."
     >
-      Bar, line, area, pie, KPI card, table, heatmap, funnel, gauge, scatter. All tuned NLDS-compliant. Custom chart types via a small React plugin API.
+      Text, images, link buttons, files, people, news, calendar, video, quicklinks, menus, and containers — plus every native Nextcloud dashboard widget, side by side on the same board.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>}
       title="Role-based access, shared via Nextcloud groups."
     >
-      One dashboard per group, per role, or for the whole organisation. Login and authorisation through Nextcloud, no second user-management system.
+      Restrict which widget types a group may add, and roll out admin templates with view-only, add-only, or full-customisation permission levels. Login and authorisation through Nextcloud, no second user-management system.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
-      title="Real-time updates."
+      title="Conditional visibility."
     >
-      Dashboards refresh over WebSocket the moment the underlying register record changes. No manual refresh button, no stale KPIs.
+      Show or hide individual widgets based on group membership, time of day, or date — the same dashboard adapts to who's looking and when.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
-      title="Embed outside Nextcloud."
+      title="Dashboard sharing."
     >
-      Every dashboard has a signed embed URL. Drop it in your intranet, on a TV in the hall, or in a mail template. Auth via signed token.
+      Share a dashboard with specific users or groups with its own permission level, or publish a brute-force-protected, read-only public link — no Nextcloud login required for viewers.
     </FeatureItem>
   </FeatureList>
     </div>
@@ -77,32 +77,32 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <RotatingCards
   eyebrow="Three ways LaunchPad earns its place"
-  title="Tiles, BI graphs, every app's widget."
+  title="Tiles, templates, every app's widget."
   lede="Scroll the cards. Each pins as you reach it; the next slides up from below."
   cards={[
     {
       tone: 'workspace',
-      eyebrow: 'Tiles & grids',
-      title: 'Custom launchers, sub-grids, deeplinks anywhere.',
-      summary: 'Make a tile that opens an app, a document, a process, or an external URL. Group tiles into sub-grids per team. The home screen becomes a launcher you actually maintain.',
-      cta: {label: 'See the tile recipes', href: 'https://launchpad.conduction.nl#tiles'},
+      eyebrow: 'Tiles & templates',
+      title: 'Custom launchers, admin templates, one click to a whole team.',
+      summary: 'Make a tile that opens an app, a document, or an external URL. Admins pre-configure a template dashboard, pin compulsory widgets, and roll it out to a user group with a chosen permission level. The home screen becomes a launcher you actually maintain.',
+      cta: {label: 'See the admin templates guide', href: 'https://launchpad.conduction.nl/admin-templates'},
       panel: <AppMock app="launchpad-tiles" />,
     },
     {
       tone: 'forest',
-      eyebrow: 'BI on registers',
-      title: 'Any chart on any register, no ETL.',
-      summary: 'LaunchPad reads OpenRegister directly. Drop bar, line, donut, table, or KPI chart-types onto a board and they query the register live. No nightly batch, no separate BI database.',
-      cta: {label: 'See OpenRegister', href: '/apps/openregister'},
-      panel: <AppMock app="launchpad-bi" />,
+      eyebrow: 'Widget library',
+      title: 'Eighteen built-in widget types, plus every Nextcloud widget.',
+      summary: 'Text, images, link buttons, files, people, news, calendar, video, quicklinks, menus, and containers ship out of the box. Conditional visibility rules show or hide any widget by group, time of day, or date.',
+      cta: {label: 'Browse the widget catalogue', href: 'https://launchpad.conduction.nl#widgets'},
+      panel: <AppMock app="launchpad-widgets" />,
     },
     {
       tone: 'lavender',
-      eyebrow: 'Widget integration',
-      title: 'Every Nextcloud app brings its own widget.',
-      summary: 'DocuDesk ships an upload-to-anonymise dropzone. Procest ships a task queue. Mail ships an inbox. Calendar ships upcoming events. Any app that registers a Nextcloud dashboard widget shows up in LaunchPad automatically, no separate config.',
-      cta: {label: 'Browse the widget catalogue', href: 'https://launchpad.conduction.nl#widgets'},
-      panel: <AppMock app="launchpad-widgets" />,
+      eyebrow: 'Sharing & kiosk mode',
+      title: 'Share a dashboard, or put it on a screen in the hall.',
+      summary: 'Share with a user or a group at its own permission level, publish a read-only public link protected against brute-forced tokens, or run a chrome-less kiosk playlist on a shared display.',
+      cta: {label: 'See the sharing guide', href: 'https://launchpad.conduction.nl/sharing'},
+      panel: <AppMock app="launchpad-bi" />,
     },
   ]}
 />
@@ -112,23 +112,6 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   title="Every Nextcloud app brings its own."
   lede="LaunchPad is the surface every other app's widget shows up on. Drop these onto a board, drag to size, share with the team. The widget itself comes from the app that ships it."
   widgets={[
-    {
-      title: 'BI on a register',
-      desc: 'Read OpenRegister directly via REST or GraphQL. Drop a chart on the board, configure the field, save.',
-      panel: (
-        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
-          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
-            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 24, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>1.247</div>
-            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.05em', color: 'var(--c-mint-500)'}}>+18%</div>
-          </div>
-          <div style={{display: 'flex', alignItems: 'flex-end', gap: 4, height: 50}}>
-            {[40, 55, 35, 70, 50, 80, 65].map((h, i) => (
-              <div key={i} style={{flex: 1, height: `${h}%`, background: i === 5 ? 'var(--c-mint-500)' : 'var(--c-cobalt-300)', borderRadius: 1}}></div>
-            ))}
-          </div>
-        </div>
-      ),
-    },
     {
       title: 'Calendar from Nextcloud',
       desc: 'The Nextcloud Calendar dashboard widget lands on LaunchPad without extra config. Same auth, same source.',
@@ -154,16 +137,32 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       ),
     },
     {
-      title: 'Task queue from Procest',
-      desc: 'Any app that registers a Nextcloud dashboard widget shows up here. Procest, DocuDesk, Mail, you name it.',
+      title: 'Your own files, pinned',
+      desc: 'Pin a folder or a single file to a board, with thumbnails and an optional upload dropzone. No separate storage, it is your Nextcloud Files.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6, fontFamily: 'var(--conduction-typography-font-family-body)'}}>
+          {[
+            {tone: 'var(--c-lavender-300)', l1: '60%'},
+            {tone: 'var(--c-mint-300)', l1: '70%'},
+            {tone: 'var(--c-cobalt-300)', l1: '50%'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 18, height: 18, borderRadius: 3, background: row.tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, height: 6, width: row.l1, background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Any Nextcloud dashboard widget',
+      desc: 'Mail, Talk, Deck, Notifications — any app that registers a Nextcloud dashboard widget shows up here, wrapped in the same grid as your tiles and templates.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6, fontFamily: 'var(--conduction-typography-font-family-body)'}}>
           {[
             {tone: 'var(--c-orange-knvb)', l1: '60%', l2: '40%', av: 'var(--c-mint-300)'},
             {tone: 'var(--c-lavender-300)', l1: '70%', l2: '50%', av: 'var(--c-lavender-300)'},
             {tone: 'var(--c-red-vermillion)', l1: '55%', l2: '45%', av: 'var(--c-orange-knvb)'},
-            {tone: 'var(--c-lavender-300)', l1: '65%', l2: '35%', av: 'var(--c-mint-300)'},
-            {tone: 'var(--c-lavender-300)', l1: '75%', l2: '50%', av: 'var(--c-forest-300)'},
           ].map((row, i) => (
             <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
               <span style={{width: 14, height: 16, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
@@ -182,31 +181,31 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <Showcase
   eyebrow="How LaunchPad plugs into the workspace"
-  title="Live data, every native widget, embedded anywhere."
-  lede="Three integration paths that let LaunchPad compose dashboards from the data and apps you already run, without ETL or a second auth system."
+  title="Every native widget, curated per group, shared however you like."
+  lede="Three ways LaunchPad composes dashboards from the apps and groups you already run, with no second auth system."
   layout="side"
-  defaultOpen="register-graphql"
+  defaultOpen="native-widgets"
   items={[
-    {
-      id: 'register-graphql',
-      title: 'OpenRegister, live',
-      summary: 'LaunchPad reads OpenRegister directly via REST and GraphQL. Drop a bar, line, donut, or KPI chart on a board and it queries the register live. No nightly batch, no separate BI database, dashboards refresh over WebSocket the moment the underlying record changes.',
-      cta: {label: 'See the BI guide', href: 'https://launchpad.conduction.nl/bi'},
-      panel: <AppMock app="launchpad-bi" />,
-    },
     {
       id: 'native-widgets',
       title: 'Native Nextcloud widgets',
-      summary: 'Mail, Calendar, Files, Activity, Talk, Deck, Notifications. Anything that registers a Nextcloud dashboard widget surfaces in LaunchPad automatically. Same auth, same source, no separate config. The launcher tile fits next to the BI chart.',
+      summary: 'Mail, Calendar, Files, Activity, Talk, Deck, Notifications. Anything that registers a Nextcloud dashboard widget surfaces in LaunchPad automatically. Same auth, same source, no separate config.',
       cta: {label: 'Browse the widget catalogue', href: 'https://launchpad.conduction.nl#widgets'},
       panel: <AppMock app="launchpad-widgets" />,
     },
     {
-      id: 'embed',
-      title: 'Embed outside Nextcloud',
-      summary: 'Every dashboard has a signed embed URL. Drop it on the intranet, on a TV in the hall, in a mail template. Auth via signed token; role-based access reuses the Nextcloud groups your team is already in.',
-      cta: {label: 'See the embed guide', href: 'https://launchpad.conduction.nl/embed'},
+      id: 'templates',
+      title: 'Admin templates and role-based access',
+      summary: 'Admins pre-configure a dashboard, pin compulsory widgets, and roll it out to a group with a view-only, add-only, or full permission level. A separate role-feature policy can restrict which widget types a group is allowed to add at all.',
+      cta: {label: 'See the admin templates guide', href: 'https://launchpad.conduction.nl/admin-templates'},
       panel: <AppMock app="launchpad-tiles" />,
+    },
+    {
+      id: 'sharing',
+      title: 'Sharing, public links, kiosk mode',
+      summary: 'Share a dashboard with a user or group at its own permission level, publish a brute-force-protected read-only public link, or run a chrome-less kiosk playlist on a shared screen.',
+      cta: {label: 'See the sharing guide', href: 'https://launchpad.conduction.nl/sharing'},
+      panel: <AppMock app="launchpad-bi" />,
     },
   ]}
 />
@@ -214,7 +213,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="Two apps for the data, one for the surface."
+    title="Built on Nextcloud groups, open to the register layer."
     align="stack"
   />
   <PairRow>
@@ -222,26 +221,20 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       href="/apps/openregister"
       icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
       name="OpenRegister"
-      why="The data LaunchPad reads from. Schema-driven typing means dashboards know their column types out of the box."
+      why="Fully optional. LaunchPad runs with no OpenRegister installed; widgets that surface register data feature-detect it at runtime and fall back to an empty state."
     />
     <PairCard
-      href="/apps/openconnector"
-      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-      name="OpenConnector"
-      why="Pulls data from your existing systems into OpenRegister so LaunchPad has fresh material."
-    />
-    <PairCard
-      href="/apps/opencatalogi"
+      href="/apps/procest"
       icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
-      name="OpenCatalogi"
-      why="Indexes your published dashboards as catalogue entries; auditors can search them by sector or topic."
+      name="Procest"
+      why="The spend-analytics widget reads live case and vendor data from Procest over GraphQL, with a graceful empty state when Procest is not installed."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
   title="Dashboards on your own Nextcloud."
-  lede={<>Drop LaunchPad into your <span className="next-blue">Nextcloud</span>, point it at a register, and your team sees the numbers that matter on the home screen.</>}
+  lede={<>Drop LaunchPad into your <span className="next-blue">Nextcloud</span>, roll out a template to a group, and your team gets a home screen they actually maintain.</>}
   primaryCta={{label: 'Install from app store', href: '/install'}}
   secondaryCta={{label: 'Read the docs', href: 'https://launchpad.conduction.nl'}}
 />

@@ -9,13 +9,13 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
 <DetailHero
   appId="docudesk"
   crumb={[{label: 'Apps', href: '/apps'}, 'DocuDesk']}
-  status={{label: 'Stable', color: 'var(--c-mint-500)'}}
-  version="v1.8"
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.0.34"
   locales="NL · EN"
   title="DocuDesk"
-  tagline={<>Documentcreatie, anonimisering, ondertekening en templating op <span className="next-blue">Nextcloud</span>. Twaalf templates voor de meest gebruikte Nederlandse overheidsdocumenten zitten erin (beschikkingen, jaarverslagen, bezwaarbrieven). Trekt velden direct uit je registers.</>}
+  tagline={<>Documentgeneratie, anonimisering, ondertekening en templating op <span className="next-blue">Nextcloud</span>. Voorbeeldtemplates voor veelgebruikte Nederlandse overheidsdocumenten zitten erin (beschikking, brief, kwartaalrapportage). Trekt velden direct uit je registers.</>}
   primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://docs.conduction.nl/docudesk'}}
+  secondaryCta={{label: 'Lees de docs', href: 'https://docudesk.conduction.nl'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/docudesk'}}
   iconColor="var(--c-blue-cobalt)"
   icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>}
@@ -26,32 +26,32 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
     eyebrow="Wat het doet"
     title="Genereer, anonimiseer, onderteken. Vanuit dezelfde template."
     align="stack"
-    lede="DocuDesk leest registervelden direct in Word- en PDF-templates, anonimiseert binnenkomende post voordat die je registers raakt, en ondertekent uitgaande documenten met een per-instance certificaat. Eén install dekt de hele documentlevenscyclus."
+    lede="DocuDesk leest registervelden direct in Twig-templates en rendert PDF-, ODF- of HTML-uitvoer, anonimiseert documenten voordat die je registers raken, en ondertekent uitgaande documenten met eIDAS-betrouwbaarheidsniveaus. Eén install dekt de hele documentlevenscyclus."
   />
   <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
       title="Templates met register-aware velden."
     >
-      Drop het schema van een register erin, DocuDesk bindt de velden automatisch. Word- en PDF-templates worden ondersteund. Bewerk in Office, regenereer wanneer je wilt, registers blijven system of record.
+      Drop het schema van een register erin, DocuDesk bindt de velden automatisch. Twig/HTML-templates renderen als PDF, ODF of HTML. Regenereer wanneer je wilt, registers blijven system of record.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg>}
-      title="Anonimisering bij binnenkomst."
+      title="Anonimisering, instelbare backend."
     >
-      Microsoft Presidio onder de motorkap, getuned voor Nederlandse persoons- en zorgterminologie. Drop een e-mail, krijg een geredigeerde versie die veilig is voor het register.
+      Entiteitsherkenning loopt via OpenRegister naar een instelbare backend — regex, OpenAnonymiser, Presidio, of een LLM. Drop een document, krijg een geredigeerde versie die veilig is voor het register.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
-      title="Onderteken uitgaand, archiveer inkomend."
+      title="eIDAS-ondertekening."
     >
-      Per-instance ondertekencertificaat voor uitgaande documenten. Toepassingsprofiel Metagegevens (TMLO)-conforme archivering voor inkomende documenten, met bewaarregels per recordtype.
+      SES-, AdES- en QES-betrouwbaarheidsniveaus, met sequentiële of parallelle multi-signer workflows. Ondertekenverzoeken, ondertekenaars en audit-trail worden als OpenRegister-objecten opgeslagen.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
-      title="Twaalf templates uit de doos."
+      title="Voorbeeldtemplates, breid zelf uit."
     >
-      Beschikkingen, jaarverslagen, bezwaarbrieven, subsidie-toekenningen, vergunningen. Allemaal NLDS-conform en Wet open overheid-aware.
+      Wordt geleverd met voorbeeldtemplates voor veelgebruikte overheidsdocumenten (beschikking, algemene brief, kwartaalrapportage). Wet open overheid-aware; voeg je eigen templates toe per registerschema.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
