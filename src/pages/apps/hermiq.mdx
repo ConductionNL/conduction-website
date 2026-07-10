@@ -1,0 +1,98 @@
+---
+title: Hermiq, Conduction
+description: Schedule autonomous AI agents in Nextcloud. Chat, memory, skills, and human approval gates, delivered to Nextcloud Talk.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+<DetailHero
+  background="cobalt"
+  appId="hermiq"
+  crumb={[{label: 'Apps', href: '/apps'}, 'Hermiq']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.1"
+  locales="NL · EN"
+  title="Hermiq"
+  tagline={<>Schedule autonomous AI agents in <span className="next-blue">Nextcloud</span>. Give an agent a prompt, tools and skills, then run it daily, hourly, or on a flow trigger — delivered straight to Nextcloud Talk.</>}
+  intro={<>Hermiq brings autonomous AI agents to the Nextcloud workspace. Define an agent, give it MCP tools and installable skills, and run it on a schedule — daily reports, inbox triage, monitoring, morning briefings. Agents chat over a live streaming thread, keep session history and consolidating memory, and can be gated behind a human approval inbox before they act. Every agent, run, memory and skill is stored as an OpenRegister object, so it is governed, audited and multi-tenant by construction. Released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Read the docs', href: 'https://hermiq.conduction.nl'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/hermiq'}}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="Autonomous agents, on your own Nextcloud."
+        align="stack"
+        lede="Hermiq turns a prompt, a set of tools and a schedule into a working agent. No external agent hosting, no separate vector database — agents, their memory and their skills all live as OpenRegister objects inside your own Nextcloud instance."
+      />
+      <FeatureList>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>}
+          title="Agents with tools and skills."
+        >
+          Define an agent with a prompt, a model, MCP tools, and installable skills from the agentskills.io catalog. Manage them from the Agents catalog and detail page.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+          title="Scheduled runs, delivered to Talk."
+        >
+          Attach a schedule to an agent — daily, hourly, or flow-triggered — and its output lands in a Nextcloud Talk conversation (or a notification when Talk isn't installed).
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
+          title="Chat, sessions and memory."
+        >
+          Talk to any agent over a live streaming chat thread. Sessions keep the full conversation history; consolidating memory keeps long-running agents within their context budget.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
+          title="Human approval gate."
+        >
+          Route sensitive agent actions to a reviewer inbox before they run. Approve or deny per action, with an org-level kill switch.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+          title="Governed by OpenRegister."
+        >
+          Every agent, run, memory and skill is an OpenRegister object — audited, RBAC'd and multi-tenant, with a run-analytics view and a per-org quota and audit export for tenant admins.
+        </FeatureItem>
+      </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['hermiq']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<PartnersForApp slug="hermiq" />
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="The apps Hermiq depends on."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="Agents, memory, skills and runs stored as governed, audited registers."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="AI agents that live in your Nextcloud."
+  lede={<>Hermiq schedules autonomous AI agents on your own infrastructure, governed by OpenRegister and delivered to Nextcloud Talk. Open-source, on your own data.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+/>

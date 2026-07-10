@@ -1,0 +1,86 @@
+---
+title: HRMQ, Conduction
+description: Open-source HR and payroll administration on Nextcloud. Timesheets, expense claims, and a labour-law and wage-tax compliance rule engine.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+<DetailHero
+  background="cobalt"
+  appId="hrmq"
+  crumb={[{label: 'Apps', href: '/apps'}, 'HRMQ']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.1"
+  locales="NL · EN"
+  title="HRMQ"
+  tagline={<>Open-source HR and payroll administration on <span className="next-blue">Nextcloud</span>. Timesheets and expense claims with an approval workflow, plus a compliance rule engine that checks your HR data against labour law and wage-tax rules.</>}
+  intro={<>HRMQ is an open-source HR and payroll app for Dutch and EU employers, built on the OpenRegister data layer. Employees log hours and submit expense claims through a submit-approve-reject workflow, while the underlying register holds employee, contract, payroll-run, payslip and wage-tax-filing records. A machine-checkable rule corpus — EU labour directives, ILO conventions, GDPR for employee data, and Dutch labour and wage-tax law (Wet minimumloon, Wet DBA, Wet LB 1964, Wfsv) — is audited against that data on demand. Released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'View on Codeberg', href: 'https://codeberg.org/Conduction/hrmq'}}
+  tertiaryCta={{label: 'View on GitHub (mirror)', href: 'https://github.com/ConductionNL/hrmq'}}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="Timesheets, expenses, and compliance in one place."
+        align="stack"
+        lede="HRMQ covers the day-to-day HR workflows — logging hours, claiming expenses, getting them approved — and backs them with a static, versioned corpus of labour-law and payroll rules that an executable rule engine checks your register data against."
+      />
+      <FeatureList>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+          title="Timesheets with an approval workflow."
+        >
+          Employees log hours per period and project. Managers review submitted timesheets and approve, reject, or reopen them — the full state history stays on the record.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+          title="Expense claims with an approval workflow."
+        >
+          Employees submit expense claims with amount, category, and receipt. Once approved, the claim moves to reimbursed — a separate workflow from timesheets, with its own approval trail.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
+          title="HR and payroll compliance rule engine."
+        >
+          A versioned corpus of EU labour directives, ILO conventions, GDPR, and Dutch labour and wage-tax law. Run <code>occ hrmq:rules:audit</code> to check the register's employee, contract, payroll-run, and payslip data against every machine-checkable rule and get a coverage report.
+        </FeatureItem>
+      </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['hrmq']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<PartnersForApp slug="hrmq" />
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="The app HRMQ depends on."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="Employee, contract, payroll-run, payslip, timesheet and expense objects as typed registers."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="HR administration your compliance team can check."
+  lede={<>HRMQ pairs everyday HR workflows with a rule engine that tells you, in one audit run, which labour-law and wage-tax rules your data actually satisfies. Open-source, on your own Nextcloud.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+/>

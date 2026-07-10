@@ -1,0 +1,85 @@
+---
+title: HRMQ, Conduction
+description: Open-source HR- en salarisadministratie op Nextcloud. Urenregistratie, declaraties en een arbeidsrecht- en loonheffingen-compliance-engine.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+
+<DetailHero
+  appId="hrmq"
+  crumb={[{label: 'Apps', href: '/apps'}, 'HRMQ']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.1"
+  locales="NL · EN"
+  title="HRMQ"
+  tagline={<>Open-source HR- en salarisadministratie op <span className="next-blue">Nextcloud</span>. Urenregistratie en declaraties met een goedkeurings-flow, plus een compliance-engine die je HR-data toetst aan arbeidsrecht en loonheffingen.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Bekijk op Codeberg', href: 'https://codeberg.org/Conduction/hrmq'}}
+  tertiaryCta={{label: 'Bekijk op GitHub (mirror)', href: 'https://github.com/ConductionNL/hrmq'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+/>
+
+HRMQ is een open-source HR- en salarisadministratie-app voor Nederlandse en EU-werkgevers, gebouwd op de OpenRegister-datalaag. Medewerkers registreren uren en dienen declaraties in via een indienen-goedkeuren-afkeuren-flow, terwijl het onderliggende register medewerker-, contract-, loonrun-, loonstrook- en loonheffingenaangifte-gegevens vasthoudt. Een machine-controleerbaar regelcorpus — EU-arbeidsrichtlijnen, ILO-verdragen, AVG voor medewerkersgegevens, en Nederlands arbeids- en loonheffingenrecht (Wet minimumloon, Wet DBA, Wet LB 1964, Wfsv) — wordt op verzoek getoetst aan die data. Uitgegeven onder EUPL-1.2, onderhouden door Conduction.
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="Urenregistratie, declaraties en compliance in één app."
+        align="stack"
+        lede="HRMQ dekt de dagelijkse HR-workflows — uren loggen, declaraties indienen, laten goedkeuren — en onderbouwt ze met een statisch, geversioneerd corpus van arbeidsrecht- en loonregels dat een uitvoerbare regelengine toetst aan je registerdata."
+      />
+      <FeatureList>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+          title="Urenregistratie met goedkeurings-flow."
+        >
+          Medewerkers loggen uren per periode en project. Managers beoordelen ingediende urenstaten en keuren goed, af, of heropenen ze — de volledige statusgeschiedenis blijft op het record staan.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+          title="Declaraties met goedkeurings-flow."
+        >
+          Medewerkers dienen declaraties in met bedrag, categorie en bon. Na goedkeuring gaat de declaratie naar vergoed — een aparte flow ten opzichte van urenregistratie, met een eigen goedkeuringsspoor.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
+          title="HR- en salaris-compliance-engine."
+        >
+          Een geversioneerd corpus van EU-arbeidsrichtlijnen, ILO-verdragen, AVG en Nederlands arbeids- en loonheffingenrecht. Draai <code>occ hrmq:rules:audit</code> om de medewerker-, contract-, loonrun- en loonstrookgegevens in het register te toetsen aan elke machine-controleerbare regel en krijg een dekkingsrapport.
+        </FeatureItem>
+      </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['hrmq']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Werkt goed met"
+    title="De app waarop HRMQ leunt."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="Medewerker-, contract-, loonrun-, loonstrook-, uren- en declaratie-objecten als typed registers."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="HR-administratie die je compliance-team kan controleren."
+  lede={<>HRMQ combineert dagelijkse HR-workflows met een regelengine die in één auditrun laat zien welke arbeidsrecht- en loonheffingenregels je data daadwerkelijk naleeft. Open-source, op je eigen Nextcloud.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+/>

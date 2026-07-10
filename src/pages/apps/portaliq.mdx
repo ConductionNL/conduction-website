@@ -1,0 +1,110 @@
+---
+title: Portaliq, Conduction
+description: One shared external portal for clients and suppliers. White-label, built on OpenRegister, no separate login per app.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+<DetailHero
+  background="cobalt"
+  appId="portaliq"
+  crumb={[{label: 'Apps', href: '/apps'}, 'Portaliq']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.x"
+  locales="NL · EN"
+  title="Portaliq"
+  tagline={<>One shared external portal for clients and suppliers, on <span className="next-blue">Nextcloud</span>. No separate login and no separate UI per app — one white-label front door, built on OpenRegister.</>}
+  intro={<>Portaliq is the fleet's shared external portal. Clients (citizens) and suppliers (companies) get one integrated, white-label portal to see and act on their records across every Conduction app — reading and writing through OpenRegister, subject-scoped and re-verified on every row. Employees stay inside Nextcloud; Portaliq is exclusively for the people who aren't. Released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Read the docs', href: 'https://portaliq.conduction.nl'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/portaliq'}}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="One portal, not one portal per app."
+        align="stack"
+        lede="Every app that wants an external-facing surface used to build its own login, its own UI, its own auth model. Portaliq replaces all of that with one contribution registry: an app declares what a client or supplier may see and do in a small manifest, and Portaliq renders it, reads it through OpenRegister, and enforces the boundary."
+      />
+      <FeatureList>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>}
+          title="Fail-closed auth edge."
+        >
+          A bearer-token portal session today, resolved server-side and never trusted from the client. Real DigiD (citizens) and eHerkenning (companies) federation is planned behind the same interface, pending an OpenConnector broker.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>}
+          title="Declarative contribution registry."
+        >
+          Any app plugs in with one dependency-free class — no import of Portaliq, no info.xml dependency, inert if Portaliq isn't installed. procest, PipelinQ, and Scholiq already contribute in the current beta.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+          title="Subject-scoped, re-verified reads."
+        >
+          Portaliq reads each app's data through OpenRegister and re-verifies every row against the authenticated subject — a supplier only ever sees its own tenders, contracts, and invoices.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>}
+          title="Whitelisted create actions."
+        >
+          Apps declare which fields an external subject may submit; the server stamps ownership, so a spoofed identifier in the request never survives.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
+          title="Unified inbox."
+        >
+          Every contributing app's notifications land in one message list per subject, fed by OpenRegister's notification engine.
+        </FeatureItem>
+      </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['portaliq']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<PartnersForApp slug="portaliq" />
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="The apps Portaliq depends on and renders."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="Every contribution's data — read subject-scoped, written with server-stamped ownership."
+    />
+    <PairCard
+      href="/apps/procest"
+      icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
+      name="Procest"
+      why="First live contribution: suppliers see their own tenders, contracts, and invoices."
+    />
+    <PairCard
+      href="/apps/pipelinq"
+      icon={<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="19" cy="18" r="2"/></svg>}
+      name="PipelinQ"
+      why="Client and customer contributions — contactmomenten, bookings, and requests."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="One front door for everyone outside Nextcloud."
+  lede={<>Portaliq replaces a per-app external login and a per-app external UI with one white-label portal, built on the same registers your team already works in. Open-source, on your own data.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+/>
