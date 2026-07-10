@@ -93,9 +93,11 @@ If you want to understand what OpenBuild is writing for you under the hood, skim
 
 ## Step 1: Create the app and give it a paw
 
-Open **OpenBuild** from the Nextcloud app menu and choose **Create app**. Give it a name (`Pet Store`), a short description, and pick **Virtual** as the type. A virtual app lives entirely in OpenBuild; it has no installed Nextcloud counterpart.
+Open **OpenBuild** from the Nextcloud app menu and choose **Create app**. The wizard opens on **Basics**: give it a name (`Pet Store`) and a short description. Every app you build here is *virtual* — it lives entirely in OpenBuild with no installed Nextcloud counterpart — so there is no app-type to pick.
 
-Once the app exists, open its settings and upload an **icon**. A pet store wants a paw. Drop a 24x24 SVG into the light icon slot (and a white version into the dark slot for dark themes). OpenBuild stores the icon against the app and serves it at `/apps/openbuild/icons/pet-store.svg`.
+Right there in Basics, give it a **paw**. The **App icon** picker offers thousands of **Material Design Icons** plus the **OpenGemeenten** set: type `paw` in the search box and click the paw glyph, or use **Upload your own SVG** if you have your own artwork. A single pick becomes *both* icons — a white glyph for Nextcloud's dark app header and a dark glyph for light backgrounds — and the two preview swatches show exactly how each will look; use **Add a dark override** only if you want a different glyph for dark. OpenBuild attaches the icon to the app and serves it at `/apps/openbuild/icons/pet-store.svg`.
+
+Then **Next** through **Preset** (pick a version preset — **Single production** is fine to start) and **Review**, and hit **Create**. You can change the icon any time later from the app's detail page, on the **Icon** tab.
 
 **Verify:** the app appears in the OpenBuild app list with its paw, and opening it shows an empty shell with your app name in the navigation.
 
@@ -126,6 +128,7 @@ Each entry opens a focused editor, and the rest of this tutorial is really just 
 - **Edit sidebar… / Edit actions… / Edit settings…**: tailor the current page's right sidebar, its action buttons, and the settings ⚙ foldout ("Tailor the chrome", below).
 - **Edit data…**: create the register and schemas; set each schema's icon and searchable flag (Step 2).
 - **Edit flows…**: add no-code business logic to a schema (Step 10).
+- **Edit setup wizard… / Edit walkthrough… / Edit support & donation…**: author the three onboarding surfaces new users see — the first-run setup wizard, the guided walkthrough, and the support/donation dialog ("Onboard your users", near the end).
 
 ### Edit mode, the grid, and the cogs
 
