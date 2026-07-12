@@ -6,6 +6,12 @@ hide_table_of_contents: true
 
 import {Section, SectionHead, HowSteps, HowStep, Card, Pill, HexBullet, HexNetwork, FeatureList, FeatureItem, PairRow, PairCard, Button, PartnerGrid, PartnerCard, BecomePartner, PartnerDirectory, ManagedCommonGround, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
 import {usePartners, useBecomePartner} from '@site/src/data/partners-catalog';
+import LeadForm from '@site/src/components/LeadForm';
+
+export const supportLeadTitle = (f) =>
+  `Support enquiry — ${[f.firstName, f.lastName].filter(Boolean).join(' ') || 'Website visitor'}${f.organisation ? ` (${f.organisation})` : ''}`;
+export const partnerLeadTitle = (f) =>
+  `Partner application — ${f.company || 'Unknown company'}`;
 
 export function PartnerLogoNetwork() {
   const partners = usePartners();
@@ -166,7 +172,7 @@ export const TIER_PILL_BASE = {
   />
   <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24}} className="support-forms">
 
-    <form style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 'var(--radius-lg)', padding: 36}}>
+    <LeadForm source="website-support" buildTitle={supportLeadTitle} successText="We'll route your request to one to three matching partners and be in touch shortly." style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 'var(--radius-lg)', padding: 36}}>
       <div style={{display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)', marginBottom: 12}}>
         <span style={{width: 10, height: 12, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-orange-knvb)'}}></span>
         I need help
@@ -228,9 +234,9 @@ export const TIER_PILL_BASE = {
       <button type="submit" style={{background: 'var(--c-blue-cobalt)', color: 'white', border: 'none', padding: '13px 28px', borderRadius: 'var(--radius-md)', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', cursor: 'pointer'}}>
         Find me a partner →
       </button>
-    </form>
+    </LeadForm>
 
-    <form id="become-a-partner" style={{background: 'var(--c-cobalt-900)', color: 'white', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-lg)', padding: 36}}>
+    <LeadForm source="website-partner" buildTitle={partnerLeadTitle} successText="We review partner applications within five business days and will follow up by email." id="become-a-partner" style={{background: 'var(--c-cobalt-900)', color: 'white', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-lg)', padding: 36}}>
       <div style={{display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: 12}}>
         <span style={{width: 10, height: 12, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-orange-knvb)'}}></span>
         I want to be a partner
@@ -288,7 +294,7 @@ export const TIER_PILL_BASE = {
       <button type="submit" style={{background: 'white', color: 'var(--c-blue-cobalt)', border: 'none', padding: '13px 28px', borderRadius: 'var(--radius-md)', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', cursor: 'pointer'}}>
         Submit application →
       </button>
-    </form>
+    </LeadForm>
 
   </div>
 </Section>

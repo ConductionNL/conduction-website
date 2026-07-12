@@ -40,6 +40,23 @@ module.exports = createConfig({
   organizationName: 'ConductionNL',
   projectName: 'conduction-website',
 
+  /* Public lead-intake endpoint. The support + partner forms POST here to
+     create a `lead` object in the Pipelinq CRM (OpenRegister, public-create
+     schema, anonymous rate-limited). Set PIPELINQ_LEAD_ENDPOINT at build time
+     to point at a real instance.
+
+     The fallback below is a DEV-ONLY convenience so the forms work out of the
+     box against a local docker environment. It is NOT a production value:
+     `localhost` is the visitor's own machine, and an http endpoint on an https
+     page is blocked as mixed content. LeadForm detects that at runtime and
+     degrades to an email fallback rather than accepting a submit it cannot
+     deliver — so shipping without PIPELINQ_LEAD_ENDPOINT is safe, just inert. */
+  customFields: {
+    pipelinqLeadEndpoint:
+      process.env.PIPELINQ_LEAD_ENDPOINT
+      || 'http://localhost:8080/index.php/apps/openregister/api/objects/pipelinq/lead',
+  },
+
   /* Two locales, English default. URL shape:
        /                 → English (canonical)
        /nl/              → Nederlands
