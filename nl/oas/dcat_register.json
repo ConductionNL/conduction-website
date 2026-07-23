@@ -1,0 +1,78 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DCAT Register",
+    "version": "1.0.0",
+    "description": "DCAT-AP-NL open-data register for OpenRegister. Holds a single Dataset schema aligned to the DCAT-AP-NL standard (https://data.overheid.nl/dcat-ap-nl). A dataset's files become its distributions."
+  },
+  "x-openregister": {
+    "app": "dcat",
+    "type": "url"
+  },
+  "components": {
+    "registers": {
+      "dcat": {
+        "slug": "dcat",
+        "title": "DCAT",
+        "version": "1.0.0",
+        "description": "Open-data register. Datasets are published as DCAT-AP-NL and can be harvested by OpenCatalogi.",
+        "schemas": [
+          "dataset"
+        ]
+      }
+    },
+    "schemas": {
+      "dataset": {
+        "slug": "dataset",
+        "title": "Dataset",
+        "$id": "https://openregister.conduction.nl/schemas/dataset.schema.json",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "version": "1.0.0",
+        "type": "object",
+        "description": "A DCAT-AP-NL dataset: a published, findable collection of open data. Files attached to the object become its distributions.",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of the dataset (dct:title)."
+          },
+          "description": {
+            "type": "string",
+            "description": "Free-text description of the dataset (dct:description)."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Keywords describing the dataset (dcat:keyword)."
+          },
+          "category": {
+            "type": "string",
+            "description": "Theme/category of the dataset (dcat:theme), e.g. a value from the EU data theme vocabulary."
+          },
+          "license": {
+            "type": "string",
+            "description": "License under which the dataset is published (dct:license), e.g. CC0-1.0."
+          },
+          "publicatiedatum": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Publication date (dct:issued). Datasets with a publicatiedatum at or before now are publicly visible."
+          },
+          "landingPage": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of a human-readable landing page for the dataset (dcat:landingPage)."
+          },
+          "publisher": {
+            "type": "string",
+            "description": "Name of the organisation publishing the dataset (dct:publisher)."
+          }
+        }
+      }
+    }
+  }
+}

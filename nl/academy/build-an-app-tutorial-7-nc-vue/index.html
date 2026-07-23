@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="nl-NL" dir="ltr" class="blog-wrapper blog-post-page plugin-blog plugin-id-default" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.10.1">
+<title data-rh="true">Build a Nextcloud app on the Conduction stack — Part 7: The nc-vue component library | Conduction</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" property="og:image" content="https://www.conduction.nl/nl/img/og-conduction.png"><meta data-rh="true" name="twitter:image" content="https://www.conduction.nl/nl/img/og-conduction.png"><meta data-rh="true" property="og:url" content="https://www.conduction.nl/nl/academy/build-an-app-tutorial-7-nc-vue/"><meta data-rh="true" property="og:locale" content="nl_NL"><meta data-rh="true" property="og:locale:alternate" content="en_GB"><meta data-rh="true" name="docusaurus_locale" content="nl"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="nl"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" name="twitter:site" content="@ConductionNL"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:title" content="Build a Nextcloud app on the Conduction stack — Part 7: The nc-vue component library | Conduction"><meta data-rh="true" name="description" content="By Part 6 your PetStore app is shipped and integrated. Along the way the manifest renderer mounted a handful of nc-vue components for you (CnAppRoot, CnPageRenderer, CnIndexPage, CnDetailPage, CnDashboardPage, CnObjectSidebar, CnMarkdownEditor) and Part 5b walked through the dashboard widget vocabulary. The lib ships ~70 Cn* components and a dozen composables. Part 7 is the capability tour: which component to reach for when, what the composable layer does for you, and how the whole library fits together so you stop guessing."><meta data-rh="true" property="og:description" content="By Part 6 your PetStore app is shipped and integrated. Along the way the manifest renderer mounted a handful of nc-vue components for you (CnAppRoot, CnPageRenderer, CnIndexPage, CnDetailPage, CnDashboardPage, CnObjectSidebar, CnMarkdownEditor) and Part 5b walked through the dashboard widget vocabulary. The lib ships ~70 Cn* components and a dozen composables. Part 7 is the capability tour: which component to reach for when, what the composable layer does for you, and how the whole library fits together so you stop guessing."><meta data-rh="true" property="og:type" content="article"><meta data-rh="true" property="article:published_time" content="2026-06-01T00:00:00.000Z"><meta data-rh="true" property="article:author" content="https://conduction.nl"><meta data-rh="true" property="article:tag" content="App development,nextcloud-vue,Components,Composables,Tutorial series"><link data-rh="true" rel="icon" href="/nl/img/favicon.svg"><link data-rh="true" rel="canonical" href="https://www.conduction.nl/nl/academy/build-an-app-tutorial-7-nc-vue/"><link data-rh="true" rel="alternate" href="https://www.conduction.nl/academy/build-an-app-tutorial-7-nc-vue/" hreflang="en-GB"><link data-rh="true" rel="alternate" href="https://www.conduction.nl/nl/academy/build-an-app-tutorial-7-nc-vue/" hreflang="nl-NL"><link data-rh="true" rel="alternate" href="https://www.conduction.nl/academy/build-an-app-tutorial-7-nc-vue/" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","@id":"https://www.conduction.nl/nl/academy/build-an-app-tutorial-7-nc-vue","mainEntityOfPage":"https://www.conduction.nl/nl/academy/build-an-app-tutorial-7-nc-vue","url":"https://www.conduction.nl/nl/academy/build-an-app-tutorial-7-nc-vue","headline":"Build a Nextcloud app on the Conduction stack — Part 7: The nc-vue component library","name":"Build a Nextcloud app on the Conduction stack — Part 7: The nc-vue component library","description":"By Part 6 your PetStore app is shipped and integrated. Along the way the manifest renderer mounted a handful of nc-vue components for you (CnAppRoot, CnPageRenderer, CnIndexPage, CnDetailPage, CnDashboardPage, CnObjectSidebar, CnMarkdownEditor) and Part 5b walked through the dashboard widget vocabulary. The lib ships ~70 Cn* components and a dozen composables. Part 7 is the capability tour: which component to reach for when, what the composable layer does for you, and how the whole library fits together so you stop guessing.","datePublished":"2026-06-01T00:00:00.000Z","author":{"@type":"Person","name":"Conduction","description":"Open-source workspace stack","url":"https://conduction.nl","image":"/nl/img/brand/avatar-conduction-cobalt-on-white.svg"},"keywords":[],"isPartOf":{"@type":"Blog","@id":"https://www.conduction.nl/nl/academy","name":"Conduction Academy"}}</script><link rel="alternate" type="application/rss+xml" href="/nl/academy/rss.xml" title="Conduction Academy RSS Feed">
+<link rel="alternate" type="application/atom+xml" href="/nl/academy/atom.xml" title="Conduction Academy Atom Feed">
+
+
+
+
+
+
+
+
+
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","@id":"https://www.conduction.nl/#org","name":"Conduction B.V.","alternateName":"Conduction","url":"https://www.conduction.nl/","logo":"https://www.conduction.nl/img/brand/avatar-conduction-gold-on-white.svg","foundingDate":"2019","description":"Dutch open-source software company building EUPL-1.2 apps for the Nextcloud workspace.","address":{"@type":"PostalAddress","streetAddress":"Lauriergracht 14h","postalCode":"1016 RR","addressLocality":"Amsterdam","addressCountry":"NL"},"email":"info@conduction.nl","telephone":"+31-85-303-6840","taxID":"NL860784241B01","vatID":"NL860784241B01","identifier":{"@type":"PropertyValue","propertyID":"KvK","value":"76741850"},"sameAs":["https://codeberg.org/Conduction","https://www.linkedin.com/company/conduction/"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","@id":"https://www.conduction.nl/#website","url":"https://www.conduction.nl/","name":"Conduction","publisher":{"@id":"https://www.conduction.nl/#org"},"inLanguage":["en","nl"]}</script><link rel="stylesheet" href="/nl/assets/css/styles.01a3c9bd.css">
+<script src="/nl/assets/js/runtime~main.76b1a004.js" defer="defer"></script>
+<script src="/nl/assets/js/main.ab9a38b8.js" defer="defer"></script>
+</head>
+<body>
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")),document.documentElement.setAttribute("data-theme-choice",t||"system")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Ga naar hoofdinhoud"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Ga naar hoofdinhoud</a></div><nav class="navbar nav_MuJ0" role="navigation" aria-label="Main"><div class="left__6eY"><a class="wordmark_mhs1" href="/nl/"><img src="/nl/img/logo.svg" alt="Conduction-avatar" class="wordmarkIcon_boru" width="32" height="32"><span class="wordmarkText_r1t1">Conduction</span></a><div class="links_cXJT"><a class="link_CwQh" href="/nl/apps/">Apps</a><a class="link_CwQh" href="/nl/solutions/">Oplossingen</a><a class="link_CwQh" href="/nl/academy/">Academy</a><a class="link_CwQh" href="/nl/support/">Support</a><a class="link_CwQh" href="/nl/about/">Over ons</a></div></div><div class="ctas_jpo4"><div class="localeWrapper__Pip"><div class="navbar__item dropdown dropdown--hoverable dropdown--right"><a href="#" aria-haspopup="true" aria-expanded="false" role="button" class="navbar__link" type="localeDropdown"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" class="iconLanguage_nlXk"><path fill="currentColor" d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"></path></svg>Nederlands</a><ul class="dropdown__menu"><li><a href="/academy/build-an-app-tutorial-7-nc-vue/" target="_self" rel="noopener noreferrer" class="dropdown__link" lang="en-GB">English</a></li><li><a href="/nl/academy/build-an-app-tutorial-7-nc-vue/" target="_self" rel="noopener noreferrer" class="dropdown__link dropdown__link--active" lang="nl-NL">Nederlands</a></li></ul></div></div><a class="cta_G5Px" href="/nl/install/">Installeer<!-- --> →</a></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><main class="marketing-page"><article style="margin:0;padding:0"><section class="section_HYk5 bg-default_W4Ct sp-default_t7r_"><div class="inner_wUIo"><section class="hero_N04v"><div class="crumb_cjh6"><a href="/nl/academy/">Academy</a><span class="sep_Y8vQ" aria-hidden="true">/</span><a href="/nl/academy/?type=tutorial">tutorial</a><span class="sep_Y8vQ" aria-hidden="true">/</span>Build a Nextcloud app on the Conduction stack — Part 7: The nc-vue component library</div><h1 class="title_IVS9">Build a Nextcloud app on the Conduction stack — Part 7: The nc-vue component library</h1><div class="cover_t_M8"><span class="watermark_UqPF" aria-hidden="true"></span><span class="thumb_m_mH size-xl_RJss tone-cobalt_kvXT"><svg viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.6" fill="none" stroke="currentColor"><path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h10"></path><path d="M19 14v6"></path><path d="M16 17l3 3 3-3"></path></svg></span></div><p class="summary_YfKg">Parts 2–6 used a handful of nc-vue components by name (CnAppRoot, CnObjectSidebar, CnDashboardPage, CnMarkdownEditor). Part 7 completes the picture, organised by capability so you can reach for the right component the moment your PetStore app needs it.</p><div class="tags__TgB"><span class="pill_PL2G tone-default_gU1e"><span aria-hidden="true" class="hex_LAHd sm_qFQ6" style="background:var(--c-cobalt-400)"></span><span class="label_RVvm">Tutorial</span></span><span class="pill_PL2G tone-default_gU1e"><span aria-hidden="true" class="hex_LAHd sm_qFQ6" style="background:var(--c-cobalt-300)"></span><span class="label_RVvm">App development</span></span><span class="pill_PL2G tone-default_gU1e"><span aria-hidden="true" class="hex_LAHd sm_qFQ6" style="background:var(--c-cobalt-300)"></span><span class="label_RVvm">nextcloud-vue</span></span><span class="pill_PL2G tone-default_gU1e"><span aria-hidden="true" class="hex_LAHd sm_qFQ6" style="background:var(--c-cobalt-300)"></span><span class="label_RVvm">Components</span></span><span class="pill_PL2G tone-default_gU1e"><span aria-hidden="true" class="hex_LAHd sm_qFQ6" style="background:var(--c-cobalt-300)"></span><span class="label_RVvm">Composables</span></span><span class="pill_PL2G tone-default_gU1e"><span aria-hidden="true" class="hex_LAHd sm_qFQ6" style="background:var(--c-cobalt-300)"></span><span class="label_RVvm">Tutorial series</span></span></div><div class="meta_Bh8I"><span class="byline_kgtp tone-default_pILj"><span class="avatar_wR1r" aria-hidden="true"><img src="/nl/img/brand/avatar-conduction-cobalt-on-white.svg" alt=""></span><span class="name__W4N">Conduction</span><span class="sep_CXt6">·</span><span class="date_TPWZ">1 juni 2026</span></span><span class="duration_puxP">19 min read</span></div></section><div class="content-detail-body body_TxfT"><p>By Part 6 your PetStore app is shipped and integrated. Along the way the manifest renderer mounted a handful of nc-vue components for you (<code>CnAppRoot</code>, <code>CnPageRenderer</code>, <code>CnIndexPage</code>, <code>CnDetailPage</code>, <code>CnDashboardPage</code>, <code>CnObjectSidebar</code>, <code>CnMarkdownEditor</code>) and Part 5b walked through the dashboard widget vocabulary. The lib ships ~70 <code>Cn*</code> components and a dozen composables. Part 7 is the capability tour: which component to reach for when, what the composable layer does for you, and how the whole library fits together so you stop guessing.</p>
+<p>This is a tour, not a reference. The full prop tables live on <a href="https://nextcloud-vue.conduction.nl/">nextcloud-vue.conduction.nl</a>. Use Part 7 to build the mental map; use the lib docs to look up signatures.</p>
+<!-- -->
+<admonition title="Recommended first: Part 6" type="tip"><p>Part 7 assumes you&#x27;ve finished <a href="/academy/build-an-app-tutorial-6-integrate">Part 6: Integrate</a>. The examples extend the PetStore app from Parts 1–6, so the schemas (<code>pet</code>, <code>order</code>, <code>category</code>, <code>care_guide</code>) and the manifest are already in place.</p></admonition>
+<aside class="card_hthX"><span class="badge__IZW" aria-hidden="true"><span class="thumb_m_mH size-sm_gHBw tone-cobalt-deep_BRHh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 21h4"></path><path d="M12 3a6 6 0 0 0-4 10.5c.7.8 1 1.6 1 2.5v1h6v-1c0-.9.3-1.7 1-2.5A6 6 0 0 0 12 3z"></path></svg></span></span><div class="head_SuGj"><h3 class="title_L5Jn">What you&#x27;ll learn in this part</h3></div><div class="body_rmUs"><ul><li class="item_XUUM"><svg class="check_Ab1X" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg><span class="body_rk5K">A capability map of the nc-vue library: forms, dialogs, status, filtering, detail-page anatomy, composables, theming.</span></li><li class="item_XUUM"><svg class="check_Ab1X" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg><span class="body_rk5K">How to pick between <code>CnFormPage</code>, <code>CnFormDialog</code>, <code>CnSchemaFormDialog</code>, <code>CnTabbedFormDialog</code>, and <code>CnAdvancedFormDialog</code> without re-reading docs.</span></li><li class="item_XUUM"><svg class="check_Ab1X" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg><span class="body_rk5K">How to wire a destructive flow with <code>CnDeleteDialog</code> and bulk operations with <code>CnMassActionBar</code> + the <code>CnMass*Dialog</code> family.</span></li><li class="item_XUUM"><svg class="check_Ab1X" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg><span class="body_rk5K">When <code>useObjectStore</code> is enough, when <code>useObjectSubscription</code> saves a polling tick, and when <code>useDataSource</code> is the right shape.</span></li><li class="item_XUUM"><svg class="check_Ab1X" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg><span class="body_rk5K">The right pattern for theming a Conduction app with <code>nldesign</code> and CSS tokens, with no hardcoded colours.</span></li></ul></div></aside>
+<aside class="card_hthX"><span class="badge__IZW" aria-hidden="true"><span class="thumb_m_mH size-sm_gHBw tone-cobalt-deep_BRHh"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"></rect><rect x="9" y="2" width="6" height="4" rx="1"></rect><path d="M9 11h6"></path><path d="M9 15h6"></path></svg></span></span><div class="head_SuGj"><h3 class="title_L5Jn">Before you start</h3></div><div class="body_rmUs"><ul><li class="item_T6wn"><span class="bullet_sO3U" aria-hidden="true"></span><span class="body_f8Uy">You&#x27;ve finished <a href="/academy/build-an-app-tutorial-6-integrate">Part 6</a>. Your PetStore app runs locally, ships a manifest, and integrates a second register + xWiki.</span></li><li class="item_T6wn"><span class="bullet_sO3U" aria-hidden="true"></span><span class="body_f8Uy"><code>@conduction/nextcloud-vue</code> at <code>^1.0.0-beta.65</code> or newer pinned in <code>package.json</code>.</span></li><li class="item_T6wn"><span class="bullet_sO3U" aria-hidden="true"></span><span class="body_f8Uy">Comfort reading Vue 3 single-file components. Composition API is the canonical pattern for any new component this part introduces; existing Parts 1–6 used Options API in places, both work.</span></li></ul></div></aside>
+<p>The library breaks naturally into six capability groups. Each group below names the components, says when to reach for each, and shows the minimum integration into PetStore. The seventh section covers the composables; the eighth covers theming.</p>
+<aside class="card_hthX"><div class="head_SuGj"><h3 class="title_L5Jn">Forms</h3></div><div class="body_rmUs"><p>Going beyond the schema-generated <code>&lt;input&gt;</code>s that Parts 2 and 5 already used. <code>CnFormPage</code>, <code>CnFormDialog</code>, <code>CnSchemaFormDialog</code>, <code>CnTabbedFormDialog</code>, <code>CnAdvancedFormDialog</code>.</p></div></aside>
+<aside class="card_hthX"><div class="head_SuGj"><h3 class="title_L5Jn">Destructive + bulk actions</h3></div><div class="body_rmUs"><p>The toolkit above a list when the user wants to delete or copy one or many objects. <code>CnDeleteDialog</code>, <code>CnCopyDialog</code>, <code>CnMassActionBar</code>, <code>CnMass{Delete,Copy,Export,Import}Dialog</code>.</p></div></aside>
+<aside class="card_hthX"><div class="head_SuGj"><h3 class="title_L5Jn">Filtering and quick-find</h3></div><div class="body_rmUs"><p>How to surface filter controls above a list. <code>CnFilterBar</code>, <code>CnQuickFilterBar</code>, <code>CnFacetSidebar</code>.</p></div></aside>
+<aside class="card_hthX"><div class="head_SuGj"><h3 class="title_L5Jn">Status, locks, missing pieces</h3></div><div class="body_rmUs"><p>&quot;Tell the reader what&#x27;s going on&quot; toolkit. <code>CnStatusBadge</code>, <code>CnLockedBanner</code>, <code>CnDependencyMissing</code>, <code>CnProgressBar</code>.</p></div></aside>
+<aside class="card_hthX"><div class="head_SuGj"><h3 class="title_L5Jn">Detail-page anatomy</h3></div><div class="body_rmUs"><p>Composing the right side of a detail view from the canonical cards. <code>CnDetailCard</code>, <code>CnDetailGrid</code>, <code>CnObjectCard</code>, <code>CnAuditTrailCard</code>, <code>CnFilesCard</code>, <code>CnNotesCard</code>, <code>CnTagsCard</code>, <code>CnTasksCard</code>.</p></div></aside>
+<aside class="card_hthX"><div class="head_SuGj"><h3 class="title_L5Jn">Composables and theming</h3></div><div class="body_rmUs"><p>The reactive layer the components build on, plus how to theme the whole thing with nldesign without writing a single hardcoded colour.</p></div></aside>
+<div class="eyebrow_LQhi"><span aria-hidden="true" class="hex_LAHd md_UwWv"></span><span class="label_cEG6">Forms</span></div>
+<h2 id="1-forms-beyond-input-five-form-components-when-to-reach-for-each">1. Forms beyond <code>&lt;input&gt;</code>: five form components, when to reach for each</h2>
+<p>Part 2 generated forms from the schema automatically. Part 5 added a <code>CnMarkdownEditor</code> via <code>fieldWidgets[]</code>. Most apps eventually outgrow the auto-form: a creation dialog with three steps, a settings page that needs tabs, a form on its own route. The library exposes five form components for those moments.</p>
+<div class="theme-tabs-container tabs-container tabList__CuJ"><ul role="tablist" aria-orientation="horizontal" class="tabs"><li role="tab" tabindex="0" aria-selected="true" class="tabs__item tabItem_LNqP tabs__item--active">CnFormPage</li><li role="tab" tabindex="-1" aria-selected="false" class="tabs__item tabItem_LNqP">CnFormDialog</li><li role="tab" tabindex="-1" aria-selected="false" class="tabs__item tabItem_LNqP">CnSchemaFormDialog</li><li role="tab" tabindex="-1" aria-selected="false" class="tabs__item tabItem_LNqP">CnTabbedFormDialog</li><li role="tab" tabindex="-1" aria-selected="false" class="tabs__item tabItem_LNqP">CnAdvancedFormDialog</li></ul><div class="margin-top--md"><div role="tabpanel" class="tabItem_Ymn6"><p>A standalone page that hosts a form, takes the whole column. Use when the form deserves its own URL (multi-step creation, a long edit form, a wizard).</p><pre><code class="language-json" metastring="title=&quot;src/manifest.json: order placement as its own page&quot;">{&quot;id&quot;: &quot;orders-create&quot;,
+ &quot;route&quot;: &quot;/orders/new&quot;,
+ &quot;type&quot;: &quot;form&quot;,
+ &quot;title&quot;: &quot;petstore.orders.createTitle&quot;,
+ &quot;config&quot;: {
+   &quot;register&quot;: &quot;petstore&quot;, &quot;schema&quot;: &quot;order&quot;,
+   &quot;submitEndpoint&quot;: &quot;/index.php/apps/openregister/api/objects/petstore/order&quot;,
+   &quot;submitMethod&quot;: &quot;POST&quot;,
+   &quot;mode&quot;: &quot;create&quot;
+ }}
+</code></pre><p><code>CnFormPage</code> is what the renderer mounts behind the manifest&#x27;s <code>type: &#x27;form&#x27;</code>. No Vue file. The page reads the schema, generates inputs, validates against the schema, and submits to the endpoint declared in <code>config</code>.</p><p>Reach for it when: the form is the whole reason for a route.</p></div><div role="tabpanel" class="tabItem_Ymn6" hidden=""><p>A modal dialog that hosts a form. Use when the form is an action on an index or detail page, not a destination.</p><pre><code class="language-vue" metastring="title=&quot;src/components/OrderQuickAddDialog.vue&quot;">&lt;template&gt;
+  &lt;CnFormDialog
+    v-model:open=&quot;open&quot;
+    :register=&quot;&#x27;petstore&#x27;&quot;
+    :schema=&quot;&#x27;order&#x27;&quot;
+    :endpoint=&quot;endpoint&quot;
+    method=&quot;POST&quot;
+    :title=&quot;$t(&#x27;petstore.orders.quickAdd&#x27;)&quot;
+    @submitted=&quot;onSubmitted&quot; /&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { CnFormDialog } from &#x27;@conduction/nextcloud-vue&#x27;
+
+const open = defineModel(&#x27;open&#x27;, { default: false })
+const endpoint = &#x27;/index.php/apps/openregister/api/objects/petstore/order&#x27;
+
+function onSubmitted(order) {
+  // order is the just-created object
+}
+&lt;/script&gt;
+</code></pre><p>Reach for it when: the user is mid-flow and shouldn&#x27;t leave the page.</p></div><div role="tabpanel" class="tabItem_Ymn6" hidden=""><p>A <code>CnFormDialog</code> that takes the <strong>schema slug</strong> and figures the rest out. Used when you want a one-liner: &quot;open the order create dialog&quot;. No template, no controlled state, no endpoint string.</p><pre><code class="language-vue" metastring="title=&quot;Triggering a schema form from anywhere&quot;">&lt;template&gt;
+  &lt;NcButton @click=&quot;openCreate&quot;&gt;
+    {{ $t(&#x27;petstore.orders.add&#x27;) }}
+  &lt;/NcButton&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { openSchemaFormDialog } from &#x27;@conduction/nextcloud-vue&#x27;
+
+function openCreate() {
+  openSchemaFormDialog({
+    register: &#x27;petstore&#x27;,
+    schema: &#x27;order&#x27;,
+    mode: &#x27;create&#x27;,
+    prefill: { status: &#x27;placed&#x27; },
+  })
+}
+&lt;/script&gt;
+</code></pre><p>Reach for it when: every page in the app might want to spawn the same form. The imperative <code>openSchemaFormDialog()</code> helper keeps the call site terse.</p></div><div role="tabpanel" class="tabItem_Ymn6" hidden=""><p>A form dialog with multiple tabs, one per schema section. Used when the schema has natural groupings (&quot;General&quot;, &quot;Shipping&quot;, &quot;Tracking&quot;) and shoving every field on one screen would intimidate.</p><pre><code class="language-vue" metastring="title=&quot;Edit order: three tabs&quot;">&lt;template&gt;
+  &lt;CnTabbedFormDialog
+    v-model:open=&quot;open&quot;
+    :register=&quot;&#x27;petstore&#x27;&quot;
+    :schema=&quot;&#x27;order&#x27;&quot;
+    :object-id=&quot;orderId&quot;
+    :tabs=&quot;[
+      { id: &#x27;general&#x27;, label: $t(&#x27;petstore.orders.tabs.general&#x27;),
+        fields: [&#x27;pet&#x27;, &#x27;quantity&#x27;, &#x27;status&#x27;, &#x27;placedBy&#x27;] },
+      { id: &#x27;shipping&#x27;, label: $t(&#x27;petstore.orders.tabs.shipping&#x27;),
+        fields: [&#x27;shipDate&#x27;, &#x27;address&#x27;, &#x27;carrier&#x27;] },
+      { id: &#x27;tracking&#x27;, label: $t(&#x27;petstore.orders.tabs.tracking&#x27;),
+        fields: [&#x27;trackingNumber&#x27;, &#x27;complete&#x27;] },
+    ]&quot; /&gt;
+&lt;/template&gt;
+</code></pre><p>Reach for it when: the schema has 12+ properties and the user would scroll on a flat form.</p></div><div role="tabpanel" class="tabItem_Ymn6" hidden=""><p>The escape hatch. Use the form dialog&#x27;s chrome (title, submit/cancel, validation surface) but mount a host SFC inside instead of the schema-driven inputs.</p><pre><code class="language-vue" metastring="title=&quot;A bespoke order conflict resolver&quot;">&lt;template&gt;
+  &lt;CnAdvancedFormDialog
+    v-model:open=&quot;open&quot;
+    :title=&quot;$t(&#x27;petstore.orders.resolveConflict&#x27;)&quot;
+    @submit=&quot;resolve&quot;&gt;
+    &lt;OrderConflictResolver
+      :conflict=&quot;conflict&quot;
+      v-model:choice=&quot;choice&quot; /&gt;
+  &lt;/CnAdvancedFormDialog&gt;
+&lt;/template&gt;
+</code></pre><p>Reach for it when: the form is too bespoke for schema-driven generation but you still want the lib&#x27;s dialog chrome. If you find yourself reaching for this often, the gap is probably worth a <code>fieldWidgets[]</code> proposal upstream.</p></div></div></div>
+<p>The shorthand: <code>CnFormPage</code> if it owns the URL, <code>CnFormDialog</code> (or its <code>CnSchemaFormDialog</code> shortcut) if it doesn&#x27;t, <code>CnTabbedFormDialog</code> when the schema is big, <code>CnAdvancedFormDialog</code> for the genuinely bespoke 5%.</p>
+<div class="eyebrow_LQhi"><span aria-hidden="true" class="hex_LAHd md_UwWv"></span><span class="label_cEG6">Destructive + bulk actions</span></div>
+<h2 id="2-destructive--bulk-actions-the-toolkit-above-a-list">2. Destructive + bulk actions: the toolkit above a list</h2>
+<p>When the user clicks &quot;Delete&quot;, a confirmation surface stands between the click and the irreversible write. The library ships dedicated dialogs for the four common destructive flows, plus a bulk-action bar that materialises when one or more rows are selected in a <code>CnIndexPage</code>.</p>
+<h3 id="single-object-destructive">Single-object destructive</h3>
+<pre><code class="language-vue" metastring="title=&quot;Single-object delete from a row action&quot;">&lt;template&gt;
+  &lt;CnDeleteDialog
+    v-model:open=&quot;confirmOpen&quot;
+    :title=&quot;$t(&#x27;petstore.orders.delete.title&#x27;)&quot;
+    :description=&quot;$t(&#x27;petstore.orders.delete.body&#x27;, { label: order.id })&quot;
+    :object-id=&quot;order.id&quot;
+    :register=&quot;&#x27;petstore&#x27;&quot;
+    :schema=&quot;&#x27;order&#x27;&quot;
+    @deleted=&quot;onDeleted&quot; /&gt;
+&lt;/template&gt;
+</code></pre>
+<p><code>CnCopyDialog</code> is the sibling for &quot;duplicate this object&quot;. Both follow the same shape: <code>register</code>, <code>schema</code>, <code>object-id</code>, an emit on success.</p>
+<h3 id="bulk-actions">Bulk actions</h3>
+<p><code>CnIndexPage</code> already shows row checkboxes when <code>actionToggles.selectable</code> (or the legacy <code>selectable: true</code>) is on. When at least one row is selected, <code>CnMassActionBar</code> slides in from the bottom of the list with the actions you wired:</p>
+<pre><code class="language-json" metastring="title=&quot;src/manifest.json: bulk actions enabled&quot;">{&quot;id&quot;: &quot;orders-index&quot;,
+ &quot;route&quot;: &quot;/orders&quot;,
+ &quot;type&quot;: &quot;index&quot;,
+ &quot;title&quot;: &quot;petstore.orders.title&quot;,
+ &quot;config&quot;: {
+   &quot;register&quot;: &quot;petstore&quot;, &quot;schema&quot;: &quot;order&quot;,
+   &quot;actionToggles&quot;: { &quot;selectable&quot;: true,
+                      &quot;showMassDelete&quot;: true,
+                      &quot;showMassExport&quot;: true,
+                      &quot;showMassImport&quot;: false }
+ }}
+</code></pre>
+<p>The bar wires <code>showMassDelete</code> to <code>CnMassDeleteDialog</code>, <code>showMassCopy</code> to <code>CnMassCopyDialog</code>, <code>showMassExport</code> to <code>CnMassExportDialog</code>, <code>showMassImport</code> to <code>CnMassImportDialog</code>. Each takes a selected-IDs array, runs the operation server-side via OpenRegister&#x27;s mass-action endpoint, surfaces progress in the bar, and emits on completion. No code on your end.</p>
+<p>When you need a custom bulk action (e.g. &quot;mark selected orders as cancelled&quot;), drop a custom slot in <code>CnMassActionBar</code>:</p>
+<pre><code class="language-vue" metastring="title=&quot;Custom bulk action alongside the lib ones&quot;">&lt;template&gt;
+  &lt;CnMassActionBar :selected=&quot;selectedIds&quot;&gt;
+    &lt;template #custom-actions&gt;
+      &lt;NcButton @click=&quot;markCancelled(selectedIds)&quot;&gt;
+        {{ $t(&#x27;petstore.orders.markCancelled&#x27;) }}
+      &lt;/NcButton&gt;
+    &lt;/template&gt;
+  &lt;/CnMassActionBar&gt;
+&lt;/template&gt;
+</code></pre>
+<p>The lib actions stay; your custom action joins them.</p>
+<div class="eyebrow_LQhi"><span aria-hidden="true" class="hex_LAHd md_UwWv"></span><span class="label_cEG6">Filtering and quick-find</span></div>
+<h2 id="3-filtering-three-components-three-intents">3. Filtering: three components, three intents</h2>
+<p>The library separates &quot;filter for power users&quot; from &quot;find for everyone&quot; from &quot;facet exploration&quot;. Pick by intent.</p>
+<table><thead><tr><th>Component</th><th>Intent</th><th>UI shape</th><th>When</th></tr></thead><tbody><tr><td><code>CnFilterBar</code></td><td>Filter by named field with explicit operators</td><td>Pill chips above the list, each one a <code>field op value</code> triple</td><td>Power-user filtering where the field set is stable and the operator matters (<code>status = available</code>, <code>shipDate &gt;= today</code>)</td></tr><tr><td><code>CnQuickFilterBar</code></td><td>Omnibox-style free-text search across declared fields</td><td>Single input above the list</td><td>The common &quot;I just want to find one thing&quot; case</td></tr><tr><td><code>CnFacetSidebar</code></td><td>Faceted browse by a small set of high-cardinality fields</td><td>Left-rail with collapsible facets, each showing counts</td><td>Catalogues, search pages, anywhere browsing by attribute matters</td></tr></tbody></table>
+<p>PetStore&#x27;s orders index ships with <code>CnQuickFilterBar</code> by default: it&#x27;s what most users want. To add <code>CnFilterBar</code> for power users, declare <code>filterBar</code> in the page config:</p>
+<pre><code class="language-json" metastring="title=&quot;src/manifest.json: orders index with both&quot;">{&quot;id&quot;: &quot;orders-index&quot;,
+ &quot;route&quot;: &quot;/orders&quot;,
+ &quot;type&quot;: &quot;index&quot;,
+ &quot;title&quot;: &quot;petstore.orders.title&quot;,
+ &quot;config&quot;: {
+   &quot;register&quot;: &quot;petstore&quot;, &quot;schema&quot;: &quot;order&quot;,
+   &quot;quickFilter&quot;: { &quot;fields&quot;: [&quot;id&quot;, &quot;pet.name&quot;, &quot;notes&quot;] },
+   &quot;filterBar&quot;: {
+     &quot;filters&quot;: [
+       { &quot;id&quot;: &quot;status&quot;, &quot;label&quot;: &quot;petstore.orders.fields.status&quot;,
+         &quot;field&quot;: &quot;status&quot;, &quot;operators&quot;: [&quot;=&quot;],
+         &quot;options&quot;: [&quot;placed&quot;, &quot;approved&quot;, &quot;delivered&quot;, &quot;cancelled&quot;] },
+       { &quot;id&quot;: &quot;shipDate&quot;, &quot;label&quot;: &quot;petstore.orders.fields.shipDate&quot;,
+         &quot;field&quot;: &quot;shipDate&quot;, &quot;operators&quot;: [&quot;&gt;=&quot;, &quot;&lt;=&quot;, &quot;between&quot;] },
+       { &quot;id&quot;: &quot;category&quot;, &quot;label&quot;: &quot;petstore.orders.fields.category&quot;,
+         &quot;field&quot;: &quot;pet.category&quot;, &quot;operators&quot;: [&quot;=&quot;] }
+     ]
+   }
+ }}
+</code></pre>
+<p>The renderer mounts <code>CnQuickFilterBar</code> and <code>CnFilterBar</code> above the list; both feed their predicate into the same <code>useObjectStore</code> query.</p>
+<p><code>CnFacetSidebar</code> is the heavier surface. Reach for it on a <code>type: &#x27;search&#x27;</code> page (Part 5 §5) where the user starts with no query and refines by facet. It&#x27;s overkill for a simple list.</p>
+<div class="eyebrow_LQhi"><span aria-hidden="true" class="hex_LAHd md_UwWv"></span><span class="label_cEG6">Status, locks, missing pieces</span></div>
+<h2 id="4-status-indicators-the-whats-going-on-toolkit">4. Status indicators: the &quot;what&#x27;s going on&quot; toolkit</h2>
+<p>Four components carry small but loud messages.</p>
+<h3 id="cnstatusbadge-release-status-mode-flags"><code>CnStatusBadge</code>: release status, mode flags</h3>
+<pre><code class="language-vue">&lt;CnStatusBadge tone=&quot;stable&quot;&gt;{{ $t(&#x27;petstore.released&#x27;) }}&lt;/CnStatusBadge&gt;
+&lt;CnStatusBadge tone=&quot;beta&quot;&gt;{{ $t(&#x27;petstore.preview&#x27;) }}&lt;/CnStatusBadge&gt;
+&lt;CnStatusBadge tone=&quot;warning&quot;&gt;{{ $t(&#x27;petstore.deprecated&#x27;) }}&lt;/CnStatusBadge&gt;
+</code></pre>
+<p>Tones: <code>stable</code>, <code>beta</code>, <code>warning</code>, <code>info</code>, <code>neutral</code>. The component renders the brand hex bullet in the corresponding semantic colour. Use it for tagging the app&#x27;s release status near the title, or for tagging individual objects whose state shifts (&quot;draft&quot;, &quot;published&quot;, &quot;archived&quot;). Don&#x27;t sprinkle: one or two per page maximum.</p>
+<h3 id="cnlockedbanner-object-lock-notice"><code>CnLockedBanner</code>: object lock notice</h3>
+<p>When OpenRegister&#x27;s object-lock feature is on and another user holds the lock on the current detail object, the lock banner appears at the top of the detail page. You don&#x27;t usually mount it directly: <code>CnDetailPage</code> auto-mounts it when <code>useObjectLock</code> reports a held lock. Reach for it manually only when you&#x27;ve built a custom detail surface and want the same chrome.</p>
+<pre><code class="language-vue">&lt;template&gt;
+  &lt;CnLockedBanner v-if=&quot;lock.held&quot; :held-by=&quot;lock.heldBy&quot; :since=&quot;lock.since&quot; /&gt;
+&lt;/template&gt;
+</code></pre>
+<h3 id="cndependencymissing-required-app-not-installed"><code>CnDependencyMissing</code>: required app not installed</h3>
+<p>The Conduction stack has app dependencies (PetStore requires OpenRegister; the integrations from Part 6 require OpenConnector). When a dependency is missing, the page renders a friendly banner that says what&#x27;s missing and how to install it, instead of a stack trace.</p>
+<pre><code class="language-vue">&lt;template&gt;
+  &lt;CnDependencyMissing
+    v-if=&quot;!hasOpenConnector&quot;
+    app=&quot;openconnector&quot;
+    :reason=&quot;$t(&#x27;petstore.integrations.openconnectorRequired&#x27;)&quot;
+    install-url=&quot;https://apps.nextcloud.com/apps/openconnector&quot; /&gt;
+  &lt;OrdersIntegrationPage v-else /&gt;
+&lt;/template&gt;
+</code></pre>
+<p>In the manifest path, the renderer surfaces this automatically when the page declares <code>requires-apps</code>. Reach for the component manually only when you need finer-grained guards.</p>
+<h3 id="cnprogressbar-long-operations"><code>CnProgressBar</code>: long operations</h3>
+<p>For anything that takes more than two seconds and produces a progress signal (bulk import, mass export, sync). Drives off an <code>IProgressReporter</code> your service exposes, or off a polled endpoint.</p>
+<pre><code class="language-vue">&lt;template&gt;
+  &lt;CnProgressBar
+    v-if=&quot;sync.running&quot;
+    :value=&quot;sync.processed&quot;
+    :max=&quot;sync.total&quot;
+    :label=&quot;$t(&#x27;petstore.sync.inProgress&#x27;, { n: sync.total })&quot; /&gt;
+&lt;/template&gt;
+</code></pre>
+<p><code>CnIndexPage</code> and the bulk-action dialogs use it internally, so you rarely mount it by hand.</p>
+<div class="eyebrow_LQhi"><span aria-hidden="true" class="hex_LAHd md_UwWv"></span><span class="label_cEG6">Detail-page anatomy</span></div>
+<h2 id="5-detail-page-anatomy-composing-the-right-side-from-cards">5. Detail-page anatomy: composing the right side from cards</h2>
+<p>A <code>CnDetailPage</code> is more than the object form. Its right side is a column of &quot;cards&quot;, each focused on one facet of the object. The library ships a card for every common facet, and they all share the same chrome (title, collapse, optional actions). Compose them in <code>config.detailCards[]</code> in the manifest, or by passing the cards as a slot when you build a detail page by hand.</p>
+<table><thead><tr><th>Card</th><th>Shows</th><th>When to drop it on a detail page</th></tr></thead><tbody><tr><td><code>CnDetailCard</code></td><td>The object form itself (auto-generated from schema)</td><td>Always: this is the spine of the detail page</td></tr><tr><td><code>CnDetailGrid</code></td><td>A grid layout for multiple <code>CnDetailCard</code>s side-by-side</td><td>When the object has natural left/right groupings (pet identity left, inventory right)</td></tr><tr><td><code>CnObjectCard</code></td><td>A compact reference to a related object</td><td>&quot;This order is for pet X&quot;, clickable, opens X in a slide-over</td></tr><tr><td><code>CnAuditTrailCard</code></td><td>The OR audit log for this object</td><td>Required for compliance flows; useful for &quot;who changed what when&quot; tracing</td></tr><tr><td><code>CnFilesCard</code></td><td>Files attached to the object</td><td>When the object has a <code>files[]</code> relation (pet photos, care_guide assets)</td></tr><tr><td><code>CnNotesCard</code></td><td>Free-form notes against the object</td><td>When <code>CnDetailCard</code>&#x27;s schema-driven <code>notes</code> field isn&#x27;t enough: multi-author, threaded notes</td></tr><tr><td><code>CnTagsCard</code></td><td>Tags applied to the object</td><td>When the object has a <code>tags[]</code> relation, surfaces them as removable chips</td></tr><tr><td><code>CnTasksCard</code></td><td>Tasks linked to the object</td><td>When the workflow needs a to-do list on each object: common on incidents/cases, less so on orders</td></tr><tr><td><code>CnConfigurationCard</code></td><td>Per-object configuration overrides</td><td>Rare: used on objects that themselves configure something else (a register&#x27;s settings object)</td></tr></tbody></table>
+<pre><code class="language-json" metastring="title=&quot;src/manifest.json: PetStore pet detail with the right cards&quot;">{&quot;id&quot;: &quot;pet-detail&quot;,
+ &quot;route&quot;: &quot;/pets/:id&quot;,
+ &quot;type&quot;: &quot;detail&quot;,
+ &quot;title&quot;: &quot;petstore.pets.detailTitle&quot;,
+ &quot;config&quot;: {
+   &quot;register&quot;: &quot;petstore&quot;, &quot;schema&quot;: &quot;pet&quot;,
+   &quot;detailCards&quot;: [
+     { &quot;kind&quot;: &quot;CnDetailCard&quot; },
+     { &quot;kind&quot;: &quot;CnObjectCard&quot;, &quot;label&quot;: &quot;petstore.pets.categoryRef&quot;,
+       &quot;ref&quot;: { &quot;register&quot;: &quot;petstore&quot;, &quot;schema&quot;: &quot;category&quot;, &quot;idField&quot;: &quot;category&quot; } },
+     { &quot;kind&quot;: &quot;CnAuditTrailCard&quot; },
+     { &quot;kind&quot;: &quot;CnFilesCard&quot; },
+     { &quot;kind&quot;: &quot;CnNotesCard&quot; }
+   ]
+ }}
+</code></pre>
+<p>The renderer hosts them in the right column, in the order you declare. Reorder by editing the array; remove what&#x27;s not relevant. Don&#x27;t sprinkle every card on every detail page: the right side is a place for the facets that matter for this object kind.</p>
+<div class="eyebrow_LQhi"><span aria-hidden="true" class="hex_LAHd md_UwWv"></span><span class="label_cEG6">Composables</span></div>
+<h2 id="6-the-composables-what-runs-underneath-every-component">6. The composables: what runs underneath every component</h2>
+<p>Every <code>Cn*</code> component is built on a small composable surface. Once you know the composables, you can drop into Vue and rebuild any surface, or compose a custom one that the library doesn&#x27;t yet ship.</p>
+<h3 id="useobjectstore-the-workhorse-youve-already-used"><code>useObjectStore</code>: the workhorse you&#x27;ve already used</h3>
+<p>Part 4 used <code>useObjectStore</code> to fetch pets and orders. The full shape:</p>
+<pre><code class="language-javascript">import { useObjectStore } from &#x27;@conduction/nextcloud-vue&#x27;
+
+const orders = useObjectStore(&#x27;petstore&#x27;, &#x27;order&#x27;)
+
+// List with filter, sort, pagination
+const page = await orders.list({
+  filter: { status: &#x27;placed&#x27; },
+  orderBy: &#x27;shipDate&#x27;,
+  direction: &#x27;asc&#x27;,
+  limit: 50,
+  offset: 0,
+})
+
+// One object by id
+const order = await orders.get(orderId)
+
+// Create
+const created = await orders.create({ pet: petId, quantity: 1, shipDate, placedBy: &#x27;admin&#x27; })
+
+// Update
+await orders.update(orderId, { status: &#x27;approved&#x27; })
+
+// Delete (soft, by default; pass force: true for hard delete)
+await orders.delete(orderId)
+
+// Aggregate
+const count = await orders.count({ filter: { status: &#x27;placed&#x27; } })
+
+// Caching is automatic per (register, schema, query) tuple.
+// Local writes invalidate the cache; the next read re-fetches.
+</code></pre>
+<p>This is the surface every list, detail, and dashboard widget ultimately calls. When you build a custom Vue component, this is your starting point.</p>
+<h3 id="useobjectsubscription-live-updates-without-polling"><code>useObjectSubscription</code>: live updates without polling</h3>
+<p>When the user is staring at a list and someone else creates an order, the list should update. <code>useObjectSubscription</code> opens the OpenRegister push channel for a (register, schema) pair and re-renders affected components.</p>
+<pre><code class="language-vue">&lt;script setup&gt;
+import { useObjectSubscription } from &#x27;@conduction/nextcloud-vue&#x27;
+
+const { events, subscribe, unsubscribe } = useObjectSubscription(&#x27;petstore&#x27;, &#x27;order&#x27;)
+
+subscribe()
+
+watch(events, (event) =&gt; {
+  if (event.kind === &#x27;created&#x27;) reloadOrders()
+  if (event.kind === &#x27;deleted&#x27;) removeFromList(event.objectId)
+})
+
+onUnmounted(unsubscribe)
+&lt;/script&gt;
+</code></pre>
+<p><code>useObjectStore</code> integrates with subscriptions automatically: if a subscription is open, cache invalidation flows through it. You&#x27;ll mount <code>useObjectSubscription</code> by hand only when you need to react to events beyond what cache invalidation handles (a toast, a refresh of a derived view, etc.).</p>
+<h3 id="usedatasource-manifest-driven-data-the-same-shape-the-renderer-uses"><code>useDataSource</code>: manifest-driven data, the same shape the renderer uses</h3>
+<p><code>useDataSource</code> reads a <code>dataSource</code> block (the same shape Part 5b&#x27;s dashboard <code>widgetDef</code> used) and returns the resolved query result. Use it when you build a custom widget for a <code>kind: &#x27;component&#x27;</code> dashboard slot. The widget should consume data the same way as the typed widgets next to it.</p>
+<pre><code class="language-vue">&lt;script setup&gt;
+import { useDataSource } from &#x27;@conduction/nextcloud-vue&#x27;
+
+const props = defineProps([&#x27;dataSource&#x27;])
+const { data, loading, error, refresh } = useDataSource(props.dataSource)
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div v-if=&quot;loading&quot;&gt;...&lt;/div&gt;
+  &lt;div v-else-if=&quot;error&quot;&gt;{{ error.message }}&lt;/div&gt;
+  &lt;div v-else&gt;
+    &lt;p v-for=&quot;row in data&quot; :key=&quot;row.id&quot;&gt;{{ row.label }}&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+</code></pre>
+<p>This is the composable that lets a custom dashboard widget participate in the renderer&#x27;s batched-query optimisation and refresh cycle.</p>
+<h3 id="other-composables-in-one-paragraph-each">Other composables, in one paragraph each</h3>
+<ul>
+<li><strong><code>useAppManifest</code></strong> reads the running app&#x27;s manifest at runtime. Useful for a &quot;what version am I on&quot; surface or for showing a route map inside the app itself.</li>
+<li><strong><code>useAppStatus</code></strong> returns the app&#x27;s running state (loading, ready, error). Used by <code>CnAppLoading</code> to draw the initial skeleton.</li>
+<li><strong><code>useIntegrationRegistry</code></strong> is the read side of ADR-036: query which integrations are registered globally so cross-app surfaces (Calendar tab, Talk tab, Files tab) can opt in.</li>
+<li><strong><code>useObjectLock</code></strong> acquires + releases a server-side lock on an object. <code>CnDetailPage</code> uses it to drive <code>CnLockedBanner</code>; you&#x27;ll touch it directly only when building a custom editor.</li>
+<li><strong><code>useContextMenu</code></strong> drives the right-click + kebab-menu surface on rows and cards. Wire it once at the page level; row components pick up the menu from context.</li>
+<li><strong><code>useGraphQL</code></strong> is the OR GraphQL escape hatch. When <code>useObjectStore</code> can&#x27;t express the join you need, drop to GraphQL and bind the result the same way.</li>
+</ul>
+<div class="eyebrow_LQhi"><span aria-hidden="true" class="hex_LAHd md_UwWv"></span><span class="label_cEG6">Theming</span></div>
+<h2 id="7-theming-tokens-nldesign-and-never-hardcoding-a-colour">7. Theming: tokens, nldesign, and never hardcoding a colour</h2>
+<p>Every Conduction app is themeable by every Conduction theme. The mechanism is CSS tokens: the library reads <code>var(--c-cobalt-700)</code>, <code>var(--c-orange-knvb)</code>, <code>var(--space-5)</code>, never a hex literal. When a Nextcloud instance has <code>nldesign</code> enabled (the government theme), the same tokens resolve to the NL Design palette instead of cobalt; the lib renders correctly with no per-app code change.</p>
+<p>The rule for any custom component you write inside your app:</p>
+<pre><code class="language-css" metastring="title=&quot;src/components/MyCustomCard.module.css&quot;">.card {
+  /* good: picks up nldesign overrides automatically */
+  background: var(--c-cobalt-50);
+  color: var(--c-cobalt-900);
+  padding: var(--space-5);
+  border-radius: var(--border-radius-large);
+}
+
+.cardWarn {
+  /* good: semantic token */
+  background: var(--color-warning-bg);
+  border-left: 4px solid var(--color-warning);
+}
+</code></pre>
+<pre><code class="language-css" metastring="title=&quot;What NOT to write&quot;">.card {
+  /* bad: hardcoded cobalt breaks nldesign */
+  background: #21468B;
+  /* bad: magic spacing breaks the 8px grid */
+  padding: 14px;
+}
+</code></pre>
+<p>The full token list lives in the design-system repo: <code>apps-extra/design-system/tokens.css</code>. Search for <code>--c-</code>, <code>--space-</code>, <code>--color-</code>, <code>--border-radius-</code> and use those. The brand pointy-top hexagon clip-path is <code>var(--hex-pointy-top)</code>. Never flat-top, never rotated, that&#x27;s a hard brand rule.</p>
+<p>To verify your theme behaves under nldesign, enable the <code>nldesign</code> app on your dev Nextcloud and reload your PetStore pages. If anything looks broken, the broken element is reading a non-token value somewhere. Grep your <code>.css</code>/<code>.vue</code> files for hex literals and fix them at the source.</p>
+<h2 id="what-youve-built-now">What you&#x27;ve built now</h2>
+<p>A working mental map of the nc-vue library, organised by capability so you know which component to reach for in any given moment:</p>
+<ul>
+<li>The five form components escalate from auto-generated <code>&lt;input&gt;</code>s to bespoke editors</li>
+<li>The destructive + bulk toolkit covers the four common write patterns plus the bar that hosts them</li>
+<li>Three filter components match the three intents (power-user, omnibox, faceted browse)</li>
+<li>Four status components cover the common &quot;tell the reader&quot; needs</li>
+<li>Nine detail-page cards compose the right column for any object kind</li>
+<li>The composables let you build custom surfaces on the same primitives the lib uses</li>
+<li>The token + nldesign discipline keeps every app themeable for free</li>
+</ul>
+<h2 id="test-yourself">Test yourself</h2>
+<p><strong>Question 1:</strong> A user clicks &quot;Edit order&quot; on a row in the orders list. The form needs to scroll through twelve fields. Which form component is right?</p>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Hint</summary><div><div class="collapsibleContent_i85q"><p>How many natural groupings do the twelve fields have? If the answer is &quot;three or four&quot;, the answer isn&#x27;t a flat dialog.</p></div></div></details>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Answer</summary><div><div class="collapsibleContent_i85q"><p><code>CnTabbedFormDialog</code>. The schema has 12+ properties and the user would scroll on a flat form, which is the explicit threshold from §1. <code>CnFormDialog</code> is also acceptable if the fields really are flat with no groupings, but for order-edit-with-shipping-and-tracking, tabs win.</p></div></div></details>
+<p><strong>Question 2:</strong> You&#x27;re adding a &quot;mark as cancelled&quot; bulk action to the orders list. The lib ships <code>showMassDelete</code>, <code>showMassCopy</code>, <code>showMassExport</code>, <code>showMassImport</code> but no <code>showMassMarkCancelled</code>. Where do you wire your custom action?</p>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Hint</summary><div><div class="collapsibleContent_i85q"><p>The bar is already there. It has slots.</p></div></div></details>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Answer</summary><div><div class="collapsibleContent_i85q"><p><code>CnMassActionBar</code>&#x27;s <code>#custom-actions</code> slot. Mount your own <code>NcButton</code> (or whatever control fits) inside the slot, pass the selected IDs through, and call your own service. The lib actions stay where they are; your custom action sits alongside them in the same bar.</p></div></div></details>
+<p><strong>Question 3:</strong> You&#x27;re building a custom dashboard widget that shows &quot;orders by category, this week&quot;. The widget needs to refresh when other dashboard tiles refresh. Which composable do you bind to?</p>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Hint</summary><div><div class="collapsibleContent_i85q"><p>The widget needs to behave the same way the typed widgets behave: declarative data source, batched query, automatic refresh.</p></div></div></details>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Answer</summary><div><div class="collapsibleContent_i85q"><p><code>useDataSource</code>. Pass it the same <code>dataSource</code> shape a typed widget would use. The composable joins the renderer&#x27;s batched-query optimisation and refresh cycle, so your custom widget participates in the dashboard&#x27;s lifecycle instead of fetching independently.</p></div></div></details>
+<h2 id="where-to-go-from-here">Where to go from here</h2>
+<p>You can now reach for any component in the library by capability rather than by name. The natural next step is documenting and showcasing the app you&#x27;ve built. Part 8 stands up a documentation site with token-built screen mocks and Playwright-captured walkthroughs.</p>
+<section class="section_nBI1"><h2 class="title_NJn1">Volgende stappen</h2><div class="grid_K0En cols-3_ffYz"><a class="card_fJ6r" href="/academy/build-an-app-tutorial-8-document-and-showcase"><div class="title_NJn1">Part 8: Document and showcase</div><div class="cta_fxqO">Lees meer<svg viewBox="0 0 24 24" aria-hidden="true" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></div></a><a class="card_fJ6r" href="https://nextcloud-vue.conduction.nl/docs/components/"><div class="title_NJn1">Full nc-vue component reference</div><div class="cta_fxqO">Lees meer<svg viewBox="0 0 24 24" aria-hidden="true" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></div></a><a class="card_fJ6r" href="https://nextcloud-vue.conduction.nl/docs/architecture/integrations/"><div class="title_NJn1">Pluggable integration registry (ADR-036)</div><div class="cta_fxqO">Lees meer<svg viewBox="0 0 24 24" aria-hidden="true" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></div></a></div></section>
+<aside class="card_hthX hasActions_M26a"><span class="decoFrame_l5OC" aria-hidden="true"><span class="deco_eS8A deco1_qLiN"></span><span class="deco_eS8A deco2_IFvL"></span><span class="deco_eS8A deco3_hfix"></span></span><span class="badge__IZW" aria-hidden="true"><span class="thumb_m_mH size-sm_gHBw tone-cobalt-deep_BRHh"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 7 9-7"></path></svg></span></span><div class="head_SuGj"></div><div class="body_rmUs"></div><div class="actions_x1H1"></div></aside></div><div style="margin-top:64px"><aside class="root_A5ie variant-inline_N9cV" aria-label="Related app links"><h3 class="heading_bCjS">Continue with this app</h3><div class="list_JWNJ"><div class="card_E3dE" aria-labelledby="app-cross-links-openregister"><div class="head_AUSd"><span class="hex_SFbx" aria-hidden="true"><svg viewBox="0 0 24 24" class="hexGlyph_zJRU" fill="currentColor" style="fill:currentColor;stroke:none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M19,12v1.5c2.2,0,4,1.8,4,4s-.2,1.6-.7,2.2l-1.1-1.1c.2-.3.3-.7.3-1.1,0-1.4-1.1-2.5-2.5-2.5v1.5l-2.2-2.2,2.2-2.2M19,23v-1.5c-2.2,0-4-1.8-4-4s.2-1.6.7-2.2l1.1,1.1c-.2.3-.3.7-.3,1.1,0,1.4,1.1,2.5,2.5,2.5v-1.5l2.2,2.2-2.2,2.2M12,3c4.4,0,8,1.8,8,4s-3.6,4-8,4-8-1.8-8-4S7.6,3,12,3M4,9c0,2.2,3.6,4,8,4s2.2-.1,3.1-.3c-1,.9-1.6,2-2,3.3h-1.2c-4.4,0-8-1.8-8-4v-3M20,9v2h-1.1c.7-.6,1.1-1.3,1.1-2M4,14c0,2.2,3.6,4,8,4h1c0,1,.4,2,.9,2.9h-1.9c-4.4.1-8-1.7-8-3.9v-3Z"/></svg></span><div><p class="eyebrow_wYCr">About this app</p><h4 class="title_T279" id="app-cross-links-openregister">OpenRegister</h4></div></div><ul class="rows_uopa"><li class="row_jVO9"><a href="/apps/openregister" class="rowLink_rfne"><span class="rowIcon_WV0y" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4-9-4z"></path><path d="M3 12l9 4 9-4"></path><path d="M3 17l9 4 9-4"></path></svg></span><span class="rowText_YUX5"><span class="rowLabel_udoF">Open product page</span><span class="rowHint_kfTw">Capabilities, pricing, install link</span></span><span class="rowArrow_JTWO" aria-hidden="true">→</span></a></li><li class="row_jVO9"><a href="https://openregister.conduction.nl" class="rowLink_rfne" target="_blank" rel="noopener noreferrer"><span class="rowIcon_WV0y" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M9 13h6M9 17h6M9 9h2"></path></svg></span><span class="rowText_YUX5"><span class="rowLabel_udoF">Read the documentation</span><span class="rowHint_kfTw">Reference, guides, API</span></span><span class="rowArrow_JTWO" aria-hidden="true">→</span></a></li></ul></div></div></aside></div><div style="margin-top:96px"><section class="section_wZ0r"><div class="head_GclI"><h2 class="title_k2LD">Keep learning…</h2><a href="/nl/academy/" class="link_D8_x">View all</a></div><div class="grid_Q1NP cols-2_Dhdc"><a href="/nl/academy/openspec-tutorial-5-retrofit" class="card_EP4w"><div class="leftCol_yA_S"><div class="thumbPanel_NGEN panel-cobalt-deep_X6FU"><span class="thumb_m_mH size-md_R9io tone-cobalt_kvXT"><svg viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.6" fill="none" stroke="currentColor"><path d="M3 11l9-8 9 8"></path><path d="M5 10v10h14V10"></path><path d="M9 20v-6h6v6"></path></svg></span></div></div><div class="body_O5Ih"><h3 class="title_KHMs">OpenSpec leerlijn — Deel 3 (optioneel): Retrofit een bestaande codebase</h3></div></a><a href="/nl/academy/build-an-app-tutorial-8-document-and-showcase" class="card_EP4w"><div class="leftCol_yA_S"><div class="thumbPanel_NGEN panel-cobalt-deep_X6FU"><span class="thumb_m_mH size-md_R9io tone-cobalt_kvXT"><svg viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.6" fill="none" stroke="currentColor"><path d="M3 11l9-8 9 8"></path><path d="M5 10v10h14V10"></path><path d="M9 20v-6h6v6"></path></svg></span></div></div><div class="body_O5Ih"><h3 class="title_KHMs">Build a Nextcloud app on the Conduction stack — Part 8: Document and showcase</h3></div></a></div></section></div></div></section></article></main></div><footer class="canal-footer" aria-label="Site footer"><div class="skyline" role="presentation"></div><div class="kade"><div class="kade-items"><svg class="ki ki-bike-1" width="22" height="16" viewBox="0 -2 22 18" aria-hidden="true"><g stroke="var(--c-cobalt-900)" stroke-width="1.4" fill="none" stroke-linecap="round"><circle cx="4" cy="12" r="3"></circle><circle cx="18" cy="12" r="3"></circle><line x1="4" y1="12" x2="11" y2="6"></line><line x1="11" y1="6" x2="18" y2="12"></line><line x1="11" y1="6" x2="14" y2="12"></line><line x1="11" y1="6" x2="11" y2="3"></line><line x1="11" y1="3" x2="14" y2="6"></line></g><circle cx="11" cy="1.5" r="1.6" fill="var(--c-cobalt-900)"></circle></svg><svg class="ki ki-car-1" width="38" height="16" viewBox="0 0 38 16" aria-hidden="true"><rect x="0" y="6" width="38" height="6" rx="2" fill="#C8482F"></rect><path d="M 5,6 L 9,2 L 29,2 L 33,6 Z" fill="#C8482F"></path><rect x="11" y="3" width="6" height="3" fill="rgba(255,255,255,0.5)"></rect><rect x="20" y="3" width="6" height="3" fill="rgba(255,255,255,0.5)"></rect><circle cx="9" cy="13" r="2" fill="var(--c-cobalt-900)"></circle><circle cx="29" cy="13" r="2" fill="var(--c-cobalt-900)"></circle></svg><svg class="ki ki-bike-2" width="22" height="16" viewBox="0 -2 22 18" aria-hidden="true"><g stroke="var(--c-cobalt-900)" stroke-width="1.4" fill="none" stroke-linecap="round"><circle cx="4" cy="12" r="3"></circle><circle cx="18" cy="12" r="3"></circle><line x1="4" y1="12" x2="11" y2="6"></line><line x1="11" y1="6" x2="18" y2="12"></line><line x1="11" y1="6" x2="14" y2="12"></line><line x1="11" y1="6" x2="11" y2="3"></line><line x1="11" y1="3" x2="14" y2="6"></line></g><circle cx="11" cy="1.5" r="1.6" fill="var(--c-cobalt-900)"></circle></svg><svg class="ki ki-car-2" width="38" height="16" viewBox="0 0 38 16" aria-hidden="true"><rect x="0" y="6" width="38" height="6" rx="2" fill="var(--c-cobalt-900)"></rect><path d="M 5,6 L 9,2 L 29,2 L 33,6 Z" fill="var(--c-cobalt-900)"></path><rect x="11" y="3" width="6" height="3" fill="rgba(255,255,255,0.4)"></rect><rect x="20" y="3" width="6" height="3" fill="rgba(255,255,255,0.4)"></rect><circle cx="9" cy="13" r="2" fill="#C8482F"></circle><circle cx="29" cy="13" r="2" fill="#C8482F"></circle></svg></div></div><div class="water"><div class="canal-items"><svg class="ci ci-cruise" width="120" height="28" viewBox="0 -10 120 28" aria-hidden="true"><line x1="2" y1="14" x2="2" y2="-9" stroke="var(--c-orange-knvb)" stroke-width="0.9"></line><rect x="2.5" y="-9" width="9" height="2" fill="#AE1C28"></rect><rect x="2.5" y="-7" width="9" height="2" fill="#FFFFFF"></rect><rect x="2.5" y="-5" width="9" height="2" fill="#21468B"></rect><path d="M 0,16 L 6,18 L 114,18 L 120,16 L 120,11 L 0,11 Z" fill="var(--c-orange-knvb)"></path><rect x="8" y="5" width="104" height="6" fill="var(--c-orange-knvb)"></rect><path d="M 8,5 Q 60,0 112,5 L 8,5 Z" fill="var(--c-orange-knvb)"></path><g fill="rgba(255,247,210,0.85)"><rect x="14" y="7" width="6" height="3"></rect><rect x="22" y="7" width="6" height="3"></rect><rect x="30" y="7" width="6" height="3"></rect><rect x="38" y="7" width="6" height="3"></rect><rect x="46" y="7" width="6" height="3"></rect><rect x="54" y="7" width="6" height="3"></rect><rect x="62" y="7" width="6" height="3"></rect><rect x="70" y="7" width="6" height="3"></rect><rect x="78" y="7" width="6" height="3"></rect><rect x="86" y="7" width="6" height="3"></rect><rect x="94" y="7" width="6" height="3"></rect><rect x="102" y="7" width="6" height="3"></rect></g></svg><svg class="ci ci-sloep" width="50" height="20" viewBox="0 -2 50 20" aria-hidden="true"><path d="M 0,12 L 4,16 L 46,16 L 50,12 L 50,8 L 0,8 Z" fill="var(--c-orange-knvb)"></path><rect x="20" y="2" width="12" height="6" rx="1" fill="var(--c-orange-knvb)"></rect><circle cx="26" cy="0" r="1.4" fill="var(--c-orange-knvb)"></circle></svg><svg class="ci ci-row" width="44" height="16" viewBox="-2 0 48 16" aria-hidden="true"><path d="M 0,10 L 4,14 L 40,14 L 44,10 Z" fill="var(--c-orange-knvb)"></path><line x1="8" y1="10" x2="0" y2="3" stroke="var(--c-orange-knvb)" stroke-width="1.2" stroke-linecap="round"></line><line x1="36" y1="10" x2="44" y2="3" stroke="var(--c-orange-knvb)" stroke-width="1.2" stroke-linecap="round"></line><circle cx="22" cy="7" r="1.6" fill="var(--c-orange-knvb)"></circle></svg><svg class="ci ci-swim" width="26" height="10" viewBox="-3 0 30 10" aria-hidden="true"><ellipse cx="13" cy="6" rx="7" ry="1.4" fill="var(--c-orange-knvb)"></ellipse><circle cx="17" cy="4" r="1.7" fill="var(--c-orange-knvb)"></circle><line x1="13" y1="5" x2="11" y2="3" stroke="var(--c-orange-knvb)" stroke-width="1" stroke-linecap="round"></line><line x1="-3" y1="6" x2="2" y2="6" stroke="var(--c-orange-knvb)" stroke-width="0.7" opacity="0.55"></line><line x1="0" y1="8" x2="3" y2="8" stroke="var(--c-orange-knvb)" stroke-width="0.7" opacity="0.4"></line></svg><svg class="ci ci-periscope" width="14" height="26" viewBox="-3 -2 18 28" aria-hidden="true"><rect x="4" y="4" width="2" height="18" fill="var(--c-orange-knvb)"></rect><rect x="0" y="0" width="9" height="3" fill="var(--c-orange-knvb)"></rect><rect x="4" y="3" width="2" height="2" fill="var(--c-orange-knvb)"></rect><ellipse cx="5" cy="24" rx="7" ry="0.9" fill="var(--c-orange-knvb)" opacity="0.5"></ellipse></svg><svg class="ci ci-whale" width="76" height="18" viewBox="-3 -4 82 22" aria-hidden="true"><path d="M 0,12 Q 0,4 26,3 Q 54,2 64,7 L 72,4 L 68,9 L 72,14 L 64,11 Q 54,14 26,14 Q 6,14 0,12 Z" fill="var(--c-orange-knvb)"></path><g opacity="0.55" stroke="var(--c-orange-knvb)" stroke-width="1" stroke-linecap="round"><line x1="22" y1="2" x2="20" y2="-3"></line><line x1="25" y1="2" x2="25" y2="-4"></line><line x1="28" y1="2" x2="30" y2="-3"></line></g></svg><svg class="ci ci-hover" width="74" height="26" viewBox="0 -4 74 28" aria-hidden="true"><ellipse cx="37" cy="22" rx="37" ry="2.5" fill="var(--c-orange-knvb)" opacity="0.4"></ellipse><path d="M 6,18 L 10,10 L 64,10 L 68,18 Z" fill="var(--c-orange-knvb)"></path><path d="M 14,10 Q 37,-4 60,10 L 14,10 Z" fill="var(--c-orange-knvb)"></path><ellipse cx="37" cy="4" rx="16" ry="3.2" fill="rgba(255,247,210,0.7)"></ellipse><polygon points="37,11 42,13.5 42,16.5 37,19 32,16.5 32,13.5" fill="#FFFFFF"></polygon><text x="37" y="17.4" font-size="4" text-anchor="middle" fill="var(--c-orange-knvb)" font-family="sans-serif" font-weight="900">C</text><g stroke="var(--c-orange-knvb)" stroke-width="0.7" opacity="0.6"><line x1="8" y1="22" x2="12" y2="22"></line><line x1="16" y1="22" x2="20" y2="22"></line><line x1="26" y1="22" x2="30" y2="22"></line><line x1="36" y1="22" x2="40" y2="22"></line><line x1="46" y1="22" x2="50" y2="22"></line><line x1="56" y1="22" x2="60" y2="22"></line></g></svg></div><div class="game-hud" aria-live="polite" aria-label="Mini-game: bootjes zinken"><div class="hud-block hud-counter"><span class="hud-num" data-counter="">100</span><span class="hud-label">Boten over</span></div><div class="hud-block hud-timer"><span class="hud-num" data-timer="">60</span><span class="hud-label">Seconden</span></div></div><div class="game-over" role="dialog" aria-label="Mini-game afgelopen"><p class="go-title" data-go-title="">Tijd is om</p><p class="go-stat"><span data-go-sunk="">0</span> <!-- -->gezonken</p><button type="button" data-restart="">Opnieuw spelen</button></div><svg class="canal-waves" viewBox="0 0 1400 500" preserveAspectRatio="none" aria-hidden="true"><path class="w1" d="M 0,96 L 140,82 L 280,96 L 420,82 L 560,96 L 700,82 L 840,96 L 980,82 L 1120,96 L 1260,82 L 1400,96"></path><path class="w2" d="M 0,206 L 180,182 L 360,206 L 540,182 L 720,206 L 900,182 L 1080,206 L 1260,182 L 1400,200"></path><path class="w3" d="M 0,362 L 220,332 L 440,362 L 660,332 L 880,362 L 1100,332 L 1320,362 L 1400,348"></path></svg><div class="footer-grid"><div class="brand"><div class="wm">Conduction</div><p>Open-source apps voor <span class="next-blue">Nextcloud</span>. Gebouwd en onderhouden door Conduction in Amsterdam, uitgegeven onder EUPL-1.2.</p><div class="triad"><span><span class="h"></span>Conduction<!-- --> <svg class="heart" viewBox="0 0 24 24" fill="currentColor" aria-label="loves" role="img"><path d="M12 21s-6.7-4.35-9.2-8.4C.8 9.2 2 5.5 5.2 4.7c2-.5 3.8.4 4.8 1.9 1-1.5 2.8-2.4 4.8-1.9 3.2.8 4.4 4.5 2.4 7.9C18.7 16.65 12 21 12 21z"></path></svg> <a href="https://nextcloud.com" target="_blank" rel="noopener noreferrer" class="next-blue">Nextcloud</a></span></div><div class="socials"><a href="https://codeberg.org/Conduction" aria-label="GitHub" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="filled" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.04 1.53 1.04.9 1.53 2.36 1.09 2.93.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.93.36.31.68.92.68 1.86v2.76c0 .27.18.58.69.48A10 10 0 0 0 12 2z"></path></svg></a><a href="https://www.linkedin.com/company/conduction" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle class="filled" cx="4" cy="4" r="2"></circle></svg></a><a href="mailto:info@conduction.nl" aria-label="Email info@conduction.nl"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg></a><a href="tel:+31853036840" aria-label="Phone +31 (0)85 303 6840"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z"></path></svg></a><a href="https://maps.google.com/?q=Lauriergracht+14h+Amsterdam" aria-label="Lauriergracht 14h, Amsterdam, open in Google Maps" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></a></div></div><div><h4>Apps</h4><ul><li><a href="https://opencatalogi.conduction.nl/" target="_blank" rel="noopener noreferrer">OpenCatalogi</a></li><li><a href="https://openregister.conduction.nl/" target="_blank" rel="noopener noreferrer">OpenRegister</a></li><li><a href="https://openconnector.conduction.nl/" target="_blank" rel="noopener noreferrer">OpenConnector</a></li><li><a href="https://docudesk.conduction.nl/" target="_blank" rel="noopener noreferrer">DocuDesk</a></li><li><a href="https://launchpad.conduction.nl/" target="_blank" rel="noopener noreferrer">LaunchPad</a></li></ul></div><div><h4>Oplossingen</h4><ul><li><a href="/nl/solutions/openwoo/">OpenWoo</a></li><li><a href="/nl/support/">Support</a></li><li><a href="/nl/connext/">ConNext</a></li><li><a href="/nl/commonground/">Common Ground</a></li></ul></div><div><h4>Bronnen</h4><ul><li><a href="/nl/partners/">Partners</a></li><li><a href="/nl/build/">Bouw een app</a></li><li><a href="/nl/academy/?type=blog">Blogs</a></li><li><a href="/nl/academy/?type=guide">Gidsen</a></li><li><a href="/nl/academy/?type=tutorial">Tutorials</a></li><li><a href="/nl/academy/?type=webinar">Webinars</a></li></ul></div><div><h4>Conduction</h4><ul><li><a href="/nl/about/">Over ons</a></li><li><a href="/nl/about/#opensource">Open source</a></li><li><a href="/nl/about/#team">Team</a></li><li><a href="https://docs.conduction.nl/WayOfWork/way-of-work/" target="_blank" rel="noopener noreferrer">Werkwijze</a></li><li><a href="/nl/quality/">Kwaliteit</a></li><li><a href="https://identity.conduction.nl/" target="_blank" rel="noopener noreferrer">Identiteit</a></li></ul></div></div><div class="legal-bar"><div class="left"><span>Conduction B.V. · KvK 76741850 · BTW NL860784241B01 · IBAN NL51 ABNA 0868951550 · Lauriergracht 14h, 1016 RR Amsterdam · © 2026</span><span class="legal-links"><a href="/nl/privacy/">Privacy</a><span class="sep">·</span><a href="/nl/terms/">Terms</a><span class="sep">·</span><a href="/nl/quality/">ISO</a></span></div><div class="right"><a class="iso-badge" aria-label="ISO 9001:2015 certified, see details" href="/nl/quality/"><span class="iso-mark">ISO</span><span class="iso-num">9001:2015</span></a><a class="iso-badge" aria-label="ISO 27001:2022 certified, see details" href="/nl/quality/"><span class="iso-mark">ISO</span><span class="iso-num">27001:2022</span></a></div></div></div></footer><div style="display:none" aria-hidden="true">
+      <template id="tpl-h-a">
+        <svg class="house h-a" viewBox="0 -2 80 202" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 0,200 L 0,38 L 8,38 L 8,26 L 16,26 L 16,14 L 24,14 L 24,8 L 56,8 L 56,14 L 64,14 L 64,26 L 72,26 L 72,38 L 80,38 L 80,200 Z" fill="var(--c-orange-knvb)"/>
+          <rect x="22" y="68" width="10" height="16" fill="rgba(255,247,210,0.95)"/>
+          <rect x="48" y="68" width="10" height="16" fill="rgba(11,32,73,0.35)"/>
+          <rect x="22" y="98" width="10" height="16" fill="rgba(11,32,73,0.35)"/>
+          <rect x="48" y="98" width="10" height="16" fill="rgba(255,247,210,0.6)"/>
+          <rect x="22" y="128" width="10" height="16" fill="rgba(11,32,73,0.35)"/>
+          <rect x="48" y="128" width="10" height="16" fill="rgba(11,32,73,0.35)"/>
+          <rect x="32" y="160" width="16" height="34" fill="rgba(11,32,73,0.55)"/>
+        </svg>
+      </template>
+      <template id="tpl-h-b">
+        <svg class="house h-b" viewBox="0 0 100 220" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 0,220 L 0,58 L 8,58 L 8,47 L 16,47 L 16,36 L 24,36 L 24,25 L 32,25 L 32,14 L 50,4 L 68,14 L 68,25 L 76,25 L 76,36 L 84,36 L 84,47 L 92,47 L 92,58 L 100,58 L 100,220 Z" fill="var(--c-orange-knvb)"/>
+          <rect x="14" y="80" width="14" height="20" fill="rgba(255,247,210,0.85)"/>
+          <rect x="43" y="80" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="72" y="80" width="14" height="20" fill="rgba(255,247,210,0.55)"/>
+          <rect x="14" y="115" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="43" y="115" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="72" y="115" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="14" y="150" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="43" y="150" width="14" height="20" fill="rgba(255,247,210,0.7)"/>
+          <rect x="72" y="150" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="42" y="180" width="16" height="34" fill="rgba(11,32,73,0.55)"/>
+        </svg>
+      </template>
+      <template id="tpl-h-c">
+        <svg class="house h-c" viewBox="0 0 70 240" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 0,240 L 0,48 L 5,48 L 5,41 L 10,41 L 10,34 L 15,34 L 15,27 L 20,27 L 20,20 L 25,20 L 25,15 L 45,15 L 45,20 L 50,20 L 50,27 L 55,27 L 55,34 L 60,34 L 60,41 L 65,41 L 65,48 L 70,48 L 70,240 Z" fill="var(--c-orange-knvb)"/>
+          <rect x="14" y="70" width="12" height="18" fill="rgba(255,247,210,0.55)"/>
+          <rect x="44" y="70" width="12" height="18" fill="rgba(255,247,210,0.85)"/>
+          <rect x="14" y="100" width="12" height="18" fill="rgba(11,32,73,0.35)"/>
+          <rect x="44" y="100" width="12" height="18" fill="rgba(11,32,73,0.35)"/>
+          <rect x="14" y="130" width="12" height="18" fill="rgba(255,247,210,0.7)"/>
+          <rect x="44" y="130" width="12" height="18" fill="rgba(11,32,73,0.35)"/>
+          <rect x="14" y="160" width="12" height="18" fill="rgba(11,32,73,0.35)"/>
+          <rect x="44" y="160" width="12" height="18" fill="rgba(11,32,73,0.35)"/>
+          <rect x="27" y="200" width="16" height="34" fill="rgba(11,32,73,0.55)"/>
+        </svg>
+      </template>
+      <template id="tpl-h-d">
+        <svg class="house h-d" viewBox="0 -10 90 180" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 0,170 L 0,30 L 8,30 L 8,20 L 16,20 L 16,10 L 24,10 L 24,4 L 66,4 L 66,10 L 74,10 L 74,20 L 82,20 L 82,30 L 90,30 L 90,170 Z" fill="var(--c-orange-knvb)"/>
+          <rect x="12" y="60" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="38" y="60" width="14" height="20" fill="rgba(255,247,210,0.85)"/>
+          <rect x="64" y="60" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="12" y="100" width="14" height="20" fill="rgba(255,247,210,0.6)"/>
+          <rect x="38" y="100" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="64" y="100" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="37" y="130" width="16" height="34" fill="rgba(11,32,73,0.55)"/>
+        </svg>
+      </template>
+      <template id="tpl-h-e">
+        <svg class="house h-e" viewBox="0 0 95 210" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 0,210 L 0,55 L 8,55 L 8,44 L 16,44 L 16,33 L 24,33 L 24,22 L 32,22 L 32,11 L 35,11 L 35,6 L 59,6 L 59,11 L 63,11 L 63,22 L 71,22 L 71,33 L 79,33 L 79,44 L 87,44 L 87,55 L 95,55 L 95,210 Z" fill="var(--c-orange-knvb)"/>
+          <rect x="13" y="75" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="40" y="75" width="14" height="20" fill="rgba(255,247,210,0.65)"/>
+          <rect x="68" y="75" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="13" y="110" width="14" height="20" fill="rgba(255,247,210,0.8)"/>
+          <rect x="40" y="110" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="68" y="110" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="13" y="145" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="40" y="145" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="68" y="145" width="14" height="20" fill="rgba(255,247,210,0.55)"/>
+          <rect x="39.5" y="175" width="16" height="34" fill="rgba(11,32,73,0.55)"/>
+        </svg>
+      </template>
+
+      <template id="tpl-ship-sailing">
+        <svg class="ci ci-sailing" width="100" height="60" viewBox="-4 -42 108 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 0,12 L 6,16 L 90,16 L 96,12 L 96,8 L 0,8 Z" fill="var(--c-orange-knvb)"/>
+          <line x1="0" y1="11" x2="-4" y2="6" stroke="var(--c-orange-knvb)" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="48" y1="8" x2="48" y2="-40" stroke="#3a4553" stroke-width="1.4"/>
+          <rect x="44.5" y="-30" width="7" height="2.5" fill="#3a4553"/>
+          <line x1="22" y1="-12" x2="74" y2="-12" stroke="#3a4553" stroke-width="0.9"/>
+          <path d="M 24,-12 Q 48,-7 72,-12 L 72,4 Q 48,8 24,4 Z" fill="rgba(255,247,210,0.92)"/>
+          <line x1="24" y1="-26" x2="72" y2="-26" stroke="#3a4553" stroke-width="0.9"/>
+          <path d="M 26,-26 Q 48,-22 70,-26 L 70,-13 Q 48,-9 26,-13 Z" fill="rgba(255,247,210,0.92)"/>
+          <line x1="34" y1="-38" x2="62" y2="-38" stroke="#3a4553" stroke-width="0.9"/>
+          <path d="M 35,-38 Q 48,-35 61,-38 L 61,-28 Q 48,-25 35,-28 Z" fill="rgba(255,247,210,0.92)"/>
+          <path d="M 48,-40 L 58,-39 L 56,-37 L 58,-35 L 48,-36 Z" fill="#AE1C28"/>
+        </svg>
+      </template>
+      <template id="tpl-ship-cargo">
+        <svg class="ci ci-cargo" width="180" height="44" viewBox="0 -28 180 44" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 0,14 L 6,16 L 174,16 L 180,14 L 180,10 L 0,10 Z" fill="var(--c-orange-knvb)"/>
+          <g>
+            <rect x="14" y="0" width="14" height="9" fill="#C8482F"/>
+            <rect x="30" y="0" width="14" height="9" fill="var(--c-cobalt-900)"/>
+            <rect x="46" y="0" width="14" height="9" fill="rgba(255,247,210,0.9)"/>
+            <rect x="62" y="0" width="14" height="9" fill="#C8482F"/>
+            <rect x="78" y="0" width="14" height="9" fill="var(--c-cobalt-900)"/>
+            <rect x="94" y="0" width="14" height="9" fill="rgba(255,247,210,0.9)"/>
+            <rect x="110" y="0" width="14" height="9" fill="#C8482F"/>
+            <rect x="14" y="-9" width="14" height="9" fill="var(--c-cobalt-900)"/>
+            <rect x="30" y="-9" width="14" height="9" fill="rgba(255,247,210,0.9)"/>
+            <rect x="62" y="-9" width="14" height="9" fill="var(--c-cobalt-900)"/>
+            <rect x="94" y="-9" width="14" height="9" fill="#C8482F"/>
+            <rect x="14" y="-18" width="14" height="9" fill="rgba(255,247,210,0.9)"/>
+            <rect x="62" y="-18" width="14" height="9" fill="#C8482F"/>
+          </g>
+          <rect x="138" y="-18" width="22" height="27" fill="#5a6573"/>
+          <rect x="142" y="-14" width="14" height="3" fill="rgba(255,247,210,0.85)"/>
+          <rect x="142" y="-9" width="14" height="3" fill="rgba(255,247,210,0.6)"/>
+          <rect x="142" y="-4" width="14" height="3" fill="rgba(255,247,210,0.6)"/>
+          <rect x="146" y="-26" width="8" height="8" fill="#3a4553"/>
+          <rect x="146" y="-22" width="8" height="2" fill="var(--c-orange-knvb)"/>
+        </svg>
+      </template>
+      <template id="tpl-ship-frigate">
+        <svg class="ci ci-frigate" width="130" height="36" viewBox="0 -20 130 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 0,14 L 6,16 L 124,16 L 130,14 L 130,10 L 0,10 Z" fill="#5a6573"/>
+          <rect x="0" y="9" width="130" height="1.4" fill="var(--c-orange-knvb)"/>
+          <rect x="14" y="6" width="14" height="4" rx="1.5" fill="#6a7583"/>
+          <line x1="21" y1="8" x2="40" y2="6" stroke="#3a4553" stroke-width="1.6" stroke-linecap="round"/>
+          <rect x="42" y="-2" width="48" height="12" fill="#6a7583"/>
+          <rect x="58" y="-12" width="16" height="10" fill="#7a8593"/>
+          <rect x="60" y="-9" width="12" height="2.5" fill="rgba(255,247,210,0.85)"/>
+          <line x1="66" y1="-12" x2="66" y2="-18" stroke="#3a4553" stroke-width="1"/>
+          <rect x="82" y="-7" width="6" height="5" fill="#3a4553"/>
+          <rect x="82" y="-5" width="6" height="1.5" fill="var(--c-orange-knvb)"/>
+          <rect x="100" y="6" width="14" height="4" rx="1.5" fill="#6a7583"/>
+        </svg>
+      </template>
+      <template id="tpl-battleship">
+        <svg class="ci ci-battleship boss" width="220" height="56" viewBox="0 -22 220 56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 0,18 L 8,28 L 212,28 L 220,18 L 220,12 L 0,12 Z" fill="#4a5663"/>
+          <rect x="0" y="11" width="220" height="2" fill="var(--c-orange-knvb)"/>
+          <rect x="50" y="0" width="120" height="12" fill="#5a6573"/>
+          <rect x="92" y="-12" width="36" height="12" fill="#6a7583"/>
+          <rect x="96" y="-9" width="28" height="3" fill="rgba(255,247,210,0.85)"/>
+          <rect x="138" y="-7" width="10" height="7" fill="#3a4553"/>
+          <rect x="138" y="-4" width="10" height="2" fill="var(--c-orange-knvb)"/>
+          <line x1="110" y1="-12" x2="110" y2="-20" stroke="#3a4553" stroke-width="1.4"/>
+          <rect x="22" y="6" width="22" height="6" rx="2" fill="#6a7583"/>
+          <line x1="32" y1="9" x2="56" y2="6" stroke="#3a4553" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="32" y1="9" x2="8" y2="6" stroke="#3a4553" stroke-width="2.2" stroke-linecap="round"/>
+          <rect x="176" y="6" width="22" height="6" rx="2" fill="#6a7583"/>
+          <line x1="186" y1="9" x2="210" y2="6" stroke="#3a4553" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="186" y1="9" x2="162" y2="6" stroke="#3a4553" stroke-width="2.2" stroke-linecap="round"/>
+          <g class="hp-pips" transform="translate(58, -18)">
+            <circle class="pip" cx="0" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="11" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="22" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="33" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="44" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="55" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="66" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="77" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="88" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="99" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+          </g>
+        </svg>
+      </template>
+</div></div>
+</body>
+</html>

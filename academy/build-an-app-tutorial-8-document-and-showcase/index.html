@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en-GB" dir="ltr" class="blog-wrapper blog-post-page plugin-blog plugin-id-default" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.10.1">
+<title data-rh="true">Build a Nextcloud app on the Conduction stack — Part 8: Document and showcase | Conduction</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" property="og:image" content="https://www.conduction.nl/img/og-conduction.png"><meta data-rh="true" name="twitter:image" content="https://www.conduction.nl/img/og-conduction.png"><meta data-rh="true" property="og:url" content="https://www.conduction.nl/academy/build-an-app-tutorial-8-document-and-showcase/"><meta data-rh="true" property="og:locale" content="en_GB"><meta data-rh="true" property="og:locale:alternate" content="nl_NL"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" name="twitter:site" content="@ConductionNL"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:title" content="Build a Nextcloud app on the Conduction stack — Part 8: Document and showcase | Conduction"><meta data-rh="true" name="description" content="A 45-minute tutorial that gives your PetStore app a documentation site. Hosted from your own Codeberg or GitHub repo via the central documentation workflow, illustrated with abstract screen mocks that compose from design tokens, and brought to life with real screenshots that Playwright captures from your running app. By the end, every push to development rebuilds and republishes."><meta data-rh="true" property="og:description" content="A 45-minute tutorial that gives your PetStore app a documentation site. Hosted from your own Codeberg or GitHub repo via the central documentation workflow, illustrated with abstract screen mocks that compose from design tokens, and brought to life with real screenshots that Playwright captures from your running app. By the end, every push to development rebuilds and republishes."><meta data-rh="true" property="og:type" content="article"><meta data-rh="true" property="article:published_time" content="2026-06-01T00:00:00.000Z"><meta data-rh="true" property="article:author" content="https://conduction.nl"><meta data-rh="true" property="article:tag" content="App development,Documentation,Docusaurus,Cloudflare,Codeberg,Playwright,Tutorial series"><link data-rh="true" rel="icon" href="/img/favicon.svg"><link data-rh="true" rel="canonical" href="https://www.conduction.nl/academy/build-an-app-tutorial-8-document-and-showcase/"><link data-rh="true" rel="alternate" href="https://www.conduction.nl/academy/build-an-app-tutorial-8-document-and-showcase/" hreflang="en-GB"><link data-rh="true" rel="alternate" href="https://www.conduction.nl/nl/academy/build-an-app-tutorial-8-document-and-showcase/" hreflang="nl-NL"><link data-rh="true" rel="alternate" href="https://www.conduction.nl/academy/build-an-app-tutorial-8-document-and-showcase/" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","@id":"https://www.conduction.nl/academy/build-an-app-tutorial-8-document-and-showcase","mainEntityOfPage":"https://www.conduction.nl/academy/build-an-app-tutorial-8-document-and-showcase","url":"https://www.conduction.nl/academy/build-an-app-tutorial-8-document-and-showcase","headline":"Build a Nextcloud app on the Conduction stack — Part 8: Document and showcase","name":"Build a Nextcloud app on the Conduction stack — Part 8: Document and showcase","description":"A 45-minute tutorial that gives your PetStore app a documentation site. Hosted from your own Codeberg or GitHub repo via the central documentation workflow, illustrated with abstract screen mocks that compose from design tokens, and brought to life with real screenshots that Playwright captures from your running app. By the end, every push to development rebuilds and republishes.","datePublished":"2026-06-01T00:00:00.000Z","author":{"@type":"Person","name":"Conduction","description":"Open-source workspace stack","url":"https://conduction.nl","image":"/img/brand/avatar-conduction-cobalt-on-white.svg"},"keywords":[],"isPartOf":{"@type":"Blog","@id":"https://www.conduction.nl/academy","name":"Conduction Academy"}}</script><link rel="alternate" type="application/rss+xml" href="/academy/rss.xml" title="Conduction Academy RSS Feed">
+<link rel="alternate" type="application/atom+xml" href="/academy/atom.xml" title="Conduction Academy Atom Feed">
+
+
+
+
+
+
+
+
+
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","@id":"https://www.conduction.nl/#org","name":"Conduction B.V.","alternateName":"Conduction","url":"https://www.conduction.nl/","logo":"https://www.conduction.nl/img/brand/avatar-conduction-gold-on-white.svg","foundingDate":"2019","description":"Dutch open-source software company building EUPL-1.2 apps for the Nextcloud workspace.","address":{"@type":"PostalAddress","streetAddress":"Lauriergracht 14h","postalCode":"1016 RR","addressLocality":"Amsterdam","addressCountry":"NL"},"email":"info@conduction.nl","telephone":"+31-85-303-6840","taxID":"NL860784241B01","vatID":"NL860784241B01","identifier":{"@type":"PropertyValue","propertyID":"KvK","value":"76741850"},"sameAs":["https://codeberg.org/Conduction","https://www.linkedin.com/company/conduction/"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","@id":"https://www.conduction.nl/#website","url":"https://www.conduction.nl/","name":"Conduction","publisher":{"@id":"https://www.conduction.nl/#org"},"inLanguage":["en","nl"]}</script><link rel="stylesheet" href="/assets/css/styles.01a3c9bd.css">
+<script src="/assets/js/runtime~main.f2a55f4d.js" defer="defer"></script>
+<script src="/assets/js/main.e8f024f2.js" defer="defer"></script>
+</head>
+<body>
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")),document.documentElement.setAttribute("data-theme-choice",t||"system")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav class="navbar nav_MuJ0" role="navigation" aria-label="Main"><div class="left__6eY"><a class="wordmark_mhs1" href="/"><img src="/img/logo.svg" alt="Conduction avatar" class="wordmarkIcon_boru" width="32" height="32"><span class="wordmarkText_r1t1">Conduction</span></a><div class="links_cXJT"><a class="link_CwQh" href="/apps/">Apps</a><a class="link_CwQh" href="/solutions/">Solutions</a><a class="link_CwQh linkActive_jOIb" href="/academy/">Academy</a><a class="link_CwQh" href="/support/">Support</a><a class="link_CwQh" href="/about/">About</a></div></div><div class="ctas_jpo4"><div class="localeWrapper__Pip"><div class="navbar__item dropdown dropdown--hoverable dropdown--right"><a href="#" aria-haspopup="true" aria-expanded="false" role="button" class="navbar__link" type="localeDropdown"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" class="iconLanguage_nlXk"><path fill="currentColor" d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"></path></svg>English</a><ul class="dropdown__menu"><li><a href="/academy/build-an-app-tutorial-8-document-and-showcase/" target="_self" rel="noopener noreferrer" class="dropdown__link dropdown__link--active" lang="en-GB">English</a></li><li><a href="/nl/academy/build-an-app-tutorial-8-document-and-showcase/" target="_self" rel="noopener noreferrer" class="dropdown__link" lang="nl-NL">Nederlands</a></li></ul></div></div><a class="cta_G5Px" href="/install/">Install<!-- --> →</a></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><main class="marketing-page"><article style="margin:0;padding:0"><section class="section_HYk5 bg-default_W4Ct sp-default_t7r_"><div class="inner_wUIo"><section class="hero_N04v"><div class="crumb_cjh6"><a href="/academy/">Academy</a><span class="sep_Y8vQ" aria-hidden="true">/</span><a href="/academy/?type=tutorial">tutorial</a><span class="sep_Y8vQ" aria-hidden="true">/</span>Build a Nextcloud app on the Conduction stack — Part 8: Document and showcase</div><h1 class="title_IVS9">Build a Nextcloud app on the Conduction stack — Part 8: Document and showcase</h1><div class="cover_t_M8"><span class="watermark_UqPF" aria-hidden="true"></span><span class="thumb_m_mH size-xl_RJss tone-cobalt_kvXT"><svg viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.6" fill="none" stroke="currentColor"><path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h10"></path><path d="M19 14v6"></path><path d="M16 17l3 3 3-3"></path></svg></span></div><p class="summary_YfKg">Stand up the documentation site for the PetStore app you&#x27;ve built across Parts 1–7. Hosted from your Codeberg or GitHub repo via the central documentation workflow, illustrated with token-built screen mocks, and walked through with Playwright-captured screenshots. Every push to development rebuilds and republishes.</p><div class="tags__TgB"><span class="pill_PL2G tone-default_gU1e"><span aria-hidden="true" class="hex_LAHd sm_qFQ6" style="background:var(--c-cobalt-400)"></span><span class="label_RVvm">Tutorial</span></span><span class="pill_PL2G tone-default_gU1e"><span aria-hidden="true" class="hex_LAHd sm_qFQ6" style="background:var(--c-cobalt-300)"></span><span class="label_RVvm">App development</span></span><span class="pill_PL2G tone-default_gU1e"><span aria-hidden="true" class="hex_LAHd sm_qFQ6" style="background:var(--c-cobalt-300)"></span><span class="label_RVvm">Documentation</span></span><span class="pill_PL2G tone-default_gU1e"><span aria-hidden="true" class="hex_LAHd sm_qFQ6" style="background:var(--c-cobalt-300)"></span><span class="label_RVvm">Docusaurus</span></span><span class="pill_PL2G tone-default_gU1e"><span aria-hidden="true" class="hex_LAHd sm_qFQ6" style="background:var(--c-cobalt-300)"></span><span class="label_RVvm">Cloudflare</span></span><span class="pill_PL2G tone-default_gU1e"><span aria-hidden="true" class="hex_LAHd sm_qFQ6" style="background:var(--c-cobalt-300)"></span><span class="label_RVvm">Codeberg</span></span><span class="pill_PL2G tone-default_gU1e"><span aria-hidden="true" class="hex_LAHd sm_qFQ6" style="background:var(--c-cobalt-300)"></span><span class="label_RVvm">Playwright</span></span><span class="pill_PL2G tone-default_gU1e"><span aria-hidden="true" class="hex_LAHd sm_qFQ6" style="background:var(--c-cobalt-300)"></span><span class="label_RVvm">Tutorial series</span></span></div><div class="meta_Bh8I"><span class="byline_kgtp tone-default_pILj"><span class="avatar_wR1r" aria-hidden="true"><img src="/img/brand/avatar-conduction-cobalt-on-white.svg" alt=""></span><span class="name__W4N">Conduction</span><span class="sep_CXt6">·</span><span class="date_TPWZ">1 juni 2026</span></span><span class="duration_puxP">12 min read</span></div></section><div class="content-detail-body body_TxfT"><p>A 45-minute tutorial that gives your PetStore app a documentation site. Hosted from your own Codeberg or GitHub repo via the central documentation workflow, illustrated with abstract screen mocks that compose from design tokens, and brought to life with real screenshots that Playwright captures from your running app. By the end, every push to <code>development</code> rebuilds and republishes.</p>
+<!-- -->
+<admonition title="Recommended first: Part 7" type="tip"><p>Part 8 assumes you&#x27;ve finished <a href="/academy/build-an-app-tutorial-7-nc-vue">Part 7: The nc-vue component library</a>. The screen mocks and capture flow build on the PetStore app from Parts 1–7.</p></admonition>
+<admonition title="Also useful first: the Claude Skills tutorial series" type="tip"><p>Three of the steps below run Conduction skills (<code>/journeydoc-init</code>, <code>/journeydoc-instrument</code>, <code>/journeydoc-add-story</code>). Skills are short, declarative Claude Code workflows. If you&#x27;ve never run one, take <a href="/academy/claude-skills-tutorial-1-what-are-claude-skills">Part 1 of the Claude Skills series</a> first (10 minutes).</p></admonition>
+<aside class="card_hthX"><span class="badge__IZW" aria-hidden="true"><span class="thumb_m_mH size-sm_gHBw tone-cobalt-deep_BRHh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 21h4"></path><path d="M12 3a6 6 0 0 0-4 10.5c.7.8 1 1.6 1 2.5v1h6v-1c0-.9.3-1.7 1-2.5A6 6 0 0 0 12 3z"></path></svg></span></span><div class="head_SuGj"><h3 class="title_L5Jn">What you&#x27;ll learn in this part</h3></div><div class="body_rmUs"><ul><li class="item_XUUM"><svg class="check_Ab1X" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg><span class="body_rk5K">How to bootstrap a journeydoc-shaped Docusaurus site in your app repo with <code>/journeydoc-init</code>.</span></li><li class="item_XUUM"><svg class="check_Ab1X" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg><span class="body_rk5K">How to wire the central documentation workflow on Codeberg or GitHub so every push redeploys to Cloudflare.</span></li><li class="item_XUUM"><svg class="check_Ab1X" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg><span class="body_rk5K">How to compose token-built screen previews with <code>&lt;AppMock&gt;</code>, <code>&lt;WidgetMock&gt;</code>, and <code>&lt;SidebarMock&gt;</code> from <code>@conduction/docusaurus-preset</code>: no screenshots required.</span></li><li class="item_XUUM"><svg class="check_Ab1X" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg><span class="body_rk5K">How to add a tutorial story with <code>/journeydoc-add-story</code> and capture the real walkthrough as Playwright screenshots.</span></li></ul></div></aside>
+<aside class="card_hthX"><span class="badge__IZW" aria-hidden="true"><span class="thumb_m_mH size-sm_gHBw tone-cobalt-deep_BRHh"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"></rect><rect x="9" y="2" width="6" height="4" rx="1"></rect><path d="M9 11h6"></path><path d="M9 15h6"></path></svg></span></span><div class="head_SuGj"><h3 class="title_L5Jn">What you need</h3></div><div class="body_rmUs"><ul><li class="item_T6wn"><span class="bullet_sO3U" aria-hidden="true"></span><span class="body_f8Uy">Parts 1–7 completed: <a href="/academy/build-an-app-tutorial-1-scaffold">PetStore scaffolded</a>, schemas in OpenRegister, the manifest shipping, integrations wired, the nc-vue library mapped.</span></li><li class="item_T6wn"><span class="bullet_sO3U" aria-hidden="true"></span><span class="body_f8Uy">The app&#x27;s repo on Codeberg (<code>Conduction/petstore</code>) or GitHub (<code>ConductionNL/petstore</code>). Both forges support the central workflow.</span></li><li class="item_T6wn"><span class="bullet_sO3U" aria-hidden="true"></span><span class="body_f8Uy">A Cloudflare account with two org-level secrets set: <code>CF_API_TOKEN</code> (Workers Scripts: Edit + Zone DNS: Edit scope) and <code>CF_ACCOUNT_ID</code>. Without these the deploy step skips silently.</span></li><li class="item_T6wn"><span class="bullet_sO3U" aria-hidden="true"></span><span class="body_f8Uy">Node 20+ and the Claude Code CLI installed locally. The journeydoc skills install Playwright on first run.</span></li></ul></div></aside>
+<p>In the examples we use <code>petstore</code> as the app slug. Replace with your own slug throughout. Commands assume you have a Claude Code session open in the repo root.</p>
+<h2 id="step-1-bootstrap-the-docs-scaffold">Step 1: Bootstrap the docs scaffold</h2>
+<p>In your Claude Code session, run:</p>
+<pre><code class="language-bash">/journeydoc-init petstore
+</code></pre>
+<p>The skill walks through five short prompts:</p>
+<ol>
+<li>Confirms the app slug (<code>petstore</code>).</li>
+<li>Confirms the docs domain (default <code>petstore.conduction.nl</code>).</li>
+<li>Asks for your user-track stories, one per line. For PetStore: <em>Open the app for the first time</em>, <em>Add a pet</em>, <em>Place an order</em>, <em>Search the catalogue</em>.</li>
+<li>Asks for admin-track stories, or skip if PetStore&#x27;s admin UI is light.</li>
+<li>Audits the repo for the four canonical brown-field migrations (screenshots dir, relative image refs, stale Dutch locale, old docs domain) and applies fixes where needed.</li>
+</ol>
+<p>When it finishes you have:</p>
+<ul>
+<li><code>docs/</code> with a Docusaurus config that imports <code>createConfig</code> from <code>@conduction/docusaurus-preset</code></li>
+<li><code>docs/tutorials/user/01-first-launch.md</code>, <code>02-add-pet.md</code>, <code>03-place-order.md</code>, <code>04-search-catalogue.md</code> as skeleton pages, one per story</li>
+<li><code>tests/e2e/docs-screenshots.spec.ts</code> with empty test stubs that match the markdown filenames</li>
+<li><code>playwright.config.ts</code> extended with a <code>docs-capture</code> Playwright project</li>
+<li><code>docs/static/CNAME</code> set to <code>petstore.conduction.nl</code></li>
+<li>A pull request opened against <code>development</code> with the diff</li>
+</ul>
+<p><strong>Verify:</strong></p>
+<pre><code class="language-bash">ls docs/tutorials/user/
+# 01-first-launch.md  02-add-pet.md  03-place-order.md  04-search-catalogue.md
+
+cat docs/static/CNAME
+# petstore.conduction.nl
+</code></pre>
+<p>Merge the PR before continuing. Part 8 builds on the scaffold.</p>
+<h2 id="step-2-wire-the-central-documentation-workflow">Step 2: Wire the central documentation workflow</h2>
+<p>The build and deploy are shared across the Conduction fleet via a reusable workflow in <code>Conduction/.github</code> (Codeberg) or <code>ConductionNL/.github</code> (GitHub). Your per-repo wrapper declares three things: the Cloudflare project name, the docs source folder, and the secrets to forward.</p>
+<div class="theme-tabs-container tabs-container tabList__CuJ"><ul role="tablist" aria-orientation="horizontal" class="tabs"><li role="tab" tabindex="0" aria-selected="true" class="tabs__item tabItem_LNqP tabs__item--active">Codeberg (Forgejo Actions)</li><li role="tab" tabindex="-1" aria-selected="false" class="tabs__item tabItem_LNqP">GitHub Actions</li></ul><div class="margin-top--md"><div role="tabpanel" class="tabItem_Ymn6"><p>Create <code>.forgejo/workflows/documentation.yml</code>:</p><pre><code class="language-yaml">name: Publish docs
+
+on:
+  push:
+    branches: [documentation, main, development]
+  pull_request:
+    branches: [documentation, main]
+  workflow_dispatch:
+  schedule:
+    - cron: &quot;0 4 * * *&quot;
+
+jobs:
+  docs:
+    uses: https://codeberg.org/Conduction/.github/.forgejo/workflows/documentation.yml@main
+    with:
+      cf-project-name: petstore-docs
+      source-folder: docs
+    secrets:
+      CF_API_TOKEN:   ${{ secrets.CF_API_TOKEN }}
+      CF_ACCOUNT_ID:  ${{ secrets.CF_ACCOUNT_ID }}
+      CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
+</code></pre><p>The central workflow runs on <code>codeberg-small</code> runners, builds Docusaurus, then deploys via <code>wrangler deploy</code> to Cloudflare Workers Static Assets.</p></div><div role="tabpanel" class="tabItem_Ymn6" hidden=""><p>Create <code>.github/workflows/documentation.yml</code>:</p><pre><code class="language-yaml">name: Publish docs
+
+on:
+  push:
+    branches: [documentation, main, development]
+  pull_request:
+    branches: [documentation, main]
+  workflow_dispatch:
+  schedule:
+    - cron: &quot;0 4 * * *&quot;
+
+jobs:
+  docs:
+    uses: ConductionNL/.github/.github/workflows/documentation.yml@main
+    with:
+      cf-project-name: petstore-docs
+      source-folder: docs
+    secrets:
+      CF_API_TOKEN:  ${{ secrets.CF_API_TOKEN }}
+      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+</code></pre><p>The GitHub variant uses the same Cloudflare Workers Static Assets deploy step on the <code>ubuntu-latest</code> runner.</p></div></div></div>
+<p>Commit and push the wrapper:</p>
+<pre><code class="language-bash">git add .forgejo/workflows/documentation.yml
+git commit -m &quot;ci(docs): wire central docs workflow&quot;
+git push origin development
+</code></pre>
+<p><strong>Verify</strong> by opening the Actions tab on your forge. The workflow appears in the list, queued or already running.</p>
+<h2 id="step-3-set-the-cloudflare-secrets--trigger-the-first-deploy">Step 3: Set the Cloudflare secrets + trigger the first deploy</h2>
+<p>Two org-level secrets unlock the deploy:</p>
+<ul>
+<li><code>CF_API_TOKEN</code>: create at <a href="https://dash.cloudflare.com/profile/api-tokens">dash.cloudflare.com/profile/api-tokens</a>. Grant <strong>Account: Workers Scripts: Edit</strong> and <strong>Zone: DNS: Edit</strong>. Set a 1-day TTL while you test, then rotate.</li>
+<li><code>CF_ACCOUNT_ID</code>: copy from the Cloudflare dashboard sidebar.</li>
+</ul>
+<div class="theme-tabs-container tabs-container tabList__CuJ"><ul role="tablist" aria-orientation="horizontal" class="tabs"><li role="tab" tabindex="0" aria-selected="true" class="tabs__item tabItem_LNqP tabs__item--active">Codeberg</li><li role="tab" tabindex="-1" aria-selected="false" class="tabs__item tabItem_LNqP">GitHub</li></ul><div class="margin-top--md"><div role="tabpanel" class="tabItem_Ymn6"><p>Set at the org-secrets screen:</p><pre><code>https://codeberg.org/org/Conduction/-/secrets/actions
+</code></pre><p>Add three secrets:</p><pre><code>CF_API_TOKEN   = &lt;your token&gt;
+CF_ACCOUNT_ID  = &lt;your account id&gt;
+CODEBERG_TOKEN = &lt;a forge PAT, used to authenticate npm prebuild requests to the Codeberg API&gt;
+</code></pre><p>Trigger the workflow manually so you don&#x27;t have to wait for the next push:</p><pre><code class="language-bash">curl -sS -X POST \
+  -H &quot;Authorization: token $CODEBERG_TOKEN&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;ref&quot;:&quot;development&quot;}&#x27; \
+  &quot;https://codeberg.org/api/v1/repos/Conduction/petstore/actions/workflows/documentation.yml/dispatches&quot;
+</code></pre></div><div role="tabpanel" class="tabItem_Ymn6" hidden=""><p>Set at the org-secrets screen:</p><pre><code>https://github.com/organizations/ConductionNL/settings/secrets/actions
+</code></pre><p>Add two secrets:</p><pre><code>CF_API_TOKEN  = &lt;your token&gt;
+CF_ACCOUNT_ID = &lt;your account id&gt;
+</code></pre><p>Trigger the workflow manually:</p><pre><code class="language-bash">gh workflow run documentation.yml -R ConductionNL/petstore --ref development
+</code></pre></div></div></div>
+<p><strong>Verify</strong> by watching the run finish. The build step prints the upload count, the deploy step prints a URL:</p>
+<pre><code>Uploaded petstore-docs (12.4 sec)
+Deployed petstore-docs triggers (1.9 sec)
+  https://petstore-docs.conduction-a2d.workers.dev
+</code></pre>
+<p>Open that URL. You see your Docusaurus site live. Binding the custom domain <code>petstore.conduction.nl</code> to the Worker is a one-time API call described in the central workflow&#x27;s README.</p>
+<h2 id="step-4-embed-an-appmock-for-context">Step 4: Embed an <code>&lt;AppMock&gt;</code> for context</h2>
+<p><code>@conduction/docusaurus-preset</code> ships token-built abstract previews of every fleet app. They paint with design tokens (no images, no real text) so they stay sharp at any zoom and never go stale when the real UI moves. Use them whenever a docs page needs to <strong>show</strong> an app without taking a screenshot.</p>
+<p>Open <code>docs/intro.md</code> (created by <code>/journeydoc-init</code>) and add the import plus a mock:</p>
+<pre><code class="language-mdx">import { AppMock } from &#x27;@conduction/docusaurus-preset/components&#x27;;
+
+# PetStore on the Conduction stack
+
+PetStore is a typed-data app built on OpenRegister. The dashboard
+composes from the same widget chassis you see across the fleet, here
+illustrated with the LaunchPad reference:
+
+&lt;AppMock app=&quot;launchpad&quot; caption /&gt;
+</code></pre>
+<p><strong>Verify</strong> by running the docs locally:</p>
+<pre><code class="language-bash">cd docs
+npm run start
+</code></pre>
+<p>Open <code>http://localhost:3000/docs/intro</code>. The LaunchPad mock renders with its caption, scaling cleanly at any zoom level.</p>
+<admonition title="Showing your own app&#x27;s chassis" type="tip"><p>The <code>app</code> prop expects one of the predefined fleet variants (<code>launchpad</code>, <code>openregister</code>, <code>openconnector</code>, <code>procest</code>, <code>decidesk</code>, <code>docudesk</code>, <code>larpingapp</code>, <code>nldesign</code>, <code>openwoo</code>, <code>pipelinq</code>, <code>softwarecatalog</code>, <code>zaakafhandelapp</code>, <code>opencatalogi</code>). To ship an abstract mock of your PetStore dashboard, add <code>PetStoreMock.jsx</code> under <code>@conduction/docusaurus-preset/src/components/AppMock/variants/</code> and register it in the <code>VARIANTS</code> map. Follow the design-system repo&#x27;s <code>SKILL.md</code> for the &quot;app glyphs&quot; and &quot;status palette&quot; conventions: one orange accent per variant, no images, design tokens only.</p></admonition>
+<h2 id="step-5-compose-a-deeper-scene-with-widgetmock-and-sidebarmock">Step 5: Compose a deeper scene with <code>&lt;WidgetMock&gt;</code> and <code>&lt;SidebarMock&gt;</code></h2>
+<p><code>&lt;AppMock&gt;</code> shows the whole app frame. <code>&lt;WidgetMock&gt;</code> shows one widget, typically a dashboard tile. <code>&lt;SidebarMock&gt;</code> shows a Nextcloud sidebar opened over an app (e.g. the OpenRegister &quot;object detail&quot; sidebar over a list).</p>
+<p>Add a new page <code>docs/architecture/dashboards.md</code>:</p>
+<pre><code class="language-mdx">import {
+  AppMock,
+  WidgetMock,
+  SidebarMock,
+} from &#x27;@conduction/docusaurus-preset/components&#x27;;
+
+# Dashboard widgets
+
+PetStore&#x27;s home dashboard ships three KPI widgets and an activity feed:
+
+&lt;div className=&quot;hex-grid&quot;&gt;
+  &lt;WidgetMock kind=&quot;kpi-tile&quot; caption /&gt;
+  &lt;WidgetMock kind=&quot;activity-feed&quot; caption /&gt;
+  &lt;WidgetMock kind=&quot;status-rollup&quot; caption /&gt;
+&lt;/div&gt;
+
+Each row in the activity feed opens a detail sidebar in place, using
+the same chrome the rest of the fleet ships:
+
+&lt;AppMock app=&quot;launchpad&quot; sidebar={&lt;SidebarMock kind=&quot;register-detail&quot; /&gt;} /&gt;
+</code></pre>
+<p><strong>Verify</strong> by reloading <code>http://localhost:3000/docs/architecture/dashboards</code>. Three widget tiles render in a hex grid, and the AppMock below renders with the sidebar overlay.</p>
+<p>The result is a docs page that shows the app pattern without a single screenshot. When the real UI changes, the mock does not need updating: it speaks in shapes, not pixels.</p>
+<h2 id="step-6-instrument-your-vue-components-for-capture">Step 6: Instrument your Vue components for capture</h2>
+<p>Before the capture spec can find UI elements reliably, the relevant Vue components need stable <code>data-testid</code> attributes. The <code>/journeydoc-instrument</code> skill audits one component at a time and proposes the additions.</p>
+<p>Run it on the form for adding a pet:</p>
+<pre><code class="language-bash">/journeydoc-instrument src/components/PetForm.vue
+</code></pre>
+<p>The skill:</p>
+<ol>
+<li>Reads the component.</li>
+<li>Identifies the elements the capture spec will need (form fields, submit button, success and error notices).</li>
+<li>Proposes <code>data-testid</code> values following the <code>&lt;component&gt;.&lt;element&gt;</code> convention.</li>
+<li>Asks you to confirm before writing the edits.</li>
+<li>Runs Vitest after the edit to make sure no existing test breaks.</li>
+</ol>
+<p><strong>Verify:</strong></p>
+<pre><code class="language-bash">grep -n &#x27;data-testid&#x27; src/components/PetForm.vue
+# 23:    &lt;input data-testid=&quot;pet-form.name&quot; v-model=&quot;form.name&quot; /&gt;
+# 24:    &lt;input data-testid=&quot;pet-form.category&quot; v-model=&quot;form.category&quot; /&gt;
+# 31:    &lt;button data-testid=&quot;pet-form.submit&quot; @click=&quot;save&quot;&gt;Save&lt;/button&gt;
+</code></pre>
+<p>The shared chrome (lists, modals, headers) is already instrumented in <code>@conduction/nextcloud-vue</code>. Run <code>/journeydoc-instrument</code> once per app-specific component, typically 3–5 files for a small app.</p>
+<h2 id="step-7-add-a-tutorial-story-with-journeydoc-add-story">Step 7: Add a tutorial story with <code>/journeydoc-add-story</code></h2>
+<p><code>/journeydoc-init</code> left the markdown skeletons empty. <code>/journeydoc-add-story</code> fleshes them out one at a time, dropping a markdown page plus a capture-spec test block, with the sidebar position auto-incremented.</p>
+<pre><code class="language-bash">/journeydoc-add-story petstore user &quot;Add a pet&quot;
+</code></pre>
+<p>The skill asks three short questions:</p>
+<table><thead><tr><th>Question</th><th>Example answer</th></tr></thead><tbody><tr><td>Goal, in one sentence, what does the user accomplish?</td><td>Register a new pet under their customer profile.</td></tr><tr><td>Prerequisites, what must already be true?</td><td>A pet schema exists. The user is signed in.</td></tr><tr><td>Steps, paste a numbered list of UI clicks.</td><td>1. Open the PetStore app. 2. Click &quot;Add pet&quot;. 3. Fill name + category. 4. Click Save. 5. See the new row in the list.</td></tr></tbody></table>
+<p>It then writes two files:</p>
+<ul>
+<li><code>docs/tutorials/user/02-add-pet.md</code>: the markdown page with five numbered steps, each with an image reference and a <code>TODO</code> HTML comment for verification and common issues</li>
+<li>A new <code>test(&#x27;U02 add-pet&#x27;)</code> block at the end of <code>tests/e2e/docs-screenshots.spec.ts</code>, with one TODO per numbered step</li>
+</ul>
+<p><strong>Verify:</strong></p>
+<pre><code class="language-bash">ls docs/tutorials/user/
+# 01-first-launch.md  02-add-pet.md  03-place-order.md  04-search-catalogue.md
+
+grep -A1 &quot;U02 add-pet&quot; tests/e2e/docs-screenshots.spec.ts
+# test(&#x27;U02 add-pet: REPLACE WITH ACTUAL FLOW&#x27;, async ({ page }) =&gt; {
+#   // docs/tutorials/user/02-add-pet.md
+</code></pre>
+<h2 id="step-8-run-the-capture-spec-to-populate-the-screenshots">Step 8: Run the capture spec to populate the screenshots</h2>
+<p>Open <code>tests/e2e/docs-screenshots.spec.ts</code> and fill the <code>U02</code> block. Each numbered TODO comment maps 1:1 to a step in the markdown. Use the <code>data-testid</code> attributes from Step 6 and the three helpers the template ships (<code>dismissOverlays</code>, <code>go</code>, <code>shoot</code>):</p>
+<pre><code class="language-typescript">test(&#x27;U02 add-pet: Add a pet to the store&#x27;, async ({ page }) =&gt; {
+  await dismissOverlays(page);
+  await go(page, &#x27;/apps/petstore&#x27;);
+  await shoot(page, &#x27;user&#x27;, &#x27;02-step-1.png&#x27;);
+
+  await page.getByTestId(&#x27;pet-list.add&#x27;).click();
+  await shoot(page, &#x27;user&#x27;, &#x27;02-step-2.png&#x27;);
+
+  await page.getByTestId(&#x27;pet-form.name&#x27;).fill(&#x27;Mochi&#x27;);
+  await page.getByTestId(&#x27;pet-form.category&#x27;).fill(&#x27;Cats&#x27;);
+  await shoot(page, &#x27;user&#x27;, &#x27;02-step-3.png&#x27;);
+
+  await page.getByTestId(&#x27;pet-form.submit&#x27;).click();
+  await page.getByTestId(&#x27;pet-list.row&#x27;).first().waitFor();
+  await shoot(page, &#x27;user&#x27;, &#x27;02-step-4.png&#x27;);
+});
+</code></pre>
+<p>Run only the user-track tests so you don&#x27;t trigger the full regression suite:</p>
+<pre><code class="language-bash">npm run test:e2e:docs -- --grep &quot;U02&quot;
+</code></pre>
+<p>Playwright launches a headless Chromium, runs the test, and writes the PNGs to <code>docs/static/screenshots/tutorials/user/</code>:</p>
+<pre><code class="language-bash">ls docs/static/screenshots/tutorials/user/02-*
+# 02-step-1.png  02-step-2.png  02-step-3.png  02-step-4.png
+</code></pre>
+<p><strong>Verify</strong> by opening <code>http://localhost:3000/docs/tutorials/user/add-pet</code>. Each numbered step now renders its captured screenshot. The full capture run for all four stories takes about 90 seconds on a laptop.</p>
+<h2 id="what-you-ship-at-the-end-of-part-8">What you ship at the end of Part 8</h2>
+<ul>
+<li><code>petstore.conduction.nl</code> serving your Docusaurus site after the custom-domain bind</li>
+<li>Intro and architecture pages illustrated with <code>&lt;AppMock&gt;</code> and <code>&lt;WidgetMock&gt;</code>, scaling cleanly without screenshots</li>
+<li>Tutorials under <code>/docs/tutorials/user/</code> with real Playwright-captured screenshots</li>
+<li>Every push to <code>development</code>, <code>main</code>, or <code>documentation</code> redeploys the site automatically</li>
+</ul>
+<h2 id="where-to-go-from-here">Where to go from here</h2>
+<p>The journeydoc capture is the highest-leverage doc surface. Run <code>/journeydoc-add-story</code> once a sprint and your tutorials grow alongside the code. When the UI shifts, re-run <code>npm run test:e2e:docs</code> and the screenshots refresh in one pass.</p>
+<p>You have now finished the eight-part PetStore series: scaffolded, modelled, integrated, mastered the nc-vue library, and shipped a documentation site that grows with the code. The natural next move is publishing the app to the Nextcloud app store: signing the release, the <code>appstoreapp:create-app</code> flow, and shipping under your own brand. Until that part lands, the <a href="https://nextcloudappstore.readthedocs.io/">Nextcloud app store docs</a> describe the upload protocol.</p>
+<section class="section_nBI1"><h2 class="title_NJn1">Next steps</h2><div class="grid_K0En cols-3_ffYz"><a class="card_fJ6r" href="/academy/claude-skills-tutorial-1-what-are-claude-skills"><div class="title_NJn1">Claude Skills tutorial series: Part 1</div><div class="cta_fxqO">Read more<svg viewBox="0 0 24 24" aria-hidden="true" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></div></a><a class="card_fJ6r" href="/academy/openspec-tutorial-1-what-is-openspec"><div class="title_NJn1">OpenSpec tutorial series: Part 1</div><div class="cta_fxqO">Read more<svg viewBox="0 0 24 24" aria-hidden="true" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></div></a><a class="card_fJ6r" href="https://nextcloud-vue.conduction.nl/docs/components/"><div class="title_NJn1">Full nc-vue component reference</div><div class="cta_fxqO">Read more<svg viewBox="0 0 24 24" aria-hidden="true" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></div></a></div></section>
+<aside class="card_hthX hasActions_M26a"><span class="decoFrame_l5OC" aria-hidden="true"><span class="deco_eS8A deco1_qLiN"></span><span class="deco_eS8A deco2_IFvL"></span><span class="deco_eS8A deco3_hfix"></span></span><span class="badge__IZW" aria-hidden="true"><span class="thumb_m_mH size-sm_gHBw tone-cobalt-deep_BRHh"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 7 9-7"></path></svg></span></span><div class="head_SuGj"></div><div class="body_rmUs"></div><div class="actions_x1H1"></div></aside></div><div style="margin-top:64px"><aside class="root_A5ie variant-inline_N9cV" aria-label="Related app links"><h3 class="heading_bCjS">Continue with this app</h3><div class="list_JWNJ"><div class="card_E3dE" aria-labelledby="app-cross-links-openregister"><div class="head_AUSd"><span class="hex_SFbx" aria-hidden="true"><svg viewBox="0 0 24 24" class="hexGlyph_zJRU" fill="currentColor" style="fill:currentColor;stroke:none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M19,12v1.5c2.2,0,4,1.8,4,4s-.2,1.6-.7,2.2l-1.1-1.1c.2-.3.3-.7.3-1.1,0-1.4-1.1-2.5-2.5-2.5v1.5l-2.2-2.2,2.2-2.2M19,23v-1.5c-2.2,0-4-1.8-4-4s.2-1.6.7-2.2l1.1,1.1c-.2.3-.3.7-.3,1.1,0,1.4,1.1,2.5,2.5,2.5v-1.5l2.2,2.2-2.2,2.2M12,3c4.4,0,8,1.8,8,4s-3.6,4-8,4-8-1.8-8-4S7.6,3,12,3M4,9c0,2.2,3.6,4,8,4s2.2-.1,3.1-.3c-1,.9-1.6,2-2,3.3h-1.2c-4.4,0-8-1.8-8-4v-3M20,9v2h-1.1c.7-.6,1.1-1.3,1.1-2M4,14c0,2.2,3.6,4,8,4h1c0,1,.4,2,.9,2.9h-1.9c-4.4.1-8-1.7-8-3.9v-3Z"/></svg></span><div><p class="eyebrow_wYCr">About this app</p><h4 class="title_T279" id="app-cross-links-openregister">OpenRegister</h4></div></div><ul class="rows_uopa"><li class="row_jVO9"><a href="/apps/openregister" class="rowLink_rfne"><span class="rowIcon_WV0y" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4-9-4z"></path><path d="M3 12l9 4 9-4"></path><path d="M3 17l9 4 9-4"></path></svg></span><span class="rowText_YUX5"><span class="rowLabel_udoF">Open product page</span><span class="rowHint_kfTw">Capabilities, pricing, install link</span></span><span class="rowArrow_JTWO" aria-hidden="true">→</span></a></li><li class="row_jVO9"><a href="https://openregister.conduction.nl" class="rowLink_rfne" target="_blank" rel="noopener noreferrer"><span class="rowIcon_WV0y" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M9 13h6M9 17h6M9 9h2"></path></svg></span><span class="rowText_YUX5"><span class="rowLabel_udoF">Read the documentation</span><span class="rowHint_kfTw">Reference, guides, API</span></span><span class="rowArrow_JTWO" aria-hidden="true">→</span></a></li></ul></div></div></aside></div><div style="margin-top:96px"><section class="section_wZ0r"><div class="head_GclI"><h2 class="title_k2LD">Keep learning…</h2><a href="/academy/" class="link_D8_x">View all</a></div><div class="grid_Q1NP cols-2_Dhdc"><a href="/academy/build-an-app-tutorial-7-nc-vue" class="card_EP4w"><div class="leftCol_yA_S"><div class="thumbPanel_NGEN panel-cobalt-deep_X6FU"><span class="thumb_m_mH size-md_R9io tone-cobalt_kvXT"><svg viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.6" fill="none" stroke="currentColor"><path d="M3 11l9-8 9 8"></path><path d="M5 10v10h14V10"></path><path d="M9 20v-6h6v6"></path></svg></span></div></div><div class="body_O5Ih"><h3 class="title_KHMs">Build a Nextcloud app on the Conduction stack — Part 7: The nc-vue component library</h3></div></a><a href="/academy/government-open-source-needs-an-engine" class="card_EP4w"><div class="leftCol_yA_S"><div class="thumbPanel_NGEN panel-cobalt-deep_X6FU"><span class="thumb_m_mH size-md_R9io tone-cobalt_kvXT"><svg viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.6" fill="none" stroke="currentColor"><path d="M3 11l9-8 9 8"></path><path d="M5 10v10h14V10"></path><path d="M9 20v-6h6v6"></path></svg></span></div></div><div class="body_O5Ih"><h3 class="title_KHMs">Government open source needs an engine, not pushers</h3></div></a></div></section></div></div></section></article></main></div><footer class="canal-footer" aria-label="Site footer"><div class="skyline" role="presentation"></div><div class="kade"><div class="kade-items"><svg class="ki ki-bike-1" width="22" height="16" viewBox="0 -2 22 18" aria-hidden="true"><g stroke="var(--c-cobalt-900)" stroke-width="1.4" fill="none" stroke-linecap="round"><circle cx="4" cy="12" r="3"></circle><circle cx="18" cy="12" r="3"></circle><line x1="4" y1="12" x2="11" y2="6"></line><line x1="11" y1="6" x2="18" y2="12"></line><line x1="11" y1="6" x2="14" y2="12"></line><line x1="11" y1="6" x2="11" y2="3"></line><line x1="11" y1="3" x2="14" y2="6"></line></g><circle cx="11" cy="1.5" r="1.6" fill="var(--c-cobalt-900)"></circle></svg><svg class="ki ki-car-1" width="38" height="16" viewBox="0 0 38 16" aria-hidden="true"><rect x="0" y="6" width="38" height="6" rx="2" fill="#C8482F"></rect><path d="M 5,6 L 9,2 L 29,2 L 33,6 Z" fill="#C8482F"></path><rect x="11" y="3" width="6" height="3" fill="rgba(255,255,255,0.5)"></rect><rect x="20" y="3" width="6" height="3" fill="rgba(255,255,255,0.5)"></rect><circle cx="9" cy="13" r="2" fill="var(--c-cobalt-900)"></circle><circle cx="29" cy="13" r="2" fill="var(--c-cobalt-900)"></circle></svg><svg class="ki ki-bike-2" width="22" height="16" viewBox="0 -2 22 18" aria-hidden="true"><g stroke="var(--c-cobalt-900)" stroke-width="1.4" fill="none" stroke-linecap="round"><circle cx="4" cy="12" r="3"></circle><circle cx="18" cy="12" r="3"></circle><line x1="4" y1="12" x2="11" y2="6"></line><line x1="11" y1="6" x2="18" y2="12"></line><line x1="11" y1="6" x2="14" y2="12"></line><line x1="11" y1="6" x2="11" y2="3"></line><line x1="11" y1="3" x2="14" y2="6"></line></g><circle cx="11" cy="1.5" r="1.6" fill="var(--c-cobalt-900)"></circle></svg><svg class="ki ki-car-2" width="38" height="16" viewBox="0 0 38 16" aria-hidden="true"><rect x="0" y="6" width="38" height="6" rx="2" fill="var(--c-cobalt-900)"></rect><path d="M 5,6 L 9,2 L 29,2 L 33,6 Z" fill="var(--c-cobalt-900)"></path><rect x="11" y="3" width="6" height="3" fill="rgba(255,255,255,0.4)"></rect><rect x="20" y="3" width="6" height="3" fill="rgba(255,255,255,0.4)"></rect><circle cx="9" cy="13" r="2" fill="#C8482F"></circle><circle cx="29" cy="13" r="2" fill="#C8482F"></circle></svg></div></div><div class="water"><div class="canal-items"><svg class="ci ci-cruise" width="120" height="28" viewBox="0 -10 120 28" aria-hidden="true"><line x1="2" y1="14" x2="2" y2="-9" stroke="var(--c-orange-knvb)" stroke-width="0.9"></line><rect x="2.5" y="-9" width="9" height="2" fill="#AE1C28"></rect><rect x="2.5" y="-7" width="9" height="2" fill="#FFFFFF"></rect><rect x="2.5" y="-5" width="9" height="2" fill="#21468B"></rect><path d="M 0,16 L 6,18 L 114,18 L 120,16 L 120,11 L 0,11 Z" fill="var(--c-orange-knvb)"></path><rect x="8" y="5" width="104" height="6" fill="var(--c-orange-knvb)"></rect><path d="M 8,5 Q 60,0 112,5 L 8,5 Z" fill="var(--c-orange-knvb)"></path><g fill="rgba(255,247,210,0.85)"><rect x="14" y="7" width="6" height="3"></rect><rect x="22" y="7" width="6" height="3"></rect><rect x="30" y="7" width="6" height="3"></rect><rect x="38" y="7" width="6" height="3"></rect><rect x="46" y="7" width="6" height="3"></rect><rect x="54" y="7" width="6" height="3"></rect><rect x="62" y="7" width="6" height="3"></rect><rect x="70" y="7" width="6" height="3"></rect><rect x="78" y="7" width="6" height="3"></rect><rect x="86" y="7" width="6" height="3"></rect><rect x="94" y="7" width="6" height="3"></rect><rect x="102" y="7" width="6" height="3"></rect></g></svg><svg class="ci ci-sloep" width="50" height="20" viewBox="0 -2 50 20" aria-hidden="true"><path d="M 0,12 L 4,16 L 46,16 L 50,12 L 50,8 L 0,8 Z" fill="var(--c-orange-knvb)"></path><rect x="20" y="2" width="12" height="6" rx="1" fill="var(--c-orange-knvb)"></rect><circle cx="26" cy="0" r="1.4" fill="var(--c-orange-knvb)"></circle></svg><svg class="ci ci-row" width="44" height="16" viewBox="-2 0 48 16" aria-hidden="true"><path d="M 0,10 L 4,14 L 40,14 L 44,10 Z" fill="var(--c-orange-knvb)"></path><line x1="8" y1="10" x2="0" y2="3" stroke="var(--c-orange-knvb)" stroke-width="1.2" stroke-linecap="round"></line><line x1="36" y1="10" x2="44" y2="3" stroke="var(--c-orange-knvb)" stroke-width="1.2" stroke-linecap="round"></line><circle cx="22" cy="7" r="1.6" fill="var(--c-orange-knvb)"></circle></svg><svg class="ci ci-swim" width="26" height="10" viewBox="-3 0 30 10" aria-hidden="true"><ellipse cx="13" cy="6" rx="7" ry="1.4" fill="var(--c-orange-knvb)"></ellipse><circle cx="17" cy="4" r="1.7" fill="var(--c-orange-knvb)"></circle><line x1="13" y1="5" x2="11" y2="3" stroke="var(--c-orange-knvb)" stroke-width="1" stroke-linecap="round"></line><line x1="-3" y1="6" x2="2" y2="6" stroke="var(--c-orange-knvb)" stroke-width="0.7" opacity="0.55"></line><line x1="0" y1="8" x2="3" y2="8" stroke="var(--c-orange-knvb)" stroke-width="0.7" opacity="0.4"></line></svg><svg class="ci ci-periscope" width="14" height="26" viewBox="-3 -2 18 28" aria-hidden="true"><rect x="4" y="4" width="2" height="18" fill="var(--c-orange-knvb)"></rect><rect x="0" y="0" width="9" height="3" fill="var(--c-orange-knvb)"></rect><rect x="4" y="3" width="2" height="2" fill="var(--c-orange-knvb)"></rect><ellipse cx="5" cy="24" rx="7" ry="0.9" fill="var(--c-orange-knvb)" opacity="0.5"></ellipse></svg><svg class="ci ci-whale" width="76" height="18" viewBox="-3 -4 82 22" aria-hidden="true"><path d="M 0,12 Q 0,4 26,3 Q 54,2 64,7 L 72,4 L 68,9 L 72,14 L 64,11 Q 54,14 26,14 Q 6,14 0,12 Z" fill="var(--c-orange-knvb)"></path><g opacity="0.55" stroke="var(--c-orange-knvb)" stroke-width="1" stroke-linecap="round"><line x1="22" y1="2" x2="20" y2="-3"></line><line x1="25" y1="2" x2="25" y2="-4"></line><line x1="28" y1="2" x2="30" y2="-3"></line></g></svg><svg class="ci ci-hover" width="74" height="26" viewBox="0 -4 74 28" aria-hidden="true"><ellipse cx="37" cy="22" rx="37" ry="2.5" fill="var(--c-orange-knvb)" opacity="0.4"></ellipse><path d="M 6,18 L 10,10 L 64,10 L 68,18 Z" fill="var(--c-orange-knvb)"></path><path d="M 14,10 Q 37,-4 60,10 L 14,10 Z" fill="var(--c-orange-knvb)"></path><ellipse cx="37" cy="4" rx="16" ry="3.2" fill="rgba(255,247,210,0.7)"></ellipse><polygon points="37,11 42,13.5 42,16.5 37,19 32,16.5 32,13.5" fill="#FFFFFF"></polygon><text x="37" y="17.4" font-size="4" text-anchor="middle" fill="var(--c-orange-knvb)" font-family="sans-serif" font-weight="900">C</text><g stroke="var(--c-orange-knvb)" stroke-width="0.7" opacity="0.6"><line x1="8" y1="22" x2="12" y2="22"></line><line x1="16" y1="22" x2="20" y2="22"></line><line x1="26" y1="22" x2="30" y2="22"></line><line x1="36" y1="22" x2="40" y2="22"></line><line x1="46" y1="22" x2="50" y2="22"></line><line x1="56" y1="22" x2="60" y2="22"></line></g></svg></div><div class="game-hud" aria-live="polite" aria-label="Boat-sinking mini game"><div class="hud-block hud-counter"><span class="hud-num" data-counter="">100</span><span class="hud-label">Boats left</span></div><div class="hud-block hud-timer"><span class="hud-num" data-timer="">60</span><span class="hud-label">Seconds</span></div></div><div class="game-over" role="dialog" aria-label="Mini game over"><p class="go-title" data-go-title="">Time&#x27;s up</p><p class="go-stat"><span data-go-sunk="">0</span> <!-- -->sunk</p><button type="button" data-restart="">Play again</button></div><svg class="canal-waves" viewBox="0 0 1400 500" preserveAspectRatio="none" aria-hidden="true"><path class="w1" d="M 0,96 L 140,82 L 280,96 L 420,82 L 560,96 L 700,82 L 840,96 L 980,82 L 1120,96 L 1260,82 L 1400,96"></path><path class="w2" d="M 0,206 L 180,182 L 360,206 L 540,182 L 720,206 L 900,182 L 1080,206 L 1260,182 L 1400,200"></path><path class="w3" d="M 0,362 L 220,332 L 440,362 L 660,332 L 880,362 L 1100,332 L 1320,362 L 1400,348"></path></svg><div class="footer-grid"><div class="brand"><div class="wm">Conduction</div><p>Open-source apps for <span class="next-blue">Nextcloud</span>. Built and maintained by Conduction in Amsterdam, released under EUPL-1.2.</p><div class="triad"><span><span class="h"></span>Conduction<!-- --> <svg class="heart" viewBox="0 0 24 24" fill="currentColor" aria-label="loves" role="img"><path d="M12 21s-6.7-4.35-9.2-8.4C.8 9.2 2 5.5 5.2 4.7c2-.5 3.8.4 4.8 1.9 1-1.5 2.8-2.4 4.8-1.9 3.2.8 4.4 4.5 2.4 7.9C18.7 16.65 12 21 12 21z"></path></svg> <a href="https://nextcloud.com" target="_blank" rel="noopener noreferrer" class="next-blue">Nextcloud</a></span></div><div class="socials"><a href="https://codeberg.org/Conduction" aria-label="GitHub" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="filled" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.04 1.53 1.04.9 1.53 2.36 1.09 2.93.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.93.36.31.68.92.68 1.86v2.76c0 .27.18.58.69.48A10 10 0 0 0 12 2z"></path></svg></a><a href="https://www.linkedin.com/company/conduction" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle class="filled" cx="4" cy="4" r="2"></circle></svg></a><a href="mailto:info@conduction.nl" aria-label="Email info@conduction.nl"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg></a><a href="tel:+31853036840" aria-label="Phone +31 (0)85 303 6840"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z"></path></svg></a><a href="https://maps.google.com/?q=Lauriergracht+14h+Amsterdam" aria-label="Lauriergracht 14h, Amsterdam, open in Google Maps" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></a></div></div><div><h4>Apps</h4><ul><li><a href="https://opencatalogi.conduction.nl/" target="_blank" rel="noopener noreferrer">OpenCatalogi</a></li><li><a href="https://openregister.conduction.nl/" target="_blank" rel="noopener noreferrer">OpenRegister</a></li><li><a href="https://openconnector.conduction.nl/" target="_blank" rel="noopener noreferrer">OpenConnector</a></li><li><a href="https://docudesk.conduction.nl/" target="_blank" rel="noopener noreferrer">DocuDesk</a></li><li><a href="https://launchpad.conduction.nl/" target="_blank" rel="noopener noreferrer">LaunchPad</a></li></ul></div><div><h4>Solutions</h4><ul><li><a href="/solutions/openwoo/">OpenWoo</a></li><li><a href="/support/">Support</a></li><li><a href="/connext/">ConNext</a></li><li><a href="/commonground/">Common Ground</a></li></ul></div><div><h4>Resources</h4><ul><li><a href="/partners/">Partners</a></li><li><a href="/build/">Build an app</a></li><li><a href="/academy/?type=blog">Blogs</a></li><li><a href="/academy/?type=guide">Guides</a></li><li><a href="/academy/?type=tutorial">Tutorials</a></li><li><a href="/academy/?type=webinar">Webinars</a></li></ul></div><div><h4>Conduction</h4><ul><li><a href="/about/">About</a></li><li><a href="/about/#opensource">Open source</a></li><li><a href="/about/#team">Team</a></li><li><a href="https://docs.conduction.nl/WayOfWork/way-of-work/" target="_blank" rel="noopener noreferrer">Way of Work</a></li><li><a href="/quality/">Quality</a></li><li><a href="https://identity.conduction.nl/" target="_blank" rel="noopener noreferrer">Identity</a></li></ul></div></div><div class="legal-bar"><div class="left"><span>Conduction B.V. · KvK 76741850 · BTW NL860784241B01 · IBAN NL51 ABNA 0868951550 · Lauriergracht 14h, 1016 RR Amsterdam · © 2026</span><span class="legal-links"><a href="/privacy/">Privacy</a><span class="sep">·</span><a href="/terms/">Terms</a><span class="sep">·</span><a href="/quality/">ISO</a></span></div><div class="right"><a class="iso-badge" aria-label="ISO 9001:2015 certified, see details" href="/quality/"><span class="iso-mark">ISO</span><span class="iso-num">9001:2015</span></a><a class="iso-badge" aria-label="ISO 27001:2022 certified, see details" href="/quality/"><span class="iso-mark">ISO</span><span class="iso-num">27001:2022</span></a></div></div></div></footer><div style="display:none" aria-hidden="true">
+      <template id="tpl-h-a">
+        <svg class="house h-a" viewBox="0 -2 80 202" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 0,200 L 0,38 L 8,38 L 8,26 L 16,26 L 16,14 L 24,14 L 24,8 L 56,8 L 56,14 L 64,14 L 64,26 L 72,26 L 72,38 L 80,38 L 80,200 Z" fill="var(--c-orange-knvb)"/>
+          <rect x="22" y="68" width="10" height="16" fill="rgba(255,247,210,0.95)"/>
+          <rect x="48" y="68" width="10" height="16" fill="rgba(11,32,73,0.35)"/>
+          <rect x="22" y="98" width="10" height="16" fill="rgba(11,32,73,0.35)"/>
+          <rect x="48" y="98" width="10" height="16" fill="rgba(255,247,210,0.6)"/>
+          <rect x="22" y="128" width="10" height="16" fill="rgba(11,32,73,0.35)"/>
+          <rect x="48" y="128" width="10" height="16" fill="rgba(11,32,73,0.35)"/>
+          <rect x="32" y="160" width="16" height="34" fill="rgba(11,32,73,0.55)"/>
+        </svg>
+      </template>
+      <template id="tpl-h-b">
+        <svg class="house h-b" viewBox="0 0 100 220" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 0,220 L 0,58 L 8,58 L 8,47 L 16,47 L 16,36 L 24,36 L 24,25 L 32,25 L 32,14 L 50,4 L 68,14 L 68,25 L 76,25 L 76,36 L 84,36 L 84,47 L 92,47 L 92,58 L 100,58 L 100,220 Z" fill="var(--c-orange-knvb)"/>
+          <rect x="14" y="80" width="14" height="20" fill="rgba(255,247,210,0.85)"/>
+          <rect x="43" y="80" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="72" y="80" width="14" height="20" fill="rgba(255,247,210,0.55)"/>
+          <rect x="14" y="115" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="43" y="115" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="72" y="115" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="14" y="150" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="43" y="150" width="14" height="20" fill="rgba(255,247,210,0.7)"/>
+          <rect x="72" y="150" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="42" y="180" width="16" height="34" fill="rgba(11,32,73,0.55)"/>
+        </svg>
+      </template>
+      <template id="tpl-h-c">
+        <svg class="house h-c" viewBox="0 0 70 240" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 0,240 L 0,48 L 5,48 L 5,41 L 10,41 L 10,34 L 15,34 L 15,27 L 20,27 L 20,20 L 25,20 L 25,15 L 45,15 L 45,20 L 50,20 L 50,27 L 55,27 L 55,34 L 60,34 L 60,41 L 65,41 L 65,48 L 70,48 L 70,240 Z" fill="var(--c-orange-knvb)"/>
+          <rect x="14" y="70" width="12" height="18" fill="rgba(255,247,210,0.55)"/>
+          <rect x="44" y="70" width="12" height="18" fill="rgba(255,247,210,0.85)"/>
+          <rect x="14" y="100" width="12" height="18" fill="rgba(11,32,73,0.35)"/>
+          <rect x="44" y="100" width="12" height="18" fill="rgba(11,32,73,0.35)"/>
+          <rect x="14" y="130" width="12" height="18" fill="rgba(255,247,210,0.7)"/>
+          <rect x="44" y="130" width="12" height="18" fill="rgba(11,32,73,0.35)"/>
+          <rect x="14" y="160" width="12" height="18" fill="rgba(11,32,73,0.35)"/>
+          <rect x="44" y="160" width="12" height="18" fill="rgba(11,32,73,0.35)"/>
+          <rect x="27" y="200" width="16" height="34" fill="rgba(11,32,73,0.55)"/>
+        </svg>
+      </template>
+      <template id="tpl-h-d">
+        <svg class="house h-d" viewBox="0 -10 90 180" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 0,170 L 0,30 L 8,30 L 8,20 L 16,20 L 16,10 L 24,10 L 24,4 L 66,4 L 66,10 L 74,10 L 74,20 L 82,20 L 82,30 L 90,30 L 90,170 Z" fill="var(--c-orange-knvb)"/>
+          <rect x="12" y="60" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="38" y="60" width="14" height="20" fill="rgba(255,247,210,0.85)"/>
+          <rect x="64" y="60" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="12" y="100" width="14" height="20" fill="rgba(255,247,210,0.6)"/>
+          <rect x="38" y="100" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="64" y="100" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="37" y="130" width="16" height="34" fill="rgba(11,32,73,0.55)"/>
+        </svg>
+      </template>
+      <template id="tpl-h-e">
+        <svg class="house h-e" viewBox="0 0 95 210" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 0,210 L 0,55 L 8,55 L 8,44 L 16,44 L 16,33 L 24,33 L 24,22 L 32,22 L 32,11 L 35,11 L 35,6 L 59,6 L 59,11 L 63,11 L 63,22 L 71,22 L 71,33 L 79,33 L 79,44 L 87,44 L 87,55 L 95,55 L 95,210 Z" fill="var(--c-orange-knvb)"/>
+          <rect x="13" y="75" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="40" y="75" width="14" height="20" fill="rgba(255,247,210,0.65)"/>
+          <rect x="68" y="75" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="13" y="110" width="14" height="20" fill="rgba(255,247,210,0.8)"/>
+          <rect x="40" y="110" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="68" y="110" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="13" y="145" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="40" y="145" width="14" height="20" fill="rgba(11,32,73,0.35)"/>
+          <rect x="68" y="145" width="14" height="20" fill="rgba(255,247,210,0.55)"/>
+          <rect x="39.5" y="175" width="16" height="34" fill="rgba(11,32,73,0.55)"/>
+        </svg>
+      </template>
+
+      <template id="tpl-ship-sailing">
+        <svg class="ci ci-sailing" width="100" height="60" viewBox="-4 -42 108 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 0,12 L 6,16 L 90,16 L 96,12 L 96,8 L 0,8 Z" fill="var(--c-orange-knvb)"/>
+          <line x1="0" y1="11" x2="-4" y2="6" stroke="var(--c-orange-knvb)" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="48" y1="8" x2="48" y2="-40" stroke="#3a4553" stroke-width="1.4"/>
+          <rect x="44.5" y="-30" width="7" height="2.5" fill="#3a4553"/>
+          <line x1="22" y1="-12" x2="74" y2="-12" stroke="#3a4553" stroke-width="0.9"/>
+          <path d="M 24,-12 Q 48,-7 72,-12 L 72,4 Q 48,8 24,4 Z" fill="rgba(255,247,210,0.92)"/>
+          <line x1="24" y1="-26" x2="72" y2="-26" stroke="#3a4553" stroke-width="0.9"/>
+          <path d="M 26,-26 Q 48,-22 70,-26 L 70,-13 Q 48,-9 26,-13 Z" fill="rgba(255,247,210,0.92)"/>
+          <line x1="34" y1="-38" x2="62" y2="-38" stroke="#3a4553" stroke-width="0.9"/>
+          <path d="M 35,-38 Q 48,-35 61,-38 L 61,-28 Q 48,-25 35,-28 Z" fill="rgba(255,247,210,0.92)"/>
+          <path d="M 48,-40 L 58,-39 L 56,-37 L 58,-35 L 48,-36 Z" fill="#AE1C28"/>
+        </svg>
+      </template>
+      <template id="tpl-ship-cargo">
+        <svg class="ci ci-cargo" width="180" height="44" viewBox="0 -28 180 44" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 0,14 L 6,16 L 174,16 L 180,14 L 180,10 L 0,10 Z" fill="var(--c-orange-knvb)"/>
+          <g>
+            <rect x="14" y="0" width="14" height="9" fill="#C8482F"/>
+            <rect x="30" y="0" width="14" height="9" fill="var(--c-cobalt-900)"/>
+            <rect x="46" y="0" width="14" height="9" fill="rgba(255,247,210,0.9)"/>
+            <rect x="62" y="0" width="14" height="9" fill="#C8482F"/>
+            <rect x="78" y="0" width="14" height="9" fill="var(--c-cobalt-900)"/>
+            <rect x="94" y="0" width="14" height="9" fill="rgba(255,247,210,0.9)"/>
+            <rect x="110" y="0" width="14" height="9" fill="#C8482F"/>
+            <rect x="14" y="-9" width="14" height="9" fill="var(--c-cobalt-900)"/>
+            <rect x="30" y="-9" width="14" height="9" fill="rgba(255,247,210,0.9)"/>
+            <rect x="62" y="-9" width="14" height="9" fill="var(--c-cobalt-900)"/>
+            <rect x="94" y="-9" width="14" height="9" fill="#C8482F"/>
+            <rect x="14" y="-18" width="14" height="9" fill="rgba(255,247,210,0.9)"/>
+            <rect x="62" y="-18" width="14" height="9" fill="#C8482F"/>
+          </g>
+          <rect x="138" y="-18" width="22" height="27" fill="#5a6573"/>
+          <rect x="142" y="-14" width="14" height="3" fill="rgba(255,247,210,0.85)"/>
+          <rect x="142" y="-9" width="14" height="3" fill="rgba(255,247,210,0.6)"/>
+          <rect x="142" y="-4" width="14" height="3" fill="rgba(255,247,210,0.6)"/>
+          <rect x="146" y="-26" width="8" height="8" fill="#3a4553"/>
+          <rect x="146" y="-22" width="8" height="2" fill="var(--c-orange-knvb)"/>
+        </svg>
+      </template>
+      <template id="tpl-ship-frigate">
+        <svg class="ci ci-frigate" width="130" height="36" viewBox="0 -20 130 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 0,14 L 6,16 L 124,16 L 130,14 L 130,10 L 0,10 Z" fill="#5a6573"/>
+          <rect x="0" y="9" width="130" height="1.4" fill="var(--c-orange-knvb)"/>
+          <rect x="14" y="6" width="14" height="4" rx="1.5" fill="#6a7583"/>
+          <line x1="21" y1="8" x2="40" y2="6" stroke="#3a4553" stroke-width="1.6" stroke-linecap="round"/>
+          <rect x="42" y="-2" width="48" height="12" fill="#6a7583"/>
+          <rect x="58" y="-12" width="16" height="10" fill="#7a8593"/>
+          <rect x="60" y="-9" width="12" height="2.5" fill="rgba(255,247,210,0.85)"/>
+          <line x1="66" y1="-12" x2="66" y2="-18" stroke="#3a4553" stroke-width="1"/>
+          <rect x="82" y="-7" width="6" height="5" fill="#3a4553"/>
+          <rect x="82" y="-5" width="6" height="1.5" fill="var(--c-orange-knvb)"/>
+          <rect x="100" y="6" width="14" height="4" rx="1.5" fill="#6a7583"/>
+        </svg>
+      </template>
+      <template id="tpl-battleship">
+        <svg class="ci ci-battleship boss" width="220" height="56" viewBox="0 -22 220 56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 0,18 L 8,28 L 212,28 L 220,18 L 220,12 L 0,12 Z" fill="#4a5663"/>
+          <rect x="0" y="11" width="220" height="2" fill="var(--c-orange-knvb)"/>
+          <rect x="50" y="0" width="120" height="12" fill="#5a6573"/>
+          <rect x="92" y="-12" width="36" height="12" fill="#6a7583"/>
+          <rect x="96" y="-9" width="28" height="3" fill="rgba(255,247,210,0.85)"/>
+          <rect x="138" y="-7" width="10" height="7" fill="#3a4553"/>
+          <rect x="138" y="-4" width="10" height="2" fill="var(--c-orange-knvb)"/>
+          <line x1="110" y1="-12" x2="110" y2="-20" stroke="#3a4553" stroke-width="1.4"/>
+          <rect x="22" y="6" width="22" height="6" rx="2" fill="#6a7583"/>
+          <line x1="32" y1="9" x2="56" y2="6" stroke="#3a4553" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="32" y1="9" x2="8" y2="6" stroke="#3a4553" stroke-width="2.2" stroke-linecap="round"/>
+          <rect x="176" y="6" width="22" height="6" rx="2" fill="#6a7583"/>
+          <line x1="186" y1="9" x2="210" y2="6" stroke="#3a4553" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="186" y1="9" x2="162" y2="6" stroke="#3a4553" stroke-width="2.2" stroke-linecap="round"/>
+          <g class="hp-pips" transform="translate(58, -18)">
+            <circle class="pip" cx="0" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="11" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="22" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="33" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="44" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="55" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="66" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="77" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="88" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+            <circle class="pip" cx="99" cy="0" r="2.4" fill="var(--c-orange-knvb)"/>
+          </g>
+        </svg>
+      </template>
+</div></div>
+</body>
+</html>
