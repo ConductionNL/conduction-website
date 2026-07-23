@@ -1,4 +1,9 @@
-# conduction-website
+> [!IMPORTANT]
+> ## 🚚 This repository has moved to Codeberg
+>
+> Active development now happens at **https://codeberg.org/Conduction/conduction-website**.
+> This GitHub mirror is read-only — issues, pull requests, and new commits should go to Codeberg.
+> Update your remote with: `git remote set-url origin https://codeberg.org/Conduction/conduction-website`# conduction-website
 
 The Docusaurus 3 site for [conduction.nl](https://conduction.nl). Built on `@conduction/docusaurus-preset` for brand defaults; site-specific config lives in [docusaurus.config.js](docusaurus.config.js).
 
