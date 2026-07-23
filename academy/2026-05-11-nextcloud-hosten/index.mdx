@@ -1,0 +1,194 @@
+---
+slug: nextcloud-hosten
+title: Nextcloud hosten — bare metal, Docker of Kubernetes?
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-11
+summary: Drie manieren om Nextcloud te draaien, één onderbouwde keuze. Bare metal voor controle, Docker (of AIO) voor de meeste teams, Kubernetes alleen als je dat al draait. Plus een beslismatrix en de aandachtspunten die elke productie-installatie raakt.
+tags: [Nextcloud, Hosting, Docker, Kubernetes, Helm, AIO, Architectuur]
+durationMinutes: 20
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, ContactCta} from '@conduction/docusaurus-preset/components';
+
+Een Nextcloud opzetten kan op drie manieren, en de "beste" hangt af van wie je bent en wat je al draait. Een homelab op een mini-pc vraagt iets anders dan een gemeente met tien bestuurslagen en een ISO-audit. Deze tutorial zet de drie hoofdopties naast elkaar, met voor- en nadelen en een beslismatrix om snel te kiezen. Niets vervangt de officiële [Nextcloud admin docs](https://docs.nextcloud.com/server/latest/admin_manual/), maar dit is de korte route naar de juiste hoofdstukken.
+
+{/* truncate */}
+
+<Outcomes title="Wat je leert">
+  <Outcome>De drie hoofdopties voor Nextcloud-hosting onderscheiden: bare metal / VM, containers (Docker + AIO), Kubernetes (Helm).</Outcome>
+  <Outcome>Per optie weten wanneer je hem kiest, wat hij kost aan complexiteit, en hoe hij schaalt.</Outcome>
+  <Outcome>Een beslismatrix toepassen die past bij jouw scenario — homelab, team, of multi-tenant productie.</Outcome>
+  <Outcome>De zes aandachtspunten kennen die elke productie-Nextcloud raakt: backups, updates, TLS, object storage, caching, en performance tuning.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Een idee van je doelgroep: alleen jezelf, een klein team, of een productiedienst voor meerdere gebruikers.</PrerequisiteItem>
+  <PrerequisiteItem>Basiskennis Linux-server-admin (SSH, een package manager, systemd) helpt, maar is geen harde eis voor optie 2.</PrerequisiteItem>
+  <PrerequisiteItem>Voor optie 3: een werkend Kubernetes-cluster (eigen of beheerd). Geen cluster? Optie 3 is niet voor jou — kies optie 2.</PrerequisiteItem>
+</Prerequisites>
+
+Wil je gewoon snel testen op je laptop? Sla deze tutorial over en volg [Nextcloud lokaal draaien met Docker](/academy/nextcloud-lokaal-draaien). Dat is een snel-start, geen productie-keuze.
+
+## De drie hoofdopties in één oogopslag
+
+| Optie | Wie het draait | Kostprijs | Schaalbaarheid |
+| --- | --- | --- | --- |
+| **1. Bare metal / VM** | Jij, met de hand of via een script | Lage software-kosten, hoge ops-tijd | Verticaal (groter VM); horizontaal kan, maar is werk |
+| **2. Containers (Docker / AIO)** | Docker op één host, of een handvol hosts | Lage drempel, gemiddelde ops-tijd | Verticaal en bescheiden horizontaal; AIO is single-host |
+| **3. Kubernetes (Helm)** | Kubernetes-cluster met persistent storage | Hoge complexiteit, lage marginale ops-tijd | Horizontaal, multi-tenant, multi-region |
+
+Ieder antwoord is een trade-off. Hieronder per optie wat dat in de praktijk betekent.
+
+## Optie 1: Bare metal of VM
+
+De klassieke route: LAMP-stack op een Linux-server, Nextcloud uitpakken in `/var/www/nextcloud`, Apache of Nginx ervoor, Postgres of MariaDB ernaast, Redis voor cache, een cronjob voor `cron.php`. Volledige controle, geen abstractielagen.
+
+**Wanneer wel:**
+
+- Je hebt een single-tenant productie-installatie met strenge dataregels (lokale schijf, geen container-runtime in scope van je audit).
+- Je beheert al een vloot Linux-servers met je eigen config-management (Ansible, Salt, Puppet) en wil Nextcloud daarin vouwen.
+- Je wil tunen op systeemniveau (kernel parameters, opcache-paden, PHP-OPcache tuning) zonder dat een container-runtime ertussen zit.
+
+**Wanneer niet:**
+
+- Je werkt alleen en hebt geen zin in package-management voor PHP, Apache, en MariaDB. Optie 2.
+- Je wil meerdere Nextclouds isoleren op één host. Containers zijn daar gewoon beter in.
+
+**Complexiteit:** Hoog initieel (LAMP-stack opzetten, TLS-certificaten, php-fpm tunen). Daarna middelmatig (Nextcloud-major-upgrades vereisen handwerk via `occ upgrade`).
+
+**Schaalbaarheid:** Verticaal door je VM groter te maken. Voor horizontaal schaal-uit gebruik je Nextcloud's [scale-out-aanwijzingen](https://docs.nextcloud.com/server/latest/admin_manual/installation/deployment_recommendations.html): meerdere Nextcloud-frontends achter een load balancer, gedeelde Redis, gedeelde S3-compatibele object storage, en een aparte database-host. Concrete sizing hangt af van je werklast — raadpleeg de officiële documentatie voor richtgetallen.
+
+**Documentatie:** [Manual installation on Linux](https://docs.nextcloud.com/server/latest/admin_manual/installation/source_installation.html), en de [example installation on Ubuntu 24.04](https://docs.nextcloud.com/server/latest/admin_manual/installation/example_ubuntu.html).
+
+## Optie 2: Containers — Docker Compose of Nextcloud AIO
+
+Het brede midden. Twee smaken:
+
+### 2a. Docker Compose
+
+Eigen `docker-compose.yml`, de officiële [`nextcloud`-image](https://hub.docker.com/_/nextcloud), Postgres en Redis ernaast. Hetzelfde patroon dat je gebruikt voor [lokaal Nextcloud draaien](/academy/nextcloud-lokaal-draaien). Volledige config-controle, je eigen reverse proxy ervoor (Traefik, Caddy, Nginx Proxy Manager), je eigen TLS-routine.
+
+### 2b. Nextcloud AIO (All-in-One)
+
+Eén "mastercontainer" die alle andere services beheert: Nextcloud, Postgres, Redis, Apache proxy, Notify Push, plus optioneel Office, Talk, ClamAV, en zo'n dertig andere community-add-ons. Een webinterface op poort 8080 doet de install, backups, en updates. Officiële Nextcloud-deployment, opgezet om "in vijf minuten" een werkende Nextcloud op te leveren.
+
+**AIO is een goede default als** je één Nextcloud op één host draait, één publiek domein hebt, en de built-in backup/update-flow accepteert.
+
+**AIO is **niet** geschikt voor:**
+
+- Airgapped installs (heeft internet nodig voor de master container).
+- Self-signed certificaten of toegang via IP-adres alleen.
+- Sub-directory installs (`example.com/cloud`).
+- Meerdere domeinen achter dezelfde install.
+- Non-standaard poorten — 443 is verplicht.
+- SELinux zonder workarounds.
+
+Voor die scenario's: Docker Compose, met je eigen wiring.
+
+**Wanneer wel (containers in het algemeen):**
+
+- Je draait één of een handvol Nextcloud-installs op een hypervisor of dedicated host.
+- Je wil snel kunnen wisselen tussen Nextcloud-major-versies (image-tag wijzigen, container herstarten).
+- Je hebt een vloot apps in containers en wil Nextcloud daar consistent naast.
+
+**Wanneer niet:**
+
+- Je hebt geen Docker-host of wil er geen onderhouden. Optie 1.
+- Je draait al Kubernetes voor andere workloads. Optie 3.
+
+**Complexiteit:** Laag voor AIO (één commando, browser-wizard). Middelmatig voor eigen compose (compose-bestand schrijven, TLS regelen, backups bedenken).
+
+**Schaalbaarheid:** Beide opties zijn primair single-host. Voor horizontale schaal-uit ga je richting Kubernetes of bare-metal scale-out. Voor de meeste teams blijft single-host op een goed gesized VM ruim voldoende; concrete sizing hangt af van werklast en is een kwestie van meten.
+
+**Documentatie:** [Docker image](https://hub.docker.com/_/nextcloud) en [Nextcloud AIO repo](https://github.com/nextcloud/all-in-one).
+
+## Optie 3: Kubernetes met de officiële Helm chart
+
+[`nextcloud/helm`](https://github.com/nextcloud/helm) is de community-maintained chart, met de letterlijke waarschuwing in de README: *"⚠️⚠️⚠️ This project is maintained by community volunteers and designed for expert use."* De maintainers raden expliciet AIO aan voor wie "quick and easy" wil. Lees: kies dit alleen als je al een productioneel Kubernetes-cluster hebt en weet wat een PersistentVolumeClaim is.
+
+```bash
+helm repo add nextcloud https://nextcloud.github.io/helm/
+helm repo update
+helm install my-nextcloud nextcloud/nextcloud
+```
+
+Drie commando's, maar de echte werk zit in de `values.yaml`: ingress, certmanager-annotaties, externe MariaDB of Postgres, externe Redis, S3-compatibele primary storage, replica-counts, resource requests/limits, anti-affinity zodat replicas niet op dezelfde node landen.
+
+**Wanneer wel:**
+
+- Je draait al Kubernetes met cert-manager, een ingress controller, en monitored persistent storage.
+- Je wilt multi-tenant: meerdere Nextcloud-instanties, elk in een eigen namespace, gedeelde infra.
+- Je hebt HA-eisen: meerdere replicas, automatische failover, rolling updates zonder downtime.
+- Je werkt vanuit GitOps (ArgoCD / Flux) en wil Nextcloud daar in passen.
+
+**Wanneer niet:**
+
+- Je hebt nog geen Kubernetes draaien. De drempel om dit *speciaal voor Nextcloud* op te tuigen is veel te hoog. Begin bij optie 2.
+- Je hebt één Nextcloud nodig en niet meer. Single-pod Helm is meer werk dan Docker Compose, voor minder controle.
+
+**Complexiteit:** Hoog. Begin niet aan deze chart als je niet zelfstandig een `kubectl describe pod` kunt interpreteren en weet wat een StorageClass doet.
+
+**Schaalbaarheid:** Hoog. Meerdere Nextcloud-pods achter een service, gedeelde primary storage op S3, gedeelde Redis, externe gemanagede database. Dit is de route die multi-region en multi-tenant realistisch ondersteunt, met horizontale schaal-uit als eerste-klas concept in plaats van als nabouw.
+
+**Documentatie:** [`nextcloud/helm` README](https://github.com/nextcloud/helm) en de [scaling deployment recommendations](https://docs.nextcloud.com/server/latest/admin_manual/installation/deployment_recommendations.html).
+
+## Beslismatrix
+
+Lees van links naar rechts. Eerste match wint.
+
+| Scenario | Aantal users | Schaal-eis | Ops-capaciteit | Kies |
+| --- | --- | --- | --- | --- |
+| Homelab, eigen gebruik | 1 — 5 | Geen | Beperkt | **Optie 2b (AIO)** of [lokaal Docker](/academy/nextcloud-lokaal-draaien) |
+| Klein team, één organisatie | 5 — 50 | Verticaal | Beperkt | **Optie 2b (AIO)** als wizard-flow oké is, anders **2a (Compose)** |
+| Klein team, custom integraties | 5 — 50 | Verticaal | Gemiddeld | **Optie 2a (Docker Compose)** — je hebt control nodig die AIO niet geeft |
+| Eén productie-dienst | 50 — 500 | Verticaal | Gemiddeld | **Optie 1 (VM)** of **Optie 2a** met externe DB/Redis |
+| Eén productie-dienst, strict compliance | 50 — 500 | Verticaal | Hoog | **Optie 1 (bare metal)** voor audit-leesbaarheid |
+| Multi-tenant productie | 100+ per tenant | Horizontaal | Hoog, K8s-kennis aanwezig | **Optie 3 (Kubernetes)** |
+| Multi-tenant productie | 100+ per tenant | Horizontaal | K8s niet in huis | **Optie 1 scale-out** of een gemanagede aanbieder |
+
+Als je twijfelt tussen 2a en 2b: begin met **AIO**. Loop je tegen de [AIO-limitaties](https://github.com/nextcloud/all-in-one#limitations) (sub-directory, meerdere domeinen, non-standaard poort), migreer dan naar 2a met een database-export.
+
+## Aandachtspunten voor elke productie-Nextcloud
+
+Onafhankelijk van de gekozen hostingsmaak: deze zes onderwerpen móet je expliciet adresseren voor je iets productie noemt.
+
+### Backups
+
+Drie dingen om in een back-up te krijgen, niet één: de Nextcloud-databasedump, de `config/config.php`, en de `data/`-directory (of de S3-bucket als je object storage gebruikt). Restore-test minimaal per kwartaal. AIO heeft een ingebouwde [Borg-backup](https://github.com/nextcloud/all-in-one#how-to-do-a-backup-and-restore); voor de andere opties is `nextcloud-borgbackup` of een eigen script de standaard.
+
+### Updates
+
+Nextcloud doet één major-release per half jaar (~april en oktober). Patch-releases tussen-door. Major-upgrades zijn niet skippable: 27 → 29 doe je via 28. Plan een onderhoudsvenster per half jaar. AIO automatiseert dit grotendeels; bij Docker Compose werk je met image-tags; bij bare metal draai je `occ upgrade` na elke pull.
+
+### TLS
+
+Verplicht voor productie, ook intern. [Let's Encrypt](https://letsencrypt.org/) met cert-manager (K8s), Traefik / Caddy (Docker), of [`certbot`](https://certbot.eff.org/) (bare metal). AIO doet het automatisch via de built-in Apache. Vergeet HSTS-header en TLS 1.2-minimum niet.
+
+### Object storage (primary storage)
+
+Default schrijft Nextcloud user-files naar de `data/`-directory op lokale schijf. Voor productie boven ~500 GB wil je [S3 als primary storage](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html): MinIO zelf-gehost of een gemanagede S3 zoals AWS, Cloudflare R2, Wasabi. Verandert de schalingscurve volkomen.
+
+### Caching
+
+Redis als distributed memcache is verplicht zodra je meer dan één PHP-proces hebt — wat al het geval is bij default-config van zowat elke optie. APCu voor local memcache, Redis voor distributed + file-locking. Zonder Redis-file-locking krijg je inconsistenties bij gelijktijdige edits.
+
+### Performance tuning
+
+`php.ini`: `memory_limit=512M`, `opcache.enable=1`, `opcache.interned_strings_buffer=16`. Nextcloud's [scaling deployment recommendations](https://docs.nextcloud.com/server/latest/admin_manual/installation/deployment_recommendations.html) zijn de canonieke checklist — werk hem af voor productie, ongeacht hostingoptie.
+
+Conduction-apps draaien op de officiële Nextcloud-image en zijn agnostisch over de gekozen hostingoptie. Geen van de drie routes is "de juiste" in absolute zin — de beslismatrix hierboven is de juiste, voor jouw scenario.
+
+## Volgende stap
+
+Je weet welke hostingoptie bij je past. De vervolg-vraag is wat erop komt:
+
+- [Nextcloud lokaal draaien met Docker](/academy/nextcloud-lokaal-draaien) — drie commando's voor een lokale demo.
+- [Een Woo-register opzetten in OpenRegister](/academy/woo-register-opzetten) — Conduction's data-foundation, draait op elke hostingoptie hierboven.
+- [Build a Nextcloud app on the Conduction stack — Part 1: Scaffold](/academy/deskdesk-tutorial-1-scaffold) — een eigen app bouwen die op deze stack landt.
+
+<ContactCta
+  title="Hulp bij de keuze?"
+  body="Hosten voor een gemeente, een onderwijsinstelling, of een SaaS-product? Mail ons — we denken graag mee over de juiste route voor jouw scenario."
+  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=Nextcloud%20hosting" }}
+/>
