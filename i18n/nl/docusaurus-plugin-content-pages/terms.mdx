@@ -1,63 +1,354 @@
 ---
-title: Algemene voorwaarden
-description: De algemene voorwaarden van Conduction. Apps, managed hosting, advieswerk, en hoe we met je contracteren.
+title: Service Level Agreement
+description: De SLA van Conduction voor SaaS en managed hosting. Beschikbaarheid, reactie- en oplostijden per prioriteit, ISO 27001-conforme beveiliging, capaciteit en software-updates.
 hide_table_of_contents: true
 ---
 
-import {Section} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, Showcase, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
+
+export const TermsIcon = (
+  <svg viewBox="0 0 24 24">
+    <path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" />
+    <path d="M15 3v5h4" />
+    <path d="M9 13h6M9 17h4" />
+  </svg>
+);
+
+export const PROMISE_PANELS = {
+  uptime: (
+    <div style={{padding: 24, background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, color: 'var(--c-cobalt-900)'}}>
+      <div style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-orange-knvb)', marginBottom: 8}}>Uptime-formule</div>
+      <div style={{background: 'white', borderRadius: 4, padding: '12px 14px', border: '1px solid var(--c-cobalt-100)', marginBottom: 16, fontSize: 12, lineHeight: 1.6}}>
+        Uptime % = (Overeengekomen Diensturen − Uren Downtime) / Overeengekomen Diensturen × 100%
+      </div>
+      <div style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', marginBottom: 8}}>Telt niet als downtime</div>
+      <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6}}>
+        {['Gepland onderhoud', 'Verminderde prestaties', 'Overmacht', 'Internetstoringen', 'Handelingen of nalatigheid van klant/gebruiker', 'Handhaving van overheidsvoorschriften'].map((l, i) => (
+          <li key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+            <span style={{width: 10, height: 12, clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)', background: 'var(--c-cobalt-300)'}} />
+            <span>{l}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ),
+  response: (
+    <div style={{padding: 20, background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, color: 'var(--c-cobalt-900)'}}>
+      <div style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', marginBottom: 10}}>Reactie en oplossing (kantooruren)</div>
+      <div style={{display: 'grid', gridTemplateColumns: '64px 1fr 1fr', gap: 4, alignItems: 'center', background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 6, padding: 12}}>
+        <div style={{fontWeight: 700, fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>Prio</div>
+        <div style={{fontWeight: 700, fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>Reactie</div>
+        <div style={{fontWeight: 700, fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>Workaround / Oplossing</div>
+      </div>
+      <div style={{display: 'flex', flexDirection: 'column', gap: 6, marginTop: 6}}>
+        {[
+          {p: 'P1', r: '2 uur', s: '4 uur / 8 uur', c: 'var(--c-orange-knvb)'},
+          {p: 'P2', r: '4 uur', s: '16 uur / 48 uur', c: 'var(--c-blue-cobalt)'},
+          {p: 'P3', r: 'een week', s: 'Planmatig', c: 'var(--c-cobalt-300)'},
+        ].map((row, i) => (
+          <div key={i} style={{display: 'grid', gridTemplateColumns: '64px 1fr 1fr', gap: 4, alignItems: 'center', background: 'white', padding: '10px 12px', borderRadius: 4, border: '1px solid var(--c-cobalt-100)'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <span style={{width: 10, height: 12, clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)', background: row.c}} />
+              <strong>{row.p}</strong>
+            </div>
+            <div>{row.r}</div>
+            <div>{row.s}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{marginTop: 14, fontSize: 11, color: 'var(--c-cobalt-700)', fontStyle: 'italic'}}>Kantooruren = ma–vr 09:00–17:00, officiële feestdagen niet inbegrepen.</div>
+    </div>
+  ),
+  security: (
+    <div style={{padding: 24, background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 16}}>
+      <img src="/img/certificates/iso-27001-2022.png" alt="ISO 27001:2022-certificaat" style={{maxWidth: 180, width: '100%', height: 'auto', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', borderRadius: 4}} />
+      <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, fontWeight: 700, color: 'var(--c-cobalt-900)', letterSpacing: '0.06em'}}>ISO/IEC 27001:2022</div>
+    </div>
+  ),
+  capacity: (
+    <div style={{padding: 20, background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12, alignContent: 'center'}}>
+      {[
+        {n: '5 GB', l: 'Opslag'},
+        {n: '1 mln', l: 'Bevragingen / maand'},
+        {n: '10 GB', l: 'Dataverkeer / maand'},
+      ].map((b, i) => (
+        <div key={i} style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 8, padding: '18px 14px', textAlign: 'center', boxShadow: '0 1px 3px rgba(33, 70, 139, 0.04)'}}>
+          <div style={{fontSize: 28, fontWeight: 700, color: 'var(--c-cobalt-900)', lineHeight: 1.1}}>{b.n}</div>
+          <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', marginTop: 6}}>{b.l}</div>
+        </div>
+      ))}
+    </div>
+  ),
+  maintenance: (
+    <div style={{padding: 20, background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, color: 'var(--c-cobalt-900)'}}>
+      <div style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', marginBottom: 10}}>Gepland onderhoud</div>
+      {[
+        {k: 'Aankondiging', v: '≥ 24 uur vooraf'},
+        {k: 'Inplanning', v: 'Buiten kantooruren'},
+        {k: 'Communicatie', v: 'Binnen redelijke termijn'},
+      ].map((row, i) => (
+        <div key={i} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderTop: i > 0 ? '1px solid var(--c-cobalt-100)' : 'none'}}>
+          <span style={{fontWeight: 700, color: 'var(--c-cobalt-700)'}}>{row.k}</span>
+          <span>{row.v}</span>
+        </div>
+      ))}
+    </div>
+  ),
+  updates: (
+    <div style={{padding: 24, background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, color: 'var(--c-cobalt-900)'}}>
+      <div style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-orange-knvb)', marginBottom: 12}}>Inbegrepen in de SLA</div>
+      <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8}}>
+        {['Nieuwe versies en releases', 'Bugfixes', 'Beveiligingsupdates'].map((l, i) => (
+          <li key={i} style={{display: 'flex', alignItems: 'center', gap: 10, background: 'white', padding: '10px 12px', borderRadius: 4, border: '1px solid var(--c-cobalt-100)'}}>
+            <span style={{width: 14, height: 16, clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)', background: 'var(--c-mint-500)', flexShrink: 0}} />
+            <span>{l}</span>
+          </li>
+        ))}
+      </ul>
+      <div style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', marginTop: 18, marginBottom: 8}}>Buiten scope</div>
+      <div style={{background: 'white', padding: '10px 12px', borderRadius: 4, border: '1px solid var(--c-cobalt-100)'}}>Ontwikkeling van nieuwe functionaliteit naast bugfixes en beveiligingsupdates wordt per opdracht overeengekomen.</div>
+    </div>
+  ),
+};
+
+<DetailHero
+  background="cobalt"
+  crumb={[{label: 'Over', href: '/about'}, 'Voorwaarden']}
+  locales="Service Level Agreement"
+  title={<>Een belofte,<br/>die we waarmaken.</>}
+  tagline={<>Voorwaarden zijn een belofte. Deze pagina is de Service Level Agreement waar Conduction zich aan committeert voor elk SaaS- en managed-hosting-abonnement: <strong>95% uptime</strong>, vaste reactie- en oplostijden per prioriteit, ISO 27001-conforme beveiliging en een duidelijke capaciteit. De Nederlandse tekst hieronder is juridisch bindend; productspecifieke SLA's verwijzen naar deze basis.</>}
+  primaryCta={{label: 'Lees de beloftes', href: '#promises', tone: 'orange'}}
+  secondaryCta={{label: 'Productspecifieke SLA →', href: 'https://openwoo.app/Product/SLA/'}}
+  iconColor="var(--c-orange-knvb)"
+  icon={TermsIcon}
+/>
+
+<div id="promises" />
+<Showcase
+  eyebrow="Onze beloftes"
+  title="Waar Conduction zich aan committeert."
+  lede="Elke regel hieronder komt rechtstreeks uit de SLA verderop op deze pagina. Ze gelden voor elk SaaS- of managed-hosting-abonnement, naast de afspraken in de opdrachtovereenkomst."
+  layout="side"
+  defaultOpen="uptime"
+  items={[
+    {
+      id: 'uptime',
+      title: '95% uptime, 24/7.',
+      summary: "Conduction garandeert een uptime van 95% gedurende 24 uur per dag, 7 dagen per week. De Uptime wordt berekend op basis van het maandelijkse gemiddelde van beschikbaarheid, afgerond naar beneden op de dichtstbijzijnde minuut: (Overeengekomen Diensturen − Uren Downtime) / Overeengekomen Diensturen × 100%. Gepland onderhoud, verminderde prestaties, internetstoringen en factoren buiten Conduction's controle tellen niet als downtime.",
+      cta: {label: 'Lees de beschikbaarheidsclausule', href: '#availability'},
+      panel: PROMISE_PANELS.uptime,
+    },
+    {
+      id: 'response',
+      title: 'P1 binnen 2 uur, opgelost in 8.',
+      summary: "Reactie- en oplostijden per prioriteit. P1 betekent dat de software in zijn geheel niet beschikbaar is: 2 uur reactie, 4 uur workaround, 8 uur oplossing. P2 is verminderde servicekwaliteit: 4 uur, 16 uur, 48 uur. P3 dekt algemene problemen: reactie binnen een week, planmatige oplossing. Alle uren tellen binnen kantoortijd (ma–vr 09:00–17:00, officiële feestdagen niet inbegrepen).",
+      cta: {label: 'Bekijk de prioriteitstabel', href: '#response'},
+      panel: PROMISE_PANELS.response,
+    },
+    {
+      id: 'security',
+      title: 'Beveiliging conform ISO 27001.',
+      summary: "Gegevensbeveiliging is van essentieel belang voor Conduction. Ons beveiligingsbeleid voldoet volledig aan ISO/IEC 27001 (de internationaal erkende standaard voor informatiebeveiliging) en wordt onder hetzelfde managementsysteem geauditeerd als beschreven op onze /quality-pagina.",
+      cta: {label: 'Bekijk Quality & ISO', href: '/quality'},
+      panel: PROMISE_PANELS.security,
+    },
+    {
+      id: 'capacity',
+      title: 'Capaciteit, inbegrepen.',
+      summary: "Conduction richt haar prijsstelling op kleine organisaties en includeert een redelijke capaciteit per organisatie per abonnement: 5 GB opslag, 1 miljoen bevragingen per maand en 10 GB dataverkeer per maand. Bovenmatig gebruik wordt achteraf doorbelast op basis van nacalculatie; regulier gebruik zou daar niet toe moeten leiden.",
+      cta: {label: 'Bekijk de capaciteitsclausule', href: '#capacity'},
+      panel: PROMISE_PANELS.capacity,
+    },
+    {
+      id: 'maintenance',
+      title: 'Onderhoud, nooit in jouw werkdag.',
+      summary: "Gepland onderhoud wordt minimaal 24 uur van tevoren aangekondigd en, waar mogelijk, buiten kantooruren ingepland. Incidenten die zich voordoen tijdens een gepland onderhoudsmoment vallen niet onder de definitie van incident in deze SLA.",
+      panel: PROMISE_PANELS.maintenance,
+    },
+    {
+      id: 'updates',
+      title: 'Updates, voor onze rekening.',
+      summary: "Binnen deze SLA voorziet Conduction de klant van nieuwe versies, releases en updates van [product]. Aangezien [product] open-source is, valt de ontwikkeling van nieuwe functionaliteit (naast bugfixes en beveiligingsupdates) buiten de SLA en wordt per opdracht overeengekomen.",
+      panel: PROMISE_PANELS.updates,
+    },
+  ]}
+/>
+
+<div id="sla" />
+<Section spacing="default" background="tinted">
+
+## Service Level Agreement voor [product]
+
+<div style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 8, boxShadow: '0 2px 16px rgba(33, 70, 139, 0.06)', padding: '40px clamp(20px, 4vw, 56px)', maxWidth: 820, margin: '24px auto 0'}}>
+
+<div style={{borderBottom: '2px solid var(--c-cobalt-100)', paddingBottom: 24, marginBottom: 28}}>
+  <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-orange-knvb)', marginBottom: 6}}>Service Level Agreement</div>
+  <h3 style={{margin: 0, marginBottom: 18, fontSize: 28}}>[product] (productieomgevingen)</h3>
+  <dl style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '14px 28px', margin: 0}}>
+    <div>
+      <dt style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)', marginBottom: 4}}>Standaard</dt>
+      <dd style={{margin: 0, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 13, color: 'var(--c-cobalt-900)', fontWeight: 600}}>ISO/IEC 27001-conform</dd>
+    </div>
+    <div>
+      <dt style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)', marginBottom: 4}}>Uptime</dt>
+      <dd style={{margin: 0, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 13, color: 'var(--c-cobalt-900)', fontWeight: 600}}>95% · 24/7</dd>
+    </div>
+    <div>
+      <dt style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)', marginBottom: 4}}>P1 reactie</dt>
+      <dd style={{margin: 0, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 13, color: 'var(--c-cobalt-900)', fontWeight: 600}}>2 u / 4 u / 8 u</dd>
+    </div>
+    <div>
+      <dt style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)', marginBottom: 4}}>Kantooruren</dt>
+      <dd style={{margin: 0, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 13, color: 'var(--c-cobalt-900)', fontWeight: 600}}>ma–vr 09:00–17:00</dd>
+    </div>
+  </dl>
+</div>
+
+### Intro
+
+Deze Service Level Agreement (SLA) omvat de afspraken tussen de organisatie die [product] gebruikt en Conduction die [product] als SaaS-oplossing levert. SaaS is de afkorting van Software as a Service. Ofwel: het aanbieden en gebruiken van software via internet in de vorm van een dienst. Klanten betalen de software in een abonnementsvorm naar gebruik in plaats van het eenmalig aankopen van software. Deze SLA beschrijft de niveaus van productbeschikbaarheid en -ondersteuning die verwacht kan worden van Conduction voor de duur van de overeenkomst.
+
+Als open-source softwareleverancier biedt Conduction B.V. ondersteuning op de hosting en beheer van de code. Let op: wij bieden geen derdelijns codeonderhoud en beheer, oftewel ondersteuning op de code van derden, aan.
+
+### Definities
+
+Binnen deze SLA worden de onderstaande termen gebruikt met de aangegeven betekenis. Enkelvoud en meervoud worden als gelijkwaardig beschouwd, en vice versa. De termen "maand", "kwartaal" en "jaar" verwijzen naar de kalendermaand, kalenderkwartaal en kalenderjaar, tenzij anders vermeld. Daarnaast duidt het woord "inclusief" op onbeperkte inclusie.
+
+| Term | Betekenis |
+|---|---|
+| **Reactietijd** | De tijdsduur tussen het ontvangen van een melding en het moment waarop Conduction de melding bevestigt. |
+| **Oplostijd** | De periode die begint bij de Reactietijd en eindigt wanneer het Incident door Conduction als opgelost is gemeld. |
+| **Downtime** | De periode waarin het product niet beschikbaar is voor de klant. Het begrip "downtime" omvat niet: gepland onderhoud; verminderde prestaties; factoren waarover Conduction geen controle heeft, waaronder overmachtsituaties; internetstoringen; handelingen of nalatigheid van de Klant en zijn Gebruikers; handhaving van overheidsvoorschriften. |
+| **Beschikbaarheid** | Mate waarin de geboden dienst toegankelijk is voor geautoriseerde gebruikers. Een dienst is niet beschikbaar indien zich een prioriteit 1-storing op de dienst voordoet. |
+| **Gepland Onderhoud** | Conduction zal gepland onderhoud van de service aankondigen met een minimum termijn van 24 uur voorafgaand aan het daadwerkelijke onderhoud. Conduction streeft ernaar de aankondiging binnen een redelijke termijn te doen en, indien mogelijk, zal de geplande uitval tijdens de Onderhoudsuren plaatsvinden. |
+| **Onderhoudsuren** | Vinden plaats tijdens kantooruren. |
+| **Incident** | Indien een P1-, P2- of P3-melding door de klant wordt gedaan. |
+| **Kantooruren** | Maandag tot en met vrijdag van 09:00 tot 17:00 uur. Niet inbegrepen: officiële feestdagen. |
+| **SLA Ingangsdatum** | De startdatum zoals vermeld in de overeenkomst en de datum waarop deze SLA in werking treedt. |
+| **Ticket** | Een elektronisch verzoek dat door de klant naar Conduction is verzonden (bijvoorbeeld een verzoek om een oplossing van een Incident). |
+| **Verminderde Prestaties** | Een verminderde servicekwaliteit zoals beschreven in deze SLA (bijvoorbeeld tijdelijk verbroken of tijdelijk niet beschikbare functionaliteit). |
+
+### Scope van de SLA
+
+Deze SLA is uitsluitend van toepassing op het product en de professionele diensten zoals beschreven in de Overeenkomst. Deze SLA is niet van toepassing op software, apparatuur, diensten of andere componenten van een informatietechnologiesysteem die niet zijn aangeschaft of beheerd worden door Conduction.
+
+Conduction zal materiële problemen met het product oplossen, tenzij:
+
+- het probleem is ontstaan doordat de klant het product heeft gebruikt op een manier die in strijd is met de instructies, training of kennisbank van Conduction;
+- de klant ongeoorloofde wijzigingen heeft aangebracht in de configuratie of opzet van de betreffende omgeving;
+- de klant Conduction heeft belemmerd bij het uitvoeren van onderhoud aan de omgeving;
+- het probleem is veroorzaakt door derden;
+- het probleem is veroorzaakt door gebruiker(s), bijvoorbeeld door het aanpassen van een deel van de software, configuratie of door het verwijderen of toekennen van onjuiste rechten aan gebruikers.
+
+### Ingangsdatum en termijn
+
+Deze SLA treedt in werking vanaf de startdatum en eindigt zonder verdere kennisgeving, compensatie of restitutie bij het verstrijken of beëindigen van de overeenkomst.
+
+<div id="availability" />
+
+### Beschikbaarheid
+
+Conduction garandeert een uptime van 95% gedurende 24 uur per dag, 7 dagen per week. De Uptime wordt berekend op basis van het maandelijkse gemiddelde van beschikbaarheid, afgerond naar beneden op de dichtstbijzijnde minuut, volgens de volgende formule:
+
+```
+Uptime % = (Overeengekomen Diensturen − Uren Downtime) / Overeengekomen Diensturen × 100%
+```
+
+<div id="capacity" />
+
+### Capaciteit
+
+Conduction richt haar prijsstelling op kleine organisaties en hanteert dus weinig opslag in haar abonnementen. Dat betekent dat we bovenmatig gebruik doorbelasten aan de hand van nacalculatie. Hierbij gaat het echter wel om bovenmatig gebruik van servers of diensten; regulier gebruik zou niet tot een nacalculatie moeten leiden. De beschikbare capaciteit per organisatie bedraagt:
+
+- 5 GB opslag
+- 1 miljoen bevragingen per maand
+- 10 GB dataverkeer per maand
+
+### Stappen voor het melden van incidenten
+
+Als er een probleem optreedt, neem dan tijdens kantoortijden contact op met onze helpdesk via het aangewezen Slack-channel, [support@conduction.nl](mailto:support@conduction.nl) of +31 85 303 6840. We streven ernaar binnen 2 uur te reageren op het probleem en er wordt een ticket toegewezen. Indien er buiten kantoortijden een melding plaatsvindt, wordt deze de eerstvolgende werkdag om 09:00 meegenomen.
+
+<div id="response" />
+
+### Reactie- en oplostijden
+
+We streven ernaar om zo snel mogelijk na ontvangst van het probleem te reageren en het probleem spoedig op te lossen, afhankelijk van de complexiteit van het probleem. Hieronder een overzicht van de prioriteitsniveaus die gebruikt worden voor de reactie- en oplostijden:
+
+- **Prioriteit 1 (P1)**: software is in zijn geheel niet beschikbaar.
+- **Prioriteit 2 (P2)**: problemen die de servicekwaliteit verminderen, zoals intermitterende site- of productproblemen (bijvoorbeeld het niet doorkomen van publicaties).
+- **Prioriteit 3 (P3)**: algemene problemen zoals productvragen, functieverzoeken en ontwikkelingsproblemen.
+
+Een klant kan bij het registreren van een melding een prioriteit meegeven. Deze wordt getoetst door een medewerker van Conduction en in redelijkheid en billijkheid behandeld:
+
+| Incident-prioriteit | Reactietijd * | Workaround / Oplossing * |
+|---|---|---|
+| **P1** | 2 uur | 4 uur / 8 uur |
+| **P2** | 4 uur | 16 uur / 48 uur |
+| **P3** | een week | Planmatig |
+
+\* De genoemde uren tellen alleen binnen kantoortijd. Niet inbegrepen: officiële feestdagen.
+
+#### Uitzonderingen
+
+**Updates aan het platform.** Updates zullen altijd buiten kantooruren worden uitgevoerd. Incidenten die zich voordoen tijdens deze updates vallen niet onder de definitie van incident zoals vermeld in deze SLA.
+
+**Niet-verwijtbare incidenten.** Incidenten bij de klant die veroorzaakt worden buiten de schuld van Conduction vallen niet onder de definitie van incident zoals vermeld in deze SLA. Deze incidenten worden op basis van kosten en tijdsbestek hersteld.
+
+**Veiligheidsupdates.** Updates die om veiligheidsredenen worden uitgevoerd, worden niet beschouwd als incident zoals vermeld in deze SLA.
+
+### Beveiliging
+
+Gegevensbeveiliging is van essentieel belang voor Conduction. Ons beveiligingsbeleid voldoet volledig aan ISO/IEC 27001, een internationaal erkende standaard voor informatiebeveiliging, en wordt onder hetzelfde managementsysteem geauditeerd als beschreven op onze [Quality-pagina](/quality).
+
+### Software-updates
+
+Binnen deze SLA zal Conduction de klant voorzien van nieuwe versies, releases en updates van het product. Aangezien [product] een open-source product is, valt ontwikkeling van nieuwe versies, releases en updates (naast bugfixing en beveiligingsupdates) buiten de SLA.
+
+### Periodieke evaluatie
+
+Tijdens de maandelijkse community-meeting van [product] zal er een vertegenwoordiger van Conduction aanwezig zijn. In deze meeting wordt het product geëvalueerd en de richting, roadmap en keuzes toegelicht.
+
+<div style={{marginTop: 36, paddingTop: 20, borderTop: '2px solid var(--c-cobalt-100)', fontSize: 13, color: 'var(--c-cobalt-700)', fontStyle: 'italic'}}>
+  Vastgesteld door de directie van Conduction B.V., Amsterdam, Nederland. Deze Nederlandse tekst is de juridisch bindende versie van de SLA.
+</div>
+
+</div>
+
+</Section>
 
 <Section spacing="default">
 
-# Algemene voorwaarden
-
-Dit is de Nederlandse en juridisch bindende versie van onze voorwaarden. **Deze pagina is een werkversie en wacht op externe juridische toets.**
-
-## 1. Partijen en toepassingsgebied
-
-Deze voorwaarden gelden voor elke commerciële relatie tussen Conduction B.V. (KvK 76741850, BTW NL860784241B01, Lauriergracht 14h, 1016 RR Amsterdam) en de contractspartij.
-
-## 2. Wat we leveren
-
-Conduction levert drie soorten werk:
-
-- **Apps**, de open-source software die we publiceren in de Nextcloud app store. Elke app valt onder EUPL-1.2, tenzij de README iets anders zegt. Iedereen mag ze installeren en gebruiken zonder contract met Conduction.
-- **Managed hosting**, onze SaaS Common Ground componenten gehost op commonground.nu. Prijzen en SLA staan op [de Support-pagina](/support).
-- **Advies- en ontwikkelwerk**, per opdracht afgebakend. De geldende opdrachtovereenkomst bevat de leveringen, mijlpalen en tarieven.
-
-## 3. Open-source apps
-
-Apps blijven eigendom van hun auteurs en bijdragers. De bijdrage van Conduction valt onder EUPL-1.2. De apps worden zonder garantie geleverd. Wil je wel garantie, dan contracteer je een van onze [partners](/partners) of Conduction zelf via een opdrachtovereenkomst.
-
-## 4. Managed hosting
-
-Common Ground componenten factureren we maandelijks per app, vooraf, via SEPA-incasso of factuur. De SLA, supporturen en reactietijd bij incidenten staan op de Beheer-pagina. De opzegtermijn is één kalendermaand.
-
-## 5. Advies en ontwikkeling
-
-Voor advies- en ontwikkelopdrachten geldt een eigen opdrachtovereenkomst. Deze voorwaarden gelden aanvullend, voor wat de opdrachtovereenkomst niet regelt.
-
-## 6. Prijswijzigingen
-
-Conduction mag de prijzen voor managed hosting eens per kalenderjaar aanpassen, met twee maanden opzegtermijn. Accepteer je de wijziging niet, dan kun je opzeggen voordat de nieuwe prijs ingaat.
-
-## 7. Aansprakelijkheid
-
-De aansprakelijkheid van Conduction per kalenderjaar is gemaximeerd op de vergoedingen die je in de afgelopen twaalf maanden aan ons hebt betaald. We zijn nooit aansprakelijk voor indirecte of gevolgschade. Deze cap geldt niet bij opzet of grove schuld.
-
-## 8. Privacy en informatiebeveiliging
-
-We verwerken persoonsgegevens volgens ons [privacybeleid](/privacy) en ons [ISO 27001:2022 informatiebeveiligingsmanagementsysteem](/iso). Op verzoek tekenen we een verwerkersovereenkomst.
-
-## 9. Beëindiging
-
-Beide partijen kunnen een opdrachtovereenkomst beëindigen op de gronden die in die overeenkomst staan. Voor managed hosting geldt de opzegtermijn uit artikel 4. Bij beëindiging dragen we je gegevens over in een open, gedocumenteerd formaat.
-
-## 10. Toepasselijk recht en forum
-
-Nederlands recht is van toepassing. De rechtbank Amsterdam is exclusief bevoegd.
-
-## Contact
-
-Vragen over deze voorwaarden kun je sturen naar [info@conduction.nl](mailto:info@conduction.nl).
+<div style={{display: 'flex', gap: 12, flexWrap: 'wrap'}}>
+  <a href="https://openwoo.app/Product/SLA/" target="_blank" rel="noopener noreferrer" style={{padding: '10px 18px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Open de OpenWoo-SLA →
+  </a>
+  <a href="/quality" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Quality, certificeringen & beleid →
+  </a>
+  <a href="mailto:info@conduction.nl" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    info@conduction.nl
+  </a>
+</div>
 
 </Section>
+
+<FAQ title="Veelgestelde vragen over de SLA.">
+  <FAQItem question="Wat telt als downtime, en wat niet?" defaultOpen>
+    Downtime is de periode waarin het product niet beschikbaar is voor de klant (een P1-incident). Het begrip omvat niet: gepland onderhoud, verminderde prestaties, overmacht, internetstoringen, handelingen of nalatigheid van klant of gebruiker, of handhaving van overheidsvoorschriften.
+  </FAQItem>
+  <FAQItem question="Mag ik zelf een prioriteit aan een ticket toekennen?">
+    Je kunt bij het registreren van een melding een prioriteit meegeven. Een medewerker van Conduction toetst deze en behandelt hem in redelijkheid en billijkheid. De definitieve prioriteit ligt bij ons, zodat de reactie- en oplostijden zinvol blijven.
+  </FAQItem>
+  <FAQItem question="Wat als er een incident optreedt tijdens een platform-update?">
+    Incidenten die zich voordoen tijdens platform-updates vallen niet onder de definitie van incident in deze SLA. Updates worden specifiek buiten kantooruren ingepland zodat de werkdag niet wordt verstoord.
+  </FAQItem>
+  <FAQItem question="Waar vind ik de productspecifieke SLA?">
+    Elk [product] kent een eigen SLA-pagina die naar deze basis verwijst en productspecifieke aanvullingen bevat (afwijkende capaciteit, communicatiekanalen). De OpenWoo-uitvoering staat op <a href="https://openwoo.app/Product/SLA/" target="_blank" rel="noopener noreferrer">openwoo.app/Product/SLA</a>; andere producten verwijzen vanaf hun eigen productpagina.
+  </FAQItem>
+  <FAQItem question="Wat als ik de inbegrepen capaciteit overschrijd?">
+    Conduction richt haar prijsstelling op kleine organisaties en includeert 5 GB opslag, 1 miljoen bevragingen en 10 GB dataverkeer per organisatie per maand. Bovenmatig gebruik wordt achteraf doorbelast op basis van nacalculatie; regulier gebruik zou daar niet toe moeten leiden.
+  </FAQItem>
+  <FAQItem question="Vallen nieuwe functies onder de SLA?">
+    Nee, alleen bugfixes en beveiligingsupdates. Aangezien [product] open-source is, valt de ontwikkeling van nieuwe functionaliteit buiten de SLA en wordt deze per opdracht overeengekomen.
+  </FAQItem>
+</FAQ>

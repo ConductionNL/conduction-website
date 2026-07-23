@@ -1,0 +1,356 @@
+---
+slug: hydra-tutorial-4-skills
+title: "Hydra tutorial series — Part 4: Skills"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-12
+summary: Which skills run inside the automated Hydra factory, which exist for humans on the CLI, how they get invoked, and when you should add a new skill to the loop yourself. Fourth of six short modules.
+tags: [Hydra, Skills, OPSX, Testing, Tutorial series]
+apps: []
+durationMinutes: 14
+series: hydra-tutorial
+partNumber: 4
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+:::tip New to Claude Skills in general?
+This part dives straight into the **Hydra-specific** skill families. If you'd rather first learn what a Claude Skill even is, how the frontmatter works, and when you'd write one yourself, take the public [Claude Skills tutorial series](/academy/claude-skills-tutorial-1-what-are-claude-skills) (three short modules, ~40 minutes). From here on we assume you know the basics.
+:::
+
+The previous parts were about *what* Hydra does. This part is about *how*: the **skills** that let the personas do their job. By the end you'll know which skills the automated pipeline (the "Hydra factory") runs and which ones you call yourself as a human, you'll know the five families, and you'll be able to judge when a new skill is worth writing.
+
+{/* truncate */}
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>What a Claude Code skill is and how Hydra uses them to bundle behaviour onto personas.</Outcome>
+  <Outcome>Which skills <strong>the automated Hydra factory</strong> ships inside its Docker containers (per agent: Builder, Reviewer, Security) — and which skills are <strong>only for humans on the CLI</strong>.</Outcome>
+  <Outcome>The five skill families inside Hydra: <code>{'opsx-*'}</code>, <code>{'hydra-gate-*'}</code>, <code>{'team-*'}</code>, <code>{'test-*'}</code>, and the utility/maintenance skills.</Outcome>
+  <Outcome>The two ways a skill can be activated — manually via <code>/{'<name>'}</code> or automatically by Claude — and how you control that per skill.</Outcome>
+  <Outcome>When to add a skill yourself and how to do that in a structured way.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>Parts 1, 2 and 3 worked through.</PrerequisiteItem>
+  <PrerequisiteItem>An idea of what <code>~/.claude/skills/</code> is on your own laptop, or at least that skills are files under that name.</PrerequisiteItem>
+</Prerequisites>
+
+## Skills, in one paragraph
+
+A **skill** in Claude Code is a folder with a `SKILL.md` (and optionally scripts, `examples/`, helpers). The folder sits under `.claude/skills/<name>/`. The `description` in the frontmatter tells Claude when the skill is relevant; the contents are the instructions Claude follows once the skill is loaded.
+
+For Hydra, skills are the **bundling unit for behaviour**: instead of pasting a thousand lines of prompt text straight into a persona's `CLAUDE.md`, it lives in a skill — reusable and testable.
+
+## How a skill gets invoked
+
+A single skill can be triggered in two ways:
+
+1. **Manually** — you type `/opsx-apply` in a Claude session. Direct, predictable, and the skill runs exactly when you want it to.
+2. **Automatically** — Claude reads the `description` of every available skill and picks one itself when the current situation matches. Ask "what changed?" and Claude will trigger a skill like `summarize-changes` on its own if one is available.
+
+Which mode is allowed is set in the skill's own frontmatter:
+
+- `disable-model-invocation: true` — only you can call it via `/<name>`. Use this for skills with side-effects (`/opsx-apply` modifies code, `/create-pr` opens a PR). Claude shouldn't just decide to do that on its own.
+- `user-invocable: false` — only Claude itself may load it. Use this for background knowledge (for example a `legacy-system-context` that doesn't make sense as an action).
+- Neither set — both are allowed.
+
+So that distinction — manual vs. automatic — is about **configuration of one skill**, not about two different kinds of files. A persona in a Docker container has no keyboard and leans heavily on auto-activation; a human on the CLI usually wants explicit control and types `/`.
+
+## Two worlds: the Hydra factory vs. skills for humans
+
+Hydra's `hydra/.claude/skills/` contains ~70 skills, but **the automated pipeline only uses a handful**. The rest is tooling for you, behind a keyboard. Important to keep separate:
+
+### What the Hydra factory actually runs
+
+Every pipeline container has its own, limited set of skills baked into its Docker image:
+
+| Container | Persona | Skills in image | Main function |
+|---|---|---|---|
+| **Builder** | Al Gorithm | **All** `.claude/skills/*` + all vendor skills | Implements tasks; primarily `opsx-apply`. Has the other opsx skills on hand for context during verification, finding fits again, and fixing after a quality fail. |
+| **Reviewer** | Juan Claude | `hydra-gates` + the `hydra-gate-*` skills + vendor `code-review` | Mandatory hydra-gates check + deeper code review via the Anthropic community skill. |
+| **Security** | Clyde Barcode | `hydra-gates` + the `hydra-gate-*` skills + vendor `trailofbits` + vendor `owasp` | Mandatory hydra-gates + SAST (Semgrep) + OWASP top 10 checklists. |
+| **Applier** | Axel Plier | **No skills, no write tools** (Read + Bash only) | Reads the final diff and both review verdicts and returns one binary answer — `pass` or `not`. It applies **no** fixes; it's a go/no-go gate, not an editor. |
+| **Browser UI Tester** | (sonnet, headless) | One skill: `hydra-ui-test` | Logs in, navigates the live app via Playwright MCP, delivers verdict JSON. |
+
+On top of that, **`scripts/run-hydra-gates.sh`** runs all **22** hydra-gates mechanically in every container, independent of which skill files are in the image. The skill files serve Claude as documentation when fixing; the script does the detection.
+
+### What the factory **doesn't** do — for humans on the CLI
+
+All the other skills (~50 out of 70) are for you, or for a fellow dev in a Claude Code session on their laptop. Examples:
+
+- **Preparing a change** — `opsx-new`, `opsx-ff`, `opsx-explore`, `opsx-plan-to-issues` are things you do as a human before you throw the work into the pipeline. The Builder only runs `opsx-apply` on an existing change.
+- **Taking on a role** — `team-architect`, `team-backend`, `team-po` etc. are pure roleplay frames for one-human-one-role sessions. The pipeline doesn't use them.
+- **Running tests** — `/test-counsel` (all 8 personas) or `/test-app` (one browser sweep) you start by hand. The factory has its own browser tester (`hydra-ui-test`); the `test-*` family is separate from that.
+- **PRs and day-to-day work** — `/create-pr`, `/review-pr`, `/report-out` are the "three times a day" tools for you, not for the pipeline.
+
+Remember: **the factory grabs 5 skills, a human can call all 70**. That's the whole difference.
+
+## The five skill families in full
+
+With that split in mind, here are all five families. The tag system in the table: **🤖 factory** = ships inside a pipeline container, **⌨️ human** = CLI only.
+
+### Family 1: OpenSpec workflow (`opsx-*`, 16 skills)
+
+The OPSX skills implement the Conduction workflow for OpenSpec changes — from proposal to archive.
+
+| Skill | For whom | Does |
+|---|---|---|
+| `opsx-apply` | 🤖 Builder | Implements tasks from a change (the pipeline default). |
+| `opsx-verify` | 🤖 Builder | Verifies that the implementation covers the change artefacts. |
+| `opsx-archive` | 🤖 Builder + ⌨️ | Archives a completed change, syncing delta into the spec. |
+| `opsx-new` | ⌨️ | Starts a new change (proposal scaffold, schema choice). |
+| `opsx-ff` | ⌨️ | "Fast-forward": creates a change + all artefacts in a single pass. |
+| `opsx-continue` | ⌨️ | Pick up an interrupted change. |
+| `opsx-explore` | ⌨️ | Explore pre-spec what a change should even be. |
+| `opsx-onboard` | ⌨️ | Onboarding flow on a new repo (sets up OpenSpec config + structure). |
+| `opsx-plan-to-issues` | ⌨️ | Converts `tasks.md` into GitHub issues + a tracking issue. |
+| `opsx-sync` | ⌨️ | Sync delta specs back into the main spec. |
+| `opsx-bulk-archive` | ⌨️ | Archive multiple completed changes in one go. |
+| `opsx-apply-loop` | ⌨️ | Headless build → quality-fix loop for local dev runs. |
+| `opsx-pipeline` | ⌨️ | Run multiple changes in parallel (multi-agent). |
+| `opsx-coverage-scan` | ⌨️ | Audit a legacy app for spec ↔ code coverage. |
+| `opsx-annotate` | ⌨️ | Applies `@spec` PHPDoc tags after a coverage scan. |
+| `opsx-reverse-spec` | ⌨️ | Reverse-engineers a spec from existing code. |
+
+Sixteen skills is a lot. In practice you reach for one of a handful, and the choice follows a simple decision aid:
+
+- **Starting fresh and sure of the feature?** → `opsx-ff` (one pass to all artefacts), then `opsx-plan-to-issues`.
+- **Starting fresh but unsure of scope/approach?** → `opsx-explore` first, then `opsx-new` and `opsx-continue` step by step.
+- **New repo with no OpenSpec yet?** → `opsx-onboard`.
+- **Legacy code with no specs?** → `opsx-coverage-scan` → `opsx-reverse-spec` / `opsx-annotate`.
+- **Change is written, want it built locally without the full factory?** → `opsx-apply-loop` (one change) or `opsx-pipeline` (several in parallel).
+- **Inside the factory** the builder only ever runs `opsx-apply`, `opsx-verify` and `opsx-archive` — the rest are human-driven preparation.
+
+### Family 2: Quality + security gates (`hydra-gate-*`)
+
+The parent skill **`hydra-gates`** is a dispatcher that calls every gate together. The script engine under the hood (`scripts/run-hydra-gates.sh`) is the single source of truth, and it currently runs **22 gates** (`gate-1` … `gate-22`) in every container; the per-gate skill files serve Claude as reference material when fixing a failure.
+
+Rather than reproduce the full table here, it lives — accurate and numbered — in [part 3: Quality gates](/academy/hydra-tutorial-3-quality-gates#category-2-hydra-specific-gates). For the skill family it's enough to know the gates split into three rough groups:
+
+- **Hygiene** — `spdx-headers`, `forbidden-patterns`, `stub-scan`, `composer-audit`, `conflict-markers`.
+- **Security & auth** — `route-auth`, `orphan-auth`, `no-admin-idor`, `unsafe-auth-resolver`, `semantic-auth`, `route-reachability`.
+- **Conduction conventions & traceability** — `initial-state`, `admin-router`, `nc-input-labels`, `modal-isolation`, `dashboard-antipattern`, `redundant-controller`, `notification-dialect`, `or-objectservice-api`, `manifest-validation`, and the two traceability gates `spec-coverage` (gate-16) and `e2e-coverage` (gate-19).
+
+All 22 run **🤖 inside the Hydra factory** (Reviewer + Security containers; Builder also runs them as a post-flight check during fix-quality). When a new incident produces a new gate, it's added here and the count grows — so trust the script's `ALL N GATES GREEN` line, not a hard-coded number in any doc.
+
+### Family 3: Team roles (`team-*`, 7 skills) — **⌨️ humans only**
+
+Skills that model a specific kind of work via a persona frame. Intended for a human working in a terminal alongside Hydra who wants to step into a single role for a bit.
+
+- `team-po` (Product Owner) — writes user stories and acceptance criteria.
+- `team-sm` (Scrum Master) — manages backlog and sprint planning artefacts.
+- `team-architect` — makes architecture decisions, writes ADR drafts.
+- `team-backend` — implements backend work (PHP, services, mappers).
+- `team-frontend` — implements frontend work (Vue 2, Pinia, NL Design System).
+- `team-reviewer` — a manual variant of the reviewer work.
+- `team-qa` — writes test cases and test plans.
+
+None of these ship in a pipeline container — they have no place in the automated loop.
+
+### Family 4: Test suites (`test-*`, 19 skills) — almost all ⌨️ for humans
+
+The largest family by count: around twenty skills that drive agentic browser and API testing, in three clusters:
+
+**Test types** (one per test kind):
+- `test-app` — automated browser test of a whole Nextcloud app (Playwright MCP).
+- `test-functional` — functional scenarios against implemented features.
+- `test-api` — API checks against the PHP built-in server.
+- `test-accessibility`, `test-performance`, `test-security`, `test-regression` — specialised variants.
+
+**Personas** (`test-persona-*`) — eight Dutch user profiles, each looking at an app from their own angle: `annemarie`, `fatima`, `henk`, `janwillem`, `mark`, `noor`, `priya`, `sem`. Henk reads with large type and looks for simple navigation; Noor hammers on RBAC and audit trails; Annemarie checks NLGov/GEMMA mapping. The persona cards themselves live in [`hydra/personas/`](https://codeberg.org/Conduction/hydra/src/branch/main/personas).
+
+**Scenario management** — `test-scenario-create`, `test-scenario-edit`, `test-scenario-run` write, edit and run reusable `TS-NNN-*.md` scenarios per app.
+
+The dispatcher for this family is **`test-counsel`**: it coordinates all eight personas against one feature and delivers a combined report. Same pattern as `hydra-gates` for the quality-gates family.
+
+:::note Three things that all touch the browser — keep them apart
+There are three separate "testing" surfaces and they're easy to confuse:
+
+1. **`hydra-ui-test`** — the factory's own browser tester. Runs on the host (via `scripts/run-browser-tests.sh`, Playwright MCP), logs into the live app, walks the spec's acceptance criteria, and returns a verdict JSON. This is *runtime* proof that the feature works.
+2. **gate-19 (`e2e-coverage`)** — a *static* gate from [part 3](/academy/hydra-tutorial-3-quality-gates). It doesn't run a browser at all; it checks that every spec scenario is *linked* to a Playwright test via an `@e2e` annotation. Coverage bookkeeping, not execution.
+3. **The `test-*` family** — human-driven test suites you run by hand before or after the pipeline.
+
+So: gate-19 checks the *links* exist, `hydra-ui-test` actually *drives* the browser inside the factory, and `test-*` is what *you* run manually. Different jobs.
+:::
+
+### Family 5: Utility & maintenance (~13 skills) — almost all ⌨️ for humans
+
+The rest — those are the remaining ~13 skills. Mostly dev comfort and meta work:
+
+| Skill | Does |
+|---|---|
+| `create-pr` | Creates a PR from a feature branch — local checks → branch pick → PR body. |
+| `review-pr` | Reviews a GitHub PR (note: manual variant; the factory has its own Juan Claude). |
+| `report-out` | End-of-day report: today's commits + GitHub activity → Dutch Slack notification. |
+| `clean-env` | Fully resets the local Docker dev environment. |
+| `local-run` | Bring up the local Nextcloud dev environment. |
+| `sync-docs` | Sync `{app}/docs/` or `.github/docs/claude/` with reality in the repo. |
+| `skill-creator` | Wizard for building a new skill (scaffold, frontmatter, evals). |
+| `feature-counsel` | Pre-build spec analysis from eight persona perspectives (sibling of `test-counsel`). |
+| `persistence-audit` | Audit how an app handles data persistence (object store, sessions, etc.). |
+| `journeydoc-init` / `journeydoc-add-story` / `journeydoc-instrument` | Manual instrumentation + extension of Journey docs. |
+| `verify-global-settings-version` | Check whether `global-settings/VERSION` was bumped after a change. |
+
+Nothing in this family runs in the pipeline. They are your daily `/` commands.
+
+## Vendor skills (community)
+
+Next to its own skills, Hydra has **vendor skills** under `hydra/vendor/skills/`:
+
+- `code-review` — community review skill from Anthropic. → 🤖 Reviewer container.
+- `trailofbits` — Semgrep-based static-analysis methodology from Trail of Bits. → 🤖 Security container.
+- `owasp` — OWASP top 10:2025 + ASVS 5.0 checklists. → 🤖 Security container.
+
+So those three **do** ship inside the factory (containers). They get loaded onto Juan and Clyde for extra coverage on top of our own `hydra-gate-*`. Maintenance sits with external parties — updates happen by tracking upstream, not by editing them yourself.
+
+## When do you write a new skill?
+
+The pragmatic test: write a skill if…
+
+1. **The check / behaviour is repeatable** — needed more than once, in more than one place.
+2. **It's mechanically describable** — you can instruct it in 1-3 paragraphs without it devolving into "it depends on the context".
+3. **A persona or a human would benefit from it.** Don't write a skill because you can.
+
+For a false-positive gate (part 3): you adjust the existing skill, you don't write a new one. For a new class of mistake that you see come by 3x: yes, that earns its own `hydra-gate-*` skill.
+
+<HexCard title="Tip: use /skill-creator">
+  Hydra has a built-in <code>/skill-creator</code> skill that walks you through creating a new skill: scaffold, frontmatter, eval harness, performance measurement. Call it from a Claude session in the hydra repo to start with the right structure instead of building a folder yourself. A full walkthrough lives in <a href="/academy/claude-skills-tutorial-2-your-first-skill">part 2 of the Claude Skills tutorial series</a>; measuring and evaluating is covered in <a href="/academy/claude-skills-tutorial-3-skill-evals">part 3</a>.
+</HexCard>
+
+## Test yourself
+
+Four short questions to check whether you've grasped this part. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. What are the two ways a skill can be activated, and how do you control that per skill?**
+
+<Details summary="Hint">
+
+One way requires a human to type something. The other lets Claude decide for itself based on the skill description. Which frontmatter fields determine which mode is allowed?
+
+</Details>
+
+<Details summary="Answer">
+
+- **Manual**: you type `/<name>` in a Claude session. Direct, predictable.
+- **Automatic**: Claude reads the `description` of all skills and picks one itself when the current conversation matches.
+
+In the skill's frontmatter you set:
+
+- `disable-model-invocation: true` — manual only. Used for skills with side-effects (`/opsx-apply`, `/create-pr`).
+- `user-invocable: false` — automatic only. Used for background knowledge that isn't useful as an action.
+- Both empty → both allowed. The default for most Hydra skills.
+
+In the Hydra pipeline the containers mostly use auto-activation (Claude picks the right skill itself); a human on the CLI typically types `/` explicitly.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Which skills actually run inside the pipeline containers, and which ones sit in the repo only for humans?**
+
+<Details summary="Hint">
+
+Three containers (Builder, Reviewer, Security) each have a specific set in their image. What's inside — and which families sit entirely outside?
+
+</Details>
+
+<Details summary="Answer">
+
+**Inside the pipeline containers** (🤖 factory):
+
+- **Builder** — all `.claude/skills/*` baked in, but the standard run is `opsx-apply`. The other opsx skills are there for context.
+- **Reviewer** — `hydra-gates` + 13 individual `hydra-gate-*` + vendor `code-review`.
+- **Security** — `hydra-gates` + 13 individual `hydra-gate-*` + vendor `trailofbits` + vendor `owasp`.
+- **Applier** — no skills (pure CLAUDE.md).
+- **Browser UI Tester** — only `hydra-ui-test`.
+
+Plus: `scripts/run-hydra-gates.sh` runs all **14** gates mechanically in every container, regardless of which skill files are in the image.
+
+**Not in the factory**, only for humans on the CLI:
+
+- Almost the entire `team-*` family (7 skills).
+- Almost the entire `test-*` family (19 skills) — the factory has its own `hydra-ui-test`.
+- Most `opsx-*` skills except `opsx-apply`/`verify`/`archive` (humans start changes; the pipeline implements them).
+- The whole utility family (`create-pr`, `review-pr`, `report-out`, `clean-env`, `sync-docs`, `skill-creator`, `feature-counsel`, `persistence-audit`, `journeydoc-*`, `verify-global-settings-version`).
+
+In total: of ~70 skills in the repo, the automated pipeline uses a handful; the rest is your toolkit.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. When do you adjust an existing gate skill and when do you write a new one?**
+
+<Details summary="Hint">
+
+One decision is about "the gate doesn't do what we already wanted it to do". The other is about "we've discovered a new category of mistake".
+
+</Details>
+
+<Details summary="Answer">
+
+- **Adjust existing** for a **false positive**: the gate triggers too broadly or too narrowly on something it was already meant to check. Example: `hydra-gate-forbidden-patterns` matched `$builder->add(` incorrectly — you tighten the regex, you don't add a second gate.
+- **Write new** for a **new class of mistake** that you see come by 3× and that slips through all existing meshes. Example: `hydra-gate-stub-scan` was born when a builder shipped a `return null;` method that PHPCS swallowed and had no test — that was a new category, not a fix on an existing check.
+
+Rule of three: once is chance, twice is coincidence, three times is a pattern that deserves its own gate.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. What do the "vendor skills" do and why do we keep them separate from our own `hydra-gate-*`?**
+
+<Details summary="Hint">
+
+Think about provenance (who wrote them?), which pipeline container they get loaded into, and what happens when you need an external party to update their work.
+
+</Details>
+
+<Details summary="Answer">
+
+Vendor skills (`hydra/vendor/skills/`) are skills that were **not written by us**, and that **do** ship inside the factory:
+
+- `code-review` (Anthropic community) → Reviewer container (Juan Claude).
+- `trailofbits` (Trail of Bits, Semgrep methodology) → Security container (Clyde).
+- `owasp` (OWASP top 10:2025 + ASVS 5.0) → Security container.
+
+We keep them separate because:
+
+- **Maintenance** sits with external parties — we update them by tracking upstream (see `vendor/skills/VERSIONS.md`), not by editing them ourselves. Our own gates we mutate freely; vendor skills we leave alone.
+- **Audit trail** stays clear: what's ours vs. what's community/external? On a failure you immediately know which camp is responsible for the fix.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="In part 5 we get practical: starting a real Hydra run on a real app, including the label-prefix trick for parallel dev runs.">
+  <NextStep
+    title="Part 5 — Starting a Hydra run on a real app"
+    href="/academy/hydra-tutorial-5-starting-a-run"
+    description="The full recipe: from opening an issue to getting the PR green. With the right config in <code>secrets/.env</code> and the <code>HYDRA_LABEL_PREFIX</code> trick for anyone working alongside fellow devs."
+  />
+  <NextStep
+    title="Previous step — Quality gates"
+    href="/academy/hydra-tutorial-3-quality-gates"
+    description="The mechanical referees that these skills complement."
+  />
+  <NextStep
+    title="Skills directory"
+    href="https://codeberg.org/Conduction/hydra/src/branch/main/.claude/skills"
+    description="Browse the full list of skills in the hydra repo."
+  />
+  <NextStep
+    title="Claude Skills tutorial series (public)"
+    href="/academy/claude-skills-tutorial-1-what-are-claude-skills"
+    description="A separate, public tutorial series that goes a bit deeper on Claude Skills in general: what they are, how to write one, and how to measure it with evals. Good for the broader background."
+  />
+</NextSteps>

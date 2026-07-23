@@ -1,0 +1,253 @@
+---
+slug: hydra-tutorial-2-three-pipelines
+title: "Hydra tutorial series — Part 2: The three pipelines"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-12
+summary: Build, code review and security review. Who does what, in what order, and how a label state machine stitches the whole ride together. The second of six short modules.
+tags: [Hydra, Pipelines, Personas, Tutorial series]
+apps: []
+durationMinutes: 15
+series: hydra-tutorial
+partNumber: 2
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+In part 1 you saw that Hydra has four personas. In this part we look at the **pipeline**: how those personas work on one issue one after another, which labels mark the transitions, and when the pipeline diverts to `needs-input`. By the end you'll know Hydra's label state machine inside out and you'll be able to steer an issue back to the right phase if it gets stuck somewhere.
+
+{/* truncate */}
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>The three pipelines (build, code review, security review) and how they hand off sequentially.</Outcome>
+  <Outcome>The full label state machine: <code>build:queued → ... → done / needs-input</code>.</Outcome>
+  <Outcome>What the applier (Axel Pliér) does, and why he can be skipped.</Outcome>
+  <Outcome>The difference between <code>retry:queued</code> and <code>rebuild:queued</code>.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>
+    Part 1 read: <a href="/academy/hydra-tutorial-1-what-is-hydra">What is Hydra?</a>
+  </PrerequisiteItem>
+  <PrerequisiteItem>A notion of what labels on a GitHub issue are and how you add them.</PrerequisiteItem>
+</Prerequisites>
+
+## Three pipelines, one pipeline
+
+Hydra technically has three pipelines: **build**, **code-review** and **security-review**. But in practice they always run in the same order, automatically driven by labels. Under the hood it's one state machine:
+
+```
+ready-to-build (or <prefix>-ready-to-build on a dev workstation — see part 5)
+    ↓
+build:queued → build:running → build:pass
+    ↓
+code-review:queued → :running → :pass / :fail
+    ↓  (always traversed — even on :fail)
+security-review:queued → :running → :pass / :fail
+    ↓
+decision:
+    both reviews :pass + 0 fixes → done (Axel skipped)
+    both reviews :pass + ≥1 fix → applier:queued → :running → :pass / :fail
+    one of the reviews :fail     → needs-input (Axel skipped, human decides)
+```
+
+The pipeline has one important rule: **every outcome after review is terminal**. Hydra doesn't automatically fix in a loop. If it succeeds in one run, great. If not, the issue lands on `needs-input` and a human has to decide the next step. More on that in part 6.
+
+## Pipeline 1: Build (Al Gorithm, Sonnet)
+
+The builder receives the change, a clean clone of the target repo, and a turn budget. No review history, no feedback from earlier runs. He implements the tasks from `tasks.md`, runs the quality suite, opens a draft PR.
+
+Order within the build phase:
+
+1. **Implementation** — reads `proposal.md`, `design.md` and `tasks.md` from `openspec/changes/<slug>/` in the target repo, writes code.
+2. **Quality checks** — PHPCS, PHPMD, Psalm, PHPStan, ESLint, Stylelint, `composer audit`, `npm audit`.
+3. **PHPUnit + Newman** — backend and API tests.
+4. **Browser tests** — Playwright MCP walks through the UI on the host (see part 4 for how this differs from the `@e2e` gate).
+5. **`fix-quality` / `fix-browser`** — if checks go red, Al Gorithm gets one or two attempts to mechanically repair. This is a *pre-review* fixup, not a review loop.
+6. **Verdict** — `build:pass` (PR has been opened) or `build:fail` (broken build, `needs-input`).
+
+Important: Al Gorithm runs on **Sonnet** by default, with **Haiku** as a cheaper fallback under budget pressure (configurable via `HYDRA_BUILDER_MODEL`). An earlier design ran the builder on Haiku by default — but Haiku was caught skipping quality gates, so the default was raised to Sonnet. See the history note in [part 1](/academy/hydra-tutorial-1-what-is-hydra).
+
+<HexCard title="What does the builder not see?">
+  No reviews, no verdict history, no labels other than his own <code>build:*</code>. So he doesn't know that an earlier reviewer rejected something — that feedback only reaches him through an explicit <code>retry:queued</code> cycle (see below).
+</HexCard>
+
+## Pipeline 2: Code review (Juan Claude van Damme, Sonnet)
+
+Once `build:pass` is set, the supervisor automatically queues `code-review:queued`. Juan Claude picks it up:
+
+1. Reads **only the PR diff** (`HYDRA_REVIEW_SCOPE=diff`, ADR-020). That keeps the scope manageable and ensures every line he comments on is actually touched in this PR.
+2. Walks the ADR library and gate skills (see part 3).
+3. For **mechanical, in-scope errors** he may fix himself (ADR-021: bounded-fix scope). Missing PHPCS headers? He adds them. Awkward variable name? Not his department.
+4. For each finding he writes an inline comment on the PR with prefix `[fixed:...]` or `[unfixed:...]`.
+5. He commits and pushes his fixes to the feature branch and sets `code-review:pass` or `code-review:fail` on the issue.
+
+Juan doesn't write out his `fixes_applied[]` and `unfixed[]` as JSON himself — the orchestrator only bundles them into one round file after the next step (Clyde). See ["How verdicts are persisted"](#how-verdicts-are-persisted) below.
+
+## Pipeline 3: Security review (Clyde Barcode, Sonnet)
+
+Right after code review (whether `:pass` or `:fail`), the supervisor queues `security-review:queued`. Clyde Barcode runs on the PR state *after* Juan Claude's fixes:
+
+- Same shape as code review, plus **Semgrep** and pattern matching on CWE classes (SQL injection, XSS, path traversal, hardcoded secrets, …).
+- May also push bounded fixes in PR mode.
+- Writes `security-review:pass` or `security-review:fail`.
+
+Why sequential and not parallel? Because Clyde reviews what Juan Claude left behind. Parallel would mean Clyde looks at pre-fix code — he would then find security issues that Juan Claude had already cleaned up and you'd have to reconcile verdicts. Sequential is simpler and clearer.
+
+## How verdicts are persisted
+
+After a complete review round (Juan + Clyde back to back), the orchestrator bundles both verdicts into **one** file on the feature branch: `openspec/changes/<slug>/reviews/<round>.json` in the target repo. Rounds number sequentially — `1.json` after the first pass, `2.json` after a `retry:queued` cycle, and so on (just `ls reviews/*.json | wc -l` plus one). That file holds the `fixes_applied[]` and `unfixed[]` from **both** reviewers combined — which is what Axel Pliér will read later. An aggregated status snapshot runs alongside in `openspec/changes/<slug>/hydra.json` (see part 6 for the structure and how to read it).
+
+## The applier: Axel Pliér's binary gate
+
+With both reviews in, Hydra has three options:
+
+1. **Both reviews `:pass` and Juan and Clyde together pushed 0 fixes.**  
+   Nothing changed after the original build, so no new risks. **Axel is skipped.** Issue gets `done`. Saves tokens.
+
+2. **Both reviews `:pass` and ≥ 1 fix was pushed.**  
+   The code has changed since the original build. Before we trust the final state, the orchestrator reruns the mechanical gates (PHPCS, Psalm, PHPStan, ...). If those pass, Axel Pliér is up. He reads:
+   - the final diff,
+   - the `fixes_applied[]` + `unfixed[]` from both reviews,
+   - all inline comments on the PR.
+   
+   And gives one binary answer: `{pass: true}` or `{pass: false, blocking: [...]}`. He has no Write or Edit tools. He judges, he doesn't intervene.
+
+3. **One of the reviews `:fail`.**  
+   The reviewers are the authority. Axel is skipped. Issue goes to `needs-input`. A human decides whether this warrants a `retry:queued` or `rebuild:queued` (see part 6).
+
+## Labels: one source of truth
+
+Hydra is **stateless**. The whole state machine lives on the issue labels on GitHub. The supervisor (the daemon) reads the labels every few seconds and decides what to do. If a container crashes, the supervisor looks at the labels again and picks up where it left off.
+
+<HexCard title="Supervisor vs orchestrator — two different things">
+  These names get used interchangeably, but they're distinct. The <strong>supervisor</strong> (<code>scripts/hydra-supervisor.sh</code>) is the long-running daemon: it maintains a pool of slots (5 by default, <code>POOL_SIZE</code>), polls the forge for labelled issues every <code>IDLE_POLL_INTERVAL</code> seconds (60 by default), and fills a free slot the moment a worker finishes. The <strong>orchestrator</strong> (<code>scripts/orchestrate.sh</code>) is what the supervisor <em>launches into each slot</em>: it picks up one issue, reads its current label to decide the stage, runs that one stage in the right container, persists the result, advances the label, and exits. Supervisor = the pool manager that never stops; orchestrator = the one-shot per-stage runner. Slots are tracked as lock files under <code>/tmp/hydra-slots/</code>, and each gets its own isolated Nextcloud port and workspace so several builds run in parallel without colliding.
+</HexCard>
+
+Per stage there are four possible states: `:queued`, `:running`, `:pass`, `:fail`. They always live **on the issue, never on the PR.** That's a deliberate choice: the issue is the unit of work, the PR is an artefact of a build cycle.
+
+Alongside the stage labels there are metadata labels that live next to them:
+
+| Label | Meaning |
+|---|---|
+| `openspec` | Issue follows the OpenSpec working model |
+| `yolo` | May auto-merge as long as all gates are green — no human approve needed |
+| `agent-maxed-out` | Persona has used up its turn budget; output may be incomplete |
+| `needs-input` | Hydra has stopped the pipeline, human's turn |
+
+## `retry:queued` versus `rebuild:queued`
+
+Two human-triggered recovery labels that reach back into the pipeline. Both **single-shot** (no loop):
+
+- **`retry:queued`** — the existing PR stays. Hydra builds an ephemeral `feedback.md` (in a `/tmp/hydra-retry-XXXXXX/` working directory, not committed) containing the `unfixed[]` findings + applier blockers, mounts it as `/workspace/feedback.md` in the builder container, and dispatches Al Gorithm in `HYDRA_MODE=fix` scoped to exactly the flagged files. Cheap. Suitable for: "the reviewers were right, builder just needs to touch up a few things".
+- **`rebuild:queued`** — existing PR closes, branch resets to `development`, all cycle labels removed, back to `build:queued`. Expensive. Suitable for: "Al Gorithm's approach was wrong, we're starting over with the same change".
+
+Rule of thumb: always go for the cheapest recovery first. First `gh pr update-branch <N>` (merge development → PR), then `retry:queued`, only then `rebuild:queued`. Part 6 goes into this in more depth — including the **label cleanup steps required before applying either trigger** (removing `needs-input` and fail labels first, otherwise the supervisor won't pick up the queue entry).
+
+## Test yourself
+
+Four short questions to check whether you've understood this part. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. In what order do the three pipelines run, and why is security review sequential after code review and not parallel?**
+
+<Details summary="Hint">
+
+Think about which version of the code Clyde Barcode sees: before or after Juan Claude's fixes?
+
+</Details>
+
+<Details summary="Answer">
+
+The order is **build → code-review → security-review** (and after that applier or `needs-input`).
+
+Security review runs **after** code review so Clyde Barcode sees the PR state **after** Juan Claude's bounded fixes. Parallel would mean Clyde looks at pre-fix code and finds security issues Juan had already cleaned up. You'd then have to reconcile verdicts. Sequential is simpler and keeps the "who reviews what" boundary sharp.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. What's the difference between `build:fail` and `code-review:fail` in terms of follow-up?**
+
+<Details summary="Hint">
+
+In one of them the pipeline stops immediately, in the other it continues to the next stage. Which is which, and why?
+
+</Details>
+
+<Details summary="Answer">
+
+- **`build:fail`** = the PR has not been (correctly) opened, there's nothing to review. Issue goes **straight to `needs-input`**. Pipeline stops.
+- **`code-review:fail`** = the PR exists, Juan Claude rejected it, but the pipeline **still continues** to `security-review` (always, even on `:fail`). Only after security review is the decision made: at least one review `:fail` → applier skipped → `needs-input`.
+
+Reason for the difference: without a PR there's no work to judge; with a PR we want both reviewers to surface what's there so a human has a complete picture later.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. In which situation is Axel Pliér (the applier) skipped, and why is that a deliberate choice?**
+
+<Details summary="Hint">
+
+There are two scenarios. One revolves around "has anything changed since the original build?", the other around "who has the final word?"
+
+</Details>
+
+<Details summary="Answer">
+
+Two scenarios:
+
+1. **Both reviews `:pass` and 0 fixes pushed** by Juan/Clyde. The code is identical to what the builder delivered; there's nothing new to judge. Axel skipped → `done`. Saves Sonnet tokens.
+2. **One of the reviews `:fail`.** The reviewers are the authority; their rejection trumps the applier. Axel skipped → `needs-input`.
+
+So Axel only runs when fixes *were* pushed and both reviews passed — then he judges whether those fixes make the final state good.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. When do you pick `retry:queued` and when `rebuild:queued`?**
+
+<Details summary="Hint">
+
+The pivot is: **was Al Gorithm's build approach sound?** If yes → cheap path. If no → start over.
+
+</Details>
+
+<Details summary="Answer">
+
+- **`retry:queued`** when the **builder approach was fundamentally right** and the reviewers had legitimate, local findings. The existing PR stays; the builder gets `feedback.md` and fixes scoped to the flagged files. **Cheap, single-shot.**
+- **`rebuild:queued`** when **the build approach itself was wrong** — wrong implementation, stub methods, requirements missed. PR closes, branch resets to `development`, all cycle labels removed, back to `build:queued`. **Expensive.**
+
+Rule of thumb: always cheapest first — `gh pr update-branch` → `retry:queued` → only then `rebuild:queued`.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="Now that you can see the pipeline skeleton, in part 3 we dive into the quality gates — the mechanical referees that keep all three personas in line.">
+  <NextStep
+    title="Part 3 — Quality gates"
+    href="/academy/hydra-tutorial-3-quality-gates"
+    description="What are the gates? Why mechanical and not AI-judged? What do you do when a gate fires a false positive?"
+  />
+  <NextStep
+    title="Previous step — What is Hydra?"
+    href="/academy/hydra-tutorial-1-what-is-hydra"
+    description="A short recap of the why and the four personas."
+  />
+  <NextStep
+    title="The pipeline architecture in detail"
+    href="https://codeberg.org/Conduction/hydra/src/branch/main/docs/pipeline-overview.md"
+    description="The full pipeline overview doc, with all the subtleties about rate-limit fallback, locks and cron schedule."
+  />
+</NextSteps>

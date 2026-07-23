@@ -1,0 +1,200 @@
+---
+title: HRMQ, Conduction
+description: Open-source HR- en salarisadministratie op Nextcloud. Een Nederlandse loonrekenengine, loonaangifte en pensioenaangifte, plus de dagelijkse HR-workflows.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+<DetailHero
+  background="cobalt"
+  appId="hrmq"
+  crumb={[{label: 'Apps', href: '/apps'}, 'HRMQ']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.2"
+  locales="NL · EN"
+  title="HRMQ"
+  tagline={<>Open-source HR- en salarisadministratie op <span className="next-blue">Nextcloud</span>. Een open-source Nederlandse loonrekenengine, loonaangifte en pensioenaangifte, en de dagelijkse HR-workflows — urenregistratie, verlof, verzuim, zelfservice — daaromheen.</>}
+  intro={<>HRMQ is een open-source HR- en salarisadministratie-app voor Nederlandse en EU-werkgevers, gebouwd op de OpenRegister-datalaag. Het middelpunt is een Nederlandse loonrekenengine — rekenvoorschriften-gebaseerd bruto-naar-nettoverlonen voor belastingjaar 2026, niet gecertificeerd, elke uitkomst voorzien van een engineversie — die de loonaangifte-flow, UPA-pensioenaangifte voor de door APG geadministreerde fondsen, en grootboekboeking en SEPA-nettobetaling naar shillinq voedt. Daaromheen zit de dagelijkse HR-stapel: urenregistratie en declaraties met een goedkeurings-flow, verlof- en verzuimcasusmanagement (Poortwachter), medewerker- en managerzelfservice, urenregistratie onder de Arbeidstijdenwet, in- en uitdienst-wizards, een lichtgewicht ATS, beoordelingscycli, een organogram, HR-documenten via DocuDesk, en een assetregister. Een machine-controleerbaar regelcorpus — EU-arbeidsrichtlijnen, ILO-verdragen, AVG voor medewerkersgegevens, en Nederlands arbeids- en loonheffingenrecht — toetst dit alles op verzoek. Uitgegeven onder EUPL-1.2, onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Bekijk de documentatie', href: 'https://hrmq.conduction.nl'}}
+  tertiaryCta={{label: 'Bekijk op Codeberg', href: 'https://codeberg.org/Conduction/hrmq'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="De eerste open-source Nederlandse loonengine, plus de aangiftes die erop volgen."
+        align="stack"
+        lede="HRMQ rekent bruto-naar-netto loon door en voert het resultaat rechtstreeks door naar loonaangifte, pensioenaangifte en de boekhouding — in plaats van te stoppen bij een loonstrook."
+      />
+      <FeatureList>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h2M14 14h4M8 17h6"/></svg>}
+          title="Een Nederlandse loonrekenengine — open source."
+        >
+          Rekenvoorschriften-gebaseerd bruto-naar-nettoverlonen voor belastingjaar 2026. Er bestond nog geen open-source Nederlandse loonengine — de dichtstbijzijnde vergelijkbare oplossing, die van Odoo, is Enterprise-only. Elke uitkomst draagt een <code>engineVersion</code> en een expliciete niet-gecertificeerd-disclaimer, en <code>occ hrmq:payroll:verify</code> draait hetzelfde regelcorpus als eigen zelfcontrole.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>}
+          title="Loonaangifte, van concept tot verzonden."
+        >
+          Een concept → controle → bevestigen → verzenden-flow voor de loonaangifte, met tijdvakcodes volgens Belastingdienst LH 210 en de wettelijke deadline (einde tijdvak plus één kalendermaand, geen weekendverlenging) bewaakt en gemeld als geversioneerde regels. Digipoort-verzending zelf blijft buiten scope — dit is de administratie eromheen.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/><path d="M9 3.5 12 7l3-3.5"/></svg>}
+          title="UPA-pensioenaangifte voor de APG-fondsen."
+        >
+          Een pensioenaangifte per periode en fonds voor ABP, SPW, bpfBOUW, Schoonmaak, PFAB en PWRI, met een controlestap die pas vrijgeeft nadat de bijbehorende loonrun daadwerkelijk is goedgekeurd, geboekt en uitbetaald — plus referentie-integriteits-, volledigheids- en deadline-signaleringsregels in het corpus.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>}
+          title="Grootboekboeking en SEPA-nettobetaling, naar shillinq."
+        >
+          Elke goedgekeurde loonrun levert een sluitende journaalpost van vier regels (bruto loonkosten, werkgeverslasten, loonheffing-schuld, netto-loonschuld) en een conceptbetaalrun met IBAN's en nettobedragen van medewerkers, geleverd aan de boekhoud-app shillinq. HRMQ levert de loon-input; shillinq beheert de goedkeuring, de SEPA-export en de bankreconciliatie.
+        </FeatureItem>
+      </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['hrmq']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<PartnersForApp slug="hrmq" />
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Dagelijkse HR"
+    title="Urenregistratie, verlof, verzuim en zelfservice."
+    align="stack"
+    lede="De workflows die medewerkers en managers wekelijks gebruiken, elk met een eigen goedkeuringsspoor op het OpenRegister-record."
+  />
+  <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      title="Urenregistratie met goedkeurings-flow."
+    >
+      Medewerkers loggen uren per periode en project. Managers beoordelen ingediende urenstaten en keuren goed, af, of heropenen ze — de volledige statusgeschiedenis blijft op het record staan.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      title="Declaraties met goedkeurings-flow."
+    >
+      Medewerkers dienen declaraties in met bedrag, categorie en bon. Na goedkeuring gaat de declaratie naar vergoed — een aparte flow ten opzichte van urenregistratie, met een eigen goedkeuringsspoor.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>}
+      title="Verlof en verzuim, met Poortwachter-mijlpalen."
+    >
+      Verlofaanvragen krijgen een wettelijk-minimum verlofsaldo (4× de contractuele wekelijkse uren volgens BW 7:634, dat op 1 juli van het volgende jaar vervalt) getoetst door drie machine-controleerbare regels. Ziektecasussen volgen de Wet-verbetering-poortwachter-mijlpalen — probleemanalyse in week 6, plan van aanpak in week 8, de 42-weken-ziekmelding bij UWV, de eerstejaarsevaluatie in week 52 — als afgeleide, geregelde datums, nooit medische gegevens. Goedgekeurd verzuim synct naar een gewone Nextcloud-agenda die alleen "Afwezig" of "Verlof" toont, nooit een reden of diagnose.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg>}
+      title="Medewerker- en managerzelfservice."
+    >
+      Een Mijn HR-omgeving toont elke medewerker alleen zijn eigen gegevens — verlof, uren, declaraties, loonstroken. Managers krijgen teamgebonden goedkeuringswachtrijen en dashboard-KPI's gefilterd op hun eigen team, gecontroleerd door een regel die de teamkoppeling toetst aan het organogram.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg>}
+      title="Urenregistratie onder de Arbeidstijdenwet."
+    >
+      Klokregistraties per medewerker per dag met opgeslagen gewerkte uren, getoetst aan drie ATW-regels: minimaal 11 uur dagelijkse rust tussen werkdagen (art. 5:3), maximaal 12 uur per dienst (art. 5:7), en de wettelijke pauzetijden (art. 5:4). Een MijnAanwezigheid-zelfservicepagina toont de eigen klokgeschiedenis van de medewerker.
+    </FeatureItem>
+  </FeatureList>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Personeelszaken"
+    title="Van eerste tot laatste werkdag, plus de documenten en assets ertussenin."
+    align="stack"
+    lede="Casusgestuurde HR-processen met geregelde checklists, een organogram waar andere onderdelen op leunen, en documenten die zichzelf genereren uit dezelfde registers."
+  />
+  <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
+      title="In- en uitdienst-wizards."
+    >
+      Indiensttreding volgt de WID-identiteitscontrole, de BW 7:652-proeftijdgrenzen, en de loonheffingenverklaring vóór de eerste loonrun. Uitdiensttreding volgt de transitievergoedingsberekening, de uitbetaling van het verlofsaldo, en de getuigschriftverplichting. Elk is een declaratieve casus met geregelde checklistvelden, geen vrije-tekst to-do-lijst.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/></svg>}
+      title="Werving: vacatures en sollicitaties."
+    >
+      Publiceer vacatures en laat sollicitaties door een fasepijplijn lopen waarin afwijzen vanuit elke actieve fase bereikbaar is. Sollicitantgegevens staan in één object met één bewaartermijn-klok — de bewaartermijn-richtlijn van de Autoriteit Persoonsgegevens (verwijderen binnen 4 weken na afwijzing, tot 1 jaar met expliciete toestemming) is een opgeslagen, geregeld feit.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 20 12 16.5 6.5 20 8 13.5 3 9l6.5-.5z"/></svg>}
+      title="Beoordelingen en beoordelingscycli."
+    >
+      Eén beoordeling per medewerker per cyclus bevat rating, sterktes, ontwikkelpunten en afspraken in één dossier — geen aparte doelenentiteit om synchroon te houden. Functiescheiding wordt afgedwongen bij het vaststellen, en een regel toetst dat een vastgestelde beoordeling met rating en afspraken daadwerkelijk een ontslagdossier vormt onder BW 7:669.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="19" r="2"/><path d="M12 7v5M12 12l-6 5M12 12l6 5"/></svg>}
+      title="Een organogram waar andere onderdelen op leunen."
+    >
+      Een zelfverwijzende afdelingshiërarchie en periodegebonden plaatsingen die medewerkers aan afdelingen koppelen, getoetst op een cyclusvrije structuur. Datzelfde organogram onderbouwt de managerzelfservice-afbakening en de asset-controleregels.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>}
+      title="HR-documenten, gegenereerd via DocuDesk."
+    >
+      Arbeidsovereenkomst, aanbiedingsbrief, werkgeversverklaring, getuigschrift, loonstrook en jaaropgaaf renderen allemaal vanuit DocuDesk-sjablonen en komen terug op het record als document of loonstrook-PDF — HRMQ stelt de data samen, DocuDesk rendert het, en de functie degradeert netjes als DocuDesk niet geïnstalleerd is.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>}
+      title="Een assetregister met beheerregistratie."
+    >
+      Laptops, telefoons, voertuigen, gereedschap en toegangspassen als records met periodegebonden uitgiftes die assets aan medewerkers koppelen, getoetst zodat niets uitgegeven blijft staan na iemands uitdiensttreding.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>}
+      title="Signalering bij aflopende contracten."
+    >
+      Het regelcorpus signaleert een tijdelijk contract dat binnen 60 dagen afloopt zonder opvolger, en handhaaft de aanzegplicht — schriftelijke kennisgeving één maand voordat een tijdelijk contract van zes maanden of langer eindigt, volgens BW 7:668.
+    </FeatureItem>
+  </FeatureList>
+</Section>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="Werkt goed met"
+    title="Drie apps die de HR- en salarisstapel compleet maken."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="Medewerker-, contract-, loonrun-, loonstrook-, aangifte-, verlof- en asset-objecten als typed registers."
+    />
+    <PairCard
+      href="/apps/shillinq"
+      icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>}
+      name="Shillinq"
+      why="Elke goedgekeurde loonrun boekt een grootboekpost en een SEPA-betaalrun rechtstreeks in de boekhouding."
+    />
+    <PairCard
+      href="/apps/docudesk"
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      name="DocuDesk"
+      why="Contracten, verklaringen, loonstroken en jaaropgaven renderen vanuit DocuDesk-sjablonen gekoppeld aan HRMQ's registers."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="HR- en salarisadministratie die je compliance-team kan controleren."
+  lede={<>HRMQ draait een Nederlandse loonengine, loonaangifte en pensioenaangifte, en de dagelijkse HR-workflows op één register — onderbouwd door een regelengine die in één auditrun laat zien welke arbeidsrecht- en loonheffingenregels je data daadwerkelijk naleeft. Open-source, op je eigen Nextcloud.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+/>

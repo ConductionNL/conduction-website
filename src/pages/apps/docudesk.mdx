@@ -5,20 +5,21 @@ hide_table_of_contents: true
 ---
 
 import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
+  background="cobalt"
   appId="docudesk"
   crumb={[{label: 'Apps', href: '/apps'}, 'DocuDesk']}
-  status={{label: 'Stable', color: 'var(--c-mint-500)'}}
-  version="v1.8"
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.0.34"
   locales="NL · EN"
   title="DocuDesk"
-  tagline={<>Document creation, anonymisation, signing, and templating on <span className="next-blue">Nextcloud</span>. Twelve templates ship for the most-used Dutch government documents (beschikkingen, jaarverslagen, bezwaarbrieven). Pulls fields straight from your registers.</>}
+  tagline={<>Document generation, anonymisation, signing, and templating on <span className="next-blue">Nextcloud</span>. Starter templates ship for common Dutch government documents (beschikkingen, brieven, kwartaalrapportages). Pulls fields straight from your registers.</>}
+  intro={<>DocuDesk is an open-source document-processing app for the Nextcloud workspace. It generates PDF, ODF (.odt), or HTML documents from Twig templates, anonymizes personal data through a configurable entity-detection backend, signs documents with eIDAS signature levels, and keeps a full audit trail for GDPR and WOO publication consent. All processing runs locally on the customer's Nextcloud instance, so sensitive files never leave the premises. Released under EUPL-1.2 and maintained by Conduction since 2019.</>}
   primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/docudesk'}}
-  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/docudesk'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>}
+  secondaryCta={{label: 'Read the docs', href: 'https://docudesk.conduction.nl'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/docudesk'}}
   illustration={<AppMock app="docudesk" />}
 />
 
@@ -29,32 +30,32 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
         eyebrow="What it does"
         title="Generate, anonymise, sign. From the same template."
         align="stack"
-        lede="DocuDesk reads register fields straight into Word/PDF templates, anonymises inbound mail before it reaches your registers, and signs outbound documents with a per-instance certificate. One install covers the whole document lifecycle."
+        lede="DocuDesk reads register fields straight into Twig templates and renders PDF, ODF, or HTML output, anonymises documents before they reach your registers, and signs outbound documents with eIDAS signature levels. One install covers the whole document lifecycle."
       />
       <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
       title="Templates with register-aware fields."
     >
-      Drop a register's schema in, DocuDesk auto-binds the fields. Word and PDF templates supported. Edit in Office, regenerate any time, registers stay the system of record.
+      Drop a register's schema in, DocuDesk auto-binds the fields. Twig/HTML templates render as PDF, ODF, or HTML. Regenerate any time, registers stay the system of record.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg>}
-      title="PII anonymisation on inbound."
+      title="PII anonymisation, configurable backend."
     >
-      Microsoft Presidio under the hood, tuned for Dutch personal and healthcare terminology. Drop an email, get a redacted version that's safe for the register.
+      Entity detection routed through OpenRegister to a configurable backend — regex, OpenAnonymiser, Presidio, or an LLM. Drop a document, get a redacted version that's safe for the register.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
-      title="Sign outbound, archive inbound."
+      title="eIDAS digital signing."
     >
-      Per-instance signing certificate for outbound documents. ToepassingsProfiel Metagegevens (TMLO)-conforme archivering for inbound, with retention rules per recordtype.
+      SES, AdES, and QES signature levels, sequential or parallel multi-signer workflows. Signing requests, signer records, and audit entries are stored as OpenRegister objects.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
-      title="Twelve templates out of the box."
+      title="Starter templates, extend your own."
     >
-      Beschikkingen, jaarverslagen, bezwaarbrieven, subsidy decisions, permits. All NLDS-compliant and Wet open overheid-aware.
+      Ships with example templates for common government documents (beschikking, algemene brief, kwartaalrapportage). Wet open overheid-aware; add your own templates per register schema.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
@@ -72,6 +73,8 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
   </div>
 </Section>
 
+<PartnersForApp slug="docudesk" />
+
 <RotatingCards
   eyebrow="Three ways DocuDesk earns its place"
   title="Generate, anonymise, sign, on the same registers."
@@ -81,7 +84,7 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
       tone: 'terracotta',
       eyebrow: 'Generate',
       title: 'Templates that read your registers.',
-      summary: 'Drop a register schema into a Word or PDF template, DocuDesk auto-binds the fields. Edit in Office, regenerate any time. Twelve government-ready templates ship with the install.',
+      summary: 'Drop a register schema into a Twig/HTML template, DocuDesk auto-binds the fields and renders PDF, ODF, or HTML. Regenerate any time. Starter templates ship with the install; extend with your own.',
       cta: {label: 'See DocuDesk', href: '/apps/docudesk'},
       panel: <AppMock app="docudesk" />,
     },
@@ -89,17 +92,17 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
       tone: 'forest',
       eyebrow: 'Anonymise',
       title: 'PII stripped before it lands.',
-      summary: 'Microsoft Presidio under the hood, tuned for Dutch personal and healthcare terminology. Inbound mail is redacted before it touches a register. Citation-stable IDs survive the redaction.',
+      summary: 'A configurable entity-detection backend — regex, OpenAnonymiser, Presidio, or an LLM — routed through OpenRegister. Documents are redacted before they touch a register. Citation-stable IDs survive the redaction.',
       cta: {label: 'See OpenRegister', href: '/apps/openregister'},
       panel: <AppMock app="openregister" />,
     },
     {
       tone: 'workspace',
-      eyebrow: 'Sign + archive',
-      title: 'Per-instance certificate, TMLO archive.',
-      summary: 'Outbound documents sign with your instance certificate; inbound documents archive per your retention rules. The audit trail covers generation, edits, signing, and archival in one log.',
-      cta: {label: 'See MyDash', href: '/apps/mydash'},
-      panel: <AppMock app="mydash-bi" />,
+      eyebrow: 'Sign + audit',
+      title: 'eIDAS signing, full audit trail.',
+      summary: 'Documents sign with SES, AdES, or QES signature levels through sequential or parallel signer workflows. Every generation, edit, signing action leaves a tamper-evident entry in the audit log.',
+      cta: {label: 'See LaunchPad', href: '/apps/launchpad'},
+      panel: <AppMock app="launchpad-bi" />,
     },
   ]}
 />
@@ -128,7 +131,7 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
     },
     {
       title: 'Pending signatures',
-      desc: 'Documents awaiting your signature, sorted by deadline. One click to sign with the instance certificate.',
+      desc: 'Documents awaiting your signature, sorted by deadline. One click to sign at the required eIDAS level.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {[
@@ -151,14 +154,14 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
     },
     {
       title: 'Recent documents',
-      desc: 'Last documents you generated or signed. Type pill (PDF / DOCX), filename, and a one-click reopen.',
+      desc: 'Last documents you generated or signed. Type pill (PDF / ODF), filename, and a one-click reopen.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {[
             {pill: 'PDF',  pillBg: 'var(--c-terracotta-100)', pillFg: 'var(--c-terracotta-700)'},
-            {pill: 'DOCX', pillBg: 'var(--c-cobalt-100)',     pillFg: 'var(--c-cobalt-700)'},
+            {pill: 'ODF',  pillBg: 'var(--c-cobalt-100)',     pillFg: 'var(--c-cobalt-700)'},
             {pill: 'PDF',  pillBg: 'var(--c-terracotta-100)', pillFg: 'var(--c-terracotta-700)'},
-            {pill: 'XLSX', pillBg: 'var(--c-mint-100)',       pillFg: 'var(--c-mint-700)'},
+            {pill: 'HTML', pillBg: 'var(--c-mint-100)',       pillFg: 'var(--c-mint-700)'},
           ].map((row, i) => (
             <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
               <span style={{display: 'inline-block', padding: '2px 6px', background: row.pillBg, color: row.pillFg, borderRadius: 2, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, fontWeight: 700, letterSpacing: '0.04em'}}>{row.pill}</span>
@@ -180,32 +183,30 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
   defaultOpen="mail-files"
   items={[
     {
-      id: 'mail-files',
-      title: 'Mail and Files',
-      summary: 'Anonymise inbound mail before it touches the register. Sign outbound documents with the instance certificate from inside Files. The Mail and Files sidebars show the document\'s template, signing status, and audit trail in one place.',
-      cta: {label: 'See the integration guide', href: 'https://docs.conduction.nl/docudesk/mail-files'},
+      id: 'files',
+      title: 'Files and dossiers',
+      summary: 'Anonymise a single document, or scan a whole folder as a batch. Each redacted file is linked back to its source with a queryable OpenRegister record, and a per-dossier grondslagen (legal-basis) summary tracks which entities were redacted and why.',
+      cta: {label: 'Read the docs', href: 'https://docudesk.conduction.nl'},
       panel: <AppMock app="docudesk" />,
     },
     {
       id: 'windmill-n8n',
       title: 'Windmill and n8n',
-      summary: 'Trigger document generation as a workflow step. Windmill or n8n pulls fields from a register, calls DocuDesk to render the template, and routes the signed PDF wherever the flow wants. No glue code.',
-      cta: {label: 'See the workflow examples', href: 'https://docs.conduction.nl/docudesk/windmill-n8n'},
+      summary: 'Trigger document generation as a workflow step. Windmill or n8n pulls fields from a register, calls DocuDesk\'s API to render the template, and routes the signed PDF wherever the flow wants.',
+      cta: {label: 'See OpenConnector', href: '/apps/openconnector'},
       panel: <AppMock app="openconnector" />,
     },
     {
-      id: 'llms',
-      title: 'LLMs (Claude, Mistral, Ollama, Presidio)',
-      summary: 'Two-pass redaction. Microsoft Presidio strips structured PII (names, BSNs, addresses) with deterministic rules; an LLM catches the context the regex missed. The cleaned text is what reaches the register.',
-      cta: {label: 'See the privacy pipeline', href: 'https://docs.conduction.nl/docudesk/llm-redaction'},
+      id: 'entity-detection',
+      title: 'Configurable entity detection',
+      summary: 'PII detection runs through a backend you choose via OpenRegister — deterministic regex, OpenAnonymiser, Microsoft Presidio, or an LLM. Every redaction is written to the audit log with the detected entity type and the operator or automation that approved it.',
+      cta: {label: 'See OpenRegister', href: '/apps/openregister'},
       panel: <AgentTrace
         lines={[
-          {kind: 'note',  bullet: 'done', text: 'Inbound document received'},
-          {kind: 'tool',  text: 'presidio - scan (MCP)(file: subsidie-aanvraag.pdf)'},
-          {kind: 'note',  bullet: 'info', text: 'Presidio matched 7 PII spans', muted: '(deterministic)'},
-          {kind: 'tool',  text: 'mistral - context_check (MCP)(text: <redacted>)'},
-          {kind: 'note',  bullet: 'done', text: 'LLM caught 2 context-implicit PII spans'},
-          {kind: 'status', text: 'Sealing original, writing redacted version'},
+          {kind: 'note',  bullet: 'done', text: 'Document received'},
+          {kind: 'tool',  text: 'entityDetection - scan(file: subsidie-aanvraag.pdf, backend: presidio)'},
+          {kind: 'note',  bullet: 'info', text: 'Detected 7 PII spans', muted: '(BSN, PERSON, ADDRESS)'},
+          {kind: 'status', text: 'Writing redacted version, sealing original'},
         ]}
         cursor
         mode="audit log on (every redaction recorded)"
@@ -246,5 +247,5 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
   title="One install, the whole document lifecycle."
   lede={<>Install DocuDesk from the <span className="next-blue">Nextcloud</span> app store, point it at your registers, drop in the template pack. Your team is generating WOO-ready documents the same morning.</>}
   primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/docudesk'}}
+  secondaryCta={{label: 'Read the docs', href: 'https://docudesk.conduction.nl'}}
 />

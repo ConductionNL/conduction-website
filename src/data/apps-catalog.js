@@ -23,6 +23,7 @@
  */
 
 import React from 'react';
+import {AppGlyph} from '@conduction/docusaurus-preset/components';
 import downloadsJson from '../../data/app-downloads.json';
 
 /* Hand-curated display metadata. Keys are the GitHub repo slug
@@ -38,96 +39,178 @@ const PRESENTATION = {
     tagline: 'Public software catalog. Every app, dataset, API in your organisation, searchable in one place.',
     href: '/apps/opencatalogi',
     categories: ['Data'],
-    icon: <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/></svg>,
+    icon: <AppGlyph app="opencatalogi" />,
   },
   openregister: {
     name: 'OpenRegister',
     tagline: 'Schemas, registers, structured data objects, the typed-data backbone for every app.',
     href: '/apps/openregister',
     categories: ['Data'],
-    icon: <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg>,
+    icon: <AppGlyph app="openregister" />,
   },
   openconnector: {
     name: 'OpenConnector',
     tagline: <>Connect <span className="next-blue">Nextcloud</span> to anything, REST, SOAP, GraphQL, file drops, message queues.</>,
     href: '/apps/openconnector',
     categories: ['Connectors'],
-    icon: <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>,
+    icon: <AppGlyph app="openconnector" />,
   },
   docudesk: {
     name: 'DocuDesk',
     tagline: 'Auto-classify, anonymise, and route inbound documents. Drop them in a folder, get them filed.',
     href: '/apps/docudesk',
     categories: ['Documents'],
-    icon: <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>,
+    icon: <AppGlyph app="docudesk" />,
   },
-  mydash: {
-    name: 'MyDash',
+  openanonymiser: {
+    name: 'OpenAnonymiser',
+    tagline: 'Dutch-first PII detection as a Nextcloud ExApp. Finds persons, addresses, IBANs, BSNs, case numbers in any text. CPU (Light) and GPU builds, Presidio under the hood.',
+    href: 'https://openanonymiser.conduction.nl',
+    categories: ['Documents'],
+    icon: <AppGlyph app="openanonymiser" />,
+  },
+  launchpad: {
+    name: 'LaunchPad',
     tagline: 'Personal and team dashboards built from your registers, no separate BI tool, no extra login.',
-    href: '/apps/mydash',
+    href: '/apps/launchpad',
     categories: ['Dashboards'],
-    icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>,
-  },
-  openwoo: {
-    name: 'OpenWoo',
-    tagline: 'WOO-compliant publication flow. Active disclosure, queryable archive, citation-stable URLs.',
-    href: '/apps/openwoo',
-    categories: ['Processes'],
-    icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>,
+    icon: <AppGlyph app="launchpad" />,
   },
   zaakafhandelapp: {
     name: 'ZaakAfhandelApp',
-    tagline: 'Citizen-facing case-status portal. ZGW APIs, archief koppelvlakken, audit trail.',
+    tagline: 'Citizen-facing case-status portal. ZGW APIs, archive interfaces, audit trail.',
     href: '/apps/zaakafhandelapp',
     categories: ['Processes'],
-    icon: <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>,
+    icon: <AppGlyph app="zaakafhandelapp" />,
   },
   pipelinq: {
     name: 'PipelinQ',
     tagline: 'CRM with quotes, contacts, and deal-flow. Built on registers, no separate sales database.',
     href: '/apps/pipelinq',
     categories: ['Processes'],
-    icon: <svg viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>,
+    icon: <AppGlyph app="pipelinq" />,
   },
   procest: {
     name: 'Procest',
     tagline: 'Case-management for VTH and citizen processes. Workflow engine plus typed registers.',
     href: '/apps/procest',
     categories: ['Processes'],
-    icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>,
+    icon: <AppGlyph app="procest" />,
+  },
+  planix: {
+    name: 'Planix',
+    tagline: 'Flow-based kanban project and task management. Boards, backlog, and time tracking for dev and IT teams.',
+    href: '/apps/planix',
+    categories: ['Processes'],
+    icon: <AppGlyph app="planix" />,
   },
   decidesk: {
     name: 'DeciDesk',
     tagline: 'Decision-support and board management. Agenda, dossiers, motions, voting, audit.',
     href: '/apps/decidesk',
     categories: ['Processes'],
-    icon: <svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>,
+    icon: <AppGlyph app="decidesk" />,
   },
   softwarecatalog: {
     name: 'SoftwareCatalog',
     tagline: 'IT-asset management, software inventory, licenses, contracts, dependencies.',
     href: '/apps/softwarecatalog',
     categories: ['Data'],
-    icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>,
+    icon: <AppGlyph app="softwarecatalog" />,
   },
   larpingapp: {
     name: 'LarpingApp',
     tagline: 'Workflow and process orchestration for live-action role-play events. Visual designer, audit-logged.',
     href: '/apps/larpingapp',
     categories: ['Processes'],
-    icon: <svg viewBox="0 0 24 24"><path d="M3 12h6l3-7 3 14 3-7h3"/></svg>,
+    icon: <AppGlyph app="larpingapp" />,
+  },
+  scholiq: {
+    name: 'Scholiq',
+    tagline: 'Learning record + LMS. Courses, enrolments, certificates, compliance training.',
+    href: '/apps/scholiq',
+    categories: ['Processes'],
+    icon: <AppGlyph app="scholiq" />,
   },
   nldesign: {
     name: 'NLDesign',
     tagline: 'Drop-in NLDS theme for Nextcloud, with the Conduction component variants on top.',
     href: '/apps/nldesign',
     categories: ['Documents'],
-    icon: <svg viewBox="0 0 24 24"><path d="M4 4h16v6H4z"/><path d="M4 14h7v6H4z"/><path d="M14 14h6v6h-6z"/></svg>,
+    icon: <AppGlyph app="nldesign" />,
+  },
+  shillinq: {
+    name: 'Shillinq',
+    tagline: 'Business administration on Nextcloud. Invoices, contracts, procurement on shared registers.',
+    href: '/apps/shillinq',
+    categories: ['Processes'],
+    icon: <AppGlyph app="shillinq" />,
+  },
+  openbuild: {
+    name: 'OpenBuild',
+    tagline: 'Citizen-developer app builder. Compose Nextcloud apps from registers, connectors, workflows, no PHP.',
+    href: '/apps/openbuild',
+    categories: ['Processes'],
+    icon: <AppGlyph app="openbuild" />,
+  },
+  hrmq: {
+    name: 'HRMQ',
+    tagline: 'Open-source HR and payroll administration. Timesheets, expense claims, and a labour-law and wage-tax compliance rule engine.',
+    href: '/apps/hrmq',
+    categories: ['Processes'],
+    icon: <AppGlyph app="hrmq" />,
+  },
+  doriath: {
+    name: 'Doriath',
+    tagline: 'Self-hosted password and secrets vault. Per-user, per-team, audited. In development.',
+    href: '/apps/doriath',
+    categories: ['Connectors'],
+    icon: <AppGlyph app="doriath" />,
+  },
+  'app-versions': {
+    name: 'App Versions',
+    tagline: 'Pin and roll back any Nextcloud app version. Multi-source picker, audit-trailed. In development.',
+    href: '/apps/app-versions',
+    categories: ['Data'],
+    icon: <AppGlyph app="app-versions" />,
+  },
+  portaliq: {
+    name: 'Portaliq',
+    tagline: 'One shared external portal for clients and suppliers. White-label, built on OpenRegister.',
+    href: '/apps/portaliq',
+    categories: ['Processes'],
+    icon: <AppGlyph app="portaliq" />,
+  },
+  hermiq: {
+    name: 'Hermiq',
+    tagline: 'Schedule autonomous AI agents with human approval gates. Runs delivered to Nextcloud Talk.',
+    href: '/apps/hermiq',
+    categories: ['AI'],
+    icon: <AppGlyph app="hermiq" />,
   },
 };
 
 /* Categories the website filters by, in the order the chips render. */
 export const APP_CATEGORIES = ['All', 'Data', 'Processes', 'Connectors', 'Documents', 'AI', 'Dashboards'];
+
+/* Site-wide app-count constants — the single source of truth for "we ship N apps".
+   APP_COUNT is the size of the PRESENTATION map (every Conduction app, including
+   in-development ones). Use this in copy instead of hardcoding a digit or word,
+   so the headline number stays in sync with the registry. INTEGRATED_COUNT is the
+   number of third-party tools we surface in the External-tools shelf on /connext;
+   ECOSYSTEM_COUNT is the headline "apps in the diagram" total used as the page
+   title. Update INTEGRATED_COUNT whenever the shelf changes. */
+export const APP_COUNT = Object.keys(PRESENTATION).length;
+export const INTEGRATED_COUNT = 14;
+export const ECOSYSTEM_COUNT = APP_COUNT + INTEGRATED_COUNT;
+
+/* Combined GitHub (legacy) + Codeberg (live) download total across every
+   app, straight from the generated totals block. This is the number the
+   homepage StatsStrip renders. Sourced from the website's own local JSON
+   because the preset's `totalDownloads` export can't read the data file
+   once the package is installed into a consumer site (the import path
+   resolves outside the package and falls back to 0). */
+export const TOTAL_DOWNLOADS = (downloadsJson.totals && downloadsJson.totals.downloads) || 0;
 
 /* Pick a status label from the version string. The Nextcloud app
    store leaves the latest_version as-is, so "0.7.9-beta.8" reads as
@@ -147,7 +230,9 @@ function versionLabel(record) {
   const raw = (record.store && record.store.latest_version) || (record.github && record.github.latest_release) || '';
   const stripped = raw.replace(/^v/, '').replace(/-(beta|alpha|rc).*$/i, '');
   const short = stripped.split('.').slice(0, 2).join('.');
-  const dl = record.github && record.github.downloads;
+  const dl = record.downloads_total != null
+    ? record.downloads_total
+    : (record.github && record.github.downloads);
   const dlLabel = dl && dl > 0 ? `${dl.toLocaleString('en-US')} installs` : null;
   return [short && `v${short}`, dlLabel].filter(Boolean).join(' · ');
 }
@@ -167,7 +252,9 @@ export function getApps() {
       ...meta,
       status: statusFor(record),
       version: versionLabel(record),
-      downloads: (record.github && record.github.downloads) || 0,
+      downloads: record.downloads_total != null
+        ? record.downloads_total
+        : ((record.github && record.github.downloads) || 0),
     });
   }
   /* Apps in PRESENTATION but not in the JSON yet (e.g. brand-new repos
@@ -192,7 +279,7 @@ export function getApps() {
   return out;
 }
 
-/* Convenience: the totals strip ("12 apps in the store · 22,400 installs"). */
+/* Convenience: the totals strip ("N apps in the store · M installs"). */
 export function getCatalogTotals() {
   const apps = getApps();
   const installs = apps.reduce((n, a) => n + (a.downloads || 0), 0);

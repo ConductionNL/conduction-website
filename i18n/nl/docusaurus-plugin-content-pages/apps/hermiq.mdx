@@ -1,0 +1,100 @@
+---
+title: Hermiq, Conduction
+description: Plan autonome AI-agents in Nextcloud. Chat, geheugen, skills en menselijke goedkeuring, afgeleverd in Nextcloud Talk.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+<DetailHero
+  background="cobalt"
+  appId="hermiq"
+  crumb={[{label: 'Apps', href: '/apps'}, 'Hermiq']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.1"
+  locales="NL · EN"
+  title="Hermiq"
+  tagline={<>Plan autonome AI-agents in <span className="next-blue">Nextcloud</span>. Geef een agent een prompt, tools en skills, en laat hem dagelijks, elk uur, of op een flow-trigger draaien — afgeleverd rechtstreeks in Nextcloud Talk.</>}
+  intro={<>Hermiq brengt autonome AI-agents naar de Nextcloud-workspace. Definieer een agent, geef hem MCP-tools en installeerbare skills, en laat hem volgens een schema draaien — dagelijkse rapportages, inbox-triage, monitoring, ochtendbriefings. Agents chatten via een live streaming-gesprek, houden sessiegeschiedenis en consoliderend geheugen bij, en kunnen achter een menselijke goedkeuringswachtrij gezet worden voordat ze handelen. Elke agent, run, geheugen en skill wordt opgeslagen als een OpenRegister-object, dus alles is van nature beheerd, controleerbaar en multi-tenant. Uitgegeven onder EUPL-1.2, onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Lees de docs', href: 'https://hermiq.conduction.nl'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/hermiq'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="Autonome agents, op je eigen Nextcloud."
+        align="stack"
+        lede="Hermiq maakt van een prompt, een set tools en een schema een werkende agent. Geen externe agent-hosting, geen aparte vectordatabase — agents, hun geheugen en hun skills leven allemaal als OpenRegister-objecten in je eigen Nextcloud-omgeving."
+      />
+      <FeatureList>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>}
+          title="Agents met tools en skills."
+        >
+          Definieer een agent met een prompt, een model, MCP-tools en installeerbare skills uit de agentskills.io-catalogus. Beheer ze via de Agents-catalogus en het detailscherm.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+          title="Geplande runs, afgeleverd in Talk."
+        >
+          Koppel een schema aan een agent — dagelijks, elk uur, of flow-getriggerd — en de uitkomst landt in een Nextcloud Talk-gesprek (of een notificatie als Talk niet is geïnstalleerd).
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
+          title="Chat, sessies en geheugen."
+        >
+          Chat met elke agent via een live streaming-gesprek. Sessies bewaren de volledige gespreksgeschiedenis; consoliderend geheugen houdt langlopende agents binnen hun context-budget.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
+          title="Menselijke goedkeuringswachtrij."
+        >
+          Stuur gevoelige agent-acties naar een reviewer-inbox voordat ze uitgevoerd worden. Keur per actie goed of af, met een kill switch op organisatieniveau.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+          title="Beheerd via OpenRegister."
+        >
+          Elke agent, run, geheugen en skill is een OpenRegister-object — gecontroleerd, RBAC'd en multi-tenant, met een run-analyseoverzicht en een quotum- en audit-export per organisatie voor tenant-beheerders.
+        </FeatureItem>
+      </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['hermiq']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<PartnersForApp slug="hermiq" />
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Werkt goed met"
+    title="De apps waarop Hermiq leunt."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="Agents, geheugen, skills en runs opgeslagen als beheerde, gecontroleerde registers."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="AI-agents die in je Nextcloud leven."
+  lede={<>Hermiq plant autonome AI-agents op je eigen infrastructuur, beheerd via OpenRegister en afgeleverd in Nextcloud Talk. Open-source, op je eigen data.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+/>

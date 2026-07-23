@@ -1,0 +1,104 @@
+---
+title: Scholiq, Conduction
+description: Learning record + LMS on Nextcloud. Cohorts, courses, attendance, grading, certificates, compliance training.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+<DetailHero
+  background="cobalt"
+  appId="scholiq"
+  crumb={[{label: 'Apps', href: '/apps'}, 'Scholiq']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.x"
+  locales="NL · EN"
+  title="Scholiq"
+  tagline={<>Learning record system and LMS on <span className="next-blue">Nextcloud</span>. Courses, enrolments, attendance, grading, certificates. For schools, training providers and compliance teams who won't park their learning process at an external SaaS.</>}
+  intro={<>Scholiq is an open-source education app for the Nextcloud workspace. It runs as a learning record system for Dutch primary and secondary schools, as a full LMS for higher education, and as a compliance-training engine for MKB and government bodies. Courses, assignments, assessments and certificates ship today with QTI 2.x / 3.0 item-bank import and Open Badges 3.0 credential verification built in; DUO BRON/ROD, OSO transfer and SURFconext federation are data-exchange integrations on the roadmap via OpenConnector, not yet live. EU AI Act governance for AI-assisted features is delegated to Conduction's Hermiq app. Released under EUPL-1.2 and maintained by Conduction since 2019.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Read the docs', href: 'https://scholiq.conduction.nl/'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/scholiq'}}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="One learning environment for courses, cohorts and certificates."
+        align="stack"
+        lede="Scholiq handles the whole learning process: set up courses, enrol participants, track attendance and progress, collect and grade assignments, award certificates. Everything on typed registers in OpenRegister, so the grades in LaunchPad and inspection reports stay correct."
+      />
+      <FeatureList>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="M4 10h16M9 6v12"/></svg>}
+          title="Courses and enrolments."
+        >
+          Build a course from modules, attach learning materials and data, enrol individual participants or whole cohorts. For ongoing education and one-day training alike.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13l2 2 4-4"/></svg>}
+          title="Assignments and grading."
+        >
+          Issue an assignment, participants submit, you give feedback and a grade. The full history stays available per learner in their record.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>}
+          title="Attendance and progress."
+        >
+          Who was there, who completed the module, where each learner stands in their plan. No loose Excel spreadsheets, no shadow administration.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 .9-4.5 4.2 1.1 6L12 16l-5.6 3.1 1.1-6L3 8.9 9 8z"/></svg>}
+          title="Certificates and compliance training."
+        >
+          Award certificates with validity and recertification dates, verified through an Open Badges 3.0 endpoint. For workplace safety, GDPR, integrity training or your annual cybersecurity course: bulk-enrol everyone, capture signed attestations, and export a signed audit pack per regulation.
+        </FeatureItem>
+      </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['scholiq']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<PartnersForApp slug="scholiq" />
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="The apps Scholiq depends on."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="Participants, courses, enrolments, grades and certificates as typed registers."
+    />
+    <PairCard
+      href="/apps/docudesk"
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      name="DocuDesk"
+      why="Generates certificates, course reports and participant lists from templates."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+      name="LaunchPad"
+      why="My courses, work to grade, and recertifications on the dashboard."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="Learning at your own organisation, not at an external vendor."
+  lede={<>Scholiq keeps the learning process — from course enrolment to certification — on your own Nextcloud. Open-source, on your own data, ready for inspection and compliance.</>}
+  primaryCta={{label: 'Install from app store', href: '/install'}}
+  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+/>

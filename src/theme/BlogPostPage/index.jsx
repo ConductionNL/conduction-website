@@ -18,6 +18,7 @@
 
 import React from 'react';
 import clsx from 'clsx';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import {HtmlClassNameProvider, ThemeClassNames} from '@docusaurus/theme-common';
 import {
   BlogPostProvider,
@@ -33,7 +34,18 @@ import {
   Section,
   AppCrossLinks,
 } from '@conduction/docusaurus-preset/components';
+import WebinarHero from '@site/src/components/WebinarHero/WebinarHero';
 import styles from './styles.module.css';
+
+/**
+ * Extract a YouTube video id from a watch / youtu.be / embed URL.
+ * Returns null when the URL is missing or not a recognised YouTube link.
+ */
+function youTubeId(url) {
+  if (!url || typeof url !== 'string') return null;
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]{6,})/);
+  return m ? m[1] : null;
+}
 
 function defaultIconFor(contentType) {
   const stroke = {strokeWidth: 1.6, fill: 'none', stroke: 'currentColor'};
@@ -118,12 +130,17 @@ function BlogPostPageContent({children}) {
   const {metadata} = useBlogPost();
   const {frontMatter, nextItem, prevItem} = metadata;
 
+  const academyHref = useBaseUrl('/academy/');
+  const academyTypeHref = useBaseUrl(
+    '/academy/' + (frontMatter.contentType ? '?type=' + frontMatter.contentType : ''),
+  );
+
   const author = metadata.authors && metadata.authors[0];
   const heroProps = {
     crumb: [
-      {label: 'Academy', href: '/academy/'},
+      {label: 'Academy', href: academyHref},
       frontMatter.contentType
-        ? {label: frontMatter.contentType, href: '/academy/?type=' + frontMatter.contentType}
+        ? {label: frontMatter.contentType, href: academyTypeHref}
         : null,
       metadata.title,
     ].filter(Boolean),
@@ -142,12 +159,24 @@ function BlogPostPageContent({children}) {
     },
   };
 
+  const webinarVideoId = frontMatter.contentType === 'webinar'
+    ? youTubeId(frontMatter.videoUrl)
+    : null;
+
   const related = [postMetaToCardProps(prevItem), postMetaToCardProps(nextItem)]
     .filter(Boolean);
 
   return (
     <Section spacing="default">
-      <ContentDetailHero {...heroProps} />
+      {webinarVideoId
+        ? (
+          <WebinarHero
+            {...heroProps}
+            videoEmbedUrl={`https://www.youtube.com/embed/${webinarVideoId}`}
+            videoTitle={heroProps.title}
+          />
+        )
+        : <ContentDetailHero {...heroProps} />}
 
       <div className={`content-detail-body ${styles.body}`}>
         {children}
@@ -170,7 +199,7 @@ function BlogPostPageContent({children}) {
         <div style={{marginTop: 96}}>
           <RelatedPosts
             title="Keep learning…"
-            viewAllHref="/academy/"
+            viewAllHref={academyHref}
             viewAllLabel="View all"
             columns={2}
           >

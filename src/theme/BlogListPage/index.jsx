@@ -19,20 +19,24 @@
 
 import React, {useEffect, useMemo, useState} from 'react';
 import clsx from 'clsx';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import {
   HtmlClassNameProvider,
   ThemeClassNames,
 } from '@docusaurus/theme-common';
 import Layout from '@theme/Layout';
 import BrowserOnly from '@docusaurus/BrowserOnly';
+import {usePluginData} from '@docusaurus/useGlobalData';
+import Translate, {translate} from '@docusaurus/Translate';
 import {
   FeaturedCard,
-  ContentCard,
-  ContentCardGrid,
   ContentTypeFilter,
   CONTENT_TYPES,
   NewsletterCta,
   Section,
+  ContentCard,
+  ContentCardGrid,
+  ModuleCard,
 } from '@conduction/docusaurus-preset/components';
 import {
   APPS_REGISTRY,
@@ -42,18 +46,45 @@ import {
 const TYPE_SET = new Set(CONTENT_TYPES);
 const APP_SET = new Set(Object.keys(APPS_REGISTRY));
 
-function readQuery(search) {
+function readQuery(search, knownModules, knownSeries) {
   try {
     const params = new URLSearchParams(search);
     const t = params.get('type');
     const a = params.get('app');
+    const m = params.get('module');
+    const s = params.get('series');
     return {
-      type: t && TYPE_SET.has(t) ? t : null,
-      app:  a && APP_SET.has(a)  ? a : null,
+      type:   t && TYPE_SET.has(t)              ? t : null,
+      app:    a && APP_SET.has(a)               ? a : null,
+      module: m && knownModules && knownModules.has(m) ? m : null,
+      series: s && knownSeries && knownSeries.has(s)   ? s : null,
     };
   } catch (_) {
-    return {type: null, app: null};
+    return {type: null, app: null, module: null, series: null};
   }
+}
+
+const SERIES_LABEL_OVERRIDES = {
+  'hydra-tutorial':         'Hydra',
+  'openspec-tutorial':      'OpenSpec',
+  'claude-skills-tutorial': 'Claude Skills',
+  'woo-tutorial':           'Woo',
+};
+
+function seriesLabelFor(slug) {
+  if (slug === 'build-an-app-tutorial') {
+    return translate({
+      id: 'theme.academy.seriesLabel.buildAnApp',
+      message: 'Build a Nextcloud app',
+      description: 'Series chip label for the build-an-app-tutorial series on the academy landing page',
+    });
+  }
+  if (SERIES_LABEL_OVERRIDES[slug]) return SERIES_LABEL_OVERRIDES[slug];
+  return slug
+    .replace(/-tutorial$/, '')
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
 }
 
 function defaultIconFor(contentType) {
@@ -111,7 +142,7 @@ function panelToneFor(contentType) {
   }
 }
 
-function postToCardProps(post) {
+function postToCardProps(post, moduleSize) {
   const meta = post.content.metadata;
   const fm = meta.frontMatter || {};
   const author = meta.authors && meta.authors[0];
@@ -127,21 +158,45 @@ function postToCardProps(post) {
       icon: defaultIconFor(fm.contentType),
       panelTone: panelToneFor(fm.contentType),
     },
+    durationMinutes:  fm.durationMinutes,
+    audience:         fm.audience || [],
+    module:           fm.module,
+    modulePosition:   fm.modulePosition,
+    moduleTotalParts: fm.module && moduleSize ? moduleSize : undefined,
+    moduleTitle:      fm.moduleTitle,
   };
 }
 
-function postToFeaturedProps(post) {
-  const card = postToCardProps(post);
+function postToFeaturedProps(post, moduleSize) {
+  const card = postToCardProps(post, moduleSize);
   const fm = post.content.metadata.frontMatter || {};
   return {
     href: card.href,
-    eyebrow: 'Featured ' + (fm.contentType || 'post'),
+    eyebrow: translate(
+      {
+        id: 'theme.academy.featuredEyebrow',
+        message: 'Featured {type}',
+        description: 'Eyebrow on the featured academy card. {type} is the content type slug (blog, guide, case-study, webinar, tutorial)',
+      },
+      {type: fm.contentType || 'post'},
+    ),
     title: card.title,
     lede: card.summary,
-    ctaLabel: 'Read more',
+    ctaLabel: translate({
+      id: 'theme.academy.featuredCta',
+      message: 'Read more',
+      description: 'CTA label on the featured academy card',
+    }),
     author: card.author,
     date: card.date,
     thumbnail: {icon: defaultIconFor(fm.contentType)},
+    contentType:      fm.contentType,
+    durationMinutes:  fm.durationMinutes,
+    audience:         fm.audience || [],
+    module:           fm.module,
+    modulePosition:   fm.modulePosition,
+    moduleTotalParts: fm.module && moduleSize ? moduleSize : undefined,
+    moduleTitle:      fm.moduleTitle,
   };
 }
 
@@ -168,16 +223,50 @@ function countsByApp(posts) {
   return counts;
 }
 
+function postSeries(post) {
+  return post.content.metadata.frontMatter?.series || null;
+}
+
+function countsBySeries(posts) {
+  const counts = {};
+  for (const post of posts) {
+    const series = postSeries(post);
+    if (series) counts[series] = (counts[series] || 0) + 1;
+  }
+  return counts;
+}
+
 function AcademyLandingInner({items}) {
+  const academyHref = useBaseUrl('/academy/');
+
+  /* Module groupings from the academy-modules Docusaurus plugin.
+     Empty object when the plugin is missing so the page still renders
+     individual cards rather than throwing. */
+  const moduleData = usePluginData('academy-modules') || {};
+  const modules    = moduleData.modules || {};
+  const moduleSlugs = useMemo(() => Object.keys(modules), [modules]);
+  const knownModules = useMemo(() => new Set(moduleSlugs), [moduleSlugs]);
+
+  /* All distinct series slugs found in frontmatter — used to validate
+     the ?series= query param so an unknown slug can't get stuck. */
+  const knownSeries = useMemo(() => {
+    const set = new Set();
+    for (const post of items) {
+      const s = postSeries(post);
+      if (s) set.add(s);
+    }
+    return set;
+  }, [items]);
+
   const [active, setActive] = useState(() =>
-    readQuery(typeof window !== 'undefined' ? window.location.search : '')
+    readQuery(typeof window !== 'undefined' ? window.location.search : '', knownModules, knownSeries)
   );
 
   useEffect(() => {
-    const onPop = () => setActive(readQuery(window.location.search));
+    const onPop = () => setActive(readQuery(window.location.search, knownModules, knownSeries));
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
-  }, []);
+  }, [knownModules, knownSeries]);
 
   /* Type counts always reflect the full feed (so the user sees how many
      blogs vs guides exist regardless of the active app filter). App
@@ -200,9 +289,86 @@ function AcademyLandingInner({items}) {
     [appCounts],
   );
 
-  const filtered = active.app
+  const itemsAfterApp = active.app
     ? itemsAfterType.filter((p) => postApps(p).includes(active.app))
     : itemsAfterType;
+
+  /* Series row counts: how many posts each series contributes to the
+     type/app-filtered universe. Hide series with 0 members so the row
+     shortens as the user filters. */
+  const seriesCounts = useMemo(() => countsBySeries(itemsAfterApp), [itemsAfterApp]);
+
+  const visibleSeriesSlugs = useMemo(
+    () => [...knownSeries].filter((s) => seriesCounts[s] > 0),
+    [knownSeries, seriesCounts],
+  );
+
+  const seriesLabels = useMemo(() => {
+    const labels = {};
+    for (const slug of knownSeries) labels[slug] = seriesLabelFor(slug);
+    return labels;
+  }, [knownSeries]);
+
+  const itemsAfterSeries = active.series
+    ? itemsAfterApp.filter((p) => postSeries(p) === active.series)
+    : itemsAfterApp;
+
+  /* Apply the module filter last so the type/app/series filters always
+     narrow the universe first. If the user picks a specific module,
+     we drop into the "module focus" view: only that module's parts
+     show, no composite collapsing. */
+  const filtered = active.module
+    ? itemsAfterSeries.filter((p) => p.content.metadata.frontMatter?.module === active.module)
+    : itemsAfterSeries;
+
+  /* Module pill row counts: how many member posts each module
+     contributes to the type/app/series-filtered universe. Hide modules
+     with 0 members so the row shortens as the user filters. */
+  const moduleCounts = useMemo(() => {
+    const counts = {};
+    for (const post of itemsAfterSeries) {
+      const slug = post.content.metadata.frontMatter?.module;
+      if (slug && knownModules.has(slug)) counts[slug] = (counts[slug] || 0) + 1;
+    }
+    return counts;
+  }, [itemsAfterSeries, knownModules]);
+
+  const visibleModuleSlugs = useMemo(
+    () => moduleSlugs.filter((s) => moduleCounts[s] > 0),
+    [moduleSlugs, moduleCounts],
+  );
+
+  const moduleLabels = useMemo(() => {
+    const labels = {};
+    for (const slug of moduleSlugs) labels[slug] = modules[slug]?.title || slug;
+    return labels;
+  }, [moduleSlugs, modules]);
+
+  /* Composite collapsing: when no module-related filter is active and
+     a module has 2+ parts in the current universe, replace those parts
+     with a single ModuleCard. We collapse only on the unfiltered (no
+     module) view because picking a type/app may already narrow a
+     module to 1 visible part — collapsing that into a composite reads
+     as misleading. Skip collapsing entirely in series-focus mode: the
+     reader picked a specific series and wants every part shown. */
+  const composedItems = useMemo(() => {
+    if (active.module || active.series) return filtered;
+
+    const seenModules = new Set();
+    const result = [];
+    for (const post of filtered) {
+      const slug = post.content.metadata.frontMatter?.module;
+      const partsInUniverse = slug ? moduleCounts[slug] : 0;
+      if (slug && partsInUniverse >= 2 && knownModules.has(slug)) {
+        if (seenModules.has(slug)) continue;
+        seenModules.add(slug);
+        result.push({__module: slug});
+      } else {
+        result.push(post);
+      }
+    }
+    return result;
+  }, [filtered, moduleCounts, knownModules, active.module]);
 
   const setQueryParam = (key, value) => {
     const url = new URL(window.location.href);
@@ -213,9 +379,9 @@ function AcademyLandingInner({items}) {
 
   const handleTypeChange = (next) => {
     setQueryParam('type', next);
-    /* Clear the app filter when the type changes if the active app no
-       longer has posts in the new type. Keeps the UI honest when a
-       user moves between content types. */
+    /* Clear app and series filters when the type changes if their
+       active values no longer have posts in the new type. Keeps the UI
+       honest when a user moves between content types. */
     setActive((prev) => {
       const newItems = next
         ? items.filter((p) => p.content.metadata.frontMatter?.contentType === next)
@@ -223,7 +389,10 @@ function AcademyLandingInner({items}) {
       const stillHasApp = prev.app && newItems.some((p) => postApps(p).includes(prev.app));
       const nextApp = stillHasApp ? prev.app : null;
       if (!stillHasApp) setQueryParam('app', null);
-      return {type: next, app: nextApp};
+      const stillHasSeries = prev.series && newItems.some((p) => postSeries(p) === prev.series);
+      const nextSeries = stillHasSeries ? prev.series : null;
+      if (!stillHasSeries) setQueryParam('series', null);
+      return {...prev, type: next, app: nextApp, series: nextSeries};
     });
   };
 
@@ -232,11 +401,44 @@ function AcademyLandingInner({items}) {
     setActive((prev) => ({...prev, app: next}));
   };
 
-  const [featured, ...rest] = filtered;
+  const handleSeriesChange = (next) => {
+    setQueryParam('series', next);
+    setActive((prev) => ({...prev, series: next}));
+  };
+
+  const handleModuleChange = (next) => {
+    setQueryParam('module', next);
+    setActive((prev) => ({...prev, module: next}));
+  };
+
+  /* Featured slot picks the most-recent non-module post from the
+     composed list — but only on the fully-unfiltered "Everything" view.
+     Once any filter (type/app/series/module) is active, consuming the
+     first item into a featured tile "hides" one card from the grid and
+     makes the visible count disagree with the filter chip's count
+     (e.g. "Webinars 4" but only 3 cards). In a filtered view every
+     match belongs in the grid. */
+  const anyFilterActive = active.type || active.app || active.series || active.module;
+  const featured = !anyFilterActive && composedItems.length > 0 && !composedItems[0].__module
+    ? composedItems[0]
+    : null;
+  /* In series-focus mode, sort parts by partNumber ascending so the
+     reader sees Part 0/1 → N in natural order rather than the default
+     date-descending order. */
+  const orderedItems = active.series
+    ? [...composedItems].sort((a, b) => {
+        const ap = a.content?.metadata?.frontMatter?.partNumber ?? 0;
+        const bp = b.content?.metadata?.frontMatter?.partNumber ?? 0;
+        return ap - bp;
+      })
+    : composedItems;
+  const restItems = featured ? orderedItems.slice(1) : orderedItems;
 
   return (
     <>
-      {featured && <FeaturedCard {...postToFeaturedProps(featured)} />}
+      {featured && (
+        <FeaturedCard {...postToFeaturedProps(featured, featured.content.metadata.frontMatter?.module && moduleCounts[featured.content.metadata.frontMatter.module])} />
+      )}
 
       <div style={{height: 64}} />
 
@@ -262,6 +464,39 @@ function AcademyLandingInner({items}) {
         </>
       )}
 
+      {/* Series row only makes sense for tutorials. Show it on the
+          unfiltered ("Everything") view and on the explicit Tutorials
+          view; hide it for blog/guide/case-study/webinar/opinion. */}
+      {(active.type === null || active.type === 'tutorial') && visibleSeriesSlugs.length > 0 && (
+        <>
+          <div style={{height: 12}} />
+          <ContentTypeFilter
+            value={active.series}
+            onChange={handleSeriesChange}
+            types={visibleSeriesSlugs}
+            labels={seriesLabels}
+            counts={seriesCounts}
+            allLabel="All series"
+            allCount={itemsAfterApp.length}
+          />
+        </>
+      )}
+
+      {visibleModuleSlugs.length > 0 && (
+        <>
+          <div style={{height: 12}} />
+          <ContentTypeFilter
+            value={active.module}
+            onChange={handleModuleChange}
+            types={visibleModuleSlugs}
+            labels={moduleLabels}
+            counts={moduleCounts}
+            allLabel="All modules"
+            allCount={itemsAfterApp.length}
+          />
+        </>
+      )}
+
       <div style={{height: 32}} />
 
       {filtered.length === 0 ? (
@@ -271,13 +506,45 @@ function AcademyLandingInner({items}) {
           color: 'var(--c-cobalt-400)',
           fontSize: 16,
         }}>
-          Nothing yet for this combination. <a href="/academy/">View everything</a>
+          <Translate
+            id="theme.academy.emptyState"
+            description="Empty-state message shown when filters return no posts. {viewAll} is a link to the unfiltered academy index."
+            values={{
+              viewAll: <a href={academyHref}><Translate id="theme.academy.viewAll" description="Link text inside the empty-state message">View everything</Translate></a>,
+            }}>
+            {'Nothing yet for this combination. {viewAll}'}
+          </Translate>
         </div>
-      ) : rest.length > 0 ? (
+      ) : restItems.length > 0 ? (
         <ContentCardGrid columns={2}>
-          {rest.map((post, i) => (
-            <ContentCard key={post.content.metadata.permalink || i} {...postToCardProps(post)} />
-          ))}
+          {restItems.map((item, i) => {
+            if (item.__module) {
+              const mod = modules[item.__module];
+              if (!mod) return null;
+              return (
+                <ModuleCard
+                  key={`mod-${item.__module}`}
+                  href={mod.permalink}
+                  title={mod.title}
+                  lede={mod.lede}
+                  parts={mod.parts.length}
+                  totalMinutes={mod.totalMinutes}
+                  latestDate={mod.latestDate}
+                  curator={mod.curator}
+                  audience={mod.audience}
+                  contentTypes={mod.contentTypes}
+                />
+              );
+            }
+            const slug = item.content.metadata.frontMatter?.module;
+            const moduleSize = slug && moduleCounts[slug];
+            return (
+              <ContentCard
+                key={item.content.metadata.permalink || i}
+                {...postToCardProps(item, moduleSize)}
+              />
+            );
+          })}
         </ContentCardGrid>
       ) : null}
     </>
@@ -334,11 +601,31 @@ export default function BlogListPage(props) {
               <div style={{height: 96}} />
 
               <NewsletterCta
-                title="New posts in your inbox, monthly."
-                lede="One mail a month. New guides, case studies, and webinars. Geen spam, je kunt je altijd uitschrijven."
-                placeholder="jij@bedrijf.nl"
-                submitLabel="Subscribe"
-                fineprint="We mail vanuit info@conduction.nl. Geen lijstverkoop."
+                title={translate({
+                  id: 'theme.academy.newsletter.title',
+                  message: 'New posts in your inbox, monthly.',
+                  description: 'Newsletter section title at the bottom of the academy landing page',
+                })}
+                lede={translate({
+                  id: 'theme.academy.newsletter.lede',
+                  message: 'One mail a month. New guides, case studies, and webinars. No spam, unsubscribe any time.',
+                  description: 'Newsletter section lede paragraph',
+                })}
+                placeholder={translate({
+                  id: 'theme.academy.newsletter.placeholder',
+                  message: 'you@company.com',
+                  description: 'Placeholder text inside the newsletter email input',
+                })}
+                submitLabel={translate({
+                  id: 'theme.academy.newsletter.submit',
+                  message: 'Subscribe',
+                  description: 'Submit button label on the newsletter form',
+                })}
+                fineprint={translate({
+                  id: 'theme.academy.newsletter.fineprint',
+                  message: 'We mail from info@conduction.nl. No list reselling.',
+                  description: 'Small-print line below the newsletter form',
+                })}
               />
             </Section>
           </article>

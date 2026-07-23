@@ -1,6 +1,6 @@
 ---
 title: LarpingApp, Conduction
-description: Workflow en proces-orkestratie voor live-action role-play. Visuele designer, audit-logged, retry-veilig.
+description: Karakter-, event- en regelbeheer voor live-action roleplay (LARP)-groepen. Getypeerde registers, audit trail, PDF-karakterbladen en GM-castlijsten.
 hide_table_of_contents: true
 ---
 
@@ -13,57 +13,59 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
   version="v0.1"
   locales="NL · EN"
   title="LarpingApp"
-  tagline={<>Karakters, regels, scènes en NPC-stats voor live-action role-play (LARP). Bouw een setting in <span className="next-blue">Nextcloud</span>, deel hem met je organisatie, en speel zonder spreadsheets-met-zes-tabbladen.</>}
+  tagline={<>Karakters, regels en events voor live-action roleplay (LARP). Bouw een setting in <span className="next-blue">Nextcloud</span>, deel hem met je groep, en speel zonder spreadsheets-met-zes-tabbladen.</>}
   primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://docs.conduction.nl/larpingapp'}}
-  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/larpingapp'}}
+  secondaryCta={{label: 'Lees de docs', href: 'https://larpingapp.conduction.nl'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/larpingapp'}}
   iconColor="var(--c-blue-cobalt)"
   icon={<svg viewBox="0 0 24 24"><path d="M3 12h6l3-7 3 14 3-7h3"/></svg>}
 />
+
+LarpingApp is een open-source beheertool voor live-action roleplay (LARP) in de Nextcloud-workspace. Spelleiders ontwerpen karakters, abilities, skills, items, conditions en effects als getypeerde records, en de app herberekent elke stat automatisch zodra spelers ervaring opdoen of effecten wijzigen. De app regelt ook event-rosters, een goedkeuringsworkflow voor achtergrondverhalen, gecontroleerde XP-toekenningen na afloop, en afdrukbare PDF-karakterbladen en GM-castlijsten — één plek voor de spelleider om een campagne te draaien. Uitgegeven onder EUPL-1.2, onderhouden door Conduction sinds 2019.
 
 <Section spacing="default">
   <SectionHead
     eyebrow="Wat het doet"
     title="Een LARP-setting die meegroeit met je campagne."
     align="stack"
-    lede="Karakters, vaardigheden, items, facties, regels. Allemaal als getypeerde registers, gekoppeld aan elkaar, versievast. Spelers werken aan hun karakter in dezelfde Nextcloud waar je de scènes bewaart. Geen export-import-shuffle tussen tools, geen losse Discord-bot voor stats."
+    lede="Karakters, abilities, skills, items, conditions en effects, allemaal als getypeerde OpenRegister-records, gekoppeld aan elkaar, versievast. Spelers werken aan hun eigen karakter in dezelfde Nextcloud waar je de campagne draait."
   />
   <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>}
-      title="Karakter-sheets met type-validatie."
+      title="Karakterbladen met goedkeuringsworkflow."
     >
-      Een karakter is een record op een schema. Stats, achtergrond, vaardigheden, contacten, allemaal velden met regels. Wijzig het schema, alle karakters migreren mee.
+      Een karakter is een getypeerd record: stats, achtergrondverhaal, skills, items en een portret. Spelers dienen een achtergrondverhaal in voor spelleider-review voordat het karakter meespeelt.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5 1 6-5.5-3-5.5 3 1-6L3 9l6-1z"/></svg>}
-      title="Regels die je zelf schrijft."
+      title="Een stat-engine die je zelf inricht."
     >
-      Geen vast regelboek. Definieer skill-checks, damage-formules en XP-progressie als register-velden. Spelsysteem ruilen kost een schema-edit, geen herschrijf.
+      Abilities, skills, items, conditions en effects zijn allemaal getypeerde registers. De stat-engine herberekent elke ability deterministisch zodra skills geleerd, items uitgerust of conditions toegepast worden — met server-side gecontroleerde vereisten.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
-      title="Scènes, NPC's en facties in registers."
+      title="Settings bakenen je campagnes af."
     >
-      Een NPC heeft stats, een factie heeft leden, een scène heeft locatie, deelnemers en uitkomst. Allemaal genormaliseerd, allemaal cross-linked, allemaal queryable.
+      Groepeer karakters, events en spelmechanica onder een setting (wereld/campagne). Afgeronde campagnes archiveer je in plaats van verwijderen, zodat oude rosters leesbaar blijven.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/></svg>}
-      title="Audit log per scène."
+      title="Gecontroleerde XP-toekenningen."
     >
-      Wie was waar, wanneer, met welke uitkomst. Niet voor compliance, voor continuïteit. Volgende sessie weet je nog wat er gebeurde.
+      Spelleiders kennen ervaring toe per event, per karakter, met een reden en een tijdstempel. Elke toekenning is een vastgelegde, controleerbare grootboekregel — geen spreadsheetcel.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg>}
-      title="Spelers werken in Nextcloud."
+      title="PDF-bladen en GM-castlijsten."
     >
-      Geen losse player-portal. Karakter-sheet leeft in Files, chat in Talk, events in Calendar. Eén login voor de hele campagne.
+      Exporteer een afdrukbaar karakterblad, of een castlijst per event met de stats, conditions en goedkeuringsstatus van elke deelnemer, gerenderd via DocuDesk.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2L2 7v6c0 5 3 9 10 11 7-2 10-6 10-11V7L12 2z"/></svg>}
       title="Open source, EUPL-1.2."
     >
-      Een MKB-organisator hoeft geen jaarlijkse SaaS-licentie meer af te tikken. Self-host op een Nextcloud die je toch al hebt, of via een Conduction-partner.
+      Geen jaarlijkse SaaS-licentie voor de kleine organisator. Self-host op een Nextcloud die je toch al hebt, of via een Conduction-partner.
     </FeatureItem>
   </FeatureList>
 </Section>
@@ -79,13 +81,13 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
       href="/apps/openregister"
       icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
       name="OpenRegister"
-      why="Karakters, NPC's, regels en facties als getypeerde registers. Schema-edits migreren bestaande records mee."
+      why="Karakters, abilities, skills, items en events als getypeerde registers, elk met een volledige audit trail en versiebeheer."
     />
     <PairCard
-      href="/apps/mydash"
+      href="/apps/launchpad"
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
-      name="MyDash"
-      why="Per-speler dashboard met karakter-stats, recente scènes en aankomende events."
+      name="LaunchPad"
+      why="Per-speler dashboard met je karakter-stats, recente events en aankomende sessies."
     />
   </PairRow>
 </Section>
@@ -94,5 +96,5 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
   title="Een LARP zonder spreadsheets."
   lede={<>Installeer LarpingApp uit de <span className="next-blue">Nextcloud</span>-app-store, importeer je bestaande karakters in een schema, en speel volgende sessie zonder tab-shuffle.</>}
   primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/larpingapp'}}
+  secondaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/larpingapp'}}
 />

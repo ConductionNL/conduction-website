@@ -1,0 +1,578 @@
+---
+slug: run-nextcloud-locally
+title: Nextcloud lokaal draaien met Docker
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-07
+summary: Vijf stappen, een halfuur. Daarna draait er een schone Nextcloud op je laptop — ook als je nog nooit met Docker of een terminal hebt gewerkt.
+tags: [Nextcloud, Docker, Setup, Demo, Lokaal]
+durationMinutes: 30
+---
+
+import {useState, useEffect} from 'react';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, ContactCta, Troubleshooting, TroubleshootingItem, NextSteps, NextStep} from '@conduction/docusaurus-preset/components';
+
+export function OSTabs({children}) {
+  const [os, setOs] = useState(() => {
+    if (typeof window === 'undefined') return 'windows';
+    const stored = localStorage.getItem('docusaurus.tab.os');
+    if (stored) { try { return JSON.parse(stored); } catch (e) {} }
+    const ua = navigator.userAgent;
+    return /Mac/.test(ua) ? 'mac' : /Linux/.test(ua) ? 'linux' : 'windows';
+  });
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    const detected = /Mac/.test(ua) ? 'mac' : /Linux/.test(ua) ? 'linux' : 'windows';
+    if (!localStorage.getItem('docusaurus.tab.os')) {
+      localStorage.setItem('docusaurus.tab.os', JSON.stringify(detected));
+    }
+    setOs(detected);
+  }, []);
+  return (
+    <Tabs groupId="os" defaultValue={os}>
+      {children}
+    </Tabs>
+  );
+}
+
+Voor elke andere tutorial in deze academy heb je een werkende Nextcloud nodig. Dit is de snelste route: een paar commando's en je draait de officiële Nextcloud lokaal op je laptop, identiek aan productie. **Je hoeft geen programmeur te zijn** — als je een app kunt installeren en tekst kunt kopiëren, kom je er doorheen. Daarna installeer je de Conduction-apps via de Nextcloud app store, hetzelfde pad als productie.
+
+{/* truncate */}
+
+> **Dagelijkse developer-setup?** Deze standalone tutorial is de beginner-vriendelijke route. Voor échte Conduction-app-ontwikkeling beschrijft [Deel 5](/nl/academy/workstation-tutorial-5-nextcloud-locally) van de [Workstation Setup-leerlijn](/nl/academy/workstation-tutorial-1-what-to-install) de `nextcloud-docker-dev` + `apps-extra/`-flow — waarbij je Conduction-apps cloned (niet installeert vanuit de app store) zodat je lokale code-wijzigingen meteen in Nextcloud verschijnen.
+
+<Outcomes title="Wat je leert">
+  <Outcome>Een terminal openen en eenvoudige opdrachten uitvoeren.</Outcome>
+  <Outcome>Een werkende Nextcloud op <code>http://localhost:8080</code> opzetten met Docker.</Outcome>
+  <Outcome>Een admin-account aanmaken waar je naar believen Conduction-apps op installeert.</Outcome>
+  <Outcome>Met één commando de hele stack weer opruimen.</Outcome>
+</Outcomes>
+
+Daarna kun je verder met [Een Woo-register opzetten](/nl/academy/woo-set-up-register), [Bestanden uploaden bij een Woo-publicatie](/nl/academy/woo-upload-files), of een eigen experiment.
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Een laptop met minimaal 4 GB vrij geheugen.</PrerequisiteItem>
+  <PrerequisiteItem>Docker Desktop — een gratis programma dat je in stap 0 installeert.</PrerequisiteItem>
+  <PrerequisiteItem>Een teksteditor: Kladblok (Windows), TextEdit (Mac) of nano (Linux) is genoeg.</PrerequisiteItem>
+</Prerequisites>
+
+> **Dit is een lokale ontwikkelomgeving.** Er draait dezelfde software als een echte Nextcloud-installatie en het gedraagt zich op dezelfde manier, dus alles wat je hier leert is direct toepasbaar op een productieomgeving. Data die je hier opslaat wordt echter niet bewaard, wordt niet gedeeld met anderen en kan op elk moment worden gewist — zo verwijdert `docker compose down -v` alles permanent. Gebruik deze omgeving om te verkennen, te experimenteren en te leren. Sla geen echte, gevoelige of productiedata op in deze omgeving.
+
+Geen eerdere ervaring nodig. Op een schone laptop is stap 0 (Docker installeren en de terminal leren kennen) ongeveer tien minuten. Stap 1 t/m 5 samen daarna een halfuur.
+
+Loop je ergens vast? De sectie [Probleemoplossing](#probleemoplossing) onderaan deze pagina bevat oplossingen voor de meest voorkomende problemen.
+
+## Stap 0: Docker installeren en een terminal openen
+
+### Wat is Docker?
+
+Docker is een gratis programma waarmee je andere programma's — zoals Nextcloud — in een afgeschermde omgeving op je laptop kunt draaien. Denk aan virtuele dozen: Nextcloud, de database en de cache draaien elk in hun eigen doos en beïnvloeden niets buiten die doos. Als je klaar bent, gooi je de dozen weg en is je laptop weer schoon.
+
+### Docker installeren
+
+<OSTabs>
+<TabItem value="windows" label="Windows">
+
+Windows heeft WSL 2 nodig vóórdat Docker Desktop wordt geïnstalleerd — sla je dit over, dan verschijnt de meest voorkomende Docker-fout. Het kost maar een minuutje.
+
+1. Druk op de **Windows-toets**, typ `cmd`, **klik met de rechtermuisknop** op Opdrachtprompt en kies **Als administrator uitvoeren**. Klik op **Ja** als Windows om toestemming vraagt.
+2. Typ het onderstaande commando en druk op **Enter**. Dit installeert WSL 2 met Ubuntu automatisch:
+   ```
+   wsl --install
+   ```
+3. Als het klaar is, **herstart je computer**.
+4. Ga na de herstart naar de [Docker Desktop downloadpagina](https://www.docker.com/products/docker-desktop/) en klik op **Download for Windows**. Dit downloadt een `.exe`-installatiebestand.
+5. Open het gedownloade bestand. Als Windows vraagt "Wilt u toestaan dat deze app wijzigingen aanbrengt op uw apparaat?" klik dan op **Ja**.
+6. Volg de stappen in het installatieprogramma — klik op **OK**, **Volgende** en **Voltooien** wanneer dat gevraagd wordt.
+7. Open **Docker Desktop** via het Start-menu.
+8. Wacht tot het walvisicoontje in de taakbalk stil staat. Docker is klaar.
+
+</TabItem>
+<TabItem value="mac" label="Mac">
+
+1. Ga naar de <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener noreferrer">Docker Desktop downloadpagina</a>.
+2. Je ziet twee downloadknoppen — **Apple Silicon** (voor M1, M2, M3 en M4-chips) en **Intel** (voor oudere Macs). Weet je niet welke jij hebt? Klik op het **Apple-logo (🍎)** linksboven in je scherm en kies **Over deze Mac**. Staat er "Apple M1", "Apple M2" of vergelijkbaar, klik dan op **Apple Silicon**. Staat er "Intel Core", klik dan op **Intel**.
+3. Open het gedownloade `.dmg`-bestand. Sleep het Docker-icoontje naar de map **Programma's** (Applications) wanneer dat gevraagd wordt.
+4. Open Docker vanuit je map Programma's. macOS vraagt mogelijk of je het zeker weet — klik op **Open**.
+5. Wacht tot het walvisicoontje in de menubalk stil staat. Docker is klaar.
+
+</TabItem>
+<TabItem value="linux" label="Linux">
+
+Volg de <a href="https://docs.docker.com/engine/install/" target="_blank" rel="noopener noreferrer">installatie-instructies voor Docker Engine</a> voor jouw distributie.
+
+</TabItem>
+</OSTabs>
+
+### Een terminal openen
+
+Een **terminal** (ook wel 'opdrachtprompt' of 'console' genoemd) is een tekstvenster waarin je opdrachten typt. Je typt een commando, drukt op **Enter**, en de computer voert het uit. Je hoeft de terminal niet al te kennen — alle commando's in deze tutorial kun je gewoon kopiëren en plakken.
+
+<OSTabs>
+<TabItem value="windows" label="Windows">
+
+1. Druk op de **Windows-toets** en typ `cmd`.
+2. Klik op **Opdrachtprompt** in de resultaten, of druk op **Enter**.
+3. Er opent een zwart venster — dat is je opdrachtprompt (terminal).
+
+</TabItem>
+<TabItem value="mac" label="Mac">
+
+1. Druk op **Cmd + Spatiebalk** om Spotlight te openen.
+2. Typ `Terminal` en druk op **Enter**.
+3. Er opent een venster met een knipperende cursor — dat is je terminal.
+
+</TabItem>
+<TabItem value="linux" label="Linux">
+
+1. Druk op **Ctrl + Alt + T**, of zoek "Terminal" in je applicatiemenu.
+
+</TabItem>
+</OSTabs>
+
+### Controleer of Docker werkt
+
+Typ in de terminal (druk na elke regel op **Enter**):
+
+```bash
+docker --version
+docker compose version
+```
+
+Je ziet iets zoals `Docker version 27.0.3` en `Docker Compose version v2.x`. Zie je een foutmelding? Controleer of Docker Desktop open en actief is (walvisicoontje in de taak- of menubalk).
+
+## Stap 1: Maak een werkmap en het compose-bestand
+
+### Een map aanmaken
+
+Typ in de terminal:
+
+```bash
+mkdir conduction-demo
+cd conduction-demo
+```
+
+- `mkdir conduction-demo` maakt een nieuwe map aan met de naam `conduction-demo`.
+- `cd conduction-demo` stapt die map in ("cd" staat voor "change directory", map wisselen).
+
+### Het compose-bestand aanmaken
+
+Het compose-bestand vertelt Docker welke programma's hij moet starten en hoe ze met elkaar praten. Je maakt het één keer aan en hoeft het daarna niet meer aan te raken.
+
+Open een teksteditor via de terminal zodat de bestandsnaam en map automatisch goed staan — je hoeft niets handmatig in te vullen bij het opslaan:
+
+<OSTabs>
+<TabItem value="windows" label="Windows">
+
+Typ in de terminal:
+
+```
+notepad docker-compose.yml
+```
+
+Windows vraagt of het bestand aangemaakt mag worden — klik op **Ja**. Kladblok opent zich. Plak de inhoud hieronder, druk daarna op **Ctrl+S** om op te slaan.
+
+</TabItem>
+<TabItem value="mac" label="Mac">
+
+Typ in de terminal:
+
+```bash
+touch docker-compose.yml && open -e docker-compose.yml
+```
+
+TextEdit opent zich met het bestand al aangemaakt. Plak de inhoud hieronder, druk daarna op **Cmd+S** om op te slaan.
+
+</TabItem>
+<TabItem value="linux" label="Linux">
+
+Typ in de terminal:
+
+```bash
+nano docker-compose.yml
+```
+
+De nano-teksteditor opent zich. Plak de inhoud hieronder, druk daarna op **Ctrl+X**, dan **Y**, dan **Enter** om op te slaan.
+
+</TabItem>
+</OSTabs>
+
+Kopieer de volledige tekst hieronder en plak die in de editor. De juiste bestandsnaam (`docker-compose.yml`) en map worden automatisch gebruikt — je hoeft niets te wijzigen.
+
+```yaml title="docker-compose.yml"
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: nextcloud
+      POSTGRES_USER: nextcloud
+      POSTGRES_PASSWORD: nextcloud
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  nextcloud:
+    image: nextcloud:latest
+    restart: unless-stopped
+    depends_on: [db, redis]
+    ports:
+      - "8080:80"
+    volumes:
+      - nextcloud:/var/www/html
+      - ./apps:/var/www/html/custom_apps
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: nextcloud
+      POSTGRES_USER: nextcloud
+      POSTGRES_PASSWORD: nextcloud
+      REDIS_HOST: redis
+      NEXTCLOUD_TRUSTED_DOMAINS: "localhost nextcloud"
+
+  notify_push:
+    image: icewind1991/notify_push:latest
+    restart: unless-stopped
+    depends_on: [nextcloud, db, redis]
+    ports:
+      - "7867:7867"
+    volumes:
+      - nextcloud:/nextcloud:ro
+    environment:
+      NEXTCLOUD_URL: http://nextcloud
+      DATABASE_URL: postgres://nextcloud:nextcloud@db/nextcloud
+      REDIS_URL: redis://redis:6379
+
+volumes:
+  db:
+  nextcloud:
+```
+
+Het bestand beschrijft vier services: Nextcloud zelf, een database (Postgres), een cache (Redis) en een systeem voor live updates (notify_push). Allemaal officiële, gratis images — Docker downloadt ze automatisch in de volgende stap.
+
+Sluit de editor nu en ga terug naar de terminal die nog open staat.
+
+## Stap 2: Start de stack
+
+Zorg dat je terminal nog in de map `conduction-demo` staat (dit is zo als je stap 1 net hebt gedaan). Typ:
+
+```bash
+docker compose up -d
+```
+
+Docker downloadt nu de benodigde programma's — de eerste keer ongeveer 750 MB — en start ze daarna op. De `-d` zorgt ervoor dat alles op de achtergrond blijft draaien, zodat je de terminal vrij houdt.
+
+Wil je zien wat er achter de schermen gebeurt? Volg de voortgang met:
+
+```bash
+docker compose logs -f nextcloud
+```
+
+Je ziet regels tekst voorbijkomen terwijl Nextcloud zichzelf instelt. Wacht tot je een regel ziet met `apache2 -D FOREGROUND` of iets vergelijkbaars — dat betekent dat Nextcloud klaar is. Druk daarna op **Ctrl+C** om de log-weergave te sluiten. De containers blijven gewoon draaien.
+
+**Sluit de terminal niet** — je hebt hem in stap 5 opnieuw nodig.
+
+## Stap 3: Voltooi de Nextcloud setup-wizard
+
+Open je webbrowser (Chrome, Firefox, Edge — wat je wilt) en ga naar:
+
+```
+http://localhost:8080
+```
+
+Je ziet het setup-scherm van Nextcloud. We maken een admin-account aan met `admin` als gebruikersnaam en `admin` als wachtwoord.
+
+Nextcloud waarschuwt je dat het wachtwoord te zwak is — dat klopt, maar deze installatie draait **alleen op jouw eigen laptop** en is niet bereikbaar voor anderen, dus voor een lokale demo is dat prima. Je kunt de waarschuwing negeren.
+
+Gebruik je ooit een Nextcloud die anderen kunnen bereiken — via internet of binnen een netwerk — kies dan altijd een sterk, uniek wachtwoord. Een goede vuistregel: minimaal 12 tekens, met hoofdletters, cijfers en een speciaal teken.
+
+> **Let op:** onder het wachtwoordveld zie je een ingeklapt onderdeel **Storage & database**. Je hoeft dit niet open te klikken — de databaseconfiguratie is al geregeld via het `docker-compose.yml`-bestand.
+
+1. Vul `admin` in als **gebruikersnaam** en `admin` als **wachtwoord**. **Druk nog niet op Enter terwijl je de velden invult** — wacht tot beide velden zijn ingevuld voordat je verdergaat.
+2. Klik op **Install** of druk op Enter nadat je het wachtwoord hebt ingevuld. Het scherm verdwijnt direct en Nextcloud begint met installeren.
+3. Wacht een halve minuut terwijl Nextcloud zichzelf instelt.
+4. Nextcloud vraagt mogelijk of je aanbevolen apps wilt installeren. Klik op **Sla over** — we installeren straks alleen de Conduction-apps die je nodig hebt.
+
+Je komt op het Nextcloud-dashboard terecht. Je bent ingelogd als beheerder.
+
+## Stap 4: Installeer de Conduction-apps
+
+Open eerst de Nextcloud app store:
+
+1. Klik op je **avatar** — de cirkel met je initialen rechtsboven in het scherm.
+2. Kies **Apps** in het uitklapmenu.
+3. Klik in de linker zijbalk op **Aanbevolen apps** — als je dit overslaat, geeft de zoekfunctie mogelijk geen resultaten omdat Nextcloud alleen zoekt binnen de actieve categorie.
+
+Installeer de Conduction-apps nu één voor één. Begin met **Open Register** — OpenCatalogi en Open Connector zijn daar allebei van afhankelijk.
+
+> **Let op:** als je op **Download en activeren** klikt, kan Nextcloud vragen om je wachtwoord te bevestigen voordat de installatie wordt toegestaan. Vul `admin` in en bevestig.
+
+---
+
+**Open Register**
+
+De basis voor alle andere Conduction-apps. Installeer deze als eerste — OpenCatalogi en Open Connector lezen er allebei van af.
+
+1. Klik op het **zoekveld** bovenaan de Apps-pagina (het vergrootglas-icoon) zodat de cursor erin verschijnt.
+2. Typ `Open Register` — de resultaten worden automatisch bijgewerkt terwijl je typt.
+3. Klik op **Download en activeren** bij de Open Register-kaart.
+4. Wacht tot de installatie klaar is voordat je verdergaat.
+
+---
+
+**OpenCatalogi**
+
+Maakt elk register doorzoekbaar als publieke catalogus en federeert naar `data.overheid.nl`.
+
+1. Wis het zoekveld, typ `OpenCatalogi` en druk op **Enter**.
+2. Klik op **Download en activeren** bij de OpenCatalogi-kaart.
+
+---
+
+**Open Connector**
+
+Haalt voorbeelddata op via REST, SOAP en bestandsuploads.
+
+1. Wis het zoekveld, typ `Open Connector` en druk op **Enter**.
+2. Klik op **Download en activeren** bij de Open Connector-kaart.
+
+---
+
+Na elke Conduction-app installatie start de setup automatisch en is voorbeelddata binnen seconden zichtbaar.
+
+### Ook installeren: Client Push
+
+**Client Push** is een standaard Nextcloud-app — geen Conduction-app — die live browser-updates verzorgt zodat de pagina automatisch ververst als data verandert. Je hebt hem nodig voor stap 5.
+
+1. Wis het zoekveld, typ `Client Push` en druk op **Enter**.
+2. Klik op **Download en activeren** bij de Client Push-kaart.
+
+## Stap 5: Koppel Client Push aan de push-server
+
+Dit is de enige stap die iets meer terminal-werk vraagt. Ga terug naar de terminal die je open hebt gehouden en zorg dat je nog in de map `conduction-demo` staat.
+
+Kopieer de onderstaande commando's één voor één, plak ze in de terminal en druk na elk commando op **Enter**. Hoe je plakt hangt af van je systeem:
+
+<OSTabs>
+<TabItem value="windows" label="Windows">
+
+Klik met de **rechtermuisknop** in het terminalvenster om te plakken. **Ctrl+V** werkt soms ook op Windows 10 en 11, maar rechtermuisknop is betrouwbaarder.
+
+</TabItem>
+<TabItem value="mac" label="Mac">
+
+Druk op **Cmd+V** om te plakken.
+
+</TabItem>
+<TabItem value="linux" label="Linux">
+
+Druk op **Ctrl+Shift+V** om te plakken, of klik met de rechtermuisknop en kies **Plakken**.
+
+</TabItem>
+</OSTabs>
+
+Voer elk commando hieronder één voor één uit — kopieer het, plak het in de terminal en druk op **Enter**. Wacht tot de terminal een nieuwe regel toont voordat je het volgende commando plakt.
+
+**Commando 1 van 5** — vertel Nextcloud welke server de gedeelde cache beheert:
+```bash
+docker compose exec --user www-data nextcloud php occ config:system:set redis host --value redis
+```
+
+**Commando 2 van 5** — stel de poort van de cacheserver in:
+```bash
+docker compose exec --user www-data nextcloud php occ config:system:set redis port --value 6379 --type integer
+```
+
+**Commando 3 van 5** — vertel Nextcloud de cache te gebruiken voor gedeelde data:
+```bash
+docker compose exec --user www-data nextcloud php occ config:system:set memcache.distributed --value '\OC\Memcache\Redis'
+```
+
+**Commando 4 van 5** — markeer het interne Docker-netwerk als vertrouwd zodat Client Push met Nextcloud kan communiceren:
+```bash
+docker compose exec --user www-data nextcloud php occ config:system:set trusted_proxies 0 --value 172.16.0.0/12
+```
+
+**Commando 5 van 5** — registreer het adres van de Client Push-server bij Nextcloud:
+```bash
+docker compose exec --user www-data nextcloud php occ notify_push:setup http://notify_push:7867
+```
+
+Controleer daarna of alles goed verbonden is:
+
+```bash
+docker compose exec --user www-data nextcloud php occ notify_push:self-test
+```
+
+Je ziet een lijst met groene vinkjes (✓). Eén waarschuwing over `unencrypted http` is normaal voor lokaal gebruik — die kun je negeren. Staat er ergens anders een rood ✗, kijk dan in de probleemoplossingssectie onderaan deze pagina.
+
+## Wat je hebt opgebouwd
+
+Een kort overzicht van wat er nu op je laptop draait:
+
+| | |
+| --- | --- |
+| **Browseradres** | `http://localhost:8080` |
+| **Eerste opstart** | Ongeveer 3 minuten (download ~750 MB eenmalig) |
+| **Later opnieuw opstarten** | Een paar seconden |
+| **Nextcloud-versie** | Officiële laatste versie, identiek aan productie |
+| **Geheugengebruik** | Ongeveer 1 GB |
+| **Alles wissen en opnieuw beginnen** | Voer `docker compose down -v` uit — ⚠️ verwijdert alle data |
+
+Dit is een echte, volledig werkende Nextcloud — geen opname of gedeelde demo die offline kan gaan.
+
+## Stoppen en opnieuw starten
+
+Als je klaar bent voor vandaag, hoef je niet alles aan te laten staan.
+
+**Even pauzeren** — stopt de containers maar behoudt al je data:
+```bash
+docker compose stop
+```
+
+**Opnieuw starten na een pauze:**
+```bash
+docker compose start
+```
+
+**Alles verwijderen en opnieuw beginnen:**
+```bash
+docker compose down -v
+```
+
+> ⚠️ **Dit verwijdert alles.** Al je Nextcloud-data, elke geïnstalleerde app, elke instelling en elk bestand dat je hebt geüpload verdwijnt permanent. Er is geen hersteloptie. Voer dit alleen uit als je zeker weet dat je helemaal opnieuw wilt beginnen.
+
+Na `docker compose down -v` is je laptop weer in de oorspronkelijke staat. Wil je opnieuw beginnen, voer dan `docker compose up -d` uit vanuit de map `conduction-demo` en doorloop de volledige setup opnieuw vanaf stap 3.
+
+## Probleemoplossing
+
+<Troubleshooting lede="Werkt er iets niet? Zoek de bijpassende situatie hieronder.">
+
+<TroubleshootingItem symptom="De terminal herkent `docker` niet">
+
+Docker Desktop is waarschijnlijk niet actief. Open Docker Desktop en wacht tot het walvisicoontje stil staat, probeer het daarna opnieuw. Op Windows: sluit de opdrachtprompt en open een nieuwe nadat Docker Desktop is opgestart.
+
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom="Docker Desktop start niet op Windows en geeft een foutmelding over virtualisatie of WSL 2">
+
+Virtualisatie is waarschijnlijk uitgeschakeld in de BIOS van je pc. De BIOS is een instellingenscherm dat onder Windows zit en je hardware beheert — het ziet er anders uit dan alles wat je normaal gesproken ziet. Op de meeste moderne laptops (2018+) staat virtualisatie standaard al aan, dus deze fout komt weinig voor.
+
+> **Niet comfortable met BIOS-wijzigingen?** Dat is heel begrijpelijk — vraag iemand met IT-kennis om je te helpen met de onderstaande stappen.
+
+**Stap 1 — toegang tot de BIOS.** De makkelijkste manier op Windows 10 en 11:
+1. Klik op **Start** → **Instellingen** (het tandwiel-icoon) → **Systeem** → **Herstel**.
+2. Klik onder **Geavanceerde opstart** op **Nu opnieuw opstarten**.
+3. Klik na het herstarten op **Problemen oplossen** → **Geavanceerde opties** → **UEFI-firmware-instellingen** → **Opnieuw opstarten**.
+4. Je pc herstart direct in het BIOS-scherm.
+
+Als die optie niet beschikbaar is, herstart je computer en druk meteen op de toets die bij jouw laptopfabrikant hoort — je hebt maar een paar seconden voordat Windows begint te laden:
+
+| Fabrikant | Toets |
+| --- | --- |
+| Dell | F2 |
+| HP | F10 of Esc |
+| Lenovo | F1 of F2 |
+| ASUS | Del of F2 |
+| Acer | Del of F2 |
+| Microsoft Surface | Houd **Volume omhoog** ingedrukt terwijl je op de aan/uitknop drukt |
+
+Weet je het niet? Kijk goed naar het scherm direct na het opstarten — er staat meestal een melding als "Press F2 to enter Setup".
+
+**Stap 2 — de virtualisatie-instelling zoeken.** Eenmaal in de BIOS:
+1. Gebruik de **pijltjestoetsen** op je toetsenbord om te navigeren — je muis werkt hier meestal niet.
+2. Zoek naar een tabblad of sectie genaamd **Advanced**, **Configuration** of **CPU Configuration**.
+3. Zoek een instelling met de naam **Intel Virtualization Technology**, **Intel VT-x**, **AMD-V**, **SVM Mode** of **Virtualization Technology**.
+4. Verander die van **Disabled** naar **Enabled**.
+
+**Stap 3 — opslaan en afsluiten.** Druk op **F10** om op te slaan en te sluiten, of zoek een tabblad **Save & Exit** en druk op **Enter** bij **Save Changes and Exit**. Bevestig met **Yes** als daarom gevraagd wordt.
+
+> **Belangrijk:** wijzig alleen de virtualisatie-instelling. Raak niets anders aan.
+
+Je computer herstart. Open Docker Desktop en het zou nu normaal moeten starten.
+
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom='Docker Desktop toont "WSL 2 installation is incomplete"'>
+
+Open de opdrachtprompt als administrator en voer `wsl --update` uit, herstart daarna Docker Desktop.
+
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom="`http://localhost:8080` opent niet in de browser">
+
+De poort is waarschijnlijk al in gebruik door een ander programma. Open `docker-compose.yml` in je teksteditor, verander `"8080:80"` naar `"8081:80"`, sla op en probeer `http://localhost:8081`.
+
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom="Het Nextcloud-setup-scherm verschijnt opnieuw terwijl je al klaar was">
+
+De database is gewist, waarschijnlijk na een `docker compose down -v`. Voer `docker compose up -d` uit om opnieuw te beginnen — je doorloopt de setup-wizard opnieuw.
+
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom='Nextcloud toont een "Trusted domain"-foutmelding na het openen van de browser'>
+
+Het adres dat je gebruikt staat niet op de toegestane lijst van Nextcloud. Open `docker-compose.yml`, zoek `NEXTCLOUD_TRUSTED_DOMAINS`, voeg je adres toe aan de waarde (spatie-gescheiden), sla op en voer `docker compose up -d` uit.
+
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom='Op "Download en activeren" klikken in de app store doet niets of geeft een fout'>
+
+Nextcloud kan waarschijnlijk het internet niet bereiken. Dit gebeurt soms op bedrijfsnetwerken. Probeer een mobiele hotspot om te bevestigen, en vraag daarna je IT-afdeling naar proxyinstellingen.
+
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom="Client Push self-test faalt met `push server can't connect to the Nextcloud server` of `nextcloud is not configured as a trusted domain`">
+
+De interne hostnaam `nextcloud` ontbreekt in de vertrouwde lijst van Nextcloud. Voer dit commando uit om het te herstellen:
+
+```bash
+docker compose exec --user www-data nextcloud php occ config:system:set trusted_domains 1 --value nextcloud
+```
+
+Voer daarna commando 5 uit stap 5 opnieuw uit. Begin je opnieuw, dan is dit al opgelost in de `docker-compose.yml` hierboven.
+
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom="Client Push self-test faalt met `is not trusted as a reverse proxy`">
+
+Het interne Docker-netwerk op jouw computer heeft een ander adresbereik dan de standaard. Dit komt zelden voor — neem contact met ons op als het bij jou gebeurt.
+
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom="Client Push blijft herstarten na `docker compose up -d`">
+
+Voer `docker compose logs notify_push` uit en zoek naar `× No redis server is configured`. Als je dat ziet, voer dan commando 1, 2 en 3 uit stap 5 opnieuw uit en herstart daarna met:
+
+```bash
+docker compose up -d notify_push
+```
+
+</TroubleshootingItem>
+
+</Troubleshooting>
+
+<NextSteps title="Volgende stap" lede="Een werkende Nextcloud is de basis voor de andere tutorials in deze serie.">
+  <NextStep href="/academy/woo-set-up-register" title="Een Woo-register opzetten" cta="Start tutorial">
+    Importeer het canonieke Woo-register in OpenRegister.
+  </NextStep>
+  <NextStep href="/academy/woo-upload-files" title="Bestanden uploaden bij een Woo-publicatie" cta="Start tutorial">
+    Vier upload-modes voor documenten.
+  </NextStep>
+  <NextStep href="/academy/build-an-app" title="Build je eerste Conduction-app" cta="Start tutorial">
+    Eindigt met een geïnstalleerde app op deze stack.
+  </NextStep>
+</NextSteps>
+
+Stuur het `docker-compose.yml` naar een collega als je dit samen wilt zien werken.
+
+<ContactCta
+  title="Wil je meer weten?"
+  body="Mail ons. We helpen je in een halve dag op weg met je eigen Conduction-stack op Nextcloud, van eerste demo tot productie."
+  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=Nextcloud%20setup" }}
+/>

@@ -1,0 +1,325 @@
+---
+slug: claude-skills-tutorial-1-what-are-claude-skills
+title: "Claude Skills tutorial series — Part 1: What are Claude Skills?"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-15
+summary: What a Claude Skill is, when you should write one (and when a prompt or command is the better tool), what fields belong in the frontmatter, and how Claude decides when to trigger it. First of four short modules.
+tags: [Claude, Claude Code, Skills, AI, Tutorial series]
+apps: []
+durationMinutes: 12
+series: claude-skills-tutorial
+partNumber: 1
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+Claude Skills are the mechanism for extending Claude Code with reusable, specialised behaviours. Think of Conduction's own `/review-pr`, `/opsx-new`, or the whole `hydra-gate-*` family: each one is a skill. This first part explains in ten minutes *what* a skill is, how it gets activated, and when you should not write one. It's part 1 of a four-part track; by the end you'll be ready to write your own in part 2 — and in part 3 we introduce the **7-level maturity framework** that takes a skill from "feels good" to "measured good" (part 4 continues with L6 and L7).
+
+{/* truncate */}
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>What a Claude Skill is — a folder with a <code>SKILL.md</code> that Claude loads on demand.</Outcome>
+  <Outcome>The two ways a skill can be activated: manually via <code>/</code> and automatically by Claude itself.</Outcome>
+  <Outcome>Which fields live in the frontmatter, and why the <code>description</code> is by far the most important one.</Outcome>
+  <Outcome>When a skill is the right choice — and when a plain prompt, a command, or an agent is a better fit.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>A working installation of <a href="https://docs.claude.com/en/docs/claude-code/overview">Claude Code</a> on your laptop. If not, do the <a href="/academy/workstation-tutorial-1-what-to-install">Workstation Setup tutorial series</a> first.</PrerequisiteItem>
+  <PrerequisiteItem>Basic Git and GitHub knowledge — a skill is, after all, just a file you commit.</PrerequisiteItem>
+  <PrerequisiteItem>A few hours of hands-on Claude Code experience. You don't need to be a power user, but you should know what <code>/help</code> does and how to send a prompt to Claude.</PrerequisiteItem>
+</Prerequisites>
+
+## In one sentence
+
+A **Claude Skill** is a folder under `.claude/skills/<name>/` containing a `SKILL.md` (and optionally scripts, examples, reference files). The frontmatter of that `SKILL.md` tells Claude when the skill is relevant; the body is the instruction Claude follows once the skill is loaded.
+
+In practical terms: a skill is a **unit of bundled behaviour**. Instead of pasting a thousand lines of prompt text into `CLAUDE.md`, or retyping the same instructions every time, you write it once as a skill. Reusable, testable, and shareable with your team.
+
+```
+.claude/skills/
+└── review-pr/
+    ├── SKILL.md          ← required: the skill logic
+    ├── templates/        ← optional: files with placeholders
+    ├── references/       ← optional: standards and background
+    ├── examples/         ← optional: examples of desired output
+    └── scripts/          ← optional: shell or Python scripts
+```
+
+## How a skill gets invoked
+
+A single skill can be triggered in **two ways**:
+
+1. **Manually** — you type `/review-pr` in a Claude session. Direct, predictable, and the skill runs exactly when you want it to.
+2. **Automatically** — Claude reads the `description` of every available skill and picks one itself when the current situation matches. Ask "can you review this PR?" and Claude triggers `review-pr` on its own if it's available.
+
+Which mode is allowed is controlled in the skill's own frontmatter:
+
+- `disable-model-invocation: true` — only you can invoke it via `/<name>`. Use this for skills with side effects (`/opsx-apply` modifies code, `/create-pr` opens a PR). Claude shouldn't fire these on its own.
+- `user-invocable: false` — only Claude itself may load it. Use this for background knowledge that doesn't make sense as an action (e.g. a `legacy-system-context` that only informs).
+- Neither set → both are allowed. The default for most skills.
+
+In a Hydra pipeline skills mostly run **automatically**: containers have no keyboard and rely on auto-activation. Behind your own keyboard you'll more often type `/` explicitly for control.
+
+## The frontmatter, field by field
+
+A minimal `SKILL.md` looks like this:
+
+```markdown
+---
+name: review-pr
+description: Review a Pull Request — runs local checks, summarises the diff, and posts inline comments
+metadata:
+  category: Workflow
+  tags: [github, review]
+---
+
+# Review PR
+
+Short explanation of what the skill does.
+
+**Input**: how you invoke the skill and which arguments it accepts.
+
+**Steps**
+
+1. **Step name**
+   Instructions...
+
+2. **Step name**
+   Instructions...
+
+**Guardrails**
+- What the skill must never do
+- What it must check before destructive actions
+```
+
+Three fields deserve extra attention:
+
+| Field | Function |
+|---|---|
+| `name` | Must be **exactly equal** to the folder name. Folder `review-pr` → `name: review-pr`. If they differ, you can't trigger the skill via `/<name>`. |
+| `description` | The most important field of the entire skill. Claude decides relevance based on this. Action-oriented, third person, with concrete trigger words. |
+| `metadata.tags` / `metadata.category` | Free-form, useful for filtering and grouping — no impact on triggering. |
+
+### Why the description matters more than you think
+
+Claude loads skills in three layers:
+
+| Layer | What | Loaded when |
+|---|---|---|
+| **Metadata** | `name` + `description` | **Always** — sits in the system prompt by default |
+| **SKILL.md body** | Steps, guardrails, instructions | Only when the skill triggers |
+| **Reference files** | `references/`, `templates/`, `examples/` | On demand during execution |
+
+That means: only your `description` is always "on". If it's vague, your skill never fires automatically. Write it in third person, start with a verb, and front-load the most specific trigger words (only the first ~250 characters are visible in skill listings).
+
+```
+# Bad — vague, passive, no trigger words
+description: A skill that helps with various document-related tasks
+
+# Good — specific, third person, action verb up front
+description: Create a Pull Request from the current branch — runs local checks, picks target branch, and opens the PR on GitHub
+```
+
+### Deeper frontmatter fields
+
+Besides `name`, `description` and `metadata` there are a few optional fields that subtly steer a skill's behaviour. You won't always need them, but knowing they exist helps later:
+
+| Field | Function | When to use |
+|---|---|---|
+| `allowed-tools` | Restricts which tools the skill may call | Read-only audit skills that must never write |
+| `context: fork` | Runs the skill in an isolated sub-context | Heavy skills that shouldn't pollute your main conversation |
+| `paths` | Auto-trigger only for work in these paths | Skills only relevant in e.g. `openspec/**` |
+| `disable-model-invocation` | Turns auto-trigger off entirely | Side-effect skills that must be strictly slash-only |
+| `user-invocable: false` | Disables manual `/` invocation | Pure background knowledge for Claude itself |
+
+Start with the three required/basic fields. Add the above only when you have a concrete reason — otherwise you'll make your skill quieter or stricter than necessary.
+
+### Naming convention: `namespace-action`
+
+Skills are conventionally named `<namespace>-<action>` using only lowercase letters, digits and hyphens. Conduction uses, among others:
+
+| Namespace | Covers |
+|---|---|
+| `opsx-` | OpenSpec workflow (`opsx-new`, `opsx-apply`, `opsx-archive`) |
+| `app-` | Nextcloud app lifecycle (`app-design`, `app-create`) |
+| `test-` | Testing (`test-counsel`, `test-persona-henk`) |
+| `team-` | Scrum team roles (`team-backend`, `team-qa`) |
+| `hydra-gate-` | Quality and security gates inside Hydra |
+
+The folder name, the `name` field, and the way you type it (`/<name>`) all need to be exactly identical.
+
+## Skill vs. prompt vs. agent
+
+A common question: when is a skill the right choice, and when is something else? Three categories, briefly:
+
+<HexCard title="Plain prompt">
+  One-off, or something you can write faster than you can look it up. No repeatable pattern. Example: <em>"refactor this function to early-return style"</em>.
+</HexCard>
+
+<HexCard title="Skill">
+  Repeatable behaviour, mechanically describable, with side effects or a fixed sequence of steps. Examples: <code>/review-pr</code>, <code>/opsx-new</code>, <code>/create-pr</code>.
+</HexCard>
+
+<HexCard title="Subagent">
+  A separate execution context with its own tools and its own token budget. Use one when you want to isolate work (heavy exploration, parallel reviews). A skill can invoke a subagent, but isn't the same thing.
+</HexCard>
+
+The pragmatic test: write a skill when…
+
+1. **The behaviour is repeatable** — needed more than once, in more than one place.
+2. **It's mechanically describable** — you can instruct it in 1-3 paragraphs without devolving into "it depends on the context".
+3. **A teammate would want to do the same** — otherwise it's a personal macro, not a team skill.
+
+For one-off work: just prompt. For repeatable work: skill. For heavy isolation of a sub-workflow: subagent.
+
+## Where skills "live"
+
+Skills can sit at three levels:
+
+| Level | Path | Who sees them |
+|---|---|---|
+| **Global** | `~/.claude/skills/<name>/` | You, in every Claude session on this laptop |
+| **Per project** | `<repo>/.claude/skills/<name>/` | Everyone working in this repo — committed to Git |
+| **Vendored** | `<repo>/vendor/skills/<name>/` | Same, but sourced from a third party (e.g. Anthropic or Trail of Bits) |
+
+In Conduction repos the vast majority live as **project skills** in `<repo>/.claude/skills/`. That ensures the whole team — and Hydra's Docker personas — have exactly the same skills.
+
+## Test yourself
+
+Four short questions to check you understood this part. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. When do you pick a skill, and when a plain prompt or a subagent?**
+
+<Details summary="Hint">
+
+Think about repeatability, mechanical describability, and isolation. Which combinations push you which way?
+
+</Details>
+
+<Details summary="Answer">
+
+- **Plain prompt** — one-off, or something you can write faster than you can look it up. No repeatable pattern. For example: *"refactor this function to early-return style"*.
+- **Skill** — repeatable behaviour, mechanically describable, with side effects or a fixed step sequence. Examples: `/review-pr`, `/opsx-new`, `/create-pr`. Your teammate would also want this to happen consistently.
+- **Subagent** — a separate execution context with its own tools and token budget. For isolation: heavy exploration, parallel reviews. A skill can call a subagent, but isn't one.
+
+Rule of thumb: one-off work → prompt. Repeatable work → skill. Heavy isolation of a sub-workflow → subagent.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Which fields are required in a skill's frontmatter, and what do they do?**
+
+<Details summary="Hint">
+
+Two fields are truly required. One determines the folder name, the other determines whether Claude ever picks the skill up.
+
+</Details>
+
+<Details summary="Answer">
+
+Required:
+
+- **`name`** — must equal the folder name exactly (folder `review-pr` → `name: review-pr`). If it differs, you can't trigger the skill via `/<name>`.
+- **`description`** — what Claude reads to decide whether the skill is relevant. Action-oriented, third person, concrete trigger words up front.
+
+Optional, but commonly used:
+
+- **`metadata.category`** / **`metadata.tags`** — for filtering/grouping.
+- **`disable-model-invocation: true`** — only manually invocable.
+- **`user-invocable: false`** — only auto-loadable by Claude.
+- **`allowed-tools`** — restricts which tools the skill may use.
+
+By far the most important field is the `description`: only that one is permanently loaded in the system prompt. The rest of the `SKILL.md` is only read once the skill triggers.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. How does Claude know when to trigger a skill — what goes in the `description`?**
+
+<Details summary="Hint">
+
+Claude reads a short piece of text and has to decide based on it. What would you want to read to make that decision fast and confident?
+
+</Details>
+
+<Details summary="Answer">
+
+Claude matches the current conversation against the `description` of every available skill. A good description:
+
+1. **Starts with an action verb** (`Create`, `Review`, `Archive`, `Test`, …) — no passive constructions.
+2. **Front-loads the essence in the first ~250 characters** — skill listings cut off after that.
+3. **Contains concrete trigger words** — nouns and verbs a user would actually type. ("Pull Request", "review", "GitHub branch" for `review-pr`).
+4. **Is written in third person** — it gets injected verbatim into the system prompt.
+
+Avoid vague phrasing ("helps with various things"), first person ("I'll help you…"), and marketing language ("a handy tool for…"). Concrete and specific always wins.
+
+Practical reality: multiple sources report ~50% auto-activation even for good skills, because Claude has a fixed context budget for skill descriptions. With large skill libraries, typing `/skill-name` explicitly is always more reliable than relying on auto-trigger.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. When is a plain prompt the better choice than a skill?**
+
+<Details summary="Hint">
+
+Ask yourself: am I going to do this again? And would a colleague want this too?
+
+</Details>
+
+<Details summary="Answer">
+
+Write a plain prompt when…
+
+- The work is **one-off**: a specific refactor, a research question, an ad-hoc analysis.
+- It's **personal**: only you will ever need it, nobody else on the team — then it stays a personal macro/snippet, not a team skill.
+- It's **hard to describe mechanically**: "it heavily depends on the context", lots of exceptions, lots of judgement. Skills are for repeatable patterns, not situation-specific decisions.
+- You haven't **done the same thing three times yet**. Only write a skill once you really see the pattern — otherwise you're building an abstraction on a single example.
+
+Rule of thumb ("rule of three"): once is coincidence, twice is still coincidence, three times is a pattern that deserves a skill.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="Now that you know what a skill is, in part 2 we'll write one ourselves — starting from /skill-creator.">
+  <NextStep
+    title="Part 2 — Writing your first skill"
+    href="/academy/claude-skills-tutorial-2-your-first-skill"
+    description="From folder to working skill: scaffolding with /skill-creator, writing a good description, testing locally, and adding it to the skill registry."
+  />
+  <NextStep
+    title="Hydra track — Part 4: Skills in practice"
+    href="/academy/hydra-tutorial-4-skills"
+    description="Want a feel up front for where skills land in a real agentic loop? Hydra's part 4 shows the skill families that keep the factory running (opsx-*, hydra-gate-*, team-*, test-*)."
+  />
+  <NextStep
+    title="Anthropic — Skill authoring best practices"
+    href="https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices"
+    description="The official Anthropic docs on skill structure, descriptions and progressive disclosure. Good background reading."
+  />
+  <NextStep
+    title="Agent Skills Open Standard"
+    href="https://agentskills.io/specification"
+    description="The open standard for the SKILL.md format, adopted by 20+ tools (OpenAI Codex, Gemini CLI, Cursor, GitHub Copilot)."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Questions about Claude Skills?"
+  body="Drop us an email or ask your question via GitHub Discussions on the .github repo. We're happy to help you get going."
+  cta={{ label: "Email Conduction", href: "mailto:info@conduction.nl?subject=Claude%20Skills%20track%20part%201" }}
+/>

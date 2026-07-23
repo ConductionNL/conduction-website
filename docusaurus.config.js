@@ -17,14 +17,45 @@
 
 const {createConfig} = require('@conduction/docusaurus-preset');
 
+/* AI-crawler baseline (Organization + WebSite JSON-LD, og:image,
+   twitter meta, FAQPage schema from <FAQ>, SoftwareApplication schema
+   from <DetailHero>) comes from @conduction/docusaurus-preset >= 3.4.0
+   automatically. We override only the bits that are specific to this
+   site (robots.txt + llms.txt in static/, the sitemap config below
+   because we pass our own classic-preset overrides). */
 module.exports = createConfig({
   title: 'Conduction',
   tagline: 'Open-source apps voor de Nextcloud-werkplek.',
-  url: 'https://conduction.nl',
+  /* Must match static/CNAME (www.conduction.nl) — GitHub Pages serves
+     only on the CNAME host and 301-redirects the apex to it. Using the
+     bare apex here made every canonical/og:url/sitemap entry point at
+     conduction.nl, adding an apex→www hop on top of whatever the
+     Cloudflare vanity worker already does — a redirect-loop amplifier
+     on connext./commonground. (trailingSlash is true, set by the
+     preset, so the worker must target https://www.conduction.nl/connext/
+     — with the www and the trailing slash — not /connext.) */
+  url: 'https://www.conduction.nl',
   baseUrl: '/',
 
   organizationName: 'ConductionNL',
   projectName: 'conduction-website',
+
+  /* Public lead-intake endpoint. The support + partner forms POST here to
+     create a `lead` object in the Pipelinq CRM (OpenRegister, public-create
+     schema, anonymous rate-limited). Set PIPELINQ_LEAD_ENDPOINT at build time
+     to point at a real instance.
+
+     The fallback below is a DEV-ONLY convenience so the forms work out of the
+     box against a local docker environment. It is NOT a production value:
+     `localhost` is the visitor's own machine, and an http endpoint on an https
+     page is blocked as mixed content. LeadForm detects that at runtime and
+     degrades to an email fallback rather than accepting a submit it cannot
+     deliver — so shipping without PIPELINQ_LEAD_ENDPOINT is safe, just inert. */
+  customFields: {
+    pipelinqLeadEndpoint:
+      process.env.PIPELINQ_LEAD_ENDPOINT
+      || 'http://localhost:8080/index.php/apps/openregister/api/objects/pipelinq/lead',
+  },
 
   /* Two locales, English default. URL shape:
        /                 → English (canonical)
@@ -70,9 +101,44 @@ module.exports = createConfig({
         theme: {
           customCss: [require.resolve('./src/css/site.css')],
         },
+        /* Built-in @docusaurus/plugin-sitemap (loaded via the classic
+           preset). Each locale outputs its own sitemap.xml (en at /,
+           nl at /nl/) — both are advertised in static/robots.txt so AI
+           crawlers without locale-suffix discovery still see Dutch
+           pages. /academy/tags/* is excluded because tag pages are
+           thin and confuse AI summarisers more than they help SEO.
+           ignorePatterns matches route paths *after* the locale prefix
+           is applied, so we list both forms. */
+        sitemap: {
+          changefreq: 'weekly',
+          priority: 0.5,
+          ignorePatterns: ['/academy/tags/**', '/nl/academy/tags/**'],
+          filename: 'sitemap.xml',
+        },
       },
     ],
   ],
+
+  /* Keep the canal-footer's Privacy / Terms / ISO links on relative
+     routes. The preset's default ships absolute https://www.conduction.nl/*
+     URLs so per-app subdomain footers don't 404, but this IS the
+     marketing site that hosts those pages, so a relative link is the
+     cleaner UX (no needless cross-host hop). */
+  legalLinks: {
+    privacy: '/privacy',
+    terms: '/terms',
+    iso: '/quality',
+  },
+
+  /* Search Console / Bing Webmaster / etc. verification tokens are
+     filled by ops once the property has been claimed; the preset
+     emits a meta tag for each token present. Leave keys absent until
+     a real token is available, otherwise a stale placeholder ends up
+     in the production HTML. */
+  // searchConsoleVerification: {
+  //   google: '...',
+  //   bing:   '...',
+  // },
 
   /* Brand top-navbar pattern: five left-side section links + locale
      dropdown + Partners ghost + Install primary CTA on the right.
@@ -103,14 +169,13 @@ module.exports = createConfig({
           {label: 'OpenRegister',  href: 'https://openregister.conduction.nl/'},
           {label: 'OpenConnector', href: 'https://openconnector.conduction.nl/'},
           {label: 'DocuDesk',      href: 'https://docudesk.conduction.nl/'},
-          {label: 'MyDash',        href: 'https://mydash.conduction.nl/'},
+          {label: 'LaunchPad',        href: 'https://launchpad.conduction.nl/'},
         ],
       },
       {
         title: 'Solutions',
         items: [
-          {label: 'WOO compliance',  to: '/solutions/woo'},
-          {label: 'Software catalog',to: '/solutions/software-catalog'},
+          {label: 'OpenWoo',         to: '/solutions/openwoo'},
           {label: 'Support',         to: '/support'},
           {label: 'ConNext',         to: '/connext'},
           {label: 'Common Ground',   to: '/commonground'},
@@ -133,8 +198,8 @@ module.exports = createConfig({
           {label: 'About',          to: '/about'},
           {label: 'Open source',    to: '/about#opensource'},
           {label: 'Team',           to: '/about#team'},
-          {label: 'Case studies',   to: '/academy?type=case-study'},
-          {label: 'ISO',            to: '/iso'},
+          {label: 'Way of Work',    href: 'https://docs.conduction.nl/WayOfWork/way-of-work/'},
+          {label: 'Quality',        to: '/quality'},
           {label: 'Identity',       href: 'https://identity.conduction.nl/'},
         ],
       },
@@ -144,6 +209,14 @@ module.exports = createConfig({
 
   /* OpenCatalogi content plugin slot, wired in via env once it exists. */
   plugins: [
+    /* academy-modules: scans academy/*\/index.mdx frontmatter and emits
+       module → ordered parts global data. Consumed by BlogListPage
+       (composite ModuleCards + module pill row) and per-module MDX
+       index pages at /academy/modules/{slug}. */
+    [
+      require.resolve('./plugins/academy-modules'),
+      {contentDir: 'academy', routeBasePath: '/academy'},
+    ],
     // [
     //   '@conduction/docusaurus-plugin-opencatalogi',
     //   {
@@ -153,5 +226,87 @@ module.exports = createConfig({
     //     locales: ['en', 'nl'],
     //   },
     // ],
+    /* Reclaim SEO equity from URLs Google has in its index from the
+       pre-Docusaurus / pre-subdomain layout. The plugin emits one
+       static HTML page per `from` with a <meta http-equiv="refresh">
+       and a `<link rel="canonical">` to the `to` target, which Google
+       treats as a 301 signal. Only the URLs in this list have current
+       equivalents worth redirecting; the rest (componenten catalogue,
+       WP placeholders, retired training pages) are let to 404 naturally. */
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          /* OpenSpec academy series moved from Dutch to English slugs
+             (2026-06-11). Parts 1 and 2 were already published, so keep
+             inbound links working. Parts 0/3/4 are new and never shipped a
+             Dutch slug, so they need no redirect. */
+          {from: '/academy/openspec-tutorial-1-wat-is-openspec', to: '/academy/openspec-tutorial-1-what-is-openspec'},
+          {from: '/academy/openspec-tutorial-2-eerste-change', to: '/academy/openspec-tutorial-2-first-change'},
+          /* Fleet-wide Dutch-to-English academy slug rename (2026-06-11):
+             every tutorial slug is now English. Keep the published Dutch
+             URLs working. */
+          {from: '/academy/nextcloud-lokaal-draaien', to: '/academy/run-nextcloud-locally'},
+          {from: '/academy/woo-bestanden-uploaden', to: '/academy/woo-upload-files'},
+          {from: '/academy/woo-register-opzetten', to: '/academy/woo-set-up-register'},
+          {from: '/academy/nextcloud-app-store-publiceren', to: '/academy/publish-to-nextcloud-app-store'},
+          {from: '/academy/haven-en-kind', to: '/academy/haven-and-haven-plus'},
+          {from: '/academy/hydra-tutorial-1-wat-is-hydra', to: '/academy/hydra-tutorial-1-what-is-hydra'},
+          {from: '/academy/hydra-tutorial-2-drie-pipelines', to: '/academy/hydra-tutorial-2-three-pipelines'},
+          {from: '/academy/hydra-tutorial-5-een-hydra-run-starten', to: '/academy/hydra-tutorial-5-starting-a-run'},
+          {from: '/academy/hydra-tutorial-6-troubleshooting-escalatie', to: '/academy/hydra-tutorial-6-troubleshooting-escalation'},
+          {from: '/academy/claude-skills-tutorial-1-wat-zijn-claude-skills', to: '/academy/claude-skills-tutorial-1-what-are-claude-skills'},
+          {from: '/academy/claude-skills-tutorial-2-je-eerste-skill', to: '/academy/claude-skills-tutorial-2-your-first-skill'},
+          {from: '/academy/workstation-tutorial-1-wat-installeer-je', to: '/academy/workstation-tutorial-1-what-to-install'},
+          {from: '/academy/workstation-tutorial-2-basis-inrichten', to: '/academy/workstation-tutorial-2-base-setup'},
+          {from: '/academy/workstation-tutorial-5-nextcloud-lokaal', to: '/academy/workstation-tutorial-5-nextcloud-locally'},
+          {from: '/academy/workstation-tutorial-6-klaar-wat-nu', to: '/academy/workstation-tutorial-6-done-what-next'},
+          /* Old Dutch "about us" slug. The English /about/ route is
+             the canonical replacement; NL translation pass will land
+             /nl/about/ later. */
+          {from: '/over-ons', to: '/about/'},
+          /* The OpenConnector page used to live on the apex; everything
+             moved to its own subdomain in the 2026-02 split. Send the
+             two indexed entry points to the canonical app site. */
+          {from: '/openconnector', to: 'https://openconnector.conduction.nl/'},
+          {from: '/openconnector/support', to: 'https://openconnector.conduction.nl/support/'},
+          /* OpenWoo brand rename: /solutions/woo conflated the law (Wet
+             open overheid) with the product. The page lives at
+             /solutions/openwoo since the fold-openwoo-into-fleet change;
+             keep inbound links working from anywhere that already shipped
+             the old URL (presentations, partner pages, press). The `nl`
+             locale doesn't emit page-route variants for src/pages/*.mdx
+             so /nl/solutions/openwoo doesn't exist as a target — same
+             pattern as the /over-ons → /about/ entry above. */
+          {from: '/solutions/woo', to: '/solutions/openwoo'},
+          /* /iso renamed to /quality (2026-05-19): the page was about
+             ISO 9001 + 27001 only, but we now treat ISO as one tool inside
+             a broader quality story (pentest-tools.com, GitHub workflow,
+             policy statements). The NL page lives at /nl/quality (same
+             slug as EN; the page title is localised to "Kwaliteit").
+             Only the EN /iso redirect is emitted here — /nl/iso 404s
+             gracefully because there are no inbound links to it. */
+          {from: '/iso', to: '/quality'},
+          /* App rename 2026-05-30: MyDash → LaunchPad and OpenBuilt → OpenBuild.
+             The old /apps/mydash and /apps/openbuilt URLs were indexed in
+             search engines and shipped on partner sites; redirect them to
+             the new canonical app pages. */
+          {from: '/apps/mydash', to: '/apps/launchpad'},
+          {from: '/apps/openbuilt', to: '/apps/openbuild'},
+          /* Academy series rename 2026-06-01: deskdesk-tutorial →
+             build-an-app-tutorial. The seven existing parts (0–6) were
+             linked from earlier blog posts, partner decks, and the
+             previous build-an-app standalone teaser; redirect each one
+             to its new home so external links keep working. */
+          {from: '/academy/deskdesk-tutorial-0-three-paths',        to: '/academy/build-an-app-tutorial-0-three-paths'},
+          {from: '/academy/deskdesk-tutorial-1-scaffold',           to: '/academy/build-an-app-tutorial-1-scaffold'},
+          {from: '/academy/deskdesk-tutorial-2-schemas-manifest',   to: '/academy/build-an-app-tutorial-2-schemas-manifest'},
+          {from: '/academy/deskdesk-tutorial-3-calendar',           to: '/academy/build-an-app-tutorial-3-calendar'},
+          {from: '/academy/deskdesk-tutorial-4-knowledge-and-ship', to: '/academy/build-an-app-tutorial-4-knowledge-and-ship'},
+          {from: '/academy/deskdesk-tutorial-5-advanced-manifest',  to: '/academy/build-an-app-tutorial-5-advanced-manifest'},
+          {from: '/academy/deskdesk-tutorial-6-integrate',          to: '/academy/build-an-app-tutorial-6-integrate'},
+        ],
+      },
+    ],
   ],
 });

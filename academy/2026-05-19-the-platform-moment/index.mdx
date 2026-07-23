@@ -1,0 +1,305 @@
+---
+slug: the-platform-moment
+title: "Nextcloud is not a suite, it is a platform"
+contentType: opinion
+authors: [ruben]
+date: 2026-05-19
+summary: "Or it should be. Nextcloud already has the substrate. What is missing is the naming, the composition layer, and an honest reframe by the buyers running European sovereign-workplace migrations."
+tags: [Nextcloud, Platform, Sovereignty, AI, OpenBuild]
+durationMinutes: 10
+---
+
+import {
+  StatsStrip,
+  PairCard,
+  PairRow,
+  DownloadPanel,
+} from '@conduction/docusaurus-preset/components';
+
+Nextcloud is standing in front of an open window. Most people, including many inside the ecosystem itself, have not yet noticed it is open. What started as a safe alternative for file storage has quietly grown into something fundamentally different. The technical reality is already that of a platform. The name is the only thing still trailing behind. And in technology, as history teaches us, naming is not cosmetic. Naming is load-bearing. Windows close.
+
+{/* truncate */}
+
+<blockquote className="pull-quote hero">
+  <span className="eyebrow"><span className="h"></span>The thesis</span>
+  <p>You buy a suite. You use a workspace. You inhabit a platform.</p>
+  <cite>
+    <span className="cite-name">Ruben van der Linde</span>, CTO Conduction
+  </cite>
+</blockquote>
+
+## Suite, workspace, platform
+
+Three words that get used interchangeably. They mean very different things.
+
+**A suite is a box with predetermined tools.** Mail, files and office apps live in a single box. Integration between those tools happens in the user's head, or in the open browser tabs on their screen. The rest you solve yourself.
+
+**A workspace is one coherent surface** where data, identity and workflows are stitched together. Chat, video, project management, knowledge management and code hosting live alongside mail and files. One login, one permission model, one user experience. The user no longer switches between ten systems.
+
+**A platform is the infrastructure on which an organisation builds its own long tail.** Not the vendor. The organisation itself. A platform has a marketplace, a composition layer, an identity layer, an AI substrate and an economic model that feeds an ecosystem. On a platform, software runs that nobody at the original vendor ever envisioned. That is the definition.
+
+Let's be honest. The difference is not a marketing trick. It determines which question an organisation asks at the moment it buys. It determines where money flows over the next decade. And it determines something many people underestimate: whether an open-source ecosystem will beat Microsoft Power Apps on the terrain that matters most tomorrow.
+
+Tomorrow's functionality will not be built by vendors anymore. It will be built by users with AI. And in that world, scale wins. Nextcloud already has that scale: more than 16 million users worldwide.[^10] Power Apps has around 56 million.[^9] The gap is smaller than it looks, and the open side plays with a fundamentally better business model.
+
+At Conduction we have made our choice. We are putting our time, our money and our engineering talent into two things: helping Nextcloud evolve further into a real workspace, and building the underlying platform infrastructure that lets developers and civil servants ship their own applications. No fork, no separate product, no lock-in. Just acceleration of what is already there.
+
+## The anatomy of a platform moment
+
+Software categories do not tip on features. They tip on framing. Three examples from the past thirty years show the pattern.
+
+**WordPress** broke through by keeping the core small and the ecosystem large. The features did not win, the ecosystem did. Today more than 43 percent of the entire web runs on WordPress.[^1]
+
+**Salesforce** launched the AppExchange in 2006. Four years later the central message was no longer "Salesforce is a CRM" but "Salesforce is a platform on which an ecosystem runs". Today 91 percent of customers use at least one app from the marketplace.[^2] The moat is no longer CRM functionality. The moat is the marketplace.
+
+**The iPhone** is the best-known example. In 2007 Steve Jobs positioned the device as "the platform that runs apps", at a moment when the App Store did not yet exist. The naming ran ahead of the technology. The technology followed.[^3]
+
+And then the cautionary example: **SharePoint**. Microsoft positioned SharePoint for years as a platform, but never built the economic architecture that feeds an ecosystem. No marketplace that works. No revenue share that rewards developers. No citizen-developer on-ramp. It became a suite that called itself a platform. That is not a platform, that is theatre.
+
+The pattern is clear. Platform moments emerge when three things are true at the same time: the technical substrate is in place, the story shifts, and the ecosystem gets economic oxygen. For Nextcloud, two of those three are now true. The third is within reach.
+
+## Year one versus year three
+
+When a Dutch municipality or a German ministry thinks about digital sovereignty, it asks a very different question in year one than in year three.
+
+<PairRow columns={2}>
+  <PairCard
+    name="Year one"
+    why={<>The question is: "Can I replace Microsoft 365?" A bundle is the answer. Mail, files, calendar, document editing. That is why the ICC switched to openDesk, the Bundeswehr signed a seven-year contract, and Schleswig-Holstein is migrating 40,000 civil servants.</>}
+    icon={<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v14H3z" fill="none" stroke="currentColor" strokeWidth="2"/><path d="M3 8h18" stroke="currentColor" strokeWidth="2" fill="none"/></svg>}
+  />
+  <PairCard
+    name="Year three"
+    why={<>The question changes. Not "can I replace Microsoft" but "where does my organisation actually run?" Leave requests, supplier onboarding, visitor registration, course administration, procurement workflows. The long tail. The actual work of a government.</>}
+    icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6 3"/></svg>}
+  />
+</PairRow>
+
+For year one, a suite works. For year three, you need a platform. A workspace sits in between. The bundle wins year one and loses year three. That is the trap European governments are walking into right now, with the best intentions, while the procurement clock keeps running.
+
+## The substrate is already there
+
+What is special about Nextcloud is that the platform substrate is already technically in place. Anyone who looks critically sees it immediately.
+
+Files with version control, sharing mechanisms and external storage connectors. Calendar and Contacts via open standards (CalDAV, CardDAV, IMAP). Talk for chat and video, federated via Matrix. Mail as an integrated inbox. LDAP, SAML and OIDC as an identity layer that hundreds of organisations already run on. ExApps as the architecture to plug external services into the workspace as first-class citizens.
+
+On top of that substrate, components have lived for years that you would call "apps" if Apple were selling them. A wiki via XWiki. Project management via OpenProject. Code hosting via GitLab. A learning record via Scholiq. Federated chat via Matrix or a team environment via Mattermost. Automated workflows via n8n, or Windmill for the developers who prefer working in code. PII anonymisation via Presidio. Single sign-on via Keycloak. AI inference via Claude, Mistral, or locally via Ollama.
+
+This is not a suite. A suite is a box with predetermined tools. This is an infrastructure on which an organisation builds its work.
+
+And yet, in nearly every sovereign-workplace bundle in Europe (openDesk in Germany, Mijn Bureau in the Netherlands, La Suite Numérique in France) Nextcloud is positioned as one of the components. Not as the underlying layer.[^7] That is a framing mistake with large consequences, because the buyer behaves accordingly. Anyone who buys Nextcloud as "the files component" locks themselves into year one while the problem plays out in year three.
+
+<blockquote className="pull-quote">
+  <p>Anyone who buys Nextcloud as "the files component" locks themselves into year one while the problem plays out in year three.</p>
+  <cite>
+    <span className="cite-name">Ruben van der Linde</span>, CTO Conduction
+  </cite>
+</blockquote>
+
+## The sovereignty calculus around AI
+
+The next question every government asks in 2026 is: "how do we do AI?" And right here the architecture tips in a way most decision-makers have not yet internalised.
+
+Microsoft Copilot routes data to cloud infrastructure for inference. Google Workspace does the same. The sovereign variants (Bleu in France, Delos in Germany, Microsoft Cloud for Sovereignty) reduce that exposure. Even so, they hit the CLOUD Act legally, because the parent company is American.[^8] For some organisations that is acceptable, for others it is not. For the ICC it demonstrably was not.
+
+Nextcloud flips the entire architecture. The starting point is that the data already lives on infrastructure the customer controls. The AI substrate comes to the data, not the other way around. That sounds subtle, only it is a world of difference. It means a municipality can choose a local model on Ollama when the data demands it, Mistral in a European cloud when the sensitivity level allows it, or Claude via a controlled gateway when the use case needs a frontier model. With Presidio in front to anonymise PII where required. With audit logging on every tool call. With the operator choosing the model, not the vendor.
+
+This is the sovereignty calculus that Microsoft and Google cannot run. Not for technical reasons, only because of their business model. Their margins depend on inference in their cloud. Anyone who moves inference to the customer also moves margin away from headquarters. You do not do that voluntarily.
+
+## The citizen-developer wave
+
+And then the third piece, the piece that completes the platform moment. A platform only comes alive when its users build on it themselves. Not just developers, all users. Microsoft has bet massively on this for the past ten years, and the numbers are genuinely impressive.
+
+Power Platform grew from 33 million monthly active users in 2023 to 56 million in 2025. Microsoft has a public target of 500 million users in 2030.[^9] The 2026 release bundles Power Apps, Power Automate, Power Pages, Copilot Studio and Dataverse into a single AI-native citizen-developer environment. The internal framing is candid: "low code is dead". It is being replaced by natural language and AI agents that build for the user.
+
+<StatsStrip stats={[
+  { value: '16M', label: <>Nextcloud users worldwide<br/>(2026)</> },
+  { value: '56M', label: <>Microsoft Power Platform<br/>monthly active users</> },
+  { value: '500M', label: <>Microsoft public target<br/>by 2030</> },
+  { value: '€0', label: <>license cost per<br/>open citizen-developer</> },
+]} />
+
+Microsoft is running from 56 million to half a billion in five years. That is the trajectory of the other side of the race. **The race is on.** Either Europe ships an answer that scales at the same rate, or in 2030 every leave request, every supplier onboarding flow, every visitor register on the continent runs on someone else's runtime.
+
+Here comes the interesting math. Until recently the reasoning in every comparison with Microsoft was: they have a bigger R&D budget, more engineers, a larger product organisation, so they win on functionality. That math no longer holds. Functionality will not be built by product organisations going forward. Functionality will be built by end users who use AI assistants to make their own apps. And in that new math, the side with the largest engineering team does not win. The side with the largest citizen-developer pool wins.
+
+<blockquote className="pull-quote">
+  <p>Tomorrow's functionality will not be built by vendors. It will be built by users with AI. In that world, scale wins.</p>
+  <cite>
+    <span className="cite-name">Ruben van der Linde</span>, CTO Conduction
+  </cite>
+</blockquote>
+
+### 16 million is a headline. The strategy lives in two segments.
+
+The bare 16M-vs-56M gap is interesting, only it hides the actual question. We do not need to convert every Nextcloud user into a citizen-developer to win. We need to convert the segments where the gap to Microsoft is closeable, where the procurement door is open, and where Microsoft's own business model blocks them from following us. Two motions matter. Both are uniquely accessible to an open platform.
+
+<PairRow columns={2}>
+  <PairCard
+    name="EU public sector"
+    why={<>France committed in January 2026 to migrate all 2.5 million civil servants off Teams and Zoom onto the sovereign Visio platform by 2027.[^11] Germany's openDesk is on track for 160,000 licenses by end of 2025 across the Bundeswehr, the Robert Koch Institute, federal insurers and state governments.[^12] La Suite Numérique already has more than 600,000 French civil servants on its encrypted Tchap messenger. None of these governments can choose Power Platform for the long tail, because the CLOUD Act blocks it. The procurement door is closed for Microsoft on the segment that is moving fastest.</>}
+    icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21v-6h4v6"/></svg>}
+  />
+  <PairCard
+    name="European MKB"
+    why={<>Eurostat counts 33.5 million enterprises in the EU, of which 99.8 percent are SMEs.[^13] In the Netherlands alone, CBS counts 1.6 million MKB businesses, with 424,000 employing between 2 and 250 people.[^14] These shops pay €10 to €15 per user per month for Microsoft 365 because no one ever told them they had a choice. They have no CIO, no procurement team, no integrator on retainer. They need good, simple, free software that runs the office, and a composition layer for the one technical person on staff who knows where the bodies are buried. Microsoft cannot price-compete here. Their margins depend on it. An open platform can.</>}
+    icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="7" width="18" height="14" rx="1"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg>}
+  />
+</PairRow>
+
+One French civil servant who uses Claude to build a supplier-onboarding app delivers more functionality than a team of five product managers in Redmond. One MKB owner in Almere who uses Mistral to wire a quote-to-invoice workflow across mail, files and a register saves their accountant three hours a month. Multiply that by 2.5 million French civil servants, plus the 160,000-and-growing German base, plus an MKB tail measured in tens of millions across Europe, and the race takes a very different shape. The 56 million Power Apps users is the headline number. What we are building is a wedge into the segments Microsoft cannot follow.
+
+On top of that, the open side plays with a fundamentally better business model. Microsoft has to monetise every citizen-developer through license fees, or the business case burns down. An open-source platform monetises through support, integration, hosting and data-sovereignty guarantees. The citizen-developer costs the platform almost nothing. At Power Apps that same user costs Microsoft license revenue they cannot wish away.
+
+That is not a small asymmetry. That is a structural advantage the moment the scale is in place.
+
+The open-source world already has pieces of the answer in place. n8n for no-code automation. Windmill for developer flows in Python, TypeScript, Go or Bash. OpenProject for workflow-oriented project work. Matrix and Mattermost for communication. They are loose puzzle pieces. What is missing is the composition layer that lets a civil servant ship a supplier onboarding app in an afternoon on the Nextcloud substrate, without code, without forks, without the next Nextcloud upgrade breaking everything.
+
+A European civil servant who builds a leave-request app in Copilot Studio in 2027 will be impossible to pry loose in 2030. Not because the technology forbids it, only because the mindshare sits elsewhere. Mindshare is the most precious window a platform has. It is also the window that closes the fastest. We have that window now, not later.
+
+## Where Conduction is putting its weight
+
+At Conduction we have made the strategic choice. We do not believe in a Dutch alternative next to openDesk, La Suite or Nextcloud. We believe the winning move is to help Nextcloud itself grow into the European platform it already has the potential to be. Concretely, we are putting our time and our engineering talent into two parallel tracks.
+
+<PairRow columns={2}>
+  <PairCard
+    name="Track one: from suite to workspace"
+    why={<>Nextcloud is strong as a suite, but the real work of a government sits in the processes around it. Our investment integrates the components governments need out of the box, without each municipality having to solve it from scratch: Scholiq, OpenProject, XWiki, GitLab, Matrix and Mattermost, n8n and Windmill, Keycloak, Presidio. All embedded in one coherent workspace, with one login, one permission model and one user experience. In the open, with the existing communities, without forks.</>}
+    icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>}
+  />
+  <PairCard
+    name="Track two: platform infrastructure"
+    why={<>A workspace is not the same as a platform. For the platform story there has to be a layer on which developers and citizen-developers compose their own apps, without forking the Nextcloud core. That is what we are building with OpenBuild: configuration over code, so changes survive upgrades. A fork-free customisation layer that lets a civil servant deliver a leave-request app in an afternoon. The AI substrate is built in, with the choice between Claude, Mistral or local Ollama depending on data sensitivity.</>}
+    icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 12l9-5"/><path d="M12 12l-9-5"/><path d="M12 12v10"/></svg>}
+  />
+</PairRow>
+
+These are not loose projects. They are two sides of the same coin. A workspace without a platform stays a suite with extra apps. A platform without a workspace stays an empty room without an audience. Together they form the European counterpart to Power Platform, built on foundations we already have.
+
+And the best part: we do not have to do this alone. ZenDiS in Germany works on comparable pieces. La Suite Numérique in France ships components we plug into. Nextcloud GmbH itself keeps building the core. Conduction delivers the Dutch contribution to a European movement, not a Dutch version of something that already exists.
+
+{/* .blog-download-cta (src/css/site.css) strips the preset
+    DownloadPanel's outer tinted band + cancels its -200px negative
+    margin, both calibrated for marketing pages (/connext) where the
+    panel sits below a structural spacer and the band reads as a
+    section divider. Inside a blog body, the band reads as an unrelated
+    section break. Tracked as design-system#26 for a proper opt-out
+    prop on the preset. */}
+<div className="blog-download-cta">
+  <DownloadPanel
+    title={<>This is what we are building on top of <span className="next-blue">Nextcloud</span>.</>}
+    lede={<>Con<span className="next-blue">Next</span> is the open-source app stack from track one and the platform infrastructure from track two, shipping today. Catalogs, registers, integrations, document handling, the AI substrate. Pick what you need from the Nextcloud app store and you are working today.</>}
+    meta="Open-source · EUPL-1.2 · no lead form, no sales call"
+    card={{
+      title: <>Explore Con<span className="next-blue">Next</span></>,
+      body: 'The apps that turn the workspace and the platform argument into something you can install in two minutes.',
+      cta: {label: 'Explore ConNext', href: '/connext'},
+    }}
+  />
+</div>
+
+## Component overview
+
+For anyone who wants to see it concretely, the stack looks like this.
+
+<table className="editorial-table">
+  <thead>
+    <tr><th>Layer</th><th>What it does</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Technical Core <span style={{color: 'var(--c-cobalt-400)'}}>· Nextcloud</span></td><td>Substrate with identity, storage, collaboration. Files, Mail, Talk, Calendar, Contacts.</td></tr>
+    <tr><td>Solutions <span style={{color: 'var(--c-cobalt-400)'}}>· Scholiq, OpenProject, XWiki, GitLab</span></td><td>Apps governments need out of the box, integrated as first-class citizens of the workspace.</td></tr>
+    <tr><td>Integrated apps <span style={{color: 'var(--c-cobalt-400)'}}>· Matrix, Mattermost, n8n, Windmill</span></td><td>Building blocks for communication and workflows. Loose puzzle pieces, single login.</td></tr>
+    <tr><td>AI substrate <span style={{color: 'var(--c-cobalt-400)'}}>· Claude, Mistral, Ollama, Presidio</span></td><td>Inference, local or via gateway, with PII protection. The operator chooses the model.</td></tr>
+    <tr><td>Identity <span style={{color: 'var(--c-cobalt-400)'}}>· Keycloak</span></td><td>SSO, OIDC, SAML, social login. One permission model across every layer above.</td></tr>
+    <tr><td>App builder <span style={{color: 'var(--c-cobalt-400)'}}>· OpenBuild</span></td><td>Composition layer for citizen-developers and organisations. Fork-free customisation.</td></tr>
+  </tbody>
+</table>
+
+This is not a suite. A suite ships in a single box. This is a platform on which an organisation builds itself, with components that are themselves vendor-independent, and an AI layer where the operator chooses the model.
+
+## Naming is load-bearing
+
+Back to Jobs and the iPhone. The name ran ahead of the technology. The name was load-bearing. It still is.
+
+For Nextcloud the platform reality is on the table technically. Schleswig-Holstein is running. The Bundeswehr is running. The ICC is running. RKI is running. ExApps works. The AI architecture is fundamentally different from the American alternatives. The component ecosystem is in place. The composition layer is under construction.
+
+What is missing is that we start calling it that. Not one of the components in a sovereign bundle. Not a files replacement. Not a suite. A platform. Because as long as we keep calling it a suite, governments keep buying it as one. And in year three they stand empty-handed when the real question comes up.
+
+<blockquote className="pull-quote">
+  <p>As long as we keep calling it a suite, governments keep buying it as one. In year three they stand empty-handed when the real question comes up.</p>
+  <cite>
+    <span className="cite-name">Ruben van der Linde</span>, CTO Conduction
+  </cite>
+</blockquote>
+
+## What this means for Europe
+
+The question is not whether Europe can build a Power Platform equivalent. The question is how fast. The window is eighteen to thirty-six months before a generation of European civil servants becomes citizen-developers inside an American ecosystem. After that, the window closes. Breaking out gets exponentially more expensive. Mindshare is the one form of infrastructure you cannot retrofit.
+
+## What governments can do now
+
+<section className="setup-steps">
+  <div className="step-row">
+    <div className="num">1</div>
+    <div className="body">
+      <strong>Call Nextcloud by its proper name.</strong>
+      <p>In tenders, in policy documents, in architecture diagrams. Not as a files component. As a platform.</p>
+    </div>
+  </div>
+  <div className="step-row">
+    <div className="num">2</div>
+    <div className="body">
+      <strong>Invest in the composition layer.</strong>
+      <p>Whether through OpenBuild or a comparable initiative. Without a citizen-developer on-ramp, a platform is not a platform.</p>
+    </div>
+  </div>
+  <div className="step-row">
+    <div className="num">3</div>
+    <div className="body">
+      <strong>Make AI part of procurement.</strong>
+      <p>Demand that the operator chooses the model. Demand local inference as an option. Demand audit logging on every tool call. Demand PII anonymisation as a feature, not an add-on.</p>
+    </div>
+  </div>
+  <div className="step-row">
+    <div className="num">4</div>
+    <div className="body">
+      <strong>Join the ecosystem.</strong>
+      <p>No separate Dutch, German or French version of what already exists. Contribute to Nextcloud, OpenProject, XWiki, Matrix. That is where the moat is built.</p>
+    </div>
+  </div>
+  <div className="step-row">
+    <div className="num">5</div>
+    <div className="body">
+      <strong>Treat mindshare as infrastructure.</strong>
+      <p>Training programmes, guilds for civil servants who build their own apps on the platform. Just like Microsoft does, only on public infrastructure.</p>
+    </div>
+  </div>
+</section>
+
+## In closing
+
+A suite bundles mail, files and office apps. A workspace adds an integrated ecosystem on top of that substrate. A platform is something else. A platform is the infrastructure on which an organisation builds its long tail, deploys its AI on its own terms, and lets its citizen-developers move without the vendor holding the strings.
+
+That is what Nextcloud already is, only under the wrong name. 16 million users worldwide form the largest potential citizen-developer pool the European open-source world can bring to the table. When that pool gets the right composition layer, and the right AI substrate, functional parity with Microsoft Power Apps is not a dream. It is arithmetic.
+
+At Conduction we are choosing our role deliberately. Workspace on top of the Nextcloud substrate. Platform infrastructure underneath, where developers and civil servants can build. Both in the open. Both plugging into what is already there. No separate Dutch version of something that already exists.
+
+The choice is easy. The time is now.
+
+## Sources
+
+[^1]: W3Techs, Usage statistics of content management systems: https://w3techs.com/technologies/overview/content_management
+[^2]: Salesforce, AppExchange statistics: https://appexchange.salesforce.com/
+[^3]: Apple, Macworld Keynote 2007, iPhone introduction: https://www.apple.com/newsroom/2007/01/09Apple-Reinvents-the-Phone-with-iPhone/
+[^4]: Heise Online, International Criminal Court switches to openDesk: https://www.heise.de/news/Strafgerichtshof-Wechsel-zu-openDesk-9854320.html
+[^5]: ZenDiS, Bundeswehr adopts openDesk: https://gitlab.opencode.de/bmi/opendesk
+[^6]: State of Schleswig-Holstein, Digital sovereignty, switching to open source: https://www.schleswig-holstein.de/DE/landesregierung/themen/digitalisierung/open-source/open-source.html
+[^7]: Sovereign Tech Fund, openDesk project, components and architecture: https://www.sovereigntechfund.de/tech/opendesk
+[^8]: Dutch government, CLOUD Act and data sovereignty: https://www.rijksoverheid.nl/actueel/nieuws/2025/07/15/non-paper-versterken-van-cloudsoevereiniteit-van-overheden
+[^9]: Microsoft, Power Platform growth and 2026 release notes: https://www.microsoft.com/en-us/power-platform
+[^10]: Nextcloud GmbH, Customers and user base: https://nextcloud.com/customers/
+[^11]: Euronews, France to ditch US platforms Microsoft Teams and Zoom for sovereign platform, January 2026: https://www.euronews.com/next/2026/01/27/france-to-ditch-us-platforms-microsoft-teams-zoom-for-sovereign-platform-amid-security-con
+[^12]: openDesk Wikipedia, deployment targets and 2025 milestones (Bundeswehr, Robert Koch Institute, Schleswig-Holstein): https://en.wikipedia.org/wiki/OpenDesk
+[^13]: Eurostat, Micro and small businesses make up 99 percent of enterprises in the EU, 2024 structural business statistics: https://ec.europa.eu/eurostat/web/products-eurostat-news/w/ddn-20241025-1
+[^14]: CBS, Ruim 1,5 miljoen mkb-bedrijven in Nederland: https://www.cbs.nl/nl-nl/nieuws/2024/15/ruim-1-5-miljoen-mkb-bedrijven-in-nederland

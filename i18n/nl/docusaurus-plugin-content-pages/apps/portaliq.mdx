@@ -1,0 +1,110 @@
+---
+title: Portaliq, Conduction
+description: Eén gedeeld extern portaal voor klanten en leveranciers. White-label, gebouwd op OpenRegister, geen aparte login per app.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+<DetailHero
+  background="cobalt"
+  appId="portaliq"
+  crumb={[{label: 'Apps', href: '/apps'}, 'Portaliq']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.x"
+  locales="NL · EN"
+  title="Portaliq"
+  tagline={<>Eén gedeeld extern portaal voor klanten en leveranciers, op <span className="next-blue">Nextcloud</span>. Geen aparte login en geen aparte UI per app — één white-label voordeur, gebouwd op OpenRegister.</>}
+  intro={<>Portaliq is het gedeelde externe portaal voor de hele appsuite. Klanten (burgers) en leveranciers (bedrijven) krijgen één geïntegreerd, white-label portaal om hun gegevens over alle Conduction-apps heen in te zien en er acties op te doen — lezen en schrijven via OpenRegister, per onderwerp afgeschermd en per rij herverifieerd. Medewerkers blijven binnen Nextcloud; Portaliq is uitsluitend voor de mensen die dat niet zijn. Uitgegeven onder EUPL-1.2, onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Lees de docs', href: 'https://portaliq.conduction.nl'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/portaliq'}}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="Eén portaal, niet één portaal per app."
+        align="stack"
+        lede="Elke app die iets extern wilde tonen, bouwde vroeger zijn eigen login, zijn eigen UI, zijn eigen authenticatiemodel. Portaliq vervangt dat allemaal door één register van bijdragen: een app meldt in een klein manifest wat een klant of leverancier mag zien en doen, en Portaliq rendert het, leest het via OpenRegister, en handhaaft de grens."
+      />
+      <FeatureList>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>}
+          title="Fail-closed authenticatie-edge."
+        >
+          Vandaag een bearer-token portaalsessie, server-side herleid en nooit vertrouwd vanaf de client. Echte DigiD- (burgers) en eHerkenning-federatie (bedrijven) is gepland achter dezelfde interface, in afwachting van een OpenConnector-broker.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>}
+          title="Declaratief register van bijdragen."
+        >
+          Elke app sluit aan met één ontkoppelde klasse — geen import van Portaliq, geen info.xml-afhankelijkheid, inactief als Portaliq niet is geïnstalleerd. procest, PipelinQ en Scholiq leveren in de huidige beta al bij.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+          title="Per onderwerp afgeschermde, herverifieerde reads."
+        >
+          Portaliq leest de gegevens van elke app via OpenRegister en herverifieert elke rij tegen het geauthenticeerde onderwerp — een leverancier ziet alleen zijn eigen aanbestedingen, contracten en facturen.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>}
+          title="Gewhitelistte aanmaakacties."
+        >
+          Apps bepalen welke velden een extern onderwerp mag indienen; de server zet het eigenaarschap, waardoor een vervalst identificatienummer in het verzoek nooit standhoudt.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
+          title="Gebundelde berichtenbox."
+        >
+          De meldingen van elke bijdragende app komen samen in één berichtenlijst per onderwerp, gevoed door de meldingsengine van OpenRegister.
+        </FeatureItem>
+      </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['portaliq']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<PartnersForApp slug="portaliq" />
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Werkt goed met"
+    title="De apps waarop Portaliq leunt en die het rendert."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="De gegevens van elke bijdrage — gelezen per onderwerp afgeschermd, geschreven met server-side eigenaarschap."
+    />
+    <PairCard
+      href="/apps/procest"
+      icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
+      name="Procest"
+      why="Eerste live bijdrage: leveranciers zien hun eigen aanbestedingen, contracten en facturen."
+    />
+    <PairCard
+      href="/apps/pipelinq"
+      icon={<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="19" cy="18" r="2"/></svg>}
+      name="PipelinQ"
+      why="Bijdragen voor klant en customer — contactmomenten, boekingen en aanvragen."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="Eén voordeur voor iedereen buiten Nextcloud."
+  lede={<>Portaliq vervangt een aparte externe login en een aparte externe UI per app door één white-label portaal, gebouwd op dezelfde registers waarin je team al werkt. Open-source, op je eigen data.</>}
+  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
+  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+/>

@@ -1,0 +1,381 @@
+---
+slug: mcp-server
+title: De Conduction MCP-server opzetten
+contentType: tutorial
+authors: [conduction]
+date: 2026-04-29
+summary: De OpenRegister Nextcloud-app levert een MCP-server mee die Claude directe toegang geeft tot je lokale Conduction-datalaag. Deze tutorial sluit hem aan op dezelfde .mcp.json waar de Playwright-pool al in staat, behandelt Nextcloud app-password-auth, en eindigt met de eerste MCP-gedreven query.
+tags: [AI & LLMs, MCP, OpenRegister, Tutorial]
+apps: [openregister]
+durationMinutes: 20
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+De OpenRegister Nextcloud-app stelt een **MCP-server** beschikbaar op `/index.php/apps/openregister/api/mcp`. Zodra je Claude erop richt, kun je vragen stellen als *"lijst alle schema's in het woo-register"* of *"geef me de audit-trail van object X"* en Claude haalt het antwoord via MCP op, in plaats van dat jij de admin-UI moet openen. Deze tutorial gaat ervan uit dat je al een lokale Nextcloud met OpenRegister hebt draaien én een Playwright-`.mcp.json` op zijn plek hebt — wat we hier toevoegen is één extra entry in dat bestand, plus het Nextcloud app-password waarmee de call werkt.
+
+{/* truncate */}
+
+> **Kom je uit de Workstation Setup-leerlijn?** [Deel 4 — De MCP-server aansluiten](/nl/academy/workstation-tutorial-4-mcp-server) is waar je de Playwright-browserpool in `.mcp.json` hebt gezet. Deze tutorial voegt een tweede server-entry aan datzelfde bestand toe. De browsers blijven; de OpenRegister-entry komt ernaast.
+
+<Outcomes title="Wat je oplevert">
+  <Outcome>Begrip van wat de OpenRegister MCP-server blootstelt — drie tool-families (<code>registers</code>, <code>schemas</code>, <code>objects</code>) en een set read-only resources.</Outcome>
+  <Outcome>Een Nextcloud app-password specifiek voor Claude (intrekbaar, gebonden aan één device).</Outcome>
+  <Outcome>Een <code>openregister</code>-entry in de <code>.mcp.json</code> van je project, met HTTP-transport en basic-auth uit een omgevingsvariabele — zodat credentials buiten git blijven.</Outcome>
+  <Outcome>De server geverifieerd in het MCP-servers-paneel van VS Code, en één echte MCP-gedreven vraag beantwoord in je Claude Code-sessie.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Een draaiende lokale Nextcloud met de OpenRegister-app geïnstalleerd en minstens één register + schema gedefinieerd. De snelste weg daarheen is <a href="/nl/academy/workstation-tutorial-5-nextcloud-locally">Workstation Deel 5 — Nextcloud lokaal draaien</a>.</PrerequisiteItem>
+  <PrerequisiteItem><a href="/nl/academy/workstation-tutorial-4-mcp-server">Workstation Deel 4</a> gedaan — er staat een <code>.mcp.json</code> in de project-root, de Playwright-browserpool is verbonden, en <code>.claude/settings.json</code> heeft <code>enableAllProjectMcpServers: true</code>.</PrerequisiteItem>
+  <PrerequisiteItem>Claude Code (CLI of VS Code-extensie), Claude Desktop, of een andere MCP-aware client die Streamable HTTP-transport ondersteunt.</PrerequisiteItem>
+  <PrerequisiteItem>Ongeveer 20 minuten.</PrerequisiteItem>
+</Prerequisites>
+
+## In één zin
+
+De OpenRegister Nextcloud-app levert een MCP-server mee als onderdeel van zijn Nextcloud-routes. Er is niets extra te installeren: als je lokale Nextcloud draait en OpenRegister is geactiveerd, is de MCP-server al bereikbaar op `/index.php/apps/openregister/api/mcp`. Wat overblijft is auth, één `.mcp.json`-entry, en een reload.
+
+Een paar dingen om vooraf te weten:
+
+- **Transport:** Streamable HTTP, JSON-RPC 2.0. Geen stdio — er is geen `npx`-commando om te starten.
+- **Auth:** standaard Nextcloud-auth. Wij gebruiken **basic-auth met een Nextcloud app-password**, dat je later vanuit de security-settings van de gebruiker kunt intrekken.
+- **Wat er beschikbaar is:**
+  - Drie tools: `registers`, `schemas`, `objects`. Elke tool is een CRUD-multiplexer — je roept hem aan met een `action`-parameter (`list`, `get`, `create`, `update`, `delete`).
+  - Resources onder het `openregister://`-URI-schema: `openregister://registers`, `openregister://schemas`, en één per register+schema-combinatie voor object-lijsten.
+
+## Stap 1: check dat het endpoint leeft
+
+De OpenRegister MCP-server heeft een **publiek discovery-endpoint** (Tier 1) dat geen authenticatie nodig heeft. Roep dat één keer aan voordat je iets anders doet — als dit faalt, gaat niets daarna werken.
+
+> **Welke URL?** Heb je [Workstation Deel 5](/nl/academy/workstation-tutorial-5-nextcloud-locally) gevolgd, dan draait je lokale Nextcloud via de nginx-proxy van `nextcloud-docker-dev` op **`http://nextcloud.local/`** (poort 80, met `nextcloud.local` op `127.0.0.1` in `/etc/hosts`). Dat is de URL die deze tutorial gebruikt. Draai je een kale Nextcloud op een andere port-mapping (bijv. `http://localhost:8080/`), vervang dan de host — het pad (`/index.php/apps/openregister/api/mcp`) is op elke installatie hetzelfde.
+
+Check eerst dat Nextcloud zelf draait *en* dat de database up-to-date is:
+
+```bash
+curl -sS http://nextcloud.local/status.php
+```
+
+Bevat de JSON `"needsDbUpgrade":true`, draai dan eerst de upgrade — een verse start van `nextcloud-docker-dev` na een core-bump of een apps-extra-pull belandt hier regelmatig:
+
+```bash
+docker compose -f /pad/naar/nextcloud-docker-dev/docker-compose.yml exec -u www-data nextcloud php occ upgrade
+```
+
+Daarna de MCP-discovery-call:
+
+```bash
+curl -sS http://nextcloud.local/index.php/apps/openregister/api/mcp/v1/discover | head -c 400
+```
+
+Je krijgt een JSON-document terug met de capability-gebieden die de server adverteert (registers, schemas, objects, …). Krijg je in plaats daarvan een HTML-loginpagina, dan draait je lokale Nextcloud wel maar is de OpenRegister-app niet geactiveerd — fix dat met:
+
+```bash
+docker compose -f /pad/naar/nextcloud-docker-dev/docker-compose.yml exec -u www-data nextcloud php occ app:enable openregister
+```
+
+(Of activeer hem via de Apps-pagina in de Nextcloud-UI.)
+
+## Stap 2: maak een eigen Nextcloud app-password aan
+
+Claude inloggen met je echte accountwachtwoord werkt, maar is de verkeerde default — dat ene credential draagt je volledige account-scope en rouleren is later vervelend. Een **app-password** is een Nextcloud-feature die hier precies voor bedoeld is: een lang-random secret met een label, in te trekken vanuit één scherm.
+
+1. Open je lokale Nextcloud in een browser (`http://nextcloud.local/`, of welke URL Stap 1 ook bevestigde) en log in als de gebruiker waaronder Claude mag werken. Voor lokale-dev-setups is dat meestal `admin`.
+2. Rechtsboven op je avatar → **Persoonlijke instellingen** → **Beveiliging**.
+3. Scroll naar **Apparaten en sessies** → **App-naam**: typ `claude-mcp-openregister` (of iets wat je later herkent).
+4. Klik op **Nieuw app-wachtwoord maken**. Nextcloud genereert een lange string — **kopieer hem nu**, hij wordt niet opnieuw getoond.
+
+Bewaar het wachtwoord ergens waar je het terug in een shell kunt plakken. We gaan het zo base64-encoden.
+
+## Stap 3: bouw de basic-auth-header
+
+Claude Code's `.mcp.json` ondersteunt environment-variable-expansion, dus we zetten het ruwe secret niet in het bestand. Bouw het één keer, exporteer het, en verwijs vanuit `.mcp.json` naar de variabelenaam.
+
+```bash
+# Vervang `admin` met je Nextcloud-gebruikersnaam en plak het app-password als je erom gevraagd wordt.
+read -srp "App-password: " OPENREGISTER_APP_PASSWORD; echo
+export OPENREGISTER_BASIC_AUTH=$(printf "admin:%s" "$OPENREGISTER_APP_PASSWORD" | base64 -w0)
+```
+
+Check dat hij gezet is:
+
+```bash
+echo "${OPENREGISTER_BASIC_AUTH:0:12}…"
+```
+
+Je ziet de eerste twaalf tekens van de base64-string — genoeg om te bevestigen dat de variabele gevuld is, zonder het secret volledig te printen.
+
+> **Maak het persistent.** Die `export` leeft alleen in je huidige shell. Zet hem in je `~/.bashrc` (of `~/.zshrc`) — met het app-password uit een meer permanente bron als `pass`, `gopass`, of een `.env`-bestand buiten de repo — zodat Claude Code hem de volgende keer automatisch oppakt als je VS Code opent.
+
+## Stap 4: voeg de OpenRegister-entry toe aan `.mcp.json`
+
+Open de `.mcp.json` die je in [Workstation Deel 4](/nl/academy/workstation-tutorial-4-mcp-server) hebt gebouwd. Voeg in het bestaande `mcpServers`-blok één nieuwe entry naast de browsers toe. Het volledige bestand ziet er dan zo uit (browsers ingekort voor leesbaarheid):
+
+```json
+{
+  "mcpServers": {
+    "browser-1": { "command": "npx", "args": ["-y", "@playwright/mcp@latest", "--browser", "chromium", "--headless", "--isolated"] },
+    "browser-2": { "command": "npx", "args": ["-y", "@playwright/mcp@latest", "--browser", "chromium", "--headless", "--isolated"] },
+    "browser-3": { "command": "npx", "args": ["-y", "@playwright/mcp@latest", "--browser", "chromium", "--headless", "--isolated"] },
+    "browser-4": { "command": "npx", "args": ["-y", "@playwright/mcp@latest", "--browser", "chromium", "--headless", "--isolated"] },
+    "browser-5": { "command": "npx", "args": ["-y", "@playwright/mcp@latest", "--browser", "chromium", "--headless", "--isolated"] },
+    "browser-6": { "command": "npx", "args": ["-y", "@playwright/mcp@latest", "--browser", "chromium", "--isolated"] },
+    "browser-7": { "command": "npx", "args": ["-y", "@playwright/mcp@latest", "--browser", "chromium", "--headless", "--isolated"] },
+
+    "openregister": {
+      "type": "http",
+      "url": "http://nextcloud.local/index.php/apps/openregister/api/mcp",
+      "headers": {
+        "Authorization": "Basic ${OPENREGISTER_BASIC_AUTH}"
+      }
+    }
+  }
+}
+```
+
+Een paar dingen om te weten:
+
+- **`"type": "http"`** is de HTTP-transport-selector van Claude Code. De MCP-spec noemt hetzelfde transport `streamable-http`; Claude Code accepteert beide spellingen als aliassen.
+- **`${OPENREGISTER_BASIC_AUTH}`** wordt op het moment van server-start uit je shell-omgeving gelezen. Als de variabele niet gezet is op het moment dat Claude Code start, faalt het parsen van de server-entry — dat is het symptoom dat zegt "draai die `export` opnieuw".
+- De Nextcloud-session-id (de `Mcp-Session-Id`-header die je anders zelf zou moeten beheren) wordt door Claude Code's MCP-client automatisch geregeld als onderdeel van de `initialize`-handshake. Die zet je niet zelf.
+
+## Stap 5: vertrouw de nieuwe server in `.claude/settings.json`
+
+De `.claude/settings.json` van je project heeft al `enableAllProjectMcpServers: true` (uit Workstation Deel 4) — dat blijft staan. Wat je nu toevoegt is een permission-regel voor de openregister-toolaanroepen, zodat achtergrondagents niet stilzwijgend geweigerd worden:
+
+```json
+{
+  "enableAllProjectMcpServers": true,
+  "permissions": {
+    "allow": [
+      "mcp__browser-*",
+      "mcp__openregister"
+    ]
+  }
+}
+```
+
+`mcp__openregister` dekt elke tool die de server aanbiedt (`registers`, `schemas`, `objects`) zonder ze stuk voor stuk te noemen. Wil je strikter zijn — bijvoorbeeld `objects` read-only toestaan maar voor register-edits een approval afdwingen — dan is de per-tool-vorm `mcp__openregister__registers`, `mcp__openregister__schemas`, `mcp__openregister__objects`.
+
+## Stap 6: VS Code opnieuw laden en verifiëren
+
+`Ctrl+Shift+P` → **"Developer: Reload Window"**.
+
+Open het MCP-servers-paneel (`/MCP servers` in het chat-invoerveld, of `Ctrl+Shift+P` → "MCP servers"). Je hoort nu **acht** entries te zien: de zeven Playwright-browsers van eerder, plus een nieuwe `openregister`-regel met **Connected**.
+
+Als `openregister` als enige rood staat:
+
+- Draai de `curl` uit Stap 1 opnieuw — bevestig dat de server zelf bereikbaar is.
+- Print `echo "${OPENREGISTER_BASIC_AUTH:0:12}…"` in een *verse* terminal. Is hij daar leeg, dan is VS Code gestart vanuit een shell die de export niet had — start VS Code opnieuw vanuit een terminal mét de variabele gezet, of zet de `export` in `~/.bashrc`.
+- Kijk in het Output-paneel (`Ctrl+Shift+P` → "Output: Focus on Output" → **Claude VSCode**). Een 401 betekent dat de basic-auth-header verkeerd is; een 403 wijst meestal op een ingetrokken app-password of dat de gebruiker geen rechten heeft op het register dat je targeteert.
+
+## Stap 7: stel Claude je eerste MCP-gedreven vraag
+
+In een Claude Code-sessie binnen hetzelfde project:
+
+> Lijst elk register op mijn lokale OpenRegister, met het aantal objecten per schema.
+
+Claude zou `mcp__openregister__registers` met `action: list` moeten aanroepen, voor elk register `mcp__openregister__schemas` met dezelfde action, en dan het antwoord samenstellen. Je ziet de tool-calls in het output-paneel terwijl ze gebeuren.
+
+Een handige vervolgvraag — om te bevestigen dat de reads echt zijn en niet verzonnen:
+
+> Pak voor het eerste register het meest recente object, en print zijn UUID en updated-at-timestamp.
+
+Komt het antwoord overeen met wat je in de OpenRegister-UI voor hetzelfde register ziet, dan staat het correct aangesloten.
+
+## Wat de server precies aanbiedt
+
+Wil je later weten wat er aanbod is zonder de source te lezen, vraag het Claude:
+
+> Gebruik `tools/list` en `resources/list` van de openregister-MCP-server en vat ze samen.
+
+Op het moment van schrijven zijn de tools:
+
+| Tool | Acties | Notitie |
+| --- | --- | --- |
+| `registers` | `list`, `get`, `create`, `update`, `delete` | Top-level datacontainers. |
+| `schemas` | `list`, `get`, `create`, `update`, `delete` | JSON Schema-definities binnen een register. |
+| `objects` | `list`, `get`, `create`, `update`, `delete` | Objecten gevalideerd tegen een schema, opgeslagen in een register. Alle acties vereisen zowel `register` als `schema` (integer-ID's). |
+
+En de resources (read-only, aanspreekbaar via `@openregister:openregister://…`):
+
+| URI | Wat hij teruggeeft |
+| --- | --- |
+| `openregister://registers` | Alle registers. |
+| `openregister://schemas` | Alle schema's. |
+| `openregister://objects/{register}/{schema}` | Alle objecten in één register + schema-combinatie. |
+| `openregister://registers/{id}` | Eén register op ID. |
+| `openregister://schemas/{id}` | Eén schema op ID. |
+| `openregister://objects/{register}/{schema}/{id}` | Eén object op samengestelde sleutel. |
+
+De audit-trail is geen aparte MCP-tool — hij wordt geserveerd als object-historie door dezelfde `objects`-familie. Vraag Claude om "de audit-trail van object X" en hij kiest de juiste call.
+
+<Troubleshooting title="Probleemoplossing">
+  <TroubleshootingItem symptom="Het MCP-servers-paneel toont `openregister` als failed, zonder duidelijke fout">
+    Draai opnieuw <code>curl http://nextcloud.local/index.php/apps/openregister/api/mcp/v1/discover</code> (vervang de host als die van jou afwijkt). Faalt <em>die</em> ook, dan is de Nextcloud-app niet geactiveerd, of staat Nextcloud in maintenance mode na een mislukte upgrade — draai <code>occ upgrade</code> opnieuw vanuit Stap 1. Werkt hij wel, dan zit de fout in auth — zie de twee items hieronder.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="401 Unauthorized in het Claude VSCode-output-paneel">
+    De basic-auth-header heeft de server niet bereikt, of is misvormd. Exporteer <code>OPENREGISTER_BASIC_AUTH</code> opnieuw in dezelfde shell waarin je VS Code gaat starten, en reload. Check ook dat de gebruikersnaam dezelfde is als waarvoor je het app-password hebt gegenereerd.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="403 Forbidden terwijl het gisteren nog werkte">
+    App-password is ingetrokken. Open Nextcloud → Persoonlijk → Beveiliging → Apparaten en sessies; als je <code>claude-mcp-openregister</code>-entry weg is (of als verlopen wordt getoond), maak een nieuw app-password aan en bouw de base64-string met de nieuwe waarde opnieuw op.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Een achtergrondagent faalt met `tool call denied` voor `mcp__openregister__objects`">
+    Je <code>.claude/settings.json</code> mist de openregister-allow-regel. Controleer dat de <code>permissions.allow</code>-array <code>"mcp__openregister"</code> bevat (dekt alle tools) of de specifieke tool-naam, en reload.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="De server staat op Connected, maar een tool call geeft een server-side fout ('Unknown tool …', een PHP-stack trace, enz.)">
+    De aansluiting is in orde — de fout zit upstream in OpenRegister. Pull je <code>apps-extra/openregister</code>-checkout naar de laatste stand, draai <code>occ upgrade</code> opnieuw, en probeer het nog eens. Faalt het dan nog, dan staat de echte exception meestal in de Nextcloud-logs: <code>docker compose -f /pad/naar/nextcloud-docker-dev/docker-compose.yml logs nextcloud | grep -i openregister | tail -50</code>.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="De variabele-expansion werkt niet — het paneel zegt dat de entry geen geldige JSON is">
+    <code>{'${OPENREGISTER_BASIC_AUTH}'}</code> expandeert alleen als de variabele gezet is op het moment dat Claude Code start. Krijg je hem niet in <code>~/.bashrc</code>, gebruik dan de default-value-vorm <code>{'${OPENREGISTER_BASIC_AUTH:-not-set}'}</code> — de entry parseert dan, en de server faalt op een duidelijkere auth-fout in plaats van een JSON-fout.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+## Test jezelf
+
+Vijf korte vragen om het mentale model te checken. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
+
+<div className="tutorial-quiz">
+
+**1. Waarom gebruikt deze MCP-server HTTP-transport en niet het stdio-transport dat de Playwright-browsers gebruiken?**
+
+<Details summary="Hint">
+
+Waar draait de OpenRegister-code eigenlijk? En hoe bereikt Claude een draaiend proces versus een remote service?
+
+</Details>
+
+<Details summary="Antwoord">
+
+De Playwright-browsers worden **door Claude Code zelf** gestart — elke `browser-N`-entry is een `npx`-commando dat een vers lokaal proces opspint waarmee Claude over stdin/stdout praat. Dat is het "stdio"-transport: Claude beheert de lifecycle.
+
+De OpenRegister MCP-server daarentegen leeft **binnen de Nextcloud-PHP-app** die al draait op je lokale Nextcloud. Het is een long-running HTTP-endpoint dat JSON-RPC over POST serveert. Claude kan (en moet) hem niet starten — hij belt hem alleen. Dat is precies waar HTTP-transport voor bestaat.
+
+Vuistregel: stdio voor wat Claude on demand moet opstarten, HTTP voor wat al draait en meerdere clients bedient.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Waarom een Nextcloud app-password en niet je gewone accountwachtwoord?**
+
+<Details summary="Hint">
+
+Denk aan scope, intrekbaarheid, en wat een gelekt credential een aanvaller toestaat.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Drie redenen, in volgorde van belang:
+
+1. **Met één klik in te trekken.** Komt een Claude-log in een bugreport terecht of wordt je laptop gestolen, dan ga je naar Persoonlijk → Beveiliging → Apparaten en sessies en verwijder je de `claude-mcp-openregister`-entry. Je accountwachtwoord blijft overal anders werken.
+2. **Gelabeld.** Een app-password heeft een naam — kijk je over zes maanden naar je Nextcloud-security-pagina, dan zie je welk secret bij welk gebruik hoort zonder te gokken.
+3. **Geen 2FA-dans.** Accountwachtwoorden lopen tegen Nextcloud's tweefactor-flow aan bij elke nieuwe sessie, wat een MCP-server niet kan voltooien. App-passwords zijn ontworpen om die niet-interactief-mogelijke stap veilig te omzeilen.
+
+Dit is niet specifiek voor OpenRegister — het is dezelfde logica die zegt dat je voor git-remotes SSH-keys moet gebruiken in plaats van wachtwoorden.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. De credentials staan in een omgevingsvariabele, niet rechtstreeks in `.mcp.json`. Waarom is dat belangrijk, en welke failure-mode ruil je daarvoor in?**
+
+<Details summary="Hint">
+
+`.mcp.json` wordt conventioneel gecommit. Omgevingsvariabelen niet. Wat is de failure als de variabele niet gezet is?
+
+</Details>
+
+<Details summary="Antwoord">
+
+`.mcp.json` is **project-scoped en wordt gecommit naar git** zodat het hele team met één clone dezelfde MCP-setup heeft. `Authorization: Basic <secret>` direct in dat bestand zetten zou het secret in de versiehistorie laten lekken zodra iemand pusht.
+
+`${OPENREGISTER_BASIC_AUTH}` gebruiken houdt het bestand veilig te commiten: elke developer maakt z'n eigen app-password en exporteert z'n eigen variabele. Het bestand is identiek op alle machines; het secret is per-user.
+
+De ruil is een **silent setup-failure**: als de variabele niet gezet is op het moment dat Claude Code start, faalt de parsing van de server-entry of geeft de eerste call een 401, en de developer heeft geen idee waarom. Daarom leunt de probleemoplossing hierboven op een `curl`-sanity-check en een partial `echo` van de variabele voordat we iets anders veronderstellen.
+
+De default-value-vorm `${OPENREGISTER_BASIC_AUTH:-not-set}` is een handige tussenoplossing — de entry parseert, de auth-call faalt luid, en de foutmelding wijst recht op de oorzaak.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. De OpenRegister MCP-server biedt drie tools, elk een CRUD-multiplexer met een `action`-parameter — niet vijftien losse tools (`register.list`, `register.get`, `register.create`, …). Wat is de afweging?**
+
+<Details summary="Hint">
+
+Denk aan wat Claude per server in zijn context-window ziet en hoe hij kiest welke tool aan te roepen.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Drie tools die elk een `action`-parameter hebben houden de **tool-telling per server laag**, wat ertoe doet omdat elke MCP-tooldefinitie context-tokens kost bij session-start (tenzij tool-search aanstaat). Drie tools is vijftien regels schema; vijftien tools is vijfenzeventig regels schema. Over al je MCP-servers heen telt dat op.
+
+De kostpost is dat Claude over de `action`-parameter zelf moet redeneren — hij kan niet gewoon "zien" dat `register.list` bestaat, hij moet kijken naar het schema van de `registers`-tool, de `action`-enum bekijken, en `list` kiezen. Voor een capabel model is dat een non-issue; voor een kleiner of ouder model leidt het soms tot een gemiste call.
+
+Met Claude Code's tool-search standaard aan kantelt deze afweging iets: tools worden sowieso uitgesteld totdat ze nodig zijn, dus de context-besparing wint minder. De multiplex-vorm wint nog steeds op consistentie — elke CRUD-operatie ziet er hetzelfde uit, ongeacht tegen welke entiteit.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. Wanneer schrijf je je eigen MCP-server in plaats van — bijvoorbeeld — een Claude Skill die de OpenRegister-REST-API rechtstreeks aanroept?**
+
+<Details summary="Hint">
+
+Skills leven binnen Claude's proces. MCP-servers leven erbuiten en volgen een protocol. Wat verandert er als je die grens oversteekt?
+
+</Details>
+
+<Details summary="Antwoord">
+
+Schrijf een **Skill** als het gedrag dat je wilt *Claude-side* is: een prompt, een procedure, een checklist, een transformatie die op de conversation werkt. Skills zijn markdown + optionele scripts; ze leven in de repo en versioneren mee met je code.
+
+Schrijf een **MCP-server** als het gedrag *service-side* is, én:
+
+1. **Meerdere clients moeten dezelfde toegang hebben.** De MCP-server van OpenRegister is bruikbaar voor Claude Code, Claude Desktop, en elke toekomstige MCP-aware editor. Een Skill zou je in elk daarvan opnieuw moeten implementeren.
+2. **De data zit aan de andere kant van een netwerkgrens.** Een Skill die met een remote service praat heeft alsnog een HTTP-client, error-handling en auth nodig — allemaal dingen die het MCP-protocol al standaardiseert.
+3. **Je wilt herbruikbare resources en tools blootstellen aan welke assistant dan ook.** Een MCP-server definieert een stabiel contract (`tools/list`, `resources/list`); een Skill is privé voor jouw installatie.
+
+De Conduction MCP-server in OpenRegister is een leerboekvoorbeeld van de juiste keuze: de datalaag is een long-lived service die meerdere AI-clients willen bevragen, en het protocoloppervlak is klein genoeg (CRUD over registers, schema's, objects) om het contract stabiel te houden. Een Skill voor hetzelfde zou 5× zoveel code zijn en alleen voor Claude bruikbaar.
+
+Voor een uitgebreide rondleiding wanneer welk van de twee past, zie [Claude Skills tutorial — Deel 1: Wat zijn Claude Skills?](/nl/academy/claude-skills-tutorial-1-what-are-claude-skills).
+
+</Details>
+
+</div>
+
+<NextSteps title="Wat nu" lede="Je hebt een werkende datalaag-MCP-server. Twee logische vervolgstappen:">
+  <NextStep
+    title="Bouw een Nextcloud-app op de Conduction-stack"
+    href="/nl/academy/build-an-app-tutorial-0-three-paths"
+    description="De oriëntatieronde voor het app-bouwtraject. Met OpenRegister + MCP aangesloten wordt de OpenRegister + nextcloud-vue-route de minst weerbarstige manier om een echte app uit te brengen."
+  />
+  <NextStep
+    title="Claude Skills tutorial-leerlijn"
+    href="/nl/academy/claude-skills-tutorial-1-what-are-claude-skills"
+    description="Skills zijn de andere helft van de toolkit: gedragingen die Claude meedraagt, niet services die Claude aanroept. Het antwoord op vraag vijf was de korte versie; deze leerlijn is de lange."
+  />
+  <NextStep
+    title="Het OpenRegister-project op Codeberg"
+    href="https://codeberg.org/Conduction/openregister"
+    description="Verandert het tools/resources-oppervlak van de MCP-server ooit, dan is de bron lib/Controller/McpServerController.php en de services onder lib/Service/Mcp/."
+  />
+</NextSteps>
+
+<ContactCta
+  title="MCP-server blijft rood?"
+  body="De meeste failures zijn óf de curl-sanity-check (Nextcloud of OpenRegister draait niet) óf de basic-auth-header (variabele niet geëxporteerd in de shell waaruit VS Code is gestart). Is geen van die twee de oorzaak, stuur dan de exacte regel uit het Claude VSCode-output-paneel — we triagen vanaf daar."
+  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=OpenRegister%20MCP-tutorial" }}
+/>

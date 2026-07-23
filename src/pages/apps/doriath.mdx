@@ -1,0 +1,85 @@
+---
+title: Doriath, Conduction
+description: Zero-knowledge encrypted secrets manager for Nextcloud. Personal vaults, team sharing, application credentials. Beta.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+<DetailHero
+  background="cobalt"
+  appId="doriath"
+  crumb={[{label: 'Apps', href: '/apps'}, 'Doriath']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.2.10"
+  locales="NL · EN"
+  title="Doriath"
+  tagline={<>A zero-knowledge encrypted secrets manager for <span className="next-blue">Nextcloud</span>. A personal vault for every user, secret sharing for teams, and a write-without-read credential store for applications.</>}
+  intro={<>Doriath stores secrets — passwords, API keys, tokens, SSH keys, certificates, database credentials — encrypted at rest with RSA-4096 and AES-256, protected by a private Certificate Authority Doriath bootstraps and manages on your instance. Your master password is never stored: not even the server administrator can read your secrets. Not yet listed on the Nextcloud app store — install from source while it finishes its public beta.</>}
+  secondaryCta={{label: 'Follow progress', href: 'https://codeberg.org/Conduction/doriath'}}
+  tertiaryCta={{label: 'Read the docs', href: 'https://doriath.conduction.nl'}}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="A vault that lives where your team already works."
+        align="stack"
+        lede="Doriath leverages Nextcloud's own users, groups, notifications and unified search instead of rebuilding them — so sharing a secret is as natural as sharing a file."
+      />
+      <FeatureList>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>}
+          title="Zero-knowledge encryption."
+        >
+          RSA-4096 encrypts every secret; AES-256 protects the private key behind your master password, which is never stored. A private Certificate Authority (root + intermediate) signs every user and application certificate and renews itself automatically.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+          title="Personal vault, folders, unified search."
+        >
+          Every user gets a private vault organised in folders, with fuzzy search and a copy-to-clipboard list view. Secrets surface in Nextcloud's unified search bar without ever exposing a decrypted value.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M17 20h5v-2a4 4 0 0 0-3-3.87M9 20H4v-2a4 4 0 0 1 3-3.87M16 3.13a4 4 0 0 1 0 7.75M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/></svg>}
+          title="Sharing built for teams."
+        >
+          Share a secret with a user or a Nextcloud group, with sync-on-update and one-click revocation. Send a password-protected link with a usage limit, or a write-without-read request link so a colleague can submit a credential you can never read. Temporary ownership delegation covers the case where an owner is unavailable.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20"/><path d="M6 12h4"/></svg>}
+          title="Application credentials, not just passwords."
+        >
+          Applications register through CSR-based onboarding, receive an admin approval queue, and get write-without-read secrets they can push but never read back in plaintext. Registered applications exchange a signed JWT assertion (RFC 7523) for a short-lived Bearer token to call the API.
+        </FeatureItem>
+      </FeatureList>
+    </div>
+    <PartnersForApp slug="doriath" />
+  </div>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="The apps Doriath connects to."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
+      name="OpenRegister"
+      why="Doriath is the storage leaf behind OpenRegister's credential broker — application-owned secrets, custody kept in Doriath, never in an OR object."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="Want to use Doriath when it ships?"
+  lede={<>Doriath is in public beta, ahead of its first Nextcloud app store listing. Reach out and we'll keep you in the loop.</>}
+  primaryCta={{label: 'Talk to a partner', href: '/partners'}}
+  secondaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/doriath'}}
+/>
