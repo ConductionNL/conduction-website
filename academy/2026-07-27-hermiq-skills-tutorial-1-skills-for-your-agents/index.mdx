@@ -1,0 +1,259 @@
+---
+slug: hermiq-skills-tutorial-1-skills-for-your-agents
+title: "Hermiq skills tutorial series — Part 1: Skills for your agents"
+contentType: tutorial
+authors: [conduction]
+date: 2026-07-27
+summary: Give a Hermiq agent a new capability without writing code. Browse the skills catalog, read the seeded examples, install a skill onto an agent, and author your own skill by hand or in conversation. Part 1 of 4.
+tags: [Hermiq, AI, Agents, Skills, OpenRegister, Tutorial series]
+apps: [hermiq, openregister]
+durationMinutes: 25
+series: hermiq-skills-tutorial
+partNumber: 1
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+  Troubleshooting,
+  TroubleshootingItem,
+} from '@conduction/docusaurus-preset/components';
+
+:::tip Also useful first — the Claude Skills tutorial series
+Hermiq skills use the same idea as Claude Code skills: a Markdown document that teaches
+an agent one capability. If the concept is new to you,
+[part 1 of the Claude Skills series](/academy/claude-skills-tutorial-1-wat-zijn-claude-skills)
+(10 minutes) is a good primer. This series stands on its own, though.
+:::
+
+A Hermiq agent gets new capabilities through **skills**: Markdown documents in the
+open [agentskills.io](https://agentskills.io) format, stored as OpenRegister objects.
+In this part you browse the skills catalog, read the anatomy of the seeded example
+skills, install one onto an agent, and author your own skill twice: once by hand in
+the markdown form, once in conversation with the seeded `skill-creator` skill.
+
+{/* truncate */}
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>What an agent skill is: agentskills.io frontmatter, a Markdown body, and optional auxiliary files.</Outcome>
+  <Outcome>How to browse the skills catalog and read the four seeded example skills.</Outcome>
+  <Outcome>How to install a skill onto an agent, and how to detach it again.</Outcome>
+  <Outcome>How to author a skill by hand with the markdown form, including pasting a full agentskills.io package.</Outcome>
+  <Outcome>How to author a skill in conversation, and why a chat-authored skill lands quarantined.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>A running Nextcloud with <a href="/apps/openregister">OpenRegister</a> installed and enabled. No Nextcloud yet? Follow <a href="/academy/run-nextcloud-locally">Run Nextcloud locally with Docker</a> first.</PrerequisiteItem>
+  <PrerequisiteItem>The Hermiq app installed and enabled. On first enable it seeds its registers and the example skills this tutorial uses.</PrerequisiteItem>
+  <PrerequisiteItem>An account with admin rights.</PrerequisiteItem>
+  <PrerequisiteItem>For step 5 only: an LLM provider configured in Hermiq's admin settings, so the chat surface can respond.</PrerequisiteItem>
+</Prerequisites>
+
+In the examples we use the local dev environment at `http://localhost:8080` with
+`admin:admin`. Replace those with your own host and credentials.
+
+## What a skill is
+
+A skill is one capability, written down so an agent can perform it well. The
+agentskills.io format keeps it to three parts:
+
+```
+---
+name: woo-request-triage
+description: Triage an incoming WOO request — use when a new WOO/Woo-verzoek arrives and needs routing, deadline and exemption pre-check.
+version: 0.1.0
+---
+# WOO Request Triage
+
+<the body: numbered steps, rules, guardrails, examples>
+```
+
+- **Frontmatter**: YAML with at least `name` and `description`. The description doubles
+  as the trigger: it tells an agent when to reach for this skill.
+- **Body**: the SKILL.md content. How to do the job, in plain Markdown.
+- **Files**: optional auxiliary files such as `references/exemption-grounds.md` or
+  `examples/tender-summary-example.md`. Larger skills move detail out of the body and
+  into these.
+
+Hermiq stores each skill as an OpenRegister object, scoped to your organisation.
+Import and export are byte-for-byte: a skill you export is exactly the package you
+imported or authored, so skills travel in and out of Hermiq without loss.
+
+## Step 1: Open the skills catalog
+
+Open **Hermiq** from the Nextcloud app menu, then pick **Skills** in the left
+navigation. You land on the catalog at `/skills`.
+
+A fresh install shows four seeded skills:
+
+<div className="hex-grid">
+  <HexCard title="skill-creator">
+    Teaches an agent to interview you and draft a well-formed SKILL.md. You use it in
+    step 5 for conversational authoring.
+  </HexCard>
+  <HexCard title="meeting-notes-cleanup">
+    A deliberately minimal example: valid structure, weak trigger description. Part 2
+    uses it to show why maturity level 1 is not enough.
+  </HexCard>
+  <HexCard title="woo-request-triage">
+    A compact municipal example: triage an incoming WOO request with routing, deadline,
+    and exemption pre-check. Part 3 measures this one with paired evals.
+  </HexCard>
+  <HexCard title="tender-summary">
+    The most complete seed: reference files, examples, seeded learnings, and a pending
+    improvement draft. Parts 2 and 4 build on it.
+  </HexCard>
+</div>
+
+Each row shows a **maturity badge** of seven dots. The seeds ship at levels 1, 2, and 4
+on purpose; Part 2 explains the ladder behind the dots.
+
+{/* TODO(screenshot): skills catalog list with the four seeded skills and their maturity dot badges. No pending-capture convention exists in academy yet; replace this comment with a real capture before publishing. */}
+
+**Verify:** the catalog lists `skill-creator`, `meeting-notes-cleanup`,
+`woo-request-triage`, and `tender-summary`.
+
+## Step 2: Read a skill's anatomy
+
+Click the `woo-request-triage` row. The skill detail page at `/skills/:id` opens.
+
+Look for four things:
+
+1. **Name and description.** The description starts with a verb and says when to use
+   the skill. That is trigger quality, and Part 2 scores it mechanically.
+2. **The body.** A short procedural SKILL.md: numbered triage steps and guardrails
+   such as "Never name real persons in the triage note; use role names."
+3. **Files.** This seed has none. Open `tender-summary` for comparison: it carries
+   `references/exemption-grounds.md` and `examples/tender-summary-example.md`.
+4. **State.** Every skill has a lifecycle state: `active`, `stale`, `archived`, or
+   `quarantined`. Only `active` skills are ever loaded into an agent's run context.
+
+**Verify:** you can read the frontmatter, body, and state on the detail page, and
+`tender-summary` shows auxiliary files where `woo-request-triage` shows none.
+
+## Step 3: Install a skill onto an agent
+
+Skills do nothing until an agent carries them. Installing associates the skill with
+one agent; the agent's next run loads the skill's content into its context.
+
+1. Open **Agents** in the left navigation. Pick an existing agent, or create one with
+   **Add agent** (a name and a short instruction are enough for this tutorial).
+2. Go back to **Skills**. On the `woo-request-triage` row, open the row actions and
+   choose **Install**.
+3. Pick your agent and confirm.
+
+Detaching is the same move in reverse: the row actions offer a detach that removes the
+association on both sides. Detaching a skill that is not installed is a safe no-op.
+
+:::warning Only active skills reach the run
+A skill in `stale`, `archived`, or `quarantined` state is never loaded into a run,
+even while it is installed on the agent. If an installed skill has no effect, check
+its state first.
+:::
+
+**Verify:** open your agent's detail page. The installed skill is listed under its
+skills. The skill's detail page lists the agent under its installations.
+
+## Step 4: Author a skill with the markdown form
+
+The catalog's **Add skill** button opens a purpose-built authoring form, not a generic
+object dialog. It gives you a markdown editor for the body, plain fields for name,
+description, and frontmatter, and an editor for auxiliary files.
+
+1. Click **Add skill**.
+2. Fill in a name: `pet-store-order-summary`.
+3. Fill in a description that says what and when:
+   `Summarise a pet store order — use when the user pastes an order JSON and wants totals, status, and follow-ups.`
+4. Write a short body:
+
+   ```markdown
+   # Pet store order summary
+
+   1. Parse the pasted order JSON (id, petId, quantity, shipDate, status).
+   2. Report the order id, the pet, the quantity, and the ship date in one line each.
+   3. Flag status `placed` orders older than 7 days as follow-ups.
+   4. Never invent fields that are not in the order.
+   ```
+
+5. Save.
+
+The form also accepts a paste of a **full agentskills.io package**: a leading `---`
+fenced frontmatter block followed by the body. Hermiq splits it into structured
+frontmatter and body on import, never storing it as one opaque blob.
+
+**Verify:** `pet-store-order-summary` appears in the catalog with state `active`, and
+opening it shows your frontmatter and body separately.
+
+## Step 5: Author a skill in conversation
+
+Hand-writing a SKILL.md is fine once you know the format. The seeded `skill-creator`
+skill lets an agent do the interviewing instead.
+
+This step needs an LLM provider configured in Hermiq's admin settings. Without one,
+read along and come back later.
+
+1. Install `skill-creator` onto your agent (step 3, same move).
+2. Open **Chat**, pick your agent, and ask:
+   `Help me write a skill that turns raw meeting notes into a decision list.`
+3. The agent interviews you: one capability, one trigger line, then a drafted
+   SKILL.md in a fenced package.
+4. On the assistant message with the finished draft, choose **Save as skill**. The
+   authoring form from step 4 opens, pre-filled with the drafted content.
+5. Review, adjust the name and description, and save.
+
+A chat-authored skill lands in the **quarantined** state, not `active`. Content that
+an LLM produced goes through the same review gate as content imported from outside:
+someone approves it before any agent can use it. That is deliberate; a skill is
+instruction content, and instruction content gets reviewed.
+
+{/* TODO(screenshot): the Save as skill action on an assistant chat message, with the pre-filled SkillFormModal open. Replace with a real capture before publishing. */}
+
+**Verify:** your new skill appears in the catalog with state `quarantined`, and it
+cannot be installed into a run until it is approved.
+
+## What you get
+
+A catalog you can read, an agent that carries a skill, and two skills of your own:
+one hand-written and active, one chat-authored and waiting for review. The maturity
+dots on every row are the thread this series follows next.
+
+<Troubleshooting>
+  <TroubleshootingItem symptom="The catalog is empty on a fresh install">
+    The seeds run as repair steps on enable. Disable and re-enable the Hermiq app, or
+    run <code>occ maintenance:repair</code>, then reload the catalog.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="An installed skill does not change the agent's behaviour">
+    Check the skill's state on its detail page. Only <code>active</code> skills are
+    loaded into a run. A <code>stale</code> skill (the curator marks unused skills)
+    stays installed but silent; edit or re-activate it.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Save as skill does not appear in chat">
+    The action shows on assistant messages. Check that your agent has
+    <code>skill-creator</code> installed and that its state is <code>active</code>,
+    and that an LLM provider is configured so the agent can answer at all.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+## Where to go from here
+
+You now have skills in the catalog with maturity dots you have not yet earned. Part 2
+qualifies a skill against the L1 to L7 maturity ladder and reads the scorecard that
+explains every dot.
+
+<NextSteps>
+  <NextStep
+    title="Part 2 — Qualifying a skill (L1–L7)"
+    href="/academy/hermiq-skills-tutorial-2-qualifying-a-skill">
+    The maturity ladder, the Qualify action, what each mechanical check means, and attesting L4 as a curator.
+  </NextStep>
+  <NextStep
+    title="Claude Skills tutorial series — Part 1"
+    href="/academy/claude-skills-tutorial-1-wat-zijn-claude-skills">
+    The same skill idea applied to Claude Code, where the L1–L7 model was first written down.
+  </NextStep>
+</NextSteps>
