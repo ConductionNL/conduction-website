@@ -24,6 +24,8 @@ import {
   TroubleshootingItem,
 } from '@conduction/docusaurus-preset/components';
 
+import pairedRunImg from './images/01-paired-run-detail.png';
+
 A skill that "feels right" can still add nothing, or make the agent worse. Paired
 evals answer the question with two runs of the same cases: one with the skill, one
 without. In this part you use the seeded `woo-triage-paired-eval` dataset to run a
@@ -162,7 +164,10 @@ zero means the skill adds nothing on these cases. A negative delta means the age
 did better without the skill; over-prescriptive skills do this more often than you
 would expect.
 
-{/* TODO(screenshot): a completed paired run on the dataset detail page, both halves side by side with the per-skill baseline delta visible. Replace with a real capture before publishing. */}
+<figure>
+  <img src={pairedRunImg} alt="A completed paired run on the dataset detail page: the run history row reads 100% pass rate, 67% baseline, a First run regression-gate badge and status Completed; the expanded details are titled 'Paired baseline — joint contribution of the linked set' with a table for woo-request-triage showing 100% with skill, 67% without skill and a +33 pp baseline delta, above side-by-side 'With skills — per case' and 'Without skills — per case' lists where the first case reads passed with the skill and failed without it" />
+  <figcaption>The expanded paired run: the per-skill delta table on top, both per-case halves below. Case 1 is the one the skill turned around — <em>failed</em> without, <em>passed</em> with, hence the +33 pp delta.</figcaption>
+</figure>
 
 **Verify:** the run detail shows `passRate`, `baselinePassRate`, and a
 `baselineDelta` for `woo-request-triage`.

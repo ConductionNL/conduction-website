@@ -24,6 +24,9 @@ import {
   TroubleshootingItem,
 } from '@conduction/docusaurus-preset/components';
 
+import catalogImg from './images/01-skills-catalog-maturity-dots.png';
+import saveAsSkillImg from './images/02-save-as-skill-modal.png';
+
 :::tip Also useful first — the Claude Skills tutorial series
 Hermiq skills use the same idea as Claude Code skills: a Markdown document that teaches
 an agent one capability. If the concept is new to you,
@@ -113,7 +116,10 @@ A fresh install shows four seeded skills:
 Each row shows a **maturity badge** of seven dots. The seeds ship at levels 1, 2, and 4
 on purpose; Part 2 explains the ladder behind the dots.
 
-{/* TODO(screenshot): skills catalog list with the four seeded skills and their maturity dot badges. No pending-capture convention exists in academy yet; replace this comment with a real capture before publishing. */}
+<figure>
+  <img src={catalogImg} alt="The Hermiq skills catalog in table view with the four seeded skills — skill-creator, meeting-notes-cleanup, woo-request-triage and tender-summary — each row showing a seven-dot maturity badge reading L0, L1, L2 and L4, an active state chip, a local source chip, and the row actions Qualify, Export, Publish, Publish to GitHub and Install" />
+  <figcaption>The skills catalog on a fresh install: four seeded skills, each with a seven-dot maturity badge. The spread — L0 through L4 — is deliberate; Part 2 explains the ladder behind the dots.</figcaption>
+</figure>
 
 **Verify:** the catalog lists `skill-creator`, `meeting-notes-cleanup`,
 `woo-request-triage`, and `tender-summary`.
@@ -211,7 +217,10 @@ an LLM produced goes through the same review gate as content imported from outsi
 someone approves it before any agent can use it. That is deliberate; a skill is
 instruction content, and instruction content gets reviewed.
 
-{/* TODO(screenshot): the Save as skill action on an assistant chat message, with the pre-filled SkillFormModal open. Replace with a real capture before publishing. */}
+<figure>
+  <img src={saveAsSkillImg} alt="The Create skill modal opened over the dimmed chat thread via the Save as skill action on an assistant message: a package-paste area at the top, empty Name, Description and Frontmatter fields, and the Body (SKILL.md) editor pre-filled with the drafted meeting-notes-to-decisions package in a split markdown view" />
+  <figcaption><strong>Save as skill</strong> on the assistant's drafted package opens the authoring form from step 4, pre-filled with the message content — review, name it, and save. It lands <code>quarantined</code> until someone approves it.</figcaption>
+</figure>
 
 **Verify:** your new skill appears in the catalog with state `quarantined`, and it
 cannot be installed into a run until it is approved.
