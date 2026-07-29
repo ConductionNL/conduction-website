@@ -17,8 +17,8 @@
 
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","@id":"https://www.conduction.nl/#org","name":"Conduction B.V.","alternateName":"Conduction","url":"https://www.conduction.nl/","logo":"https://www.conduction.nl/img/brand/avatar-conduction-gold-on-white.svg","foundingDate":"2019","description":"Dutch open-source software company building EUPL-1.2 apps for the Nextcloud workspace.","address":{"@type":"PostalAddress","streetAddress":"Lauriergracht 14h","postalCode":"1016 RR","addressLocality":"Amsterdam","addressCountry":"NL"},"email":"info@conduction.nl","telephone":"+31-85-303-6840","taxID":"NL860784241B01","vatID":"NL860784241B01","identifier":{"@type":"PropertyValue","propertyID":"KvK","value":"76741850"},"sameAs":["https://codeberg.org/Conduction","https://www.linkedin.com/company/conduction/"]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","@id":"https://www.conduction.nl/#website","url":"https://www.conduction.nl/","name":"Conduction","publisher":{"@id":"https://www.conduction.nl/#org"},"inLanguage":["en","nl"]}</script><link rel="stylesheet" href="/nl/assets/css/styles.01a3c9bd.css">
-<script src="/nl/assets/js/runtime~main.cefa4063.js" defer="defer"></script>
-<script src="/nl/assets/js/main.32cce0c8.js" defer="defer"></script>
+<script src="/nl/assets/js/runtime~main.530f6641.js" defer="defer"></script>
+<script src="/nl/assets/js/main.73ab3a04.js" defer="defer"></script>
 </head>
 <body>
 <svg style="display: none;"><defs>
@@ -64,13 +64,13 @@ the four-week deadline, and an exemption pre-check.</li>
 one dataset can qualify several skills, and a skill can be measured before it is ever
 installed on an agent.</p>
 <ol>
-<li>On the dataset detail page, open the skill panel. It lists the linked
+<li>On the dataset detail page, open the <strong>Linked skills</strong> panel. It lists the linked
 <code>woo-request-triage</code>.</li>
 <li>Link a second skill, for example your <code>pet-store-order-summary</code> from Part 1, then
 unlink it again. Both are plain object writes; there is no separate link endpoint.</li>
 </ol>
 <p>Leave only <code>woo-request-triage</code> linked for the rest of this part.</p>
-<p><strong>Verify:</strong> the skill panel reflects each link and unlink immediately.</p>
+<p><strong>Verify:</strong> the Linked skills panel reflects each link and unlink immediately.</p>
 <h2 id="step-3-pick-the-agents-baseline-mode">Step 3: Pick the agent&#x27;s baseline mode</h2>
 <p>The agent decides how the without-half is constructed, via its <code>evalBaselineMode</code>
 property on the agent detail page. Open the info affordance next to the property; the
@@ -89,8 +89,8 @@ cost consequence in place.</p>
 <ol>
 <li>On the dataset detail page, open the run panel.</li>
 <li>Pick the agent that carries <code>woo-request-triage</code> (Part 1, step 3).</li>
-<li>Enable the <strong>baseline</strong> toggle. It is only available because the dataset has a
-linked skill; on a dataset without <code>skillRefs</code> a baseline run is refused.</li>
+<li>Enable the <strong>Paired baseline</strong> toggle. It is only available because the dataset
+has a linked skill; on a dataset without <code>skillRefs</code> a baseline run is refused.</li>
 <li>Read the cost note next to the toggle: roughly 2x in joint mode. Confirm and run.</li>
 </ol>
 <p>The halves execute sequentially, so a paired run takes noticeably longer than a plain
@@ -111,10 +111,9 @@ cases into a pass.</li>
 completed run for this dataset and agent. A drop beyond the threshold records a
 failed gate. Your first run records <code>not_applicable</code>.</li>
 </ul>
-<p>Two outcomes should worry you, and the display is honest about both. A delta near
-zero means the skill adds nothing on these cases. A negative delta means the agent
-did better without the skill; over-prescriptive skills do this more often than you
-would expect.</p>
+<p>Two outcomes deserve attention. A delta near zero means the skill adds nothing on
+these cases. A negative delta means the agent did better without the skill;
+over-prescriptive skills do this more often than you would expect.</p>
 <figure><img src="/nl/assets/images/01-paired-run-detail-425eccd493e4bd22618578d8f32ef827.png" alt="A completed paired run on the dataset detail page: the run history row reads 100% pass rate, 67% baseline, a First run regression-gate badge and status Completed; the expanded details are titled &#x27;Paired baseline — joint contribution of the linked set&#x27; with a table for woo-request-triage showing 100% with skill, 67% without skill and a +33 pp baseline delta, above side-by-side &#x27;With skills — per case&#x27; and &#x27;Without skills — per case&#x27; lists where the first case reads passed with the skill and failed without it"><figcaption>The expanded paired run: the per-skill delta table on top, both per-case halves below. Case 1 is the one the skill turned around — <em>failed</em> without, <em>passed</em> with, hence the +33 pp delta.</figcaption></figure>
 <p><strong>Verify:</strong> the run detail shows <code>passRate</code>, <code>baselinePassRate</code>, and a
 <code>baselineDelta</code> for <code>woo-request-triage</code>.</p>
@@ -141,8 +140,8 @@ says so; the evidence waits, contiguity holds.</p>
 <p>A measured skill. The badge now rests on a with/without comparison through the real
 engine, and the scorecard shows when it was last validated. When the skill&#x27;s content
 changes, the trend on the eval evidence card tells you whether it is drifting.</p>
-<section class="section_YYzi"><h2 class="title_nh4Z">Troubleshooting</h2><div class="list_DQDT"><div class="item_ntin"><div class="symptom_HVuK"><span class="icon_D4wa" aria-hidden="true">!</span><code class="symptomText_QEXL">The baseline toggle is disabled</code></div><div class="body_piwG"><p>The dataset has no linked skills. Link at least one skill in the skill panel;
-baseline runs on an unlinked dataset are rejected.</p></div></div><div class="item_ntin"><div class="symptom_HVuK"><span class="icon_D4wa" aria-hidden="true">!</span><code class="symptomText_QEXL">The run ends as blocked_budget or blocked_killswitch</code></div><div class="body_piwG"><p>The same gates that stop a scheduled run stop an eval run, before any case
+<section class="section_YYzi"><h2 class="title_nh4Z">Troubleshooting</h2><div class="list_DQDT"><div class="item_ntin"><div class="symptom_HVuK"><span class="icon_D4wa" aria-hidden="true">!</span><code class="symptomText_QEXL">The Paired baseline toggle is disabled</code></div><div class="body_piwG"><p>The dataset has no linked skills. Link at least one skill in the Linked skills
+panel; baseline runs on an unlinked dataset are rejected.</p></div></div><div class="item_ntin"><div class="symptom_HVuK"><span class="icon_D4wa" aria-hidden="true">!</span><code class="symptomText_QEXL">The run ends as blocked_budget or blocked_killswitch</code></div><div class="body_piwG"><p>The same gates that stop a scheduled run stop an eval run, before any case
 executes. Check the organisation&#x27;s budget hard cap and kill-switch under tenant
 operations, then re-run.</p></div></div><div class="item_ntin"><div class="symptom_HVuK"><span class="icon_D4wa" aria-hidden="true">!</span><code class="symptomText_QEXL">The rubric case fails with an error message about model policy</code></div><div class="body_piwG"><p>Judge calls go through the same provider chokepoint as every other LLM call, so
 tenant model policy applies to them too. The case records the violation and fails;
