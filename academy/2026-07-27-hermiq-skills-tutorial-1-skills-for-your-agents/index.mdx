@@ -148,7 +148,7 @@ Skills do nothing until an agent carries them. Installing associates the skill w
 one agent; the agent's next run loads the skill's content into its context.
 
 1. Open **Agents** in the left navigation. Pick an existing agent, or create one with
-   **Add agent** (a name and a short instruction are enough for this tutorial).
+   **Add Agent** (a name and a short instruction are enough for this tutorial).
 2. Go back to **Skills**. On the `woo-request-triage` row, open the row actions and
    choose **Install**.
 3. Pick your agent and confirm.
@@ -167,11 +167,11 @@ skills. The skill's detail page lists the agent under its installations.
 
 ## Step 4: Author a skill with the markdown form
 
-The catalog's **Add skill** button opens a purpose-built authoring form, not a generic
+The catalog's **Add Skill** button opens a purpose-built authoring form, not a generic
 object dialog. It gives you a markdown editor for the body, plain fields for name,
 description, and frontmatter, and an editor for auxiliary files.
 
-1. Click **Add skill**.
+1. Click **Add Skill**.
 2. Fill in a name: `pet-store-order-summary`.
 3. Fill in a description that says what and when:
    `Summarise a pet store order — use when the user pastes an order JSON and wants totals, status, and follow-ups.`
@@ -212,10 +212,10 @@ read along and come back later.
    authoring form from step 4 opens, pre-filled with the drafted content.
 5. Review, adjust the name and description, and save.
 
-A chat-authored skill lands in the **quarantined** state, not `active`. Content that
-an LLM produced goes through the same review gate as content imported from outside:
-someone approves it before any agent can use it. That is deliberate; a skill is
-instruction content, and instruction content gets reviewed.
+A chat-authored skill lands in the **quarantined** state, not `active`. The body of
+a skill is injected into every future run that loads it. So a curator reviews and
+approves chat-authored content before any agent can use it. Skills imported from
+outside pass through the same gate.
 
 <figure>
   <img src={saveAsSkillImg} alt="The Create skill modal opened over the dimmed chat thread via the Save as skill action on an assistant message: a package-paste area at the top, empty Name, Description and Frontmatter fields, and the Body (SKILL.md) editor pre-filled with the drafted meeting-notes-to-decisions package in a split markdown view" />

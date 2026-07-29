@@ -4,7 +4,7 @@ title: "Hermiq skills tutorial series — Part 2: Qualifying a skill (L1–L7)"
 contentType: tutorial
 authors: [conduction]
 date: 2026-07-27
-summary: Run the Qualify action on the seeded skills, read the seven-level scorecard, fix a failing level, and attest L4 as a curator. Honest about why most skills stop at L4. Part 2 of 4.
+summary: Run the Qualify action on the seeded skills, read the seven-level scorecard, fix a failing level, and attest L4 as a curator. Also covers why most skills stop at L4, and why that is fine. Part 2 of 4.
 tags: [Hermiq, AI, Skills, Maturity, Governance, Tutorial series]
 apps: [hermiq, openregister]
 durationMinutes: 20
@@ -60,7 +60,7 @@ through n minus 1 also pass.
 | **L6** | Self-improvement | A living learnings loop with consolidation |
 | **L7** | Workforce | The skill demonstrably runs inside an executed orchestration chain |
 
-Three honest observations before you touch anything:
+Three things to know before you touch anything:
 
 - **L1 to L3 are mechanical.** Hermiq computes them from the skill's content. No
   judgement involved.
@@ -120,7 +120,8 @@ the description's trigger quality.
 
 ## Step 3: Fix the failing level and re-qualify
 
-The scorecard is a to-do list. Fix the one thing it names.
+The scorecard tells you what to fix first. For `meeting-notes-cleanup` that is the
+description.
 
 1. Edit `meeting-notes-cleanup` (the authoring form from Part 1).
 2. Replace the description with a trigger-quality one:
@@ -133,8 +134,8 @@ moved to L3 with a missing references/examples reason.
 
 To reach L3 you would add at least one `references/*` or `examples/*` entry in the
 files editor. Try it on your own `pet-store-order-summary` skill from Part 1: add
-`examples/order-summary-example.md` with one worked example, re-qualify, and watch
-L3 pass.
+`examples/order-summary-example.md` with one worked example and re-qualify. L3 now
+passes.
 
 ## Step 4: Attest L4 as a curator
 
@@ -147,7 +148,7 @@ must be mapped to the `skill.attest-maturity` action in Hermiq's admin settings.
 2. Open the `woo-request-triage` detail page. After step 3-style fixes it sits at the
    level its content earns.
 3. Use the **Attest L4** action on the maturity scorecard and add a short note, for
-   example: `Checked against our WOO intake procedure, routing table is ours.`
+   example: `Checked routing and deadlines against our municipality's WOO process documentation.`
 4. The attestation records who attested, when, and the note, then recomputes the
    level.
 
@@ -168,21 +169,22 @@ exactly the situation most real skills live in:
 - **L5 fails with an eval-evidence reason.** No paired eval run has written evidence
   for this skill yet.
 
-You cannot fix that from this page, and that is the point. L5 evidence has exactly one
-writer: a completed paired eval run. Hand-editing `maturityLevel` does not work
-either; the write paths silently ignore client-supplied maturity fields and carry the
-stored values forward. The only way up is real measurement, which is Part 3.
+You cannot fix this from the skill page. L5 evidence has exactly one writer: a
+completed paired eval run. Hand-editing `maturityLevel` does not work either; the
+write paths silently ignore client-supplied maturity fields and carry the stored
+values forward. Part 3 sets up and runs that eval.
 
 **Verify:** the `tender-summary` scorecard reports L5 failed with a reason pointing
 at missing eval evidence.
 
 ## Why most skills plateau at L4
 
-The ladder is not a grade to maximise. L5 costs eval datasets and roughly double the
-tokens per run. L6 costs a capture and consolidation loop. L7 costs an orchestrated
-chain that actually executes. For a skill you use weekly, L4 with a fresh attestation
-is a healthy resting place. Push to L5 and beyond for the skills that carry daily
-workflows or steer other skills, where "feels right" stops being good enough.
+Most skills stop at L4, and that is a reasonable place to stop. L5 costs eval
+datasets and roughly double the tokens per run. L6 costs a capture and consolidation
+loop. L7 costs an orchestrated chain that actually executes. For a skill you use
+weekly, L4 with a fresh attestation is enough. Reserve L5 and beyond for the skills
+that carry daily workflows or steer other skills. For those, measured evidence is
+worth the extra cost.
 
 ## Test yourself
 
@@ -217,7 +219,7 @@ bare noun phrase. What level does Qualify report, and why?
 
 ## Where to go from here
 
-Your skills now have honest badges and one named gap: eval evidence. Part 3 links an
+Your skills now have accurate badges and one named gap: eval evidence. Part 3 links an
 eval dataset to a skill, runs a paired with-and-without baseline, and watches the L5
 evidence arrive on the scorecard.
 

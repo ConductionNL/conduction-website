@@ -38,22 +38,22 @@ republish surfaces that keep the whole loop reversible.
 <Outcomes title="What you'll learn in this part">
   <Outcome>How the learnings loop works: capture from real runs, candidates, and mechanical promotion.</Outcome>
   <Outcome>How a self-improvement draft is proposed, scanned, eval-gated, and put in front of you.</Outcome>
-  <Outcome>How to review a draft: the diff, the provenance, and the evidence, then accept, edit-then-accept, or reject.</Outcome>
+  <Outcome>How to review a draft: the diff, the provenance, and the evidence, then accept, edit, or reject.</Outcome>
   <Outcome>How version history, diff, and rollback work, and what a rollback never touches.</Outcome>
-  <Outcome>How the "published copy is behind" badge and one-click Republish keep GitHub in sync, never automatically.</Outcome>
+  <Outcome>How the "Published copy is behind" badge and one-click Republish keep GitHub in sync, never automatically.</Outcome>
 </Outcomes>
 
 <Prerequisites title="What you need">
   <PrerequisiteItem>Part 2 done: <a href="/academy/hermiq-skills-tutorial-2-qualifying-a-skill">Qualifying a skill</a>. Parts 1 and 2 introduce the seeded <code>tender-summary</code> skill this part revolves around.</PrerequisiteItem>
   <PrerequisiteItem>An account whose group is mapped to the <code>skill.review-draft</code> action in Hermiq's admin settings. Admins pass by default.</PrerequisiteItem>
-  <PrerequisiteItem>Part 3 is recommended but not required: the draft flow uses eval evidence when a dataset is linked, and honestly flags when there is none.</PrerequisiteItem>
+  <PrerequisiteItem>Part 3 is recommended but not required: the draft flow uses eval evidence when a dataset is linked, and flags when there is none.</PrerequisiteItem>
 </Prerequisites>
 
 <Eyebrow>The learnings loop</Eyebrow>
 
 ## Step 1: Read a skill's learnings
 
-Open the `tender-summary` detail page and its **Learnings** tab. The seed ships with
+Open the `tender-summary` detail page and its **Learnings** card. The seed ships with
 demo content so you can see the shape before any real run has happened.
 
 Two files live in the skill's own files map, so they travel with every export:
@@ -66,16 +66,16 @@ Two files live in the skill's own files map, so they travel with every export:
   Work, Mistakes to Avoid, Domain Knowledge, Open Questions, and Consolidated
   Principles.
 
-The Learnings tab renders `learnings.md` read-only, with the candidate count and the
+The Learnings card renders `learnings.md` read-only, with the candidate count and the
 last capture and promotion timestamps. There is no edit button, on purpose: no user,
 and no agent, writes learnings directly.
 
 <figure>
   <img src={learningsImg} alt="The read-only Learnings card on tender-summary: an activity strip reading Promoted learnings 6, Open candidates 2, and last capture and last promotion timestamps, above the rendered sections Patterns That Work, Mistakes to Avoid, Domain Knowledge, Open Questions and Consolidated Principles, ending with the note that learnings are captured automatically and this view is read-only" />
-  <figcaption>The Learnings tab on the seeded <code>tender-summary</code>: the activity strip on top, the five fixed sections below, and no edit affordance anywhere — capture and promotion are the only writers.</figcaption>
+  <figcaption>The Learnings card on the seeded <code>tender-summary</code>: the activity strip on top, the five fixed sections below, and no edit affordance anywhere — capture and promotion are the only writers.</figcaption>
 </figure>
 
-**Verify:** the Learnings tab shows populated sections and an activity strip, and
+**Verify:** the Learnings card shows populated sections and an activity strip, and
 offers no edit affordance.
 
 ## Step 2: Understand what gets captured, and what never does
@@ -118,7 +118,7 @@ Before you ever see a draft, it has passed two gates:
    draft-versus-active eval runs with everything else frozen. A draft that scores
    strictly worse than the active version is auto-discarded, with both pass rates in
    the audit note. A skill with no linked dataset still produces a reviewable draft,
-   honestly flagged as having no eval evidence.
+   flagged as having no eval evidence.
 
 The seed ships `tender-summary` with one draft already in review, so open its detail
 page. The review card shows everything the decision needs:
@@ -127,10 +127,11 @@ page. The review card shows everything the decision needs:
 - The **provenance**: the driving learnings entries, the trigger, and the pinned base
   version the draft diffs against.
 - The **scan verdict** and the **eval delta**, or the explicit no-eval-evidence flag.
-  The seeded draft carries the flag, so you practise the honest worst case.
+  The seeded draft carries this flag, so you practise deciding without eval evidence.
 
 **Verify:** the review card renders diff, provenance, a clean scan verdict, and the
-no-eval-evidence flag, with Accept, Edit-then-accept, and Reject available.
+no-eval-evidence flag, with **Accept**, **Edit, then accept**, and **Reject**
+available.
 
 ## Step 4: Decide the draft
 
@@ -138,14 +139,17 @@ Three decisions exist, all behind the `skill.review-draft` action:
 
 - **Accept** applies the proposed content onto the skill as a new version through the
   normal versioned write path, and stamps the skill's last-accepted timestamp.
-- **Edit-then-accept** lets you modify the proposal first. Your edit is recorded, and
-  it invalidates the prior scan and eval results: pre-qualification re-runs over your
-  edited content before the draft can be approved from anywhere. You remain the
-  author of record.
+- **Edit, then accept** lets you modify the proposal first. Your edit is recorded,
+  and it invalidates the prior scan and eval results: pre-qualification re-runs over
+  your edited content before the draft can be approved from anywhere. The accepted
+  version is recorded under your name, not the agent's.
 - **Reject** closes the draft. You can mark specific driving learnings as bad;
   marked entries are excluded from driving the next proposal.
 
-Accept the seeded draft (or reject it; both exercise the real path). The decision
+A workable default: read the diff first. Accept when the eval delta is neutral or
+better and the driving learnings look right. Reject otherwise, and mark the bad
+learnings so the next proposal skips them. For the seeded draft, either decision
+exercises the real path. The decision
 also flows through Hermiq's generic approval inbox: every draft in review has a
 linked Approval carrying a deep link and the full evidence, so an approver can decide
 from the inbox without opening the skill. Every transition lands in the audit trail.
@@ -187,7 +191,7 @@ A skill published to GitHub carries its provenance: owner, repository, and the
 timestamp of the last publish. When you accept a draft on such a skill, the accepted
 version postdates the published one, and Hermiq raises the signal:
 
-- A **"published copy is behind"** badge on the catalog row and the detail page.
+- A **"Published copy is behind"** badge on the catalog row and the detail page.
 - One notification to the publisher per newly-behind transition.
 - A one-click **Republish** action, behind the same publish authorization as the
   original publish.
@@ -209,8 +213,8 @@ badge, and Republish clears it.
 The full loop, with a human at every gate: runs produce candidates, promotion turns
 confirmed candidates into learnings, consolidation proposes a draft, the scan and the
 eval gate filter it, you decide it, versions make it reversible, and republish is a
-deliberate act. That is what "self-improving" means here: the skill drafts, you
-author.
+deliberate act. In Hermiq a self-improving skill proposes its own next version, and
+a person approves every version that ships.
 
 ## Test yourself
 
@@ -262,6 +266,6 @@ the same maturity model runs in the development workflow.
 
 <ContactCta
   title="Running agents in your organisation?"
-  body="We help Dutch governments and organisations run AI agents with governance that holds up. Tell us what you want your agents to do and we'll think along."
+  body="Send us an email with what you want your agents to do. We're happy to think along about skills, evals, and approval flows."
   cta={{ label: "Email Conduction", href: "mailto:info@conduction.nl?subject=Hermiq%20skills%20tutorial" }}
 />
