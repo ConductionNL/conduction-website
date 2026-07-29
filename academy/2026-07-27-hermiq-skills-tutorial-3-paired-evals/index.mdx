@@ -95,14 +95,14 @@ The skill link lives on the dataset, in its `skillRefs` list. That direction mat
 one dataset can qualify several skills, and a skill can be measured before it is ever
 installed on an agent.
 
-1. On the dataset detail page, open the skill panel. It lists the linked
+1. On the dataset detail page, open the **Linked skills** panel. It lists the linked
    `woo-request-triage`.
 2. Link a second skill, for example your `pet-store-order-summary` from Part 1, then
    unlink it again. Both are plain object writes; there is no separate link endpoint.
 
 Leave only `woo-request-triage` linked for the rest of this part.
 
-**Verify:** the skill panel reflects each link and unlink immediately.
+**Verify:** the Linked skills panel reflects each link and unlink immediately.
 
 ## Step 3: Pick the agent's baseline mode
 
@@ -134,8 +134,8 @@ cost consequence in place.
 
 1. On the dataset detail page, open the run panel.
 2. Pick the agent that carries `woo-request-triage` (Part 1, step 3).
-3. Enable the **baseline** toggle. It is only available because the dataset has a
-   linked skill; on a dataset without `skillRefs` a baseline run is refused.
+3. Enable the **Paired baseline** toggle. It is only available because the dataset
+   has a linked skill; on a dataset without `skillRefs` a baseline run is refused.
 4. Read the cost note next to the toggle: roughly 2x in joint mode. Confirm and run.
 
 The halves execute sequentially, so a paired run takes noticeably longer than a plain
@@ -159,10 +159,9 @@ Open the completed run.
   completed run for this dataset and agent. A drop beyond the threshold records a
   failed gate. Your first run records `not_applicable`.
 
-Two outcomes should worry you, and the display is honest about both. A delta near
-zero means the skill adds nothing on these cases. A negative delta means the agent
-did better without the skill; over-prescriptive skills do this more often than you
-would expect.
+Two outcomes deserve attention. A delta near zero means the skill adds nothing on
+these cases. A negative delta means the agent did better without the skill;
+over-prescriptive skills do this more often than you would expect.
 
 <figure>
   <img src={pairedRunImg} alt="A completed paired run on the dataset detail page: the run history row reads 100% pass rate, 67% baseline, a First run regression-gate badge and status Completed; the expanded details are titled 'Paired baseline — joint contribution of the linked set' with a table for woo-request-triage showing 100% with skill, 67% without skill and a +33 pp baseline delta, above side-by-side 'With skills — per case' and 'Without skills — per case' lists where the first case reads passed with the skill and failed without it" />
@@ -201,9 +200,9 @@ engine, and the scorecard shows when it was last validated. When the skill's con
 changes, the trend on the eval evidence card tells you whether it is drifting.
 
 <Troubleshooting>
-  <TroubleshootingItem symptom="The baseline toggle is disabled">
-    The dataset has no linked skills. Link at least one skill in the skill panel;
-    baseline runs on an unlinked dataset are rejected.
+  <TroubleshootingItem symptom="The Paired baseline toggle is disabled">
+    The dataset has no linked skills. Link at least one skill in the Linked skills
+    panel; baseline runs on an unlinked dataset are rejected.
   </TroubleshootingItem>
   <TroubleshootingItem symptom="The run ends as blocked_budget or blocked_killswitch">
     The same gates that stop a scheduled run stop an eval run, before any case
