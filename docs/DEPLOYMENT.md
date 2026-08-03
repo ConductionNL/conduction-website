@@ -52,6 +52,24 @@ So the full flow after merging a PR to `development` is:
 2. run `deliver-website.sh`,
 3. spot-check `https://www.conduction.nl`.
 
+## Retired: the Forgejo deploy workflow
+
+`.forgejo/workflows/documentation.yml` was removed on 2026-08-03. It
+triggered on pushes to a `documentation` branch on Codeberg and called the
+shared deploy workflow with `cf-project-name: conduction-website-docs` — a
+Cloudflare Pages project that **does not exist** on the account. The only
+projects are `conduction-website`, `hermiq-docs` and
+`nextcloud-vue-conduction`.
+
+It was Codeberg-era leftover. GitHub is primary again for this repo, and the
+GitHub Documentation workflow above is the real pipeline. Had the Forgejo
+workflow ever fired it would have created a stray duplicate of the site under
+a second project name rather than updating production, so retiring it removes
+a trap rather than a capability.
+
+Do **not** "fix" it by pointing it at `conduction-website`: that would give
+two remotes an uncoordinated path to production.
+
 ## Exit paths from this setup
 
 Either of these removes the manual step:
