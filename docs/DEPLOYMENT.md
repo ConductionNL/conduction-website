@@ -8,12 +8,16 @@ reverse-engineer it from DNS again._
 
 ```
 merge to development
-  └─ Documentation workflow (.github/workflows/documentation.yml,
-     reusable workflow from ConductionNL/.github@main)
-       └─ builds the Docusaurus site (repo root, source-folder: .)
-       └─ publishes the build to the gh-pages branch   ← CI target
+  └─ Documentation workflow (.github/workflows/documentation.yml)
+       ├─ job `deploy` (reusable, ConductionNL/.github@main)
+       │    └─ builds the Docusaurus site (repo root, source-folder: .)
+       │    └─ publishes the build to the gh-pages branch   ← CI target
+       │                 │
+       └─ job `deploy-cloudflare`  (needs: deploy)
+            └─ uploads that gh-pages snapshot via wrangler
+               (inert until CLOUDFLARE_API_TOKEN is set; falls back
+                to the manual bridge below)
                     │
-                    │  (manual bridge, see below)
                     ▼
      Cloudflare Pages project `conduction-website`     ← PRODUCTION
        └─ www.conduction.nl is a proxied CNAME to
@@ -31,10 +35,28 @@ merge to development
 
 ## How a merge reaches production
 
-There is **no Cloudflare API token secret in this repository**, so CI cannot
-deploy to Cloudflare Pages. Until DNS reverts to GitHub Pages or a CF token
-secret is added, delivery is a one-command host-side step (Ruben's machine,
-where wrangler is OAuth-authenticated):
+The `deploy-cloudflare` job in `.github/workflows/documentation.yml` takes
+the `gh-pages` snapshot the build job just published and uploads it to the
+Cloudflare Pages project, so a merge to `development` reaches production on
+its own. It runs only on `development` (never on pull requests, never on the
+`documentation` branch) and refuses to deploy a snapshot with no
+`index.html`, so a partial checkout cannot overwrite a working site.
+
+**It is inert until `CLOUDFLARE_API_TOKEN` is set.** Without the secret the
+job logs a loud warning and succeeds, leaving the manual bridge below as the
+delivery mechanism. To switch automation on, add a repository secret:
+
+- **Name:** `CLOUDFLARE_API_TOKEN`
+- **Permission:** Account → Cloudflare Pages → Edit, on the Conduction account
+
+The account id is set inline in the workflow. It is not a secret; it appears
+in every dashboard URL.
+
+### Manual fallback
+
+Still valid whenever the secret is absent, a run is skipped, or production
+needs re-delivering out of band (Ruben's machine, where wrangler is
+OAuth-authenticated):
 
 ```bash
 bash ~/conduction-cf-failover/deliver-website.sh
@@ -45,12 +67,9 @@ runs `npx wrangler pages deploy <dir> --project-name conduction-website`,
 then echoes the deployment URL. It is idempotent — re-running deploys the
 same snapshot again, which is harmless.
 
-So the full flow after merging a PR to `development` is:
-
-1. wait for the **Documentation** workflow on `development` to finish
-   (it pushes the new build to `gh-pages`),
-2. run `deliver-website.sh`,
-3. spot-check `https://www.conduction.nl`.
+⚠️ It deploys **whatever is on `gh-pages`**, not your working tree. If you
+delivered a local build to production ahead of merging, running this before
+that work lands on `development` silently reverts it.
 
 ## Retired: the Forgejo deploy workflow
 

@@ -26,3 +26,59 @@ jobs:
       # Override the centralized workflow's `source-folder` default
       # ("docs") to point at the repo root.
       source-folder: .
+
+  # Production is the Cloudflare Pages project `conduction-website`, not
+  # GitHub Pages: www.conduction.nl has been a proxied CNAME to
+  # conduction-website.pages.dev since the GitHub Pages outage failover.
+  # The job above publishes the build to gh-pages; this one takes that
+  # exact snapshot and uploads it to Cloudflare, replacing the host-side
+  # `deliver-website.sh` bridge described in docs/DEPLOYMENT.md.
+  #
+  # It self-disables until CLOUDFLARE_API_TOKEN exists, so merging this is
+  # safe on its own: without the secret it logs a warning and succeeds.
+  # The token needs Account > Cloudflare Pages > Edit on the Conduction
+  # account. The account id is not a secret (it appears in dashboard URLs).
+  deploy-cloudflare:
+    needs: deploy
+    # Only the documented production lineage. Pull requests never deploy,
+    # and the `documentation` branch is not a production source.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/development'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for Cloudflare credentials
+        id: guard
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -n "$CF_API_TOKEN" ]; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo '::warning title=Cloudflare delivery skipped::CLOUDFLARE_API_TOKEN is not set, so production was not updated. gh-pages holds the new build; run deliver-website.sh by hand, or add the secret to automate this.'
+          fi
+
+      - name: Check out the gh-pages snapshot just published
+        if: steps.guard.outputs.ready == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: site
+
+      # A partial or empty gh-pages checkout would otherwise be uploaded
+      # over a working production site.
+      - name: Refuse to deploy an incomplete snapshot
+        if: steps.guard.outputs.ready == 'true'
+        run: |
+          test -f site/index.html || { echo "::error::gh-pages snapshot has no index.html — refusing to deploy."; exit 1; }
+          echo "snapshot: $(find site -type f | wc -l) files"
+
+      - name: Deploy to Cloudflare Pages
+        if: steps.guard.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: a2d03dfcc6758e48447baee66d7a8fa5
+        run: |
+          npx --yes wrangler@4 pages deploy site \
+            --project-name conduction-website \
+            --branch main \
+            --commit-dirty=true
