@@ -6,11 +6,37 @@ hide_table_of_contents: true
 
 import {DetailHero, Section, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
 
+{/* A processor, not a brain or a robot. The point of this page is that
+    the machine is a tool, so the icon should read as hardware rather
+    than as something that thinks. Stroke-only 24x24 to match the other
+    page icons (see PrivacyIcon in privacy.mdx). */}
 export const AiIcon = (
   <svg viewBox="0 0 24 24">
-    <path d="M12 2a5 5 0 0 1 5 5v1a4 4 0 0 1 0 8v1a5 5 0 0 1-10 0v-1a4 4 0 0 1 0-8V7a5 5 0 0 1 5-5z" />
-    <path d="M12 8v8M9 11h6" />
+    <rect x="7" y="7" width="10" height="10" rx="2" />
+    <path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4" />
   </svg>
+);
+
+{/* Defined as a component, not written inline in the page body. MDX parses
+    the children of a block-level JSX tag as markdown, so an inline
+    <blockquote> wrapping a <p> nests a paragraph inside a paragraph; the
+    HTML parser then splits that and the page fails hydration. Inside an
+    export the JSX is just JSX, and nothing is re-parsed. */}
+export const IbmQuote = () => (
+  <blockquote style={{margin: '4px 0 26px', padding: '18px 22px', background: 'var(--c-cobalt-50)', borderLeft: '3px solid var(--c-orange-knvb)', borderRadius: '0 6px 6px 0'}}>
+    <p style={{margin: 0, fontSize: 17, lineHeight: 1.5, fontWeight: 600, color: 'var(--c-cobalt-900)'}}>
+      “A computer can never be held accountable, therefore a computer must never make a management decision.”
+    </p>
+    <footer style={{marginTop: 10, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)'}}>
+      IBM training manual, 1979
+    </footer>
+  </blockquote>
+);
+
+export const PracticeNote = ({children}) => (
+  <div style={{marginTop: 24, padding: '16px 20px', background: 'var(--c-cobalt-50)', border: '1px solid var(--c-cobalt-100)', borderRadius: 6, fontSize: 13, lineHeight: 1.6, color: 'var(--c-cobalt-700)'}}>
+    {children}
+  </div>
 );
 
 export const USES = [
@@ -25,7 +51,10 @@ export const USES = [
         reads the result and merges it, or sends it back.
       </>
     ),
-    link: {label: 'Read the Hydra series in the academy', href: '/academy/tags/hydra'},
+    /* The academy landing page filters on ?series=, validated against the
+       series slugs found in post frontmatter. Points at the ordered
+       seven-part run rather than the tag page, which is an unordered pile. */
+    link: {label: 'Read the Hydra series in the academy', href: '/academy/?series=hydra-tutorial'},
   },
   {
     id: 'docs',
@@ -87,11 +116,15 @@ export const USES = [
 
 <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-orange-knvb)', marginBottom: 10}}>Human in the loop</div>
 
+IBM wrote this on a training slide in 1979. It has not aged a day.
+
+<IbmQuote />
+
 We are a human-in-the-loop organisation. That is one rule, and it applies everywhere.
 
 Nothing we produce is published on the say-so of a model. Code, documentation, blogs, research notes: a person reads the output, judges it, and decides. If nobody checked it, it does not ship.
 
-This matters for accountability. A model cannot be responsible for a claim. The person who published it can, and is. When you read something on this site, someone at Conduction stands behind it.
+Accountability is the whole reason. A model cannot answer for a claim. It cannot be sued, fired, or asked what it was thinking. The person who published it can, and is. When you read something on this site, someone at Conduction stands behind it.
 
 <div style={{marginTop: 28, paddingTop: 20, borderTop: '2px solid var(--c-cobalt-100)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 18}}>
   {[
@@ -144,9 +177,17 @@ This matters for accountability. A model cannot be responsible for a claim. The 
 
 <div style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 8, boxShadow: '0 2px 16px rgba(33, 70, 139, 0.06)', padding: '36px clamp(20px, 4vw, 48px)', maxWidth: 820, margin: '24px auto 0'}}>
 
-Our blogs deserve a separate answer, because the question behind it is fair. Did a person write this, or did a machine.
+We are developers. Geeks and nerds, at core. We write code, not blogs.
 
-A person wrote it.
+Good writing means putting yourself in the reader's head. Being thoughtful. Empathic. Building a model of another person's mind so you can predict what they will feel about a sentence before they read it.
+
+Written down like that, it is also roughly the job description of a sociopath. We are fine with this.
+
+The honest problem is narrower. We have thoughts worth sharing and we are not natural writers. AI is how the thought gets out of the head and onto the page in a shape someone else enjoys reading. For a person with something to say and no gift for saying it, that is not a convenience. It is an irreplaceable tool.
+
+The value is not volume. Anyone can generate an endless amount of content, and most of it is slop. The value is the opposite of volume: one specific idea, from one specific person, made readable.
+
+So the answer to the question behind this section, did a person write this or did a machine, is that a person wrote it.
 
 The idea comes from a human. So does the subject, the angle, and the scope we set for the piece. The point being made is a human point. The opinion in it is a human opinion. If an article argues something, someone here believes that argument and put their name on it.
 
@@ -178,8 +219,34 @@ The editing is human. A person decides what goes in, what comes out, and what th
 
 <Section spacing="default">
 
+## Where this sits in the AI Act
+
+<div style={{maxWidth: 820, margin: '0 auto'}}>
+
+The EU AI Act's transparency rules apply from 2 August 2026. People keep asking which banner we owe them, so here is the plain answer.
+
+**Article 50(4)** covers AI-generated or AI-manipulated text published to inform the public on matters of public interest. Two things put us outside it, and either one is enough on its own.
+
+We do not publish on matters of public interest. We write about our own software, how we build it, and how to run it. That is a company writing about its own products, not journalism or public information.
+
+And the paragraph exempts content that has been through human review or editorial control, where a person or organisation holds editorial responsibility. Final editing here stays in human hands, and Conduction B.V. holds that responsibility.
+
+So Article 50 does not apply, and we are not obliged to put a banner on anything.
+
+We wrote this page anyway. Not to satisfy a rule, but because you should be able to see where the machine sits in our process and where the human hand is.
+
+**Article 50(1)** covers AI systems that interact with people directly: those systems have to make clear that you are talking to a machine. This website has no chatbot and no AI assistant. Nothing on it talks back. Where our products use AI, that is documented with the product rather than here.
+
+<PracticeNote>This page describes how we work. It is a statement of practice, not a claim of legal conformity, and not a claim of adherence to any code of practice we have not signed.</PracticeNote>
+
+</div>
+
+</Section>
+
+<Section spacing="default">
+
 <div style={{display: 'flex', gap: 12, flexWrap: 'wrap'}}>
-  <a href="/academy/tags/hydra" style={{padding: '10px 18px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+  <a href="/academy/?series=hydra-tutorial" style={{padding: '10px 18px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
     How Hydra writes our code →
   </a>
   <a href="/quality" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
@@ -204,6 +271,9 @@ The editing is human. A person decides what goes in, what comes out, and what th
   </FAQItem>
   <FAQItem question="Do you use our data to train models?">
     No. We do not train models on customer data. What we process, and why, is set out in our privacy policy.
+  </FAQItem>
+  <FAQItem question="Does the EU AI Act require you to label these pages?">
+    No. Article 50 does not apply to us, for two separate reasons, either of which is enough. We do not publish to inform the public on matters of public interest: we write about our own software. And final editing stays in human hands, which the article exempts explicitly, with Conduction B.V. holding editorial responsibility. So no banner is owed. We publish this page regardless, because you should be able to see where AI sits in our process and where the human hand is.
   </FAQItem>
   <FAQItem question="Which parts of a blog are the author's own?">
     The idea, the subject, the angle, the argument, and the conclusion. Those are human every time. AI contributes source material, a spelling check, and suggestions on phrasing. The author decides what to keep.
