@@ -29,7 +29,11 @@
  */
 
 import React, {useState, useCallback, useEffect} from 'react';
-import {CookieCli} from '@conduction/docusaurus-preset/components';
+/* Vendored, not from the preset. The version carrying the terminal shell
+   and the game (3.29.0) is not on npm yet, because publishing needs a
+   one-time password and the Codeberg job that used to do it is retired.
+   See src/components/CookieCli/README.md for how to undo this. */
+import CookieCli from '@site/src/components/CookieCli/CookieCli';
 
 /* Ask for the banner. Dispatched by the footer link and by the settings
    panel on /privacy; listened for here. */
