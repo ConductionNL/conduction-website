@@ -62,6 +62,13 @@ export function readConsent(page) {
 export async function openBannerFromFooter(page) {
   await page.locator('footer a[href$="#cookies"]').first().click();
   await page.locator(BANNER).waitFor({state: 'visible'});
+  /* Wait for the terminal input before returning. The banner is visible as
+     soon as it paints, but the shell reads keys through a listener attached
+     in an effect, so a keystroke sent in between is simply dropped and the
+     command arrives mangled. That shows up as a game that "did not boot",
+     which is a confusing way to learn about a race. This element only
+     exists once the component has mounted. */
+  await page.locator(`${BANNER} input[aria-label*="Terminal"]`).waitFor({state: 'attached'});
 }
 
 /**

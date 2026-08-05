@@ -18,6 +18,16 @@ import {defineConfig, devices} from '@playwright/test';
 
 const PORT = 4173;
 
+/* Point the same suite at a deployed site instead of a local build:
+ *
+ *   E2E_BASE_URL=https://www.conduction.nl npm run test:e2e
+ *
+ * Useful as a post-deploy smoke test, and the only way to check what
+ * visitors actually get rather than what the build produced. No local
+ * server is started in that mode. Expect timeouts are looser because the
+ * assertions now include a network. */
+const REMOTE = process.env.E2E_BASE_URL;
+
 export default defineConfig({
   testDir: './e2e',
   /* The cookie CLI tests type into a terminal and play a game that ticks on
@@ -31,7 +41,7 @@ export default defineConfig({
   reporter: process.env.CI ? [['list'], ['html', {open: 'never'}]] : [['list']],
 
   use: {
-    baseURL: `http://localhost:${PORT}`,
+    baseURL: REMOTE || `http://localhost:${PORT}`,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'off',
@@ -41,10 +51,12 @@ export default defineConfig({
     {name: 'chromium', use: {...devices['Desktop Chrome']}},
   ],
 
-  webServer: {
-    command: `npx docusaurus serve --port ${PORT} --no-open`,
-    url: `http://localhost:${PORT}/`,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  ...(REMOTE ? {} : {
+    webServer: {
+      command: `npx docusaurus serve --port ${PORT} --no-open`,
+      url: `http://localhost:${PORT}/`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+  }),
 });
