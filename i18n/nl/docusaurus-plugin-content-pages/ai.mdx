@@ -6,11 +6,36 @@ hide_table_of_contents: true
 
 import {DetailHero, Section, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
 
+{/* Een processor, geen brein of robot. Het punt van deze pagina is dat de
+    machine gereedschap is, dus het icoon moet als hardware lezen en niet
+    als iets dat denkt. Alleen lijnen, 24x24, net als de andere
+    pagina-iconen (zie PrivacyIcon in privacy.mdx). */}
 export const AiIcon = (
   <svg viewBox="0 0 24 24">
-    <path d="M12 2a5 5 0 0 1 5 5v1a4 4 0 0 1 0 8v1a5 5 0 0 1-10 0v-1a4 4 0 0 1 0-8V7a5 5 0 0 1 5-5z" />
-    <path d="M12 8v8M9 11h6" />
+    <rect x="7" y="7" width="10" height="10" rx="2" />
+    <path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4" />
   </svg>
+);
+
+{/* Als component gedefinieerd, niet inline in de pagina. MDX leest de
+    inhoud van een JSX-blok als markdown, dus een inline <blockquote> met
+    een <p> erin zet een alinea in een alinea; de HTML-parser splitst dat
+    en dan mislukt de hydration. Binnen een export is JSX gewoon JSX. */}
+export const IbmQuote = () => (
+  <blockquote style={{margin: '4px 0 26px', padding: '18px 22px', background: 'var(--c-cobalt-50)', borderLeft: '3px solid var(--c-orange-knvb)', borderRadius: '0 6px 6px 0'}}>
+    <p style={{margin: 0, fontSize: 17, lineHeight: 1.5, fontWeight: 600, color: 'var(--c-cobalt-900)'}}>
+      “A computer can never be held accountable, therefore a computer must never make a management decision.”
+    </p>
+    <footer style={{marginTop: 10, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)'}}>
+      IBM-trainingsmap, 1979
+    </footer>
+  </blockquote>
+);
+
+export const PracticeNote = ({children}) => (
+  <div style={{marginTop: 24, padding: '16px 20px', background: 'var(--c-cobalt-50)', border: '1px solid var(--c-cobalt-100)', borderRadius: 6, fontSize: 13, lineHeight: 1.6, color: 'var(--c-cobalt-700)'}}>
+    {children}
+  </div>
 );
 
 export const USES = [
@@ -29,7 +54,7 @@ export const USES = [
        de kaarten hieronder renderen een gewone <a>, geen Docusaurus <Link>, dus
        er wordt niets automatisch vertaald: zonder voorvoegsel belandt een
        Nederlandse lezer op de Engelse pagina. */
-    link: {label: 'Lees de Hydra-serie in de academy', href: '/nl/academy/tags/hydra'},
+    link: {label: 'Lees de Hydra-serie in de academy', href: '/nl/academy/?series=hydra-tutorial'},
   },
   {
     id: 'docs',
@@ -91,11 +116,15 @@ export const USES = [
 
 <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-orange-knvb)', marginBottom: 10}}>Human in the loop</div>
 
+IBM zette dit in 1979 op een dia in een trainingsmap. Het is geen dag verouderd.
+
+<IbmQuote />
+
 Wij zijn een human-in-the-loop-organisatie. Dat is één regel, en die geldt overal.
 
 Niets van wat wij maken wordt gepubliceerd op gezag van een model. Code, documentatie, blogs, onderzoeksnotities: een mens leest het resultaat, beoordeelt het en beslist. Is er niemand langs geweest, dan gaat het niet live.
 
-Dat is belangrijk voor de verantwoordelijkheid. Een model kan niet verantwoordelijk zijn voor een bewering. De mens die het publiceert wel, en is dat ook. Als je hier iets leest, staat iemand van Conduction erachter.
+Verantwoordelijkheid is de hele reden. Een model kan zich niet verantwoorden voor een bewering. Het kan niet worden aangeklaagd, ontslagen of gevraagd wat het dacht. De mens die het publiceert kan dat wel, en doet dat ook. Als je hier iets leest, staat iemand van Conduction erachter.
 
 <div style={{marginTop: 28, paddingTop: 20, borderTop: '2px solid var(--c-cobalt-100)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 18}}>
   {[
@@ -147,9 +176,17 @@ Dat is belangrijk voor de verantwoordelijkheid. Een model kan niet verantwoordel
 
 <div style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 8, boxShadow: '0 2px 16px rgba(33, 70, 139, 0.06)', padding: '36px clamp(20px, 4vw, 48px)', maxWidth: 820, margin: '24px auto 0'}}>
 
-Onze blogs verdienen een apart antwoord, want de vraag erachter is terecht. Heeft een mens dit geschreven, of een machine.
+Wij zijn ontwikkelaars. Geeks en nerds, in de kern. We schrijven code, geen blogs.
 
-Een mens heeft het geschreven.
+Goed schrijven betekent dat je in het hoofd van de lezer gaat zitten. Bedachtzaam zijn. Empathisch. Een model bouwen van andermans denken, zodat je kunt voorspellen wat iemand van een zin vindt voordat die hem leest.
+
+Zo opgeschreven is dat ook ongeveer de functieomschrijving van een sociopaat. Daar kunnen we mee leven.
+
+Het echte probleem is kleiner. We hebben gedachten die het delen waard zijn, en we zijn geen geboren schrijvers. AI is hoe die gedachte uit het hoofd op de pagina komt, in een vorm die een ander graag leest. Voor iemand met iets te zeggen en geen talent om het te zeggen is dat geen gemak. Het is onmisbaar gereedschap.
+
+De waarde zit niet in volume. Iedereen kan eindeloos veel content genereren, en het meeste daarvan is slob. De waarde is juist het omgekeerde van volume: één specifiek idee, van één specifiek persoon, leesbaar gemaakt.
+
+Het antwoord op de vraag achter deze paragraaf, heeft een mens dit geschreven of een machine, is dus dat een mens het geschreven heeft.
 
 Het idee komt van een mens. Net als het onderwerp, de invalshoek en de kaders die we voor een stuk stellen. Het punt dat gemaakt wordt is een menselijk punt. De mening erin is een menselijke mening. Als een artikel ergens voor pleit, gelooft iemand hier in dat pleidooi en heeft die er zijn naam onder gezet.
 
@@ -181,8 +218,38 @@ De redactie is mensenwerk. Een mens bepaalt wat erin gaat, wat eruit gaat en wat
 
 <Section spacing="default">
 
+## Hoe dit zich verhoudt tot de AI-verordening
+
+<div style={{maxWidth: 820, margin: '0 auto'}}>
+
+De transparantieregels van de Europese AI-verordening gelden vanaf 2 augustus 2026. We krijgen geregeld de vraag welke banner wij verschuldigd zijn, dus hier is het simpele antwoord.
+
+**Artikel 50(4)** gaat over met AI gegenereerde of bewerkte tekst die wordt gepubliceerd om het publiek te informeren over zaken van algemeen belang. Twee dingen plaatsen ons daarbuiten, en elk daarvan is op zichzelf al genoeg.
+
+Wij publiceren niet over zaken van algemeen belang. Wij schrijven over onze eigen software, hoe we die bouwen en hoe je die draait. Dat is een bedrijf dat over zijn eigen producten schrijft, geen journalistiek en geen publieksvoorlichting.
+
+En het artikel zondert inhoud uit die door menselijke controle of redactie is gegaan, waarbij een persoon of organisatie de redactionele verantwoordelijkheid draagt. De eindredactie blijft hier in menselijke handen, en Conduction B.V. draagt die verantwoordelijkheid.
+
+Artikel 50 is dus simpelweg niet van toepassing, en we hoeven nergens een banner op te zetten.
+
+Deze pagina hebben we toch geschreven. Niet om aan een regel te voldoen, maar omdat je moet kunnen zien waar in ons proces de machine zit en waar de menselijke hand.
+
+**Artikel 50(1)** gaat over AI-systemen die rechtstreeks met mensen communiceren: die moeten duidelijk maken dat je met een machine praat. Deze website heeft geen chatbot en geen AI-assistent. Niets hier praat terug. Waar onze producten AI gebruiken, staat dat bij het product beschreven en niet hier.
+
+**Artikel 4** is het artikel dat wél op ons van toepassing is. Sinds 2 februari 2025 vraagt het van iedereen die AI inzet om te zorgen dat de mensen die ermee werken het ook echt begrijpen. Geen certificaat, maar werkend begrip: waar het goed in is, waar het misgaat, en wanneer je het moet wantrouwen.
+
+Wij zien dat als een kwestie van aannemen en opleiden, niet van papierwerk. Iedereen die hier werk oplevert, gebruikt deze tools lang genoeg om te weten hoe ze falen. En juist omdat een model met veel zelfvertrouwen vloeiende onzin produceert, leest er altijd een mens overheen voordat iets naar buiten gaat. We schrijven ons eigen lesmateriaal bovendien in het openbaar: de [Hydra-serie in de academy](/nl/academy/?series=hydra-tutorial) laat zien hoe we met AI bouwen, zodat iedereen onze redenering kan controleren of overnemen.
+
+<PracticeNote>Deze pagina beschrijft hoe wij werken. Het is een verklaring over onze praktijk, geen claim van juridische conformiteit, en geen claim dat we een gedragscode volgen die we niet hebben ondertekend.</PracticeNote>
+
+</div>
+
+</Section>
+
+<Section spacing="default">
+
 <div style={{display: 'flex', gap: 12, flexWrap: 'wrap'}}>
-  <a href="/nl/academy/tags/hydra" style={{padding: '10px 18px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+  <a href="/nl/academy/?series=hydra-tutorial" style={{padding: '10px 18px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
     Hoe Hydra onze code schrijft →
   </a>
   <a href="/nl/quality" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
@@ -207,6 +274,9 @@ De redactie is mensenwerk. Een mens bepaalt wat erin gaat, wat eruit gaat en wat
   </FAQItem>
   <FAQItem question="Gebruiken jullie onze gegevens om modellen te trainen?">
     Nee. Wij trainen geen modellen op klantgegevens. Wat we verwerken, en waarom, staat in ons privacybeleid.
+  </FAQItem>
+  <FAQItem question="Verplicht de AI-verordening jullie deze pagina's te labelen?">
+    Nee. Artikel 50 is niet op ons van toepassing, om twee losse redenen die elk op zichzelf al volstaan. Wij publiceren niet om het publiek te informeren over zaken van algemeen belang: wij schrijven over onze eigen software. En de eindredactie blijft in menselijke handen, wat het artikel expliciet uitzondert, waarbij Conduction B.V. de redactionele verantwoordelijkheid draagt. Er is dus geen banner verschuldigd. We publiceren deze pagina toch, omdat je moet kunnen zien waar in ons proces AI zit en waar de menselijke hand.
   </FAQItem>
   <FAQItem question="Welke delen van een blog zijn van de auteur zelf?">
     Het idee, het onderwerp, de invalshoek, het betoog en de conclusie. Die zijn elke keer van een mens. AI levert bronmateriaal, een spellingcontrole en suggesties voor de formulering. De auteur bepaalt wat blijft staan.
