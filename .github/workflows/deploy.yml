@@ -44,7 +44,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Build, a Chromium download, and an e2e suite whose slowest test spends
+    # 40 seconds proving the game cannot end.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -63,13 +65,43 @@ jobs:
 
       # Runs prebuild (app-downloads) then `docusaurus build`, producing
       # build/ with the English site and build/nl/ with the Dutch one.
+      #
+      # GITHUB_TOKEN is not optional in practice. The prebuild step counts
+      # release-asset downloads across the ConductionNL repos, and an
+      # unauthenticated caller is rate-limited long before it finishes: the
+      # fetch then fails soft, keeps whatever app-downloads.json is
+      # committed, and the build goes green with frozen numbers. Since
+      # refreshing those numbers is the entire purpose of the nightly run,
+      # a silent fallback would make this job theatre.
       - name: Build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build
 
       - name: Check the build produced both locales
         run: |
           test -f build/index.html || { echo "::error::build/index.html missing"; exit 1; }
           test -f build/nl/index.html || { echo "::error::build/nl/index.html missing"; exit 1; }
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      # Runs against the build produced above, not a dev server, because the
+      # failures worth catching here only exist in a production build:
+      # hydration mismatches need a server-rendered page to hydrate, and the
+      # cookie CLI's styling depends on hashed CSS-module class names.
+      # This gates the deploy on purpose. A page that fails to hydrate looks
+      # perfect in a screenshot, so "it built" is not evidence it works.
+      - name: End-to-end tests
+        run: npm run test:e2e
+
+      - name: Upload the Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
 
       # `--branch main` is load-bearing and has nothing to do with this
       # repo's branches. Cloudflare Pages treats one branch name per project
