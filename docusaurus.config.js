@@ -202,6 +202,13 @@ module.exports = createConfig({
           {label: 'Quality',        to: '/quality'},
           {label: 'How we use AI',  to: '/ai'},
           {label: 'Identity',       href: 'https://identity.conduction.nl/'},
+          /* Cookies belongs in the legal bar next to Privacy / Terms,
+             but the preset's Footer hardcodes exactly three legal slots
+             (privacyTo / termsTo / isoTo) — adding a `cookies` key to
+             themeConfig.legalLinks renders nothing at all. Until the
+             preset grows a slot, the link lives here so the consent
+             banner is reachable after a choice has been stored. */
+          {label: 'Cookies',        to: '/privacy#cookies'},
         ],
       },
     ],
