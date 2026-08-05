@@ -1,93 +1,74 @@
 # Deployment architecture
 
-_Status: 2026-07-28. This file describes how the site actually reaches
-production today — including the temporary Cloudflare leg — so nobody has to
-reverse-engineer it from DNS again._
+_Status: 2026-08-05. GitHub Pages is retired. There is now one path to
+production and CI owns it._
 
 ## The pipeline
 
 ```
 merge to development
-  └─ Documentation workflow (.github/workflows/documentation.yml,
-     reusable workflow from ConductionNL/.github@main)
-       └─ builds the Docusaurus site (repo root, source-folder: .)
-       └─ publishes the build to the gh-pages branch   ← CI target
-                    │
-                    │  (manual bridge, see below)
-                    ▼
-     Cloudflare Pages project `conduction-website`     ← PRODUCTION
-       └─ www.conduction.nl is a proxied CNAME to
-          conduction-website.pages.dev
+  └─ Deploy workflow (.github/workflows/deploy.yml)
+       └─ builds the Docusaurus site (repo root)
+       └─ wrangler pages deploy build --branch main
+            └─ Cloudflare Pages project `conduction-website`  ← PRODUCTION
+                 └─ www.conduction.nl is a proxied CNAME to
+                    conduction-website.pages.dev
 ```
 
-- **gh-pages is the CI target, not production.** The workflow deploys there
-  on every push to `development` (plus a nightly rebuild), but since the
-  GitHub Pages outage failover, `www.conduction.nl` does **not** serve
-  GitHub Pages.
-- **Production is the Cloudflare Pages project `conduction-website`**
-  (direct-upload). DNS for `www.conduction.nl` (and the vanity hosts
-  `academy`/`commonground`/`connext.conduction.nl`) points at
-  `conduction-website.pages.dev`, proxied.
+Production is the Cloudflare Pages project `conduction-website`
+(direct-upload). DNS for `www.conduction.nl` and the vanity hosts
+(`academy`, `commonground`, `connext.conduction.nl`) points at
+`conduction-website.pages.dev`, proxied.
 
-## How a merge reaches production
+## Two things that will bite you
 
-There is **no Cloudflare API token secret in this repository**, so CI cannot
-deploy to Cloudflare Pages. Until DNS reverts to GitHub Pages or a CF token
-secret is added, delivery is a one-command host-side step (Ruben's machine,
-where wrangler is OAuth-authenticated):
+**`--branch main` is not this repo's branch.** Cloudflare Pages treats one
+branch name per project as production, and for `conduction-website` that
+name is `main`. Deploying from `development` under its own name produces a
+*preview* deployment on a random `*.pages.dev` URL. It succeeds, it looks
+right, and it never reaches `www.conduction.nl`.
+
+**Required secrets.** `CLOUDFLARE_API_TOKEN` (permission: Account →
+Cloudflare Pages → Edit) and `CLOUDFLARE_ACCOUNT_ID`. Without them the
+deploy step fails loudly, which is deliberate: a deploy that cannot
+authenticate must not look like a success.
+
+## Deploying by hand
+
+Only needed if CI is unavailable. Requires wrangler authenticated to the
+Conduction Cloudflare account:
 
 ```bash
-bash ~/conduction-cf-failover/deliver-website.sh
+npm ci --legacy-peer-deps && npm run build
+npx wrangler pages deploy build --project-name=conduction-website --branch main
 ```
 
-The script fetches the current `gh-pages` snapshot of this repository and
-runs `npx wrangler pages deploy <dir> --project-name conduction-website`,
-then echoes the deployment URL. It is idempotent — re-running deploys the
-same snapshot again, which is harmless.
+Verify by fetching the live page and checking the asset hash actually
+changed, rather than trusting the deployment URL:
 
-So the full flow after merging a PR to `development` is:
+```bash
+curl -s "https://www.conduction.nl/?cb=$RANDOM" | grep -oE 'main\.[a-f0-9]+\.js'
+```
 
-1. wait for the **Documentation** workflow on `development` to finish
-   (it pushes the new build to `gh-pages`),
-2. run `deliver-website.sh`,
-3. spot-check `https://www.conduction.nl`.
+Give the edge a minute. Immediately after a deploy, different edge nodes
+briefly serve different versions, so a chunk can 404 on one request and
+return 200 on the next. Check twice before believing a missing asset.
+
+## Retired: GitHub Pages
+
+The site used to publish to the `gh-pages` branch via
+`.github/workflows/documentation.yml` (a reusable workflow from
+`ConductionNL/.github`), and GitHub Pages served it with a custom-domain
+claim on `www.conduction.nl` plus a `static/CNAME` file.
+
+DNS moved to Cloudflare during a GitHub Pages outage and never moved back,
+which left the repo writing `gh-pages` on every push and GitHub Pages
+building a site nobody could reach. Retired on 2026-08-05: the workflow is
+deleted, the Pages site is disabled, the domain claim released, and
+`static/CNAME` removed. Nothing consumes the `gh-pages` branch now; it is
+kept only as history.
 
 ## Retired: the Forgejo deploy workflow
 
-`.forgejo/workflows/documentation.yml` was removed on 2026-08-03. It
-triggered on pushes to a `documentation` branch on Codeberg and called the
-shared deploy workflow with `cf-project-name: conduction-website-docs` — a
-Cloudflare Pages project that **does not exist** on the account. The only
-projects are `conduction-website`, `hermiq-docs` and
-`nextcloud-vue-conduction`.
-
-It was Codeberg-era leftover. GitHub is primary again for this repo, and the
-GitHub Documentation workflow above is the real pipeline. Had the Forgejo
-workflow ever fired it would have created a stray duplicate of the site under
-a second project name rather than updating production, so retiring it removes
-a trap rather than a capability.
-
-Do **not** "fix" it by pointing it at `conduction-website`: that would give
-two remotes an uncoordinated path to production.
-
-## Exit paths from this setup
-
-Either of these removes the manual step:
-
-- **Revert DNS to GitHub Pages** (see
-  `~/conduction-cf-failover/revert-to-github.sh`): gh-pages becomes
-  production again and the CF project turns into a cold standby.
-- **Add a `CLOUDFLARE_API_TOKEN` secret** to this repo and append a wrangler
-  deploy step/job to the Documentation workflow: CI then delivers to CF
-  Pages directly.
-
-## Known degradation: the fallback site image
-
-The reusable Documentation workflow also builds a self-contained Apache
-image of the site and pushes it to GHCR (`ghcr.io/conductionnl/conduction-website`).
-That push currently fails with `denied: permission_denied: write_package`:
-the GHCR **package**'s "Manage Actions access" does not grant this
-repository write access, and only an org/package admin can add it — repo
-tokens cannot. The job is marked best-effort (`continue-on-error`) with a
-loud workflow warning until that org-side grant is made. The gh-pages deploy
-and the Cloudflare delivery are unaffected.
+Codeberg was retired on 2026-08-04. Any `.forgejo/workflows/*` in this repo
+is residue and runs nowhere.

@@ -46,9 +46,11 @@ export default class SpaceInvaders {
     this.onExit = typeof onExit === 'function' ? onExit : () => {};
 
     this.score = 0;
-    this.lives = 3;
     this.wave = 1;
-    this.gameOver = false;
+    this.hits = 0;      // bombs that landed on you; costs nothing but pride
+    this.cleared = 0;   // waves shot down
+    this.landed = 0;    // waves that reached the floor
+    this.hitFlash = 0;  // ticks left of the impact glyph
     this.paused = false;
     this.player = {x: Math.floor(COLS / 2) - 1};
     this.lasers = [];
@@ -84,10 +86,14 @@ export default class SpaceInvaders {
   }
 
   onKey(e) {
-    if (this.gameOver) {
-      if (e.key === 'r' || e.key === 'R') { this.restart(); e.preventDefault(); return; }
-      if (e.key === 'Escape' || e.key === 'q' || e.key === 'Enter') { this.quit(); e.preventDefault(); return; }
-      return;
+    /* The old game-over branch is gone with game over itself. [R] used to
+       live only in that branch, which would have left it dead: reachable
+       by a key hint that never appeared, on a screen that never showed.
+       It now restarts at any time. */
+    switch (e.key) {
+      case 'r': case 'R':
+        this.restart(); e.preventDefault(); return;
+      default: break;
     }
     switch (e.key) {
       case 'ArrowLeft': case 'a': case 'A':
@@ -126,9 +132,11 @@ export default class SpaceInvaders {
 
   restart() {
     this.score = 0;
-    this.lives = 3;
     this.wave = 1;
-    this.gameOver = false;
+    this.hits = 0;
+    this.cleared = 0;
+    this.landed = 0;
+    this.hitFlash = 0;
     this._endEmitted = false;
     this.player = {x: Math.floor(COLS / 2) - 1};
     this.lasers = [];
@@ -140,8 +148,20 @@ export default class SpaceInvaders {
     this.render();
   }
 
+  /* Advance to a fresh wave, whether the last one was shot down or landed.
+     Clears bombs so the new wave does not open under incoming fire, and
+     restores the grace period so there is a beat before it resumes. */
+  nextWave() {
+    this.wave += 1;
+    this.spawnUfos();
+    this.ufoSpeed = Math.max(3, 9 - this.wave);
+    this.bombs = [];
+    this.graceTicks = 12;
+    this.render();
+  }
+
   tick() {
-    if (this.gameOver || this.paused) return;
+    if (this.paused) return;
     this.tickCount++;
 
     // lasers up every tick
@@ -202,35 +222,53 @@ export default class SpaceInvaders {
 
     this.ufos.forEach((u) => { if (u.exploding > 0) u.exploding -= 1; });
 
-    // bombs vs player
+    /* Bombs vs player. You cannot die here.
+       This is an easter egg in a cookie banner, not an arcade cabinet:
+       ending someone's game with GAME OVER while they were only trying to
+       set a cookie preference is a bad trade. A hit still lands and still
+       reads as a hit, it just costs a moment of shield flash rather than a
+       life. Bombs stay dangerous-looking and become harmless. */
     this.bombs.forEach((b) => {
       if (b.y === ROWS - 1 && b.x >= this.player.x && b.x <= this.player.x + 2) {
         b.dead = true;
-        this.lives -= 1;
-        if (this.lives <= 0) this.gameOver = true;
+        this.hitFlash = 4;   // ticks the player renders as an impact
+        this.hits += 1;
       }
     });
     this.bombs = this.bombs.filter((b) => !b.dead);
+    if (this.hitFlash > 0) this.hitFlash -= 1;
 
-    // ufo reaches the player's row
-    if (this.ufos.some((u) => u.alive && u.y >= ROWS - 1)) this.gameOver = true;
+    /* UFOs reaching the bottom used to end the game outright, regardless of
+       lives. Now the wave simply lands and a fresh one spawns, so the run
+       continues. Without this the one unavoidable death would still be
+       reachable by standing still. */
+    if (this.ufos.some((u) => u.alive && u.y >= ROWS - 1)) {
+      this.landed += 1;
+      this.nextWave();
+      return;
+    }
 
     // wave clear
     if (this.ufos.every((u) => !u.alive && u.exploding === 0)) {
-      this.wave += 1;
-      this.spawnUfos();
-      this.ufoSpeed = Math.max(3, 9 - this.wave);
-      this.graceTicks = 12;
-    }
+      this.cleared += 1;
+      this.nextWave();
 
-    /* First tick after gameOver flips on, tell the shared GameModal so it
-       can record discovery and score in its cross-site progress cookie. */
-    if (this.gameOver && !this._endEmitted) {
-      this._endEmitted = true;
-      const won = this.ufos.every((u) => !u.alive);
-      if (typeof window !== 'undefined') {
+      /* Tell the shared GameModal the game was found, so it records
+         discovery and score in its cross-site progress cookie.
+         This used to fire on game over. Since there is no game over any
+         more, clearing the first wave is the moment: without moving it the
+         event would never fire at all and the game would stay permanently
+         undiscovered in the modal, which is a silent regression rather than
+         a visible one. Once per run. */
+      if (!this._endEmitted && typeof window !== 'undefined') {
+        this._endEmitted = true;
         window.dispatchEvent(new CustomEvent(GAME_END_EVENT, {
-          detail: {id: GAME_ID, won, score: this.score, summary: `${this.score} pts · wave ${this.wave}`},
+          detail: {
+            id: GAME_ID,
+            won: true,
+            score: this.score,
+            summary: `${this.score} pts · wave ${this.wave}`,
+          },
         }));
       }
     }
@@ -260,9 +298,19 @@ export default class SpaceInvaders {
     this.lasers.forEach((l) => set(l.y, l.x, '|', 'laser'));
     this.bombs.forEach((b) => set(b.y, b.x, '*', 'bomb'));
 
-    set(ROWS - 1, this.player.x, '<', 'player');
-    set(ROWS - 1, this.player.x + 1, 'A', 'player');
-    set(ROWS - 1, this.player.x + 2, '>', 'player');
+    /* The ship, or a brief impact burst when something just hit it. The
+       flash is the whole feedback for taking a hit now that it costs
+       nothing, so without it bombs would land with no effect at all and
+       the game would feel broken rather than forgiving. */
+    if (this.hitFlash > 0) {
+      set(ROWS - 1, this.player.x, '*', 'boom');
+      set(ROWS - 1, this.player.x + 1, '#', 'boom');
+      set(ROWS - 1, this.player.x + 2, '*', 'boom');
+    } else {
+      set(ROWS - 1, this.player.x, '<', 'player');
+      set(ROWS - 1, this.player.x + 1, 'A', 'player');
+      set(ROWS - 1, this.player.x + 2, '>', 'player');
+    }
 
     /* Coalesce equal-styled runs into one span per run instead of one per
        character. A row is 48 cells but usually only a handful of runs. */
@@ -283,21 +331,20 @@ export default class SpaceInvaders {
       screen += `${line}\n`;
     }
 
-    const livesIcons = '<A> '.repeat(Math.max(0, this.lives)).trim() || '—';
+    /* LIVES is gone, because there is nothing to count down. SHIELD says
+       the same thing the three little ships used to say (you are fine)
+       without implying a budget that can run out. HITS is there so the
+       bombs still mean something. */
     const hud = `
       <span class="hud-label">SCORE</span> <span class="hud-val g-laser">${String(this.score).padStart(4, '0')}</span>
-      <span class="hud-label">LIVES</span> <span class="hud-val g-player">${escapeHtml(livesIcons)}</span>
+      <span class="hud-label">SHIELD</span> <span class="hud-val g-player">${escapeHtml('∞')}</span>
       <span class="hud-label">WAVE</span>  <span class="hud-val">${this.wave}</span>
+      <span class="hud-label">HITS</span>  <span class="hud-val">${this.hits}</span>
       <span style="margin-left:auto" class="hud-label">conduction · space-invaders.exe</span>
     `;
 
     let footer;
-    if (this.gameOver) {
-      const won = this.ufos.every((u) => !u.alive);
-      footer = won
-        ? '<span class="ok">--- YOU WIN. all UFOs grounded. press [R] to restart, [ESC] to exit ---</span>'
-        : '<span class="warn">--- GAME OVER --- press [R] to restart, [ESC] to exit ---</span>';
-    } else if (this.paused) {
+    if (this.paused) {
       footer = '<span class="warn">-- paused -- press [P] to resume</span>';
     } else if (this.graceTicks > 0) {
       footer = '<span class="ok">-- READY --</span> <span class="cmt">defend the cookies. fire orange lasers at the cobalt UFOs.</span>';

@@ -4,7 +4,7 @@ The Docusaurus 3 site for [conduction.nl](https://conduction.nl). Built on `@con
 
 It also serves the `connext.conduction.nl` and `commonground.conduction.nl` vanity entry points (a Cloudflare worker — configured in the dashboard, not in this repo — 301-redirects to the `/connext` and `/commonground` paths on this site, with locale awareness via `Accept-Language`).
 
-> **Vanity-domain redirect target:** the worker must redirect to `https://www.conduction.nl/connext/` — with the `www.` and the **trailing slash**. The site is built with `url: https://www.conduction.nl` (matching `static/CNAME`) and `trailingSlash: true`. Targeting the bare apex (`conduction.nl`) or the slash-less path (`/connext`) stacks extra GitHub Pages 301s on every request and, if the worker route also matches `www`, can produce a redirect loop. If you see a redirect loop on `connext.conduction.nl`, also check Cloudflare's SSL/TLS mode is **Full** (not "Flexible") — Flexible + GitHub Pages "Enforce HTTPS" is the classic infinite HTTP↔HTTPS loop.
+> **Vanity-domain redirect target:** the worker must redirect to `https://www.conduction.nl/connext/` — with the `www.` and the **trailing slash**. The site is built with `url: https://www.conduction.nl` (matching `static/CNAME`) and `trailingSlash: true`. Targeting the bare apex (`conduction.nl`) or the slash-less path (`/connext`) stacks extra 301s on every request and, if the worker route also matches `www`, can produce a redirect loop. If you see a redirect loop on `connext.conduction.nl`, check Cloudflare's SSL/TLS mode is **Full**, not "Flexible". (The GitHub Pages leg of this warning is historical: Pages was retired on 2026-08-05 and the site is served entirely by Cloudflare.)
 
 ## Local development
 
@@ -20,7 +20,7 @@ npm start
 npm run build
 ```
 
-Output lands in `build/`. That folder is what gets deployed to GitHub Pages by `.github/workflows/documentation.yml`, which calls the centralized `ConductionNL/.github` documentation workflow.
+Output lands in `build/`. That folder is what `.github/workflows/deploy.yml` uploads to Cloudflare Pages.
 
 ## Local Nextcloud integration
 
@@ -38,7 +38,7 @@ The plugin is wired into [docusaurus.config.js](docusaurus.config.js) but commen
 
 ## Deployment
 
-GitHub Pages, served from the `build/` output via `.github/workflows/documentation.yml`. The `static/CNAME` file claims `www.conduction.nl`.
+Cloudflare Pages (project `conduction-website`), deployed by `.github/workflows/deploy.yml` on every push to `development`. GitHub Pages was retired on 2026-08-05. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — in particular why the deploy passes `--branch main` from the `development` branch.
 
 ## Structure
 
