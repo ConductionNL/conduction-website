@@ -161,13 +161,36 @@ test('you cannot die', async ({page}) => {
   await expect(page.locator(HUD), 'the HUD should promise an infinite shield').toContainText('SHIELD');
   await expect(page.locator(HUD)).not.toContainText('LIVES');
 
-  // Park the ship in the open and absorb whatever lands for 40 seconds.
-  const deadline = Date.now() + 40_000;
-  while (Date.now() < deadline) {
-    await page.waitForTimeout(1000);
-    expect(await page.locator(FOOTER).innerText(), 'the game must never end').not.toMatch(/GAME OVER/i);
-    await expect(page.locator(SCREEN), 'the game must still be running').toBeVisible();
-  }
+  /* Park the ship in the open and absorb whatever lands for 40 seconds.
+     The watching happens inside the page rather than as forty round-trips
+     with an assertion each: driven from the test side, a slow machine can
+     stretch a single poll past the expect timeout and fail a game that is
+     running perfectly. One evaluate samples every 250ms and reports what
+     it saw. */
+  const verdict = await page.evaluate(async ({screenSel, footSel, hudSel, ms}) => {
+    const out = {sawGameOver: false, screenDisappeared: false, samples: 0, lastHud: '', maxHits: 0};
+    const end = Date.now() + ms;
+    while (Date.now() < end) {
+      await new Promise((r) => setTimeout(r, 250));
+      out.samples++;
+      const screen = document.querySelector(screenSel);
+      if (!screen) { out.screenDisappeared = true; break; }
+      const foot = document.querySelector(footSel);
+      if (foot && /GAME OVER/i.test(foot.innerText)) { out.sawGameOver = true; break; }
+      const hud = document.querySelector(hudSel);
+      if (hud) {
+        out.lastHud = hud.innerText.replace(/\s+/g, ' ').trim();
+        const hits = out.lastHud.match(/HITS (\d+)/);
+        if (hits) out.maxHits = Math.max(out.maxHits, Number(hits[1]));
+      }
+    }
+    return out;
+  }, {screenSel: SCREEN, footSel: FOOTER, hudSel: HUD, ms: 40_000});
+
+  expect(verdict.sawGameOver, `the game must never end — HUD: ${verdict.lastHud}`).toBe(false);
+  expect(verdict.screenDisappeared, 'the game must still be on screen').toBe(false);
+  expect(verdict.samples, 'the watcher should have sampled the game').toBeGreaterThan(100);
+  await expect(page.locator(SCREEN)).toBeVisible();
 });
 
 test('playing produces no console errors', async ({page}) => {

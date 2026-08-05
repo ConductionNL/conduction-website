@@ -65,7 +65,17 @@ jobs:
 
       # Runs prebuild (app-downloads) then `docusaurus build`, producing
       # build/ with the English site and build/nl/ with the Dutch one.
+      #
+      # GITHUB_TOKEN is not optional in practice. The prebuild step counts
+      # release-asset downloads across the ConductionNL repos, and an
+      # unauthenticated caller is rate-limited long before it finishes: the
+      # fetch then fails soft, keeps whatever app-downloads.json is
+      # committed, and the build goes green with frozen numbers. Since
+      # refreshing those numbers is the entire purpose of the nightly run,
+      # a silent fallback would make this job theatre.
       - name: Build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build
 
       - name: Check the build produced both locales
