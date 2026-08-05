@@ -200,6 +200,7 @@ module.exports = createConfig({
           {label: 'Team',           to: '/about#team'},
           {label: 'Way of Work',    href: 'https://docs.conduction.nl/WayOfWork/way-of-work/'},
           {label: 'Quality',        to: '/quality'},
+          {label: 'How we use AI',  to: '/ai'},
           {label: 'Identity',       href: 'https://identity.conduction.nl/'},
           /* Cookies belongs in the legal bar next to Privacy / Terms,
              but the preset's Footer hardcodes exactly three legal slots

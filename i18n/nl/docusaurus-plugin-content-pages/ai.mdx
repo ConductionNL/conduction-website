@@ -1,0 +1,214 @@
+---
+title: Hoe wij AI gebruiken
+description: Conduction bouwt met AI en blijft verantwoordelijk voor het resultaat. Een mens leest elke regel code, elke pagina documentatie en elke blog voordat die wordt gepubliceerd. Deze pagina vertelt precies waar we AI inzetten, en waar niet.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
+
+export const AiIcon = (
+  <svg viewBox="0 0 24 24">
+    <path d="M12 2a5 5 0 0 1 5 5v1a4 4 0 0 1 0 8v1a5 5 0 0 1-10 0v-1a4 4 0 0 1 0-8V7a5 5 0 0 1 5-5z" />
+    <path d="M12 8v8M9 11h6" />
+  </svg>
+);
+
+export const USES = [
+  {
+    id: 'code',
+    eyebrow: 'Code',
+    title: 'We schrijven code met AI-agents.',
+    body: (
+      <>
+        Onze pijplijn heet Hydra. Een agent schrijft een wijziging, een tweede agent reviewt die, en een derde controleert
+        op beveiligingsproblemen. Daarna doorloopt de wijziging dezelfde quality gates als elke andere pull request. Een
+        ontwikkelaar leest het resultaat en merget het, of stuurt het terug.
+      </>
+    ),
+    /* Interne links op deze pagina krijgen het /nl/-voorvoegsel. DetailHero en
+       de kaarten hieronder renderen een gewone <a>, geen Docusaurus <Link>, dus
+       er wordt niets automatisch vertaald: zonder voorvoegsel belandt een
+       Nederlandse lezer op de Engelse pagina. */
+    link: {label: 'Lees de Hydra-serie in de academy', href: '/nl/academy/tags/hydra'},
+  },
+  {
+    id: 'docs',
+    eyebrow: 'Documentatie',
+    title: 'We stellen documentatie op met skills.',
+    body: (
+      <>
+        Twee skills doen het meeste werk. De journeydoc-skill maakt van een echte klikronde door een app een tutorial, met
+        schermafbeeldingen uit het draaiende product. De tutorial-skill schrijft de uitleg eromheen. Beide leveren een
+        concept. Een mens controleert dat tegen het product voordat het live gaat.
+      </>
+    ),
+    link: {label: 'Bekijk de academy', href: '/nl/academy'},
+  },
+  {
+    id: 'research',
+    eyebrow: 'Onderzoek',
+    title: 'We gebruiken AI om bronnen te vinden en te lezen.',
+    body: (
+      <>
+        AI is goed in materiaal verzamelen en samenvatten. We zetten het in om standaarden, aanbestedingen, eerder werk en
+        documentatie te vinden die we anders zouden missen. We controleren de bronnen die het teruggeeft. Een samenvatting
+        is een startpunt, geen bronvermelding.
+      </>
+    ),
+  },
+  {
+    id: 'language',
+    eyebrow: 'Taal',
+    title: 'We gebruiken AI om onze teksten na te lopen.',
+    body: (
+      <>
+        Spelling, grammatica en helderheid. De meesten van ons schrijven in het Nederlands en publiceren ook in het Engels.
+        AI helpt de fouten te vinden die daarbij horen, en maakt zinnen korter die te lang doorlopen.
+      </>
+    ),
+  },
+];
+
+<DetailHero
+  background="cobalt"
+  crumb={[{label: 'Over ons', href: '/nl/about'}, 'AI']}
+  locales="Transparantie"
+  title={<>Een mens is<br/>altijd verantwoordelijk.</>}
+  tagline={<>We bouwen met AI. We publiceren niet wat het maakt zonder het te lezen. Elke wijziging in onze code, elke pagina documentatie en elke blog gaat langs een mens voordat die naar buiten gaat. <strong>De mens blijft verantwoordelijk. De AI blijft gereedschap.</strong></>}
+  primaryCta={{label: 'Hoe we ermee werken', href: '#how', tone: 'orange'}}
+  secondaryCta={{label: 'Kwaliteit & ISO →', href: '/nl/quality'}}
+  iconColor="var(--c-orange-knvb)"
+  icon={AiIcon}
+/>
+
+<Section spacing="default" background="tinted">
+
+<div id="how" />
+
+## De regel
+
+<div style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 8, boxShadow: '0 2px 16px rgba(33, 70, 139, 0.06)', padding: '36px clamp(20px, 4vw, 48px)', maxWidth: 820, margin: '24px auto 0'}}>
+
+<div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-orange-knvb)', marginBottom: 10}}>Human in the loop</div>
+
+Wij zijn een human-in-the-loop-organisatie. Dat is één regel, en die geldt overal.
+
+Niets van wat wij maken wordt gepubliceerd op gezag van een model. Code, documentatie, blogs, onderzoeksnotities: een mens leest het resultaat, beoordeelt het en beslist. Is er niemand langs geweest, dan gaat het niet live.
+
+Dat is belangrijk voor de verantwoordelijkheid. Een model kan niet verantwoordelijk zijn voor een bewering. De mens die het publiceert wel, en is dat ook. Als je hier iets leest, staat iemand van Conduction erachter.
+
+<div style={{marginTop: 28, paddingTop: 20, borderTop: '2px solid var(--c-cobalt-100)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 18}}>
+  {[
+    {k: 'De AI', v: 'Schrijft concepten, verzamelt, controleert, suggereert.'},
+    {k: 'De mens', v: 'Beslist, redigeert, keurt goed, staat ervoor in.'},
+  ].map((row) => (
+    <div key={row.k}>
+      <div style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)', marginBottom: 6}}>{row.k}</div>
+      <div style={{fontSize: 14, color: 'var(--c-cobalt-900)', lineHeight: 1.5}}>{row.v}</div>
+    </div>
+  ))}
+</div>
+
+</div>
+
+</Section>
+
+<Section spacing="default">
+
+## Waar we het gebruiken
+
+{/* Een <div>, geen <p>: MDX leest de inhoud van een JSX-blok als markdown,
+    dus een <p> zet hier een alinea in een alinea. De HTML-parser splitst dat
+    in drie broers terwijl React er één heeft, en dan mislukt de hydration. */}
+<div style={{maxWidth: 720, fontSize: 15, lineHeight: 1.6, marginBottom: 8}}>
+  Vier plekken. Elke plek levert een concept op, en daarna neemt een mens het over.
+</div>
+
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, marginTop: 28}}>
+  {USES.map((use) => (
+    <div key={use.id} style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 8, padding: '24px 26px', display: 'flex', flexDirection: 'column', gap: 10}}>
+      <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-orange-knvb)'}}>{use.eyebrow}</div>
+      <h3 style={{margin: 0, fontSize: 19, lineHeight: 1.25, color: 'var(--c-cobalt-900)'}}>{use.title}</h3>
+      <p style={{margin: 0, fontSize: 14, lineHeight: 1.6, color: 'var(--c-cobalt-700)'}}>{use.body}</p>
+      {use.link && (
+        <a href={use.link.href} style={{marginTop: 'auto', paddingTop: 8, fontSize: 13, fontWeight: 600, color: 'var(--c-blue-cobalt)', textDecoration: 'none'}}>
+          {use.link.label} →
+        </a>
+      )}
+    </div>
+  ))}
+</div>
+
+</Section>
+
+<Section spacing="default" background="tinted">
+
+## Blogs en artikelen
+
+<div style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 8, boxShadow: '0 2px 16px rgba(33, 70, 139, 0.06)', padding: '36px clamp(20px, 4vw, 48px)', maxWidth: 820, margin: '24px auto 0'}}>
+
+Onze blogs verdienen een apart antwoord, want de vraag erachter is terecht. Heeft een mens dit geschreven, of een machine.
+
+Een mens heeft het geschreven.
+
+Het idee komt van een mens. Net als het onderwerp, de invalshoek en de kaders die we voor een stuk stellen. Het punt dat gemaakt wordt is een menselijk punt. De mening erin is een menselijke mening. Als een artikel ergens voor pleit, gelooft iemand hier in dat pleidooi en heeft die er zijn naam onder gezet.
+
+De AI doet drie dingen, en dat zijn alle drie ondersteunende taken.
+
+<div style={{margin: '24px 0 8px', display: 'flex', flexDirection: 'column', gap: 14}}>
+  {[
+    {n: '1', t: 'Het verzamelt bronnen.', d: 'Het haalt extern materiaal op dat we moeten lezen voordat we schrijven, en wijst ons op dingen die we niet hadden gevonden.'},
+    {n: '2', t: 'Het controleert de spelling.', d: 'Spelling, grammatica en de kleine fouten die drie leesrondes overleven.'},
+    {n: '3', t: 'Het helpt ons beter schrijven.', d: 'Het stelt een strakkere zin voor of een duidelijker volgorde. Wij nemen die suggestie over, of we negeren hem.'},
+  ].map((item) => (
+    <div key={item.n} style={{display: 'flex', gap: 14, alignItems: 'flex-start'}}>
+      <span style={{flexShrink: 0, width: 26, height: 26, borderRadius: 4, background: 'var(--c-cobalt-50)', border: '1px solid var(--c-cobalt-100)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>{item.n}</span>
+      <div>
+        <div style={{fontSize: 15, fontWeight: 700, color: 'var(--c-cobalt-900)', marginBottom: 2}}>{item.t}</div>
+        <div style={{fontSize: 14, lineHeight: 1.55, color: 'var(--c-cobalt-700)'}}>{item.d}</div>
+      </div>
+    </div>
+  ))}
+</div>
+
+De AI is een onderzoeksmiddel en een schrijfhulp. Het is niet de auteur.
+
+De redactie is mensenwerk. Een mens bepaalt wat erin gaat, wat eruit gaat en wat het stuk uiteindelijk zegt. Dat is het werk dat we niet uit handen geven.
+
+</div>
+
+</Section>
+
+<Section spacing="default">
+
+<div style={{display: 'flex', gap: 12, flexWrap: 'wrap'}}>
+  <a href="/nl/academy/tags/hydra" style={{padding: '10px 18px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Hoe Hydra onze code schrijft →
+  </a>
+  <a href="/nl/quality" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Kwaliteit, certificeringen & ISMS →
+  </a>
+  <a href="/nl/privacy" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Privacybeleid →
+  </a>
+</div>
+
+</Section>
+
+<FAQ title="AI bij Conduction.">
+  <FAQItem question="Is er iets op deze site volledig door AI geschreven?" defaultOpen>
+    Nee. Alles wat hier staat is gelezen en goedgekeurd door een mens. Sommige pagina's begonnen als AI-concept, en de tutorials in de academy worden opgesteld met skills die het product vastleggen zoals het echt draait. Daarna controleert een mens dat concept tegen het product en redigeert het. Niets gaat ongelezen naar buiten.
+  </FAQItem>
+  <FAQItem question="Wie is verantwoordelijk als er iets niet klopt?">
+    Wij. Een model kan geen verantwoordelijkheid dragen voor een bewering, dus laten we dat niet toe. De mens die de tekst goedkeurde of de code mergede is daarvoor aansprakelijk, en Conduction is dat als bedrijf. Vind je een fout, mail dan naar info@conduction.nl en we corrigeren het.
+  </FAQItem>
+  <FAQItem question="Mergen AI-agents hun eigen code?">
+    Nee. Agents openen pull requests en reviewen elkaar, en dat vangt veel af. De merge is een menselijke beslissing, en de wijziging doorloopt dezelfde quality gates als elke andere pull request: linting, statische analyse, tests en een securityreview.
+  </FAQItem>
+  <FAQItem question="Gebruiken jullie onze gegevens om modellen te trainen?">
+    Nee. Wij trainen geen modellen op klantgegevens. Wat we verwerken, en waarom, staat in ons privacybeleid.
+  </FAQItem>
+  <FAQItem question="Welke delen van een blog zijn van de auteur zelf?">
+    Het idee, het onderwerp, de invalshoek, het betoog en de conclusie. Die zijn elke keer van een mens. AI levert bronmateriaal, een spellingcontrole en suggesties voor de formulering. De auteur bepaalt wat blijft staan.
+  </FAQItem>
+</FAQ>
