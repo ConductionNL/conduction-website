@@ -1,18 +1,21 @@
 /**
  * CookieSettings — the "your current choice" panel on /privacy#cookies.
  *
- * Shows what the visitor has consented to and gives them a way back to
- * the consent banner. Talks to window.ConductionCookieCli, which
- * <CookieCli /> registers from an effect in src/theme/Root.js.
+ * Shows what the visitor has consented to and gives them a way to change
+ * it by opening the consent banner.
  *
- * Hydration: the stored choice lives in localStorage, which the server
- * render cannot see. Reading it during render would emit server HTML
- * that disagrees with the first client render, so state starts as
- * `undefined` ("not read yet") and an effect settles it. The server and
- * the first client paint therefore agree on the neutral text.
+ * It reads localStorage directly rather than going through
+ * window.ConductionCookieCli. That API only exists while <CookieCli /> is
+ * mounted, and since the banner became on-demand it is absent most of the
+ * time. Reading the store directly also removes a race this component
+ * used to have: it once concluded "unavailable" on its first look, before
+ * the banner had registered its API, and shipped a permanently disabled
+ * button on every direct visit to /privacy.
  *
- * The API only exists while CookieCli is mounted; if it is missing we
- * disable the control and say so rather than rendering a dead button.
+ * Hydration: localStorage is invisible to the server render. Reading it
+ * during render would emit server HTML that disagrees with the first
+ * client render, so state starts as `undefined` ("not read yet") and an
+ * effect settles it. Server and first client paint agree on neutral text.
  *
  * Strings are props so the Dutch page at
  * i18n/nl/docusaurus-plugin-content-pages/privacy.mdx can pass its own
@@ -21,61 +24,38 @@
  */
 
 import React, {useState, useEffect, useCallback} from 'react';
-import {COOKIE_CHOICE_EVENT} from '@theme/Root';
+import {COOKIE_CHOICE_EVENT, COOKIE_OPEN_EVENT} from '@theme/Root';
+
+/* Must match STORAGE_KEY inside the preset's CookieCli. */
+const STORAGE_KEY = 'conduction:cookie-cli';
+
+function readStored() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null; // private mode, quota, or corrupt JSON
+  }
+}
 
 export default function CookieSettings({
   heading = 'Your current choice',
   checking = 'Checking your stored preferences…',
   noChoice = 'You haven’t made a choice yet, so only essential cookies are in use.',
   buttonLabel = 'Change your cookie choices',
-  unavailable = 'The consent banner couldn’t be reached. Clearing this site’s data in your browser also resets your choice.',
   allowedLabel = 'allowed',
   declinedLabel = 'declined',
 }) {
   /* undefined = not read yet (server + first paint), null = read, nothing stored */
   const [choice, setChoice] = useState(undefined);
-  const [available, setAvailable] = useState(true);
 
-  const refresh = useCallback(() => {
-    const api = typeof window !== 'undefined' ? window.ConductionCookieCli : undefined;
-    if (!api) return false;
-    setAvailable(true);
-    setChoice(api.get());
-    return true;
-  }, []);
+  const refresh = useCallback(() => setChoice(readStored()), []);
 
-  /* window.ConductionCookieCli is registered by an effect inside
-     <CookieCli />, which Root renders *after* {children}. React flushes
-     effects in tree order, so on a full page load this panel's effect
-     runs first and the global does not exist yet. Deciding "unavailable"
-     from that first look shipped a permanently disabled button on every
-     direct visit to /privacy — the banner worked fine, the control next
-     to it did not. So poll briefly instead of concluding on attempt one,
-     and only give up (and say so) once it is clear nothing will arrive. */
-  useEffect(() => {
-    if (refresh()) return undefined;
+  useEffect(() => { refresh(); }, [refresh]);
 
-    let cancelled = false;
-    let attempts = 0;
-    let timer;
-    const poll = () => {
-      if (cancelled) return;
-      if (refresh()) return;
-      if (attempts++ >= 40) { // ~2s at 50ms
-        setAvailable(false);
-        setChoice(null);
-        return;
-      }
-      timer = setTimeout(poll, 50);
-    };
-    timer = setTimeout(poll, 50);
-    return () => { cancelled = true; clearTimeout(timer); };
-  }, [refresh]);
-
-  /* Re-read whenever the banner records a choice. Without this the panel
-     and the banner disagree on screen at the same time: answer the banner
-     while standing on /privacy and this panel would still claim no choice
-     had been made until the next reload. */
+  /* Re-read whenever the banner records a choice, so the panel and the
+     banner never disagree on screen at the same time. */
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
     const onChoice = () => refresh();
@@ -83,12 +63,10 @@ export default function CookieSettings({
     return () => window.removeEventListener(COOKIE_CHOICE_EVENT, onChoice);
   }, [refresh]);
 
-  const reopen = useCallback(() => {
-    const api = typeof window !== 'undefined' ? window.ConductionCookieCli : undefined;
-    if (!api) { setAvailable(false); return; }
-    api.reset();
-    refresh();
-  }, [refresh]);
+  const openBanner = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    window.dispatchEvent(new CustomEvent(COOKIE_OPEN_EVENT));
+  }, []);
 
   /* `_ts` is CookieCli's own write timestamp, not a consent category. */
   const rows = choice
@@ -119,14 +97,11 @@ export default function CookieSettings({
 
       <button
         type="button"
-        onClick={reopen}
-        disabled={!available}
-        style={{padding: '10px 18px', background: 'var(--c-blue-cobalt)', color: 'white', border: 'none', borderRadius: 'var(--radius-md, 6px)', fontWeight: 600, fontSize: 14, fontFamily: 'inherit', cursor: available ? 'pointer' : 'not-allowed', opacity: available ? 1 : 0.5}}
+        onClick={openBanner}
+        style={{padding: '10px 18px', background: 'var(--c-blue-cobalt)', color: 'white', border: 'none', borderRadius: 'var(--radius-md, 6px)', fontWeight: 600, fontSize: 14, fontFamily: 'inherit', cursor: 'pointer'}}
       >
         {buttonLabel}
       </button>
-
-      {!available && <p style={{margin: '10px 0 0', fontSize: 13, opacity: 0.75}}>{unavailable}</p>}
     </div>
   );
 }
