@@ -195,10 +195,16 @@ export default function CookieCli({
 
   /* One key handler for both modes.
      In game mode every key belongs to the game. In shell mode the rule is
-     the specimen's: digits pick cookie options, letters type. The consent
-     accelerators [A] [S] [R] stay live only while the prompt is empty, so
-     they never eat a keystroke mid-word. None of the shell's own commands
-     start with a, s, or r, so the two never collide in practice. */
+     the kit specimen's, exactly: digits pick cookie options while the
+     prompt is empty, and everything else types.
+
+     There used to be [A] [S] [R] accelerators here, live whenever the
+     prompt was empty. They quietly ate the first letter of any command
+     starting with those letters, which made `sudo` and `rm` unreachable:
+     typing `sudo` answered the consent dialog and closed the banner
+     instead. A shell that silently refuses a third of the alphabet is
+     worse than one with no shortcuts, and the three actions are buttons
+     you can click or tab to. */
   useEffect(() => {
     if (!isBrowser || decided) return undefined;
 
@@ -228,13 +234,9 @@ export default function CookieCli({
         return;
       }
 
-      const empty = buffer.length === 0;
-
-      if (empty) {
-        const k = e.key.toLowerCase();
-        if (k === 'a') { e.preventDefault(); acceptAll(); return; }
-        if (k === 's') { e.preventDefault(); saveCurrent(); return; }
-        if (k === 'r') { e.preventDefault(); rejectNonEssential(); return; }
+      /* Digits toggle only from an empty prompt, so a filename or a version
+         number can still be typed. */
+      if (buffer.length === 0) {
         const idx = parseInt(e.key, 10);
         if (!Number.isNaN(idx) && idx >= 1 && idx <= categories.length) {
           e.preventDefault();
@@ -251,7 +253,7 @@ export default function CookieCli({
 
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [isBrowser, decided, mode, buffer, submit, acceptAll, saveCurrent, rejectNonEssential, toggle, categories]);
+  }, [isBrowser, decided, mode, buffer, submit, toggle, categories]);
 
   /* Keep the prompt in view as output accumulates. */
   useEffect(() => {
