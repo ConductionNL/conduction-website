@@ -228,7 +228,11 @@ import {Section, SectionHead, EmployeeCard, TeamGrid, FeatureList, FeatureItem, 
   </FeatureList>
 
   <div style={{display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginTop: 'var(--space-5)'}}>
-    <a href="mailto:info@conduction.nl" style={{padding: '12px 20px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md)', textDecoration: 'none', fontWeight: 600}}>Mail info@conduction.nl</a>
+    {/* JSX-string, geen kale tekst: MDX linkt een e-mailadres in lopende
+        tekst automatisch, en zette hier dus een <a> binnen deze <a>. De
+        browser haalt die nesting uit elkaar en de pagina mislukt in
+        hydration. */}
+    <a href="mailto:info@conduction.nl" style={{padding: '12px 20px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md)', textDecoration: 'none', fontWeight: 600}}>{'Mail info@conduction.nl'}</a>
     <a href="tel:+31853036840" style={{padding: '12px 20px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md)', textDecoration: 'none', fontWeight: 600}}>Bel +31 (0)85 303 6840</a>
     <a href="https://maps.google.com/?q=Lauriergracht+14h+Amsterdam" target="_blank" rel="noopener noreferrer" style={{padding: '12px 20px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md)', textDecoration: 'none', fontWeight: 600}}>Open in Google Maps</a>
   </div>

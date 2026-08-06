@@ -73,24 +73,21 @@ import {Section, SectionHead, TeamGrid, EmployeeCard} from '@conduction/docusaur
   />
   <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-8)', maxWidth: 760, margin: '0 auto'}}>
     <div>
+      {/* These paragraphs are one line each on purpose, and the email is a
+          JSX string rather than bare text. Written across several lines,
+          MDX parses the contents of a block-level tag as markdown and wraps
+          them in a paragraph of its own, so <p> ends up inside <p>; the
+          browser's parser then splits that into siblings and the page fails
+          to hydrate. Bare text like info@conduction.nl is separately
+          auto-linked by MDX, which nested an <a> inside this <a>. Both were
+          live on /contact/ and /nl/contact/ until 2026-08-06. */}
       <h3 style={{fontSize: 22, fontWeight: 700, color: 'var(--c-cobalt-900)', margin: '0 0 var(--space-3)'}}>Conduction B.V.</h3>
-      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 0}}>
-        Lauriergracht 14h<br/>
-        1016 RR Amsterdam<br/>
-        Nederland
-      </p>
-      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 'var(--space-3) 0 0'}}>
-        <a href="tel:+31853036840">+31 85 303 6840</a><br/>
-        <a href="mailto:info@conduction.nl">info@conduction.nl</a>
-      </p>
+      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 0}}>Lauriergracht 14h<br/>1016 RR Amsterdam<br/>Nederland</p>
+      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 'var(--space-3) 0 0'}}><a href="tel:+31853036840">+31 85 303 6840</a><br/><a href="mailto:info@conduction.nl">{'info@conduction.nl'}</a></p>
     </div>
     <div>
       <h3 style={{fontSize: 22, fontWeight: 700, color: 'var(--c-cobalt-900)', margin: '0 0 var(--space-3)'}}>Company details</h3>
-      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 0}}>
-        KvK: 76741850<br/>
-        BTW: NL860784241B01<br/>
-        IBAN: NL51 ABNA 0868951550
-      </p>
+      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 0}}>KvK: 76741850<br/>BTW: NL860784241B01<br/>IBAN: NL51 ABNA 0868951550</p>
     </div>
   </div>
 </Section>

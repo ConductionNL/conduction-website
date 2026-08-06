@@ -325,9 +325,11 @@ Tijdens de maandelijkse community-meeting van [product] zal er een vertegenwoord
   <a href="/quality" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
     Quality, certificeringen & beleid →
   </a>
-  <a href="mailto:info@conduction.nl" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
-    info@conduction.nl
-  </a>
+  {/* JSX-string, geen kale tekst: MDX linkt een e-mailadres in lopende
+      tekst automatisch en zette daardoor een <a> binnen deze <a>. De
+      browser haalt die nesting uit elkaar, waardoor de pagina mislukt in
+      hydration. */}
+  <a href="mailto:info@conduction.nl" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>{'info@conduction.nl'}</a>
 </div>
 
 </Section>
