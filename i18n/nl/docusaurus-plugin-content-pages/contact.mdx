@@ -73,24 +73,19 @@ import {Section, SectionHead, TeamGrid, EmployeeCard} from '@conduction/docusaur
   />
   <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-8)', maxWidth: 760, margin: '0 auto'}}>
     <div>
+      {/* Eén regel per alinea, en het e-mailadres als JSX-string. Over
+          meerdere regels leest MDX de inhoud van een blok-tag als markdown
+          en zet er een eigen alinea omheen, dus <p> in <p>; de parser van
+          de browser splitst dat en de pagina mislukt in hydration. Kale
+          tekst als info@conduction.nl wordt bovendien automatisch gelinkt,
+          wat een <a> in deze <a> zette. */}
       <h3 style={{fontSize: 22, fontWeight: 700, color: 'var(--c-cobalt-900)', margin: '0 0 var(--space-3)'}}>Conduction B.V.</h3>
-      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 0}}>
-        Lauriergracht 14h<br/>
-        1016 RR Amsterdam<br/>
-        Nederland
-      </p>
-      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 'var(--space-3) 0 0'}}>
-        <a href="tel:+31853036840">+31 85 303 6840</a><br/>
-        <a href="mailto:info@conduction.nl">info@conduction.nl</a>
-      </p>
+      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 0}}>Lauriergracht 14h<br/>1016 RR Amsterdam<br/>Nederland</p>
+      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 'var(--space-3) 0 0'}}><a href="tel:+31853036840">+31 85 303 6840</a><br/><a href="mailto:info@conduction.nl">{'info@conduction.nl'}</a></p>
     </div>
     <div>
       <h3 style={{fontSize: 22, fontWeight: 700, color: 'var(--c-cobalt-900)', margin: '0 0 var(--space-3)'}}>Bedrijfsgegevens</h3>
-      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 0}}>
-        KvK: 76741850<br/>
-        BTW: NL860784241B01<br/>
-        IBAN: NL51 ABNA 0868951550
-      </p>
+      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 0}}>KvK: 76741850<br/>BTW: NL860784241B01<br/>IBAN: NL51 ABNA 0868951550</p>
     </div>
   </div>
 </Section>

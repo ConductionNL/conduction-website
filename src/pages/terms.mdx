@@ -325,9 +325,11 @@ A Conduction representative will attend the monthly community meeting for [produ
   <a href="/quality" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
     Quality, certifications & policy →
   </a>
-  <a href="mailto:info@conduction.nl" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
-    info@conduction.nl
-  </a>
+  {/* JSX string, not bare text: MDX auto-links an email address written in
+      running text, which nested an <a> inside this <a>. The browser's
+      parser pulls that nesting apart, so the client tree stops matching the
+      server's and the page fails to hydrate. */}
+  <a href="mailto:info@conduction.nl" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>{'info@conduction.nl'}</a>
 </div>
 
 </Section>
