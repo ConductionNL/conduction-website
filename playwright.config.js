@@ -37,7 +37,12 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 2 : undefined,
+  /* Against a deployed site, keep concurrency low. Pointed at
+     www.conduction.nl with the default worker count, 26 of 63 tests failed
+     and every one of them passed in isolation: Cloudflare throttles a burst
+     of parallel requests from one address, and a throttled response looks
+     exactly like a broken page. Two workers is slower and honest. */
+  workers: REMOTE ? 2 : (process.env.CI ? 2 : undefined),
   reporter: process.env.CI ? [['list'], ['html', {open: 'never'}]] : [['list']],
 
   use: {
