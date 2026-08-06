@@ -443,3 +443,32 @@ blockquote {
   white-space: nowrap;
   border: 0;
 }
+
+/**
+ * Stop decorative panel backgrounds from scrolling the page sideways.
+ *
+ * Several sections use hex-pattern backgrounds that deliberately bleed past
+ * their container (.panelHexBg and the house-wrap SVG on /connext/). On a
+ * 1280px viewport they end up about 1px wider than the document, which is
+ * enough for the browser to add a horizontal scrollbar. On a phone the same
+ * bleed is wider and the page can be dragged sideways, which reads as
+ * broken rather than decorative.
+ *
+ * `clip`, not `hidden`. Both stop the scroll, but `hidden` turns the
+ * element into a scroll container, which breaks `position: sticky`
+ * descendants (the navbar). `clip` does not.
+ *
+ * This is deliberately on the root rather than on the offending panels:
+ * those live in @conduction/docusaurus-preset, and a site-level fix does
+ * not need a package release to take effect. If the preset ever clips its
+ * own bleed, this becomes redundant rather than wrong.
+ *
+ * Both html and body, not just html. The root element's overflow is meant
+ * to propagate to the viewport, but with `clip` on html alone the page
+ * still scrolled sideways when tested: window.scrollTo(500, 0) moved it.
+ * Setting both is what actually holds.
+ */
+html,
+body {
+  overflow-x: clip;
+}
