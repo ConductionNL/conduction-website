@@ -37,12 +37,15 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  /* Against a deployed site, keep concurrency low. Pointed at
-     www.conduction.nl with the default worker count, 26 of 63 tests failed
-     and every one of them passed in isolation: Cloudflare throttles a burst
-     of parallel requests from one address, and a throttled response looks
-     exactly like a broken page. Two workers is slower and honest. */
-  workers: REMOTE ? 2 : (process.env.CI ? 2 : undefined),
+  /* Against a deployed site, run serially. Pointed at www.conduction.nl
+     with the default worker count, 26 of 63 tests failed and every one
+     passed in isolation; at two workers, immediately after a deploy when
+     the edge cache is cold, four still failed. Cloudflare throttles a burst
+     of parallel requests from one address and a throttled response is
+     indistinguishable from a broken page, so the suite was reporting on the
+     CDN rather than on the site. One worker takes about three minutes and
+     tells the truth. */
+  workers: REMOTE ? 1 : (process.env.CI ? 2 : undefined),
   reporter: process.env.CI ? [['list'], ['html', {open: 'never'}]] : [['list']],
 
   use: {
