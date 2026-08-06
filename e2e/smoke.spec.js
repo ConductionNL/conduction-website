@@ -46,28 +46,30 @@ const NL_PAGES = [
 ];
 
 /**
- * Pages with no <h1> at all: they open on a SectionHead, which renders an
- * <h2>. A document with no level-one heading is a real accessibility and
- * SEO defect (WCAG 1.3.1), not a stylistic preference — screen-reader users
- * navigate by heading level and search engines weight h1.
+ * Empty, and it should stay that way.
  *
- * Fixing it means giving these pages a hero (DetailHero and Hero both
- * render h1) or promoting the first heading, which is a design decision
- * about page hierarchy rather than a mechanical edit, so it is recorded
- * here instead of guessed at.
+ * Fourteen pages had no <h1> at all: they open on a SectionHead, which
+ * renders an <h2>, so the document had no level-one heading. Screen-reader
+ * users navigate by heading level and search engines weight h1, so that is
+ * a real defect (WCAG 1.3.1) rather than a stylistic preference.
+ *
+ * They now carry a visually hidden <h1> (src/components/PageHeading.jsx)
+ * matching the title the page shows on screen. Hidden rather than visible
+ * because the visible alternative would redesign a dozen public pages, and
+ * because SectionHead has no heading-level prop to promote.
  */
-const PAGES_WITHOUT_H1 = new Set([
-  '/about/', '/apps/', '/build/', '/contact/', '/demo/', '/install/',
-  '/partners/', '/sidecars/', '/solutions/', '/academy/',
-  '/nl/about/', '/nl/apps/', '/nl/contact/', '/nl/academy/',
-]);
+const PAGES_WITHOUT_H1 = new Set([]);
 
 /**
- * Pages that scroll sideways on a 1280px desktop viewport. Something inside
- * is wider than its container. Horizontal scroll is worst on phones, where
- * it makes a page feel broken.
+ * Empty, and it should stay that way.
+ *
+ * /connext/ scrolled sideways in both locales: decorative hex panel
+ * backgrounds bleed past their container and ended up a single pixel wider
+ * than the document, which is enough for a scrollbar on desktop and a
+ * draggable page on a phone. Fixed with `overflow-x: clip` on the root in
+ * src/css/site.css.
  */
-const PAGES_THAT_SCROLL_SIDEWAYS = new Set(['/connext/', '/nl/connext/']);
+const PAGES_THAT_SCROLL_SIDEWAYS = new Set([]);
 
 /**
  * Empty, and it should stay that way.
@@ -88,6 +90,25 @@ const PAGES_THAT_SCROLL_SIDEWAYS = new Set(['/connext/', '/nl/connext/']);
  * which is why this set exists rather than a screenshot comparison.
  */
 const PAGES_WITH_HYDRATION_ERRORS = new Set([]);
+
+/**
+ * Can the visitor actually drag the page sideways?
+ *
+ * Not `scrollWidth > innerWidth`. Decorative backgrounds legitimately bleed
+ * past the viewport, and with `overflow-x: clip` containing them the
+ * document's scrollWidth still reports the wider content even though
+ * nothing can be scrolled. Measuring the width therefore reports a bug that
+ * no visitor can experience. Try to scroll instead, and put it back.
+ */
+async function canScrollSideways(page) {
+  return page.evaluate(() => {
+    const before = window.scrollX;
+    window.scrollTo(500, window.scrollY);
+    const moved = window.scrollX > before;
+    window.scrollTo(before, window.scrollY);
+    return moved;
+  });
+}
 
 for (const path of [...PAGES, ...NL_PAGES]) {
   test(`${path} renders and hydrates cleanly`, async ({page}) => {
@@ -111,10 +132,7 @@ for (const path of [...PAGES, ...NL_PAGES]) {
     }
 
     if (!PAGES_THAT_SCROLL_SIDEWAYS.has(path)) {
-      const overflows = await page.evaluate(
-        () => document.documentElement.scrollWidth > window.innerWidth,
-      );
-      expect(overflows, `${path} scrolls horizontally`).toBe(false);
+      expect(await canScrollSideways(page), `${path} scrolls horizontally`).toBe(false);
     }
   });
 }
@@ -137,15 +155,12 @@ test('the known-debt lists are still accurate', async ({page}) => {
   }
   for (const path of PAGES_THAT_SCROLL_SIDEWAYS) {
     await page.goto(path);
-    /* Wait for hydration before measuring. The overflow on /connext/ is
-       introduced by a client-rendered element, so a measurement taken
-       straight after navigation reports a clean page and this check would
-       cheerfully declare the bug fixed. */
+    /* Wait for hydration before measuring. The overflow on /connext/ came
+       from a client-rendered element, so a measurement taken straight after
+       navigation reports a clean page and this check would cheerfully
+       declare the bug fixed. */
     await page.waitForTimeout(1200);
-    const overflows = await page.evaluate(
-      () => document.documentElement.scrollWidth > window.innerWidth,
-    );
-    if (!overflows) fixed.sideways.push(path);
+    if (!(await canScrollSideways(page))) fixed.sideways.push(path);
   }
 
   expect(
