@@ -60,3 +60,35 @@
   border-radius: var(--radius-md);
   box-shadow: 0 4px 16px rgba(13, 36, 78, 0.08);
 }
+
+/* ai-content-disclosure mark: byline-subtle row above the body, links
+   to the /ai page. The icon overrides the generic .body img treatment,
+   which would otherwise blow it up to column width. */
+.aiMark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--ifm-color-emphasis-600);
+  text-decoration: none;
+  margin: 0 0 var(--space-3);
+}
+
+.aiMark:hover {
+  color: var(--ifm-color-emphasis-800);
+  text-decoration: underline;
+}
+
+.body .aiMark img {
+  display: inline-block;
+  height: 22px;
+  width: auto;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.aiMarkIconDark { display: none; }
+
+:global(html[data-theme='dark']) .aiMarkIconLight { display: none; }
+:global(html[data-theme='dark']) .aiMarkIconDark { display: inline-block; }
