@@ -245,6 +245,9 @@ module.exports = createConfig({
       '@docusaurus/plugin-client-redirects',
       {
         redirects: [
+          /* Governance blog moved under /academy/opinion/ with the title as
+             slug (2026-08-10); the launch URL was briefly live. */
+          {from: '/academy/governance-open-source-nix-implosion', to: '/academy/opinion/governance-is-the-silent-killer-of-open-source'},
           /* OpenSpec academy series moved from Dutch to English slugs
              (2026-06-11). Parts 1 and 2 were already published, so keep
              inbound links working. Parts 0/3/4 are new and never shipped a
