@@ -245,9 +245,17 @@ module.exports = createConfig({
       '@docusaurus/plugin-client-redirects',
       {
         redirects: [
-          /* Governance blog moved under /academy/opinion/ with the title as
-             slug (2026-08-10); the launch URL was briefly live. */
-          {from: '/academy/governance-open-source-nix-implosion', to: '/academy/opinion/governance-is-the-silent-killer-of-open-source'},
+          /* Governance blog retitled to the two-wolves frame (2026-08-10).
+             Both earlier URLs were briefly live; point each straight at the
+             final slug, no chains. */
+          {from: '/academy/governance-open-source-nix-implosion', to: '/academy/opinion/feed-the-wolf-that-ships'},
+          {from: '/academy/opinion/governance-is-the-silent-killer-of-open-source', to: '/academy/opinion/feed-the-wolf-that-ships'},
+          /* All opinion posts moved under /academy/opinion/ (2026-08-10).
+             Keep the published URLs working. /academy/opinion/ itself is a
+             static stub → /academy/?type=opinion (see static/academy/opinion/,
+             same pattern as the /blog/* legacy stubs). */
+          {from: '/academy/the-platform-moment', to: '/academy/opinion/the-platform-moment'},
+          {from: '/academy/government-open-source-needs-an-engine', to: '/academy/opinion/government-open-source-needs-an-engine'},
           /* OpenSpec academy series moved from Dutch to English slugs
              (2026-06-11). Parts 1 and 2 were already published, so keep
              inbound links working. Parts 0/3/4 are new and never shipped a
