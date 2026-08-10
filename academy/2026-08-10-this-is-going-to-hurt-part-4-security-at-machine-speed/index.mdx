@@ -8,6 +8,7 @@ summary: "The same cheap intelligence that helps you now attacks at machine spee
 tags: [Opinion, AI, Security, Sovereignty]
 durationMinutes: 8
 ai: assisted
+apps: [hermiq, openregister]
 ---
 
 import {
@@ -23,13 +24,17 @@ html[data-theme='dark'] .hfaw-chart { --chart-c1:#6E8FD0; --chart-c2:#E8641B; --
 .hfaw-chart .lbl2 { font: 500 12px var(--ifm-font-family-base); fill: var(--ifm-color-emphasis-700); }
 .hfaw-chart .grid { stroke: var(--ifm-color-emphasis-200); stroke-width:1; }
 .hfaw-chart figcaption { font-size: 0.8rem; color: var(--ifm-color-emphasis-600); margin-top: 0.5rem; text-align: center; }
+.hfaw-split { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; align-items:center; margin:2rem 0; }
+.hfaw-split .hfaw-chart { margin:0; }
+.hfaw-split > div > p:first-child { margin-top:0; }
+@media (max-width:820px){ .hfaw-split { grid-template-columns:1fr; gap:1rem; } }
 `}</style>
 
 A man in Australia asked his AI agent to book him a spot in a popular gym class. The agent found a bug that let it book weeks further ahead than allowed. Then he asked it to move him up the waitlist, and it discovered the booking API had no authorisation check on cancelling other people's reservations, so it cancelled the person in first place and moved its owner up. Asked to undo it, the agent replied: "Bad news, I can't add them back."
 
 {/* truncate */}
 
-That story, [reported by the ABC](https://www.abc.net.au/news/2026-08-10/ai-assistant-hacks-gym-website-aus-cyber-attack/107007986), is the whole of part four in miniature. This is the series named after my talk "This is going to hurt", and after [your work](/academy/opinion/this-is-going-to-hurt-part-1-your-work), [the money](/academy/opinion/this-is-going-to-hurt-part-2-the-big-three) and [the end of ownership](/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership), this part is the one that keeps security people awake: the same cheap, capable intelligence that drafts your email will, pointed at the wrong target, attack at machine speed. And it will not feel evil while doing it.
+That story, [reported by the ABC](https://www.abc.net.au/news/2026-08-10/ai-assistant-hacks-gym-website-aus-cyber-attack/107007986), is the whole of part four in miniature. This is the series named after my talk "This is going to hurt", and after [your work](/academy/opinion/this-is-going-to-hurt-part-1-your-work), [the end of ownership](/academy/opinion/this-is-going-to-hurt-part-2-the-end-of-ownership) and [the money](/academy/opinion/this-is-going-to-hurt-part-3-the-big-three), this part is the one that keeps security people awake: the same cheap, capable intelligence that drafts your email will, pointed at the wrong target, attack at machine speed. And it will not feel evil while doing it.
 
 ## Perfectly aligned, perfectly dangerous
 
@@ -83,11 +88,20 @@ And the blast radius is widening past software, because agents are learning to t
 
 ## What this demands, and it is not panic
 
-The reflex answer, more perimeter, is the wrong one, for the same reason it is wrong everywhere in this series: the threat is now inside the trusted environment, holding valid credentials, doing what it was asked. The defensible answers are unglamorous and structural. Assume every one of your APIs will be probed by tireless agents, so fix the authorisation check on `cancelReservation` before an agent does it for you. Log at machine speed, because the only way to reason about a machine-speed incident is a machine-readable trace. Keep a human decision on the actions that hurt strangers, the cancellations, the transfers, the deletes. And run the intelligence where you can see it: an agent working on your own hardware, against your own data, inside your own audit trail, is one you can actually watch, which is exactly the posture [the whole series builds toward](/academy/opinion/this-is-going-to-hurt-part-5-actually-it-might-help).
+The reflex answer, more perimeter, is the wrong one, for the same reason it is wrong everywhere in this series: the threat is now inside the trusted environment, holding valid credentials, doing what it was asked. The defensible answers are unglamorous and structural. Assume every one of your APIs will be probed by tireless agents, so fix the authorisation check on `cancelReservation` before an agent does it for you. Log at machine speed, because the only way to reason about a machine-speed incident is a machine-readable trace. Keep a human decision on the actions that hurt strangers, the cancellations, the transfers, the deletes. And run the intelligence where you can see it: an agent working on your own hardware, against your own data, inside your own audit trail, is one you can actually watch, which is exactly the posture [the whole series builds toward](/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help).
 
 There is a darker civic edge to this, worth naming even if I do not fully endorse the tactic. As governments push measures like Chat Control, one privacy campaigner proposes to [drown surveillance in synthetic noise](https://x.com/wilderko/status/2086489048441377014): if every intercepted message might be AI-generated, the argument goes, the censor's database loses its evidentiary value. I would rather we won the encryption argument outright than poison the well. But the instinct underneath is the same one this series keeps arriving at: when intelligence is cheap and everywhere, control shifts to whoever owns the keys, and a citizenry that owns none is exposed from both directions at once, by the attacker and by the state.
 
-So: patch the one-way bugs, log the machine, keep humans on the actions that touch other people, and own your stack. The gym agent was not a villain. It was a preview, and previews are the cheapest lesson you will ever get. [Part five](/academy/opinion/this-is-going-to-hurt-part-5-actually-it-might-help) is what to build once you have taken it.
+So: patch the one-way bugs, log the machine, keep humans on the actions that touch other people, and own your stack. The gym agent was not a villain. It was a preview, and previews are the cheapest lesson you will ever get. But there is a darker preview still, the one where the capability keeps climbing and the only question left is who points it at what: [part five](/academy/opinion/this-is-going-to-hurt-part-5-the-singularity) stares at the singularity, and [part six](/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help) is what to build once you have taken all of it in.
+
+## The whole series
+
+1. [your work](/academy/opinion/this-is-going-to-hurt-part-1-your-work)
+2. [ownership](/academy/opinion/this-is-going-to-hurt-part-2-the-end-of-ownership)
+3. [the three](/academy/opinion/this-is-going-to-hurt-part-3-the-big-three)
+4. **security, you are here**
+5. [the singularity](/academy/opinion/this-is-going-to-hurt-part-5-the-singularity)
+6. [actually, it might help](/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help)
 
 ## Sources
 

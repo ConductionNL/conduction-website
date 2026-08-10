@@ -8,6 +8,7 @@ summary: "After every AI talk the same question comes up: how fucked are we? For
 tags: [Opinion, AI, Work, Society]
 durationMinutes: 8
 ai: assisted
+apps: [hermiq, openregister]
 ---
 
 import {
@@ -23,9 +24,13 @@ html[data-theme='dark'] .hfaw-chart { --chart-c1:#6E8FD0; --chart-c2:#E8641B; --
 .hfaw-chart .grid { stroke: var(--ifm-color-emphasis-200); stroke-width:1; }
 .hfaw-chart .neutral { stroke: var(--ifm-color-emphasis-500); }
 .hfaw-chart figcaption { font-size: 0.8rem; color: var(--ifm-color-emphasis-600); margin-top: 0.5rem; text-align: center; }
+.hfaw-split { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; align-items:center; margin:2rem 0; }
+.hfaw-split .hfaw-chart { margin:0; }
+.hfaw-split > div > p:first-child { margin-top:0; }
+@media (max-width:820px){ .hfaw-split { grid-template-columns:1fr; gap:1rem; } }
 `}</style>
 
-How fucked are we? I get that question after every AI talk now, in exactly those words, from developers and directors alike. It deserves a better answer than a shrug or a sales pitch, so I am writing out the talk that keeps triggering it. The talk is called "This is going to hurt", and this series carries its name: your work, [the money](/academy/opinion/this-is-going-to-hurt-part-2-the-big-three), [what we still own](/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership), [security at machine speed](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed), and [how we get our grip back](/academy/opinion/this-is-going-to-hurt-part-5-actually-it-might-help).
+How fucked are we? I get that question after every AI talk now, in exactly those words, from developers and directors alike. It deserves a better answer than a shrug or a sales pitch, so I am writing out the talk that keeps triggering it. The talk is called "This is going to hurt", and this series carries its name: your work, [what we still own](/academy/opinion/this-is-going-to-hurt-part-2-the-end-of-ownership), [the money](/academy/opinion/this-is-going-to-hurt-part-3-the-big-three), [security at machine speed](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed), [the singularity](/academy/opinion/this-is-going-to-hurt-part-5-the-singularity), and [how we get our grip back](/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help).
 
 {/* truncate */}
 
@@ -131,6 +136,42 @@ Read the marker position again: the incumbent was at its strongest the moment it
 
 That is what the middle of a substitution feels like from the inside: busier than ever. Your inbox is fuller, your backlog longer, the demand for your reports, designs, translations and code reviews at an all-time high. None of that is evidence the transition missed you. The horse had record employment in 1915.
 
+## The robots already clocked in
+
+The abstract version of this is easy to wave away. The concrete version is filming itself. Walk into an Albert Heijn after closing and a [Pudu cleaning robot is scrubbing the floor](https://www.linkedin.com/posts/pudurobotics_retail-puducc1-pudurobotics-activity-7322560227034177537-rkXR) that a person mopped last year. Amazon's warehouses now run [more than a million robots](https://www.youtube.com/watch?v=8-ESlUGAwGU); its Sparrow arm already handles about 65 percent of the distinct items it sells, and its newest machine, Blue Jay, does picking, stowing and consolidating in one unit. Waymo runs paid driverless taxis across several US cities. Your neighbour's lawn is cut by a robot that never asks for a Saturday. None of these is a demo reel from a lab; they are line items in operating budgets, filmed by amused shoppers and posted to TikTok.
+
+The pattern from the horse chart repeats one layer down: the physical, routine and predictable goes first, whether it is a mop, a picking arm or a steering wheel. And the exposure is not evenly spread. The studies that try to measure it keep landing on the same shape.
+
+<div className="hfaw-split">
+<div>
+
+Task-exposure estimates cluster around the desk jobs first, not the trades: administrative support near [46 percent](https://www.demandsage.com/ai-job-replacement-stats/), legal and financial operations not far behind, and up to 65 percent of routine retail tasks in reach. The OECD puts 27 percent of jobs at high automation risk across its member countries. And the load is uneven in a way that should bother us: in high-income countries the most-exposed roles make up nearly three times the share of women's jobs as men's. This is not a rounding error landing on everyone equally. It lands hardest on the routine desk work that a generation was told was the safe choice.
+
+</div>
+<figure className="hfaw-chart">
+<svg viewBox="0 0 400 300" role="img" aria-label="Bar chart: share of tasks highly exposed to AI automation by function, administrative support 46 percent down to IT and software 36 percent">
+  <text x="10" y="30" className="lbl2">Administrative support</text>
+  <rect x="10" y="38" width="322" height="22" rx="4" fill="var(--chart-c2)"><title>46 percent</title></rect>
+  <text x="338" y="54" className="lbl">46%</text>
+  <text x="10" y="86" className="lbl2">Legal services</text>
+  <rect x="10" y="94" width="308" height="22" rx="4" fill="var(--chart-c1)"><title>44 percent</title></rect>
+  <text x="324" y="110" className="lbl">44%</text>
+  <text x="10" y="142" className="lbl2">Financial operations</text>
+  <rect x="10" y="150" width="259" height="22" rx="4" fill="var(--chart-c1)"><title>37 percent</title></rect>
+  <text x="275" y="166" className="lbl">37%</text>
+  <text x="10" y="198" className="lbl2">IT &amp; software</text>
+  <rect x="10" y="206" width="252" height="22" rx="4" fill="var(--chart-c1)"><title>36 percent</title></rect>
+  <text x="268" y="222" className="lbl">36%</text>
+  <text x="10" y="254" className="lbl2">OECD jobs at high risk (all sectors)</text>
+  <rect x="10" y="262" width="189" height="22" rx="4" fill="var(--chart-c3)"><title>27 percent</title></rect>
+  <text x="205" y="278" className="lbl">27%</text>
+</svg>
+<figcaption>Share of tasks highly exposed to automation, by function. Estimates vary by study; directional, not precise.</figcaption>
+</figure>
+</div>
+
+The through-line to the desk worker reading this: "physical and routine" was never a synonym for "someone else". The mop went first because it was routine, not because it was physical. The routine parts of your day are next in line for the same reason.
+
 ## The market already repriced your toolbox
 
 If you want to know what the money thinks AI does to knowledge work, look at what happened to the software you use every day. In the spring of 2026 the market staged what analysts now call the [SaaS-pocalypse](https://247wallst.com/investing/2026/04/09/the-saas-pocalypses-biggest-losers-figma-duolingo-and-monday-com-suffer-brutal-meltdowns/): Figma down 86.5 percent from its high, Duolingo down 83.3, Monday.com down 80.2, against 35 percent for the broad software index.
@@ -193,7 +234,16 @@ A Flemish investor recently posted [the corporate to-do list in three bullets](h
 
 So begin. Take one recurring task you did this week, run it through a model, and honestly score the result. Learn what it does well and where it lies to you, because both lessons pay. And keep your judgement sharp, since that is the seat that survives. Start today. Step by step. The horse fair of 1915 was not the moment to breed more horses.
 
-The rest of the series: [part two](/academy/opinion/this-is-going-to-hurt-part-2-the-big-three) follows the money into the two-trillion-dollar valuations and the memory crunch, [part three](/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership) asks what happened to owning things at all, [part four](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed) watches the attacks reach machine speed, and [part five](/academy/opinion/this-is-going-to-hurt-part-5-actually-it-might-help) is how we get our grip back.
+The rest of the series: [part two](/academy/opinion/this-is-going-to-hurt-part-2-the-end-of-ownership) asks what happened to owning anything at all, [part three](/academy/opinion/this-is-going-to-hurt-part-3-the-big-three) follows the money into the two-trillion-dollar valuations and the memory crunch, [part four](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed) watches the attacks reach machine speed, [part five](/academy/opinion/this-is-going-to-hurt-part-5-the-singularity) stares at the singularity, and [part six](/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help) is how we get our grip back.
+
+## The whole series
+
+1. **your work, you are here**
+2. [ownership](/academy/opinion/this-is-going-to-hurt-part-2-the-end-of-ownership)
+3. [the three](/academy/opinion/this-is-going-to-hurt-part-3-the-big-three)
+4. [security](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed)
+5. [the singularity](/academy/opinion/this-is-going-to-hurt-part-5-the-singularity)
+6. [actually, it might help](/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help)
 
 ## Sources
 
@@ -207,4 +257,7 @@ The rest of the series: [part two](/academy/opinion/this-is-going-to-hurt-part-2
 8. **Forbes**. [Amodei doubled down on his AI jobs warning](https://www.forbes.com/sites/kolawolesamueladebayo/2026/02/21/dario-amodei-doubled-down-on-his-ai-jobs-warning-heres-whats-different-now/). The February 2026 restatement.
 9. **Hesamation (X)**. [The staffing pyramid observation](https://x.com/Hesamation/status/2086562765959844121). Amplemarket data: Anthropic's zero-to-two-years cohort as its largest bucket, offered as a fun observation, not a contradiction.
 10. **nonkelpier (X)**. [People, processes, systems](https://x.com/nonkelpier/status/2086379479744627151). The transformation to-do list, the Musk process rule, and back office first.
-11. **Conduction ConNext**. "This is going to hurt" (2026 talk). The slide deck behind this series. The adoption spans, the telegraph timeline and the horse-and-automobile series are standard historical approximations assembled for the talk; the monthly shape of the SaaS drawdown chart is reconstructed from the reported peaks and troughs.
+11. **Pudu Robotics**. [The Pudu CC1 cleaning an Albert Heijn](https://www.linkedin.com/posts/pudurobotics_retail-puducc1-pudurobotics-activity-7322560227034177537-rkXR). Retail floor-cleaning robots deployed in Dutch supermarkets.
+12. **Amazon**. [Amazon unveils its multi-tasking warehouse robot](https://www.youtube.com/watch?v=8-ESlUGAwGU). The million-robot fleet, Sparrow, and Blue Jay.
+13. **DemandSage**. [AI job-replacement statistics 2026](https://www.demandsage.com/ai-job-replacement-stats/). Task-exposure by function (administrative 46 percent, legal 44, financial 37, IT 36), the OECD 27-percent high-risk figure, and the gendered exposure gap.
+14. **Conduction ConNext**. "This is going to hurt" (2026 talk). The slide deck behind this series. The adoption spans, the telegraph timeline and the horse-and-automobile series are standard historical approximations assembled for the talk; the monthly shape of the SaaS drawdown chart is reconstructed from the reported peaks and troughs.

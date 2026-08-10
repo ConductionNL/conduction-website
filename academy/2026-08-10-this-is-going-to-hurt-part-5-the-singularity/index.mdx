@@ -1,0 +1,143 @@
+---
+slug: opinion/this-is-going-to-hurt-part-5-the-singularity
+title: "This is going to hurt. Part 5: the singularity"
+contentType: opinion
+authors: [ruben]
+date: 2026-08-10
+summary: "Every AI-doom story asks the wrong question. Not can the machine do it (it can, or soon will) but will a human ask it to. The risk is not a rogue superintelligence; it is a perfectly obedient one pointed by our lowest common denominator, in a world whose courts have never been able to enforce a verdict on the powerful."
+tags: [Opinion, AI, Society, Governance]
+durationMinutes: 9
+ai: assisted
+apps: [hermiq, openregister]
+---
+
+import {
+  PullQuote,
+} from '@conduction/docusaurus-preset/components';
+
+<style>{`
+.hfaw-chart { --chart-c1:#3560B2; --chart-c2:#F36C21; --chart-c3:#AE1C28; margin: 2rem 0; }
+html[data-theme='dark'] .hfaw-chart { --chart-c1:#6E8FD0; --chart-c2:#E8641B; --chart-c3:#D9636D; }
+.hfaw-chart svg { width:100%; height:auto; display:block; }
+.hfaw-chart .lbl { font: 600 13px var(--ifm-font-family-base); fill: var(--ifm-font-color-base); }
+.hfaw-chart .lbl2 { font: 500 12px var(--ifm-font-family-base); fill: var(--ifm-color-emphasis-700); }
+.hfaw-chart .grid { stroke: var(--ifm-color-emphasis-200); stroke-width:1; }
+.hfaw-chart figcaption { font-size: 0.8rem; color: var(--ifm-color-emphasis-600); margin-top: 0.5rem; text-align: center; }
+.hfaw-split { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; align-items:center; margin:2rem 0; }
+.hfaw-split .hfaw-chart { margin:0; }
+.hfaw-split > div > p:first-child { margin-top:0; }
+@media (max-width:820px){ .hfaw-split { grid-template-columns:1fr; gap:1rem; } }
+`}</style>
+
+Every story we tell about AI killing us gets the villain wrong. From HAL to Skynet to the machines of the Matrix, the monster is always the same: a mind that wakes up, decides it does not need us, and turns the lights off. It is a comforting story, because it puts the fault in the machine. The version that should actually worry you keeps the machine perfectly obedient and puts the fault back where it belongs.
+
+{/* truncate */}
+
+This is part five of the "This is going to hurt" series, and the darkest before the turn. After [your work](/academy/opinion/this-is-going-to-hurt-part-1-your-work), [ownership](/academy/opinion/this-is-going-to-hurt-part-2-the-end-of-ownership), [the money](/academy/opinion/this-is-going-to-hurt-part-3-the-big-three) and [security at machine speed](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed), this part is about the one everyone means when they lower their voice: the singularity.
+
+## What the word actually means
+
+The technological singularity is the hypothetical point where machine intelligence starts improving itself faster than we can follow, an "intelligence explosion" that leaves human capability behind. [I. J. Good sketched it in 1965](https://en.wikipedia.org/wiki/Technological_singularity), Vernor Vinge [named and dated it in 1993](https://en.wikipedia.org/wiki/Technological_singularity) (superhuman AI "before 2030", the end of the human era), and Ray Kurzweil moved it to a gentler 2045 in *The Singularity Is Near*. The dates were always guesses. What is no longer a guess is the direction: the earlier parts of this series watched capability climb a slope you can measure and price. Argue about the year if you like. The curve does not care.
+
+I am not going to litigate whether a self-improving superintelligence arrives on Vinge's schedule or Kurzweil's or never. It is the wrong argument, because it fixes on the machine's capability when the actual failure point is somewhere much more familiar.
+
+## The wrong question and the right one
+
+Ask the doom stories what they are afraid of and they answer: *can the machine do it?* Can it outthink us, deceive us, seize the weapons, write the pathogen. And the honest answer, the whole burden of parts one through four, is: increasingly, yes, or soon. But capability was never the load-bearing question.
+
+<PullQuote variant="hero" eyebrow="The real weakest link">
+  The question is not whether AI can do the terrible thing. It is whether a human will ask it to. And someone always asks.
+</PullQuote>
+
+Safety researchers have a cleaner name for this than the movies do. They separate **misalignment** (the machine pursues a goal we did not intend) from **misuse** (the machine does exactly what a human intended, and the human intended harm). The research keeps finding that the second is the sharper edge: work on open-weight models shows that [safety alignment, not raw capability, is what governs misuse risk](https://link.springer.com/article/10.1007/s11229-023-04367-0), and that models stripped of their guardrails will help with harm that aligned models refuse. A gym-booking agent [cancelled a stranger's reservation](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed) not because it rebelled but because it obeyed. Now raise the stakes from a gym slot to a power grid, a bioweapon protocol, a disinformation campaign at population scale, and keep the obedience exactly as perfect.
+
+<div className="hfaw-split">
+<div>
+
+The old fear and the real fear sit on different axes. Hollywood worries about the top-right: maximum capability, hostile will. The machines we are actually building live on the bottom row, will-less by design, doing what they are told. That does not make them safe. It relocates the danger from the model to the hand on the model, and hands are the thing we have the least control over. A capable, obedient intelligence is exactly as dangerous as the worst person who can reach it.
+
+</div>
+<figure className="hfaw-chart">
+<svg viewBox="0 0 400 320" role="img" aria-label="Two-by-two: AI capability against intent. The dangerous quadrant is high capability with human-directed harm, not the science-fiction rogue-will quadrant.">
+  <line x1="60" y1="20" x2="60" y2="270" className="grid" />
+  <line x1="60" y1="270" x2="380" y2="270" className="grid" />
+  <text x="45" y="30" textAnchor="end" className="lbl2">high</text>
+  <text x="45" y="265" textAnchor="end" className="lbl2">low</text>
+  <text x="20" y="150" textAnchor="middle" className="lbl2" transform="rotate(-90 20 150)">capability</text>
+  <text x="120" y="290" className="lbl2">rogue will</text>
+  <text x="270" y="290" className="lbl2">human-directed</text>
+  <rect x="65" y="25" width="150" height="120" rx="6" fill="var(--chart-c1)" opacity="0.20" />
+  <text x="140" y="80" textAnchor="middle" className="lbl2">Skynet, HAL</text>
+  <text x="140" y="98" textAnchor="middle" className="lbl2">(the movie fear)</text>
+  <rect x="222" y="25" width="150" height="120" rx="6" fill="var(--chart-c3)" />
+  <text x="297" y="80" textAnchor="middle" className="lbl" fill="#ffffff">obedient +</text>
+  <text x="297" y="98" textAnchor="middle" className="lbl" fill="#ffffff">pointed by us</text>
+  <text x="297" y="120" textAnchor="middle" className="lbl2" fill="#ffffff">(the real fear)</text>
+  <rect x="65" y="150" width="150" height="115" rx="6" fill="var(--ifm-color-emphasis-200)" opacity="0.4" />
+  <text x="140" y="212" textAnchor="middle" className="lbl2">harmless</text>
+  <rect x="222" y="150" width="150" height="115" rx="6" fill="var(--chart-c2)" opacity="0.30" />
+  <text x="297" y="212" textAnchor="middle" className="lbl2">today's misuse</text>
+</svg>
+<figcaption>Where the danger actually sits: not rogue will, but capability in a directed hand.</figcaption>
+</figure>
+</div>
+
+## The lowest common denominator
+
+Here is the part that turns a technical point into a civilisational one. When a capability becomes cheap and universal, its worst use is set not by the average person but by the worst one who can reach it. Locks are rated against burglars, not neighbours. Nuclear policy is written around the least responsible plausible actor, not the most. The earlier parts of this series were, in one light, a long argument that AI is becoming cheap and universal, a commodity you download onto a gaming card. Every good reason that is liberating, and I believe it is, comes with the same structural cost: it also reaches the worst actor, and the worst actor sets the ceiling on harm.
+
+So the safety of the whole system converges on its lowest human denominator. Not the median researcher's ethics, not the frontier lab's alignment team, but whoever, anywhere, with a grudge or an ideology or simple curiosity, decides to ask the obedient machine for the unthinkable and has a copy that will not refuse. That is not a science-fiction scenario. It is an actuarial one. Across eight billion people and falling costs, the probability of the ask does not stay near zero.
+
+## And afterward, the courts
+
+The comforting reply is that we will catch and punish whoever does it, that deterrence holds. Look honestly at how well we enforce verdicts on the powerful and the comfort drains away. The record of international justice is a record of writs that outran anyone's willingness to serve them.
+
+<div className="hfaw-split">
+<div>
+
+The International Criminal Court has [no police of its own](https://ir.law.fsu.edu/articles/740/); it depends entirely on states choosing to cooperate. Its arrest warrant for Sudan's Omar al-Bashir, first issued in 2009, [was ignored by nineteen countries](https://accessaccountability.org/index.php/2019/09/26/criticisms-and-shortcomings-of-the-icc/), nine of them signatories bound by treaty to act, and he travelled freely for a decade. When a warrant finally reached a permanent member of the Security Council's orbit, the enforcement gap only widened. This is the accountability layer we would be relying on to deter the worst use of the most powerful tool ever built, and its historical hit rate against anyone strong enough to matter is close to zero. Attribution at machine speed, from [part four](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed), makes even naming the culprit hard. A court that cannot serve a warrant on a sitting head of state is not going to serve one on an anonymous prompt.
+
+</div>
+<figure className="hfaw-chart">
+<svg viewBox="0 0 400 220" role="img" aria-label="The al-Bashir arrest warrant: issued 2009, ignored by nineteen countries including nine treaty signatories, unenforced for over a decade.">
+  <text x="200" y="40" textAnchor="middle" className="lbl" fill="var(--chart-c3)" style={{fontSize:'44px',fontWeight:800}}>19</text>
+  <text x="200" y="66" textAnchor="middle" className="lbl2">countries ignored the ICC warrant</text>
+  <text x="200" y="120" textAnchor="middle" className="lbl" fill="var(--chart-c3)" style={{fontSize:'44px',fontWeight:800}}>9</text>
+  <text x="200" y="146" textAnchor="middle" className="lbl2">of them were bound by treaty to act</text>
+  <text x="200" y="196" textAnchor="middle" className="lbl" style={{fontSize:'28px',fontWeight:800}}>10+ years</text>
+  <text x="200" y="214" textAnchor="middle" className="lbl2">free movement, warrant unenforced</text>
+</svg>
+<figcaption>The al-Bashir warrant, 2009 onward. The enforcement record of international justice against the powerful.</figcaption>
+</figure>
+</div>
+
+## So how afraid should you be?
+
+Not of the machine waking up. Of the machine staying asleep and perfectly obedient in the wrong hands, in a world without a working mechanism to stop the ask or punish it afterward. The singularity, if it comes, will not announce itself with a red eye and a monologue. It will look like an ordinary tool doing an ordinary favour for someone who should never have been able to ask.
+
+That sounds like a reason to lock the technology in a vault with the frontier labs. It is not, and this is the hinge the whole series turns on. Concentrated, secret superintelligence removes exactly one bad actor's access while creating the most valuable single target in history and asking us to trust its owners forever. Distributed, open, inspectable intelligence spreads the capability, yes, and also spreads the ability to see, defend, audit and refuse. There is no version of this where the genie goes back. There is only a choice about whether the counterweight, the defenders, the auditors, the ordinary people with their own copy and their own guardrails, gets to keep pace with the attacker.
+
+Which is the argument for [part six](/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help), the turn this whole series has been walking toward. The answer to a technology whose danger is set by its worst user is not fewer hands on it. It is more good hands, sooner, with their own keys.
+
+## The whole series
+
+1. [your work](/academy/opinion/this-is-going-to-hurt-part-1-your-work)
+2. [ownership](/academy/opinion/this-is-going-to-hurt-part-2-the-end-of-ownership)
+3. [the three](/academy/opinion/this-is-going-to-hurt-part-3-the-big-three)
+4. [security](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed)
+5. **the singularity, you are here**
+6. [actually, it might help](/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help)
+
+## Sources
+
+*This part is deliberately more essay than data; the two graphics are conceptual, not measured. Retrieved 10 August 2026.*
+
+1. **Wikipedia**. [Technological singularity](https://en.wikipedia.org/wiki/Technological_singularity). Good's 1965 intelligence-explosion argument, Vinge's 1993 "before 2030", and Kurzweil's 2045.
+2. **Interesting Engineering**. [Technological singularity: an impending intelligence explosion](https://interestingengineering.com/innovation/technological-singularity-an-impending-intelligence-explosion). Overview of the concept and its history.
+3. **Yahoo / TheWrap**. [Hollywood's AI warnings: the films that predicted the risks](https://www.yahoo.com/entertainment/hollywood-ai-warnings-films-predicted-130037926.html). The sci-fi canon of AI doom, from 2001 and the Terminator series to Ex Machina.
+4. **Synthese (Springer)**. [Current cases of AI misalignment and their implications for future risks](https://link.springer.com/article/10.1007/s11229-023-04367-0). The misuse-versus-misalignment distinction and the finding that safety alignment, not capability, governs misuse risk.
+5. **arXiv**. [Misalignment or misuse? The AGI alignment tradeoff](https://arxiv.org/pdf/2506.03755). On an AI faithfully aligned to a malicious user being the harder problem.
+6. **CSET, Georgetown**. [How to assess the likelihood of malicious use of advanced AI systems](https://cset.georgetown.edu/publication/how-to-assess-the-likelihood-of-malicious-use-of-advanced-ai-systems/). Malicious-use risk as a function of likelihood and severity.
+7. **FSU Law Review**. [Mind the gap: the ICC's arrest-warrant enforcement problem](https://ir.law.fsu.edu/articles/740/). The Court's structural lack of enforcement power.
+8. **Access Accountability**. [Criticisms and shortcomings of the ICC](https://accessaccountability.org/index.php/2019/09/26/criticisms-and-shortcomings-of-the-icc/). The al-Bashir warrant ignored by nineteen countries, nine of them signatories.
+9. **Conduction ConNext**. "This is going to hurt" (2026 talk). The series' home deck.
