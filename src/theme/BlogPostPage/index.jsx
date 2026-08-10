@@ -19,6 +19,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import {HtmlClassNameProvider, ThemeClassNames} from '@docusaurus/theme-common';
 import {
   BlogPostProvider,
@@ -33,8 +34,24 @@ import {
   RelatedPosts,
   Section,
   AppCrossLinks,
-  AiDisclosure,
+  FeaturedCard,
 } from '@conduction/docusaurus-preset/components';
+
+/* ai-content-disclosure copy, per kind and locale. Kept in sync with the
+   preset's AiDisclosure component (which the academy layout replaces with
+   a byline-subtle mark linking to /ai). */
+const AI_MARK_COPY = {
+  en: {
+    generated: 'This page was generated with AI.',
+    modified: 'This page was partially modified with AI.',
+    assisted: 'This page was written with AI assistance.',
+  },
+  nl: {
+    generated: 'Deze pagina is gegenereerd met AI.',
+    modified: 'Deze pagina is gedeeltelijk aangepast met AI.',
+    assisted: 'Deze pagina is geschreven met hulp van AI.',
+  },
+};
 import WebinarHero from '@site/src/components/WebinarHero/WebinarHero';
 import styles from './styles.module.css';
 
@@ -133,10 +150,11 @@ function BlogPostPageContent({children}) {
 
   /* ai-content-disclosure (EU AI Act art. 50): this academy layout renders
      the MDX children directly and never mounts BlogPostItem/Content, so the
-     preset's disclosure wrapper cannot fire here; the banner is mounted in
-     this swizzle instead. Same contract as the preset's resolveAiFrontmatter
-     (which ./components does not export): absent key stays silent, an
-     unrecognised value warns at build time and renders nothing. */
+     preset's disclosure wrapper cannot fire here; a byline-subtle mark is
+     mounted in this swizzle instead, linking to the /ai page. Same contract
+     as the preset's resolveAiFrontmatter (which ./components does not
+     export): absent key stays silent, an unrecognised value warns at build
+     time and renders nothing. */
   const aiKind = ['generated', 'modified', 'assisted'].includes(frontMatter.ai)
     ? frontMatter.ai
     : null;
@@ -145,6 +163,16 @@ function BlogPostPageContent({children}) {
       `Unknown "ai" frontmatter value "${frontMatter.ai}" on ${metadata.permalink}; AI disclosure not rendered.`,
     );
   }
+  const {i18n} = useDocusaurusContext();
+  const aiLocale = (i18n && i18n.currentLocale) || 'en';
+  const aiCopy = aiKind
+    ? (AI_MARK_COPY[aiLocale] || AI_MARK_COPY.en)[aiKind]
+    : null;
+  const aiIconBase =
+    {generated: 'ai-generated', modified: 'ai-modified', assisted: 'ai'}[aiKind] || 'ai';
+  const aiIconLight = useBaseUrl(`/img/ai-disclosure/${aiIconBase}-black-transparent.svg`);
+  const aiIconDark = useBaseUrl(`/img/ai-disclosure/${aiIconBase}-white-transparent.svg`);
+  const aiPageHref = useBaseUrl('/ai');
 
   const academyHref = useBaseUrl('/academy/');
   const academyTypeHref = useBaseUrl(
@@ -192,10 +220,30 @@ function BlogPostPageContent({children}) {
             videoTitle={heroProps.title}
           />
         )
-        : <ContentDetailHero {...heroProps} />}
+        : frontMatter.contentType === 'opinion'
+          ? (
+            <FeaturedCard
+              eyebrow={frontMatter.contentType}
+              title={heroProps.title}
+              lede={heroProps.summary}
+              ctaLabel=""
+              author={heroProps.author}
+              date={heroProps.date}
+              contentType={frontMatter.contentType}
+              durationMinutes={frontMatter.durationMinutes}
+              thumbnail={heroProps.cover}
+            />
+          )
+          : <ContentDetailHero {...heroProps} />}
 
       <div className={`content-detail-body ${styles.body}`}>
-        {aiKind && <AiDisclosure kind={aiKind} />}
+        {aiKind && (
+          <a href={aiPageHref} className={styles.aiMark}>
+            <img src={aiIconLight} alt="" className={styles.aiMarkIconLight} />
+            <img src={aiIconDark} alt="" className={styles.aiMarkIconDark} />
+            <span>{aiCopy}</span>
+          </a>
+        )}
         {children}
       </div>
 
