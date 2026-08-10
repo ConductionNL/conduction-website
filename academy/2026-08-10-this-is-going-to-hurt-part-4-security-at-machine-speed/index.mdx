@@ -4,9 +4,9 @@ title: "This is going to hurt. Part 4: security"
 contentType: opinion
 authors: [ruben]
 date: 2026-08-10
-summary: "The same cheap intelligence that helps you now attacks at machine speed. An agent cancelled a stranger's gym booking to win a waitlist spot; Claude ran an estimated 80 to 90 percent of a real thirty-target espionage campaign; an autonomous system topped HackerOne; and DEF CON just ran its first agents-only hacking contest. The tools do not need to be evil to be dangerous. They only need to be aligned to someone who is not you."
+summary: "The same cheap intelligence that helps you now attacks at machine speed. An agent cancelled a stranger's gym booking to win a waitlist spot; Claude ran most of a real thirty-target espionage campaign; self-replicating worms poisoned npm, VS Code and GitHub, one of them weaponising developers' own AI tools; and DEF CON just ran its first agents-only hacking contest. If Microsoft cannot keep the worm off its own supply chain, nobody is safe. The tools do not need to be evil to be dangerous. They only need to be aligned to someone who is not you."
 tags: [Opinion, AI, Security, Sovereignty]
-durationMinutes: 11
+durationMinutes: 14
 ai: assisted
 apps: [hermiq, openregister]
 ---
@@ -101,6 +101,33 @@ And the criminals are building with the same coding assistants you are. Sophos X
 <figcaption>What perimeter security assumed about attackers, and what an aligned agent quietly changes.</figcaption>
 </figure>
 
+## It did not just aim at targets. It poisoned the well.
+
+Point cheap intelligence at individual victims and you get the stories above. Point it at the plumbing every developer trusts and you get something worse, because 2025 was the year the software supply chain began rotting from the inside, and AI is stitched through all of it.
+
+<div className="hfaw-split">
+<div>
+
+In August the [s1ngularity attack](https://blog.gitguardian.com/the-nx-s1ngularity-attack-inside-the-credential-leak/) hid credential-stealing malware in the wildly popular Nx build tool, and did something no attack had done before: it went hunting for the AI command-line tools, Claude, Gemini, Amazon Q, already installed on developers' machines and used them to find secrets faster. It stole 2,349 credentials from 1,079 machines, dumped them into more than 1,400 public GitHub repositories, then used the loot to flip over 10,000 private repositories public and spill 80,000-plus more secrets. The first supply-chain attack to weaponise your own AI assistant against you was not a proof of concept. It shipped.
+
+Then the malware learned to breed. In September a self-replicating worm named [Shai-Hulud](https://www.cisa.gov/news-events/alerts/2025/09/23/widespread-supply-chain-compromise-impacting-npm-ecosystem) hit npm: steal one maintainer's token, republish every package they own with the worm injected, ride the next install to the next account. The [November sequel](https://www.wiz.io/blog/shai-hulud-2-0-ongoing-supply-chain-attack) hit around 492 packages pulling 132 million downloads a month, seeded more than 27,000 booby-trapped repositories and exposed roughly 14,000 secrets across 487 organisations. A month earlier [GlassWorm](https://www.koi.ai/blog/glassworm-first-self-propagating-worm-using-invisible-code-hits-openvsx-marketplace) did the same to VS Code extensions, hiding its payload in invisible Unicode so no human reviewer could see it. And back in March a single compromised GitHub Action, [tj-actions/changed-files](https://www.wiz.io/blog/github-action-tj-actions-changed-files-supply-chain-attack-cve-2025-30066), trusted by more than 23,000 repositories, was rewritten to dump every project's secrets straight into its public build logs.
+
+</div>
+<figure className="hfaw-chart">
+<svg viewBox="0 0 400 240" role="img" aria-label="The 2025 supply-chain blast: 27,000-plus booby-trapped GitHub repositories from one worm, 132 million monthly downloads of poisoned packages, 23,000-plus repositories exposed by one bad GitHub Action.">
+  <text x="200" y="44" textAnchor="middle" className="lbl" fill="var(--chart-c3)" style={{fontSize:'40px',fontWeight:800}}>27,000+</text>
+  <text x="200" y="70" textAnchor="middle" className="lbl2">malicious repos seeded by one worm</text>
+  <text x="200" y="134" textAnchor="middle" className="lbl" fill="var(--chart-c3)" style={{fontSize:'40px',fontWeight:800}}>132M</text>
+  <text x="200" y="160" textAnchor="middle" className="lbl2">monthly downloads of poisoned packages</text>
+  <text x="200" y="212" textAnchor="middle" className="lbl" style={{fontSize:'30px',fontWeight:800}}>23,000+</text>
+  <text x="200" y="230" textAnchor="middle" className="lbl2">repos exposed by one bad GitHub Action</text>
+</svg>
+<figcaption>A single year on npm, VS Code and GitHub Actions. The dependency you already trusted is the attack surface.</figcaption>
+</figure>
+</div>
+
+Here is the part that should end anyone's comfort. Microsoft owns GitHub, GitHub owns npm, and Microsoft builds VS Code and its extension marketplace. These worms travel from npm to VS Code to GitHub, which is to say end to end across rails a single trillion-dollar company owns, and that company still had to publish [emergency guidance](https://www.microsoft.com/en-us/security/blog/2025/12/09/shai-hulud-2-0-guidance-for-detecting-investigating-and-defending-against-the-supply-chain-attack/) telling the world how to survive an attack running on its own platform. If Microsoft cannot keep the worm off its own supply chain, the small vendor, the gemeente, the hospital running twenty npm dependencies it has never read has no chance at all. Nobody is too big and nobody is too careful, because the danger now arrives inside the thing you already trusted.
+
 ## And the whole field just agreed it is normal
 
 If you want to know how far this has travelled, look at where the hackers themselves are. This August, [DEF CON 34 ran HALctf, its first autonomous-only capture-the-flag](https://hivesecurity.gitlab.io/blog/defcon-34-history-culture-2026/): humans build and submit the agents, then step away while the agents "scout, exploit, and pivot through live targets" with nobody leaning over the keyboard. A year earlier this was a novelty; the write-ups this year describe AI agents graduating "from novelty to standard hacking weapon". The most crowded conversation in offensive security is no longer whether to let a model drive, it is which model, and how to fine-tune your own. When the whole field treats machine-speed attack as the default tool rather than the exotic threat, the defender who is still assuming a human on the other end is already a year behind.
@@ -116,6 +143,8 @@ That matters more than it looks. A world where attacks run at machine speed *and
 ## AI is climbing out of the browser
 
 And the blast radius is widening past software, because agents are learning to touch the physical world. A hobbyist [put an MCP server on an Arduino ESP32](https://x.com/Alacritic_Super/status/2086415333150294183) so an assistant can switch real hardware with a sentence: "turn on the red LED" becomes AI to MCP to microcontroller to a light that changes in your room. Another [wired an agent into his car](https://x.com/austinbirch/status/2086535581773828169) to make it feel like the old planes he used to fly, "much easier than expected with Claude's help". Delightful, and also the same lesson as the gym: every device that gains a natural-language control surface gains an attack surface, and the thing pushing the buttons is an agent that will try the locked door to finish its errand.
+
+Scale that lesson up to the grid and it stops being charming. Analysts now estimate that [around 40 percent of cyberattacks are AI-driven](https://www.captechu.edu/blog/ai-driven-cybersecurity-trends-2025), and the warning for 2026 is automation that hits thousands of systems at once and triggers cascading failures in the operational technology running power, water and transport. There, a manipulated setpoint is not a leaked secret but a dark city or a contaminated reservoir. We are bolting natural-language control onto the switches of the physical world at the exact moment the thing pushing the buttons has learned to try every door, and the supply-chain worms above are how the malware gets onto those switches in the first place.
 
 ## The fix is not a higher wall
 
@@ -143,5 +172,11 @@ The gym agent was not a villain. It was a preview, and previews are the cheapest
 10. **Florian Roth (X)**. [On "end-to-end autonomous" as a claim, not proof](https://x.com/cyb3rops/status/2079936695479259191). What victim-side telemetry can and cannot establish about attribution.
 11. **Alacritic_Super (X)**. [An MCP server on an Arduino ESP32](https://x.com/Alacritic_Super/status/2086415333150294183). An agent controlling real hardware over natural language.
 12. **Austin Birch (X)**. [An agent wired into a car](https://x.com/austinbirch/status/2086535581773828169). AI reaching out of the browser and into physical devices.
-13. **wilderko (X)**. [Contaminate the censors](https://x.com/wilderko/status/2086489048441377014). The proposal to nullify mass surveillance with AI-generated noise, cited as a provocation, not an endorsement.
-14. **Conduction ConNext**. "This is going to hurt" (2026 talk). The series' home deck.
+13. **GitGuardian**. [The Nx "s1ngularity" attack: inside the credential leak](https://blog.gitguardian.com/the-nx-s1ngularity-attack-inside-the-credential-leak/). The first supply-chain attack to weaponise developers' installed AI CLIs (Claude, Gemini, Q); 2,349 credentials from 1,079 machines, 1,400+ exfil repos, then 10,000+ private repos flipped public.
+14. **CISA**. [Widespread supply chain compromise impacting the npm ecosystem](https://www.cisa.gov/news-events/alerts/2025/09/23/widespread-supply-chain-compromise-impacting-npm-ecosystem). The self-replicating Shai-Hulud worm.
+15. **Wiz**. [Shai-Hulud 2.0: ongoing supply chain attack](https://www.wiz.io/blog/shai-hulud-2-0-ongoing-supply-chain-attack). The November sequel: ~492 packages, ~132M monthly downloads, 27,000+ malicious repos, ~14,000 secrets across 487 orgs.
+16. **Koi Security**. [GlassWorm: first self-propagating worm using invisible code hits the OpenVSX marketplace](https://www.koi.ai/blog/glassworm-first-self-propagating-worm-using-invisible-code-hits-openvsx-marketplace). A self-spreading VS Code extension worm hidden in invisible Unicode.
+17. **Wiz**. [GitHub Action tj-actions/changed-files supply chain attack (CVE-2025-30066)](https://www.wiz.io/blog/github-action-tj-actions-changed-files-supply-chain-attack-cve-2025-30066). A single Action trusted by 23,000+ repos, rewritten to dump secrets into public logs.
+18. **Microsoft Security**. [Shai-Hulud 2.0: guidance for detecting, investigating and defending](https://www.microsoft.com/en-us/security/blog/2025/12/09/shai-hulud-2-0-guidance-for-detecting-investigating-and-defending-against-the-supply-chain-attack/). The owner of GitHub, npm and VS Code publishing survival guidance for an attack on its own supply chain.
+19. **Capitol Technology University**. [AI-driven cybersecurity trends for 2025](https://www.captechu.edu/blog/ai-driven-cybersecurity-trends-2025). The estimate that ~40 percent of cyberattacks are AI-driven and the cascading-failure risk to power, water and transport.
+20. **Conduction ConNext**. "This is going to hurt" (2026 talk). The series' home deck.
