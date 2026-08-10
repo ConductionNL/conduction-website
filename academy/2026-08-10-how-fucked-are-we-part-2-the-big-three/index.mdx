@@ -1,0 +1,166 @@
+---
+slug: opinion/how-fucked-are-we-part-2-the-big-three
+title: "How fucked are we? Part 2: the rise and fall of the big three"
+contentType: opinion
+authors: [ruben]
+date: 2026-08-10
+summary: "Three AI labs carry 2.07 trillion dollars of paper value on roughly 72 billion of revenue: 44 Estonias of valuation on one Estonia of income. The rise broke the memory market. The fall is already visible: open weights three points behind and shrinking toward a gaming card."
+tags: [Opinion, AI, Economics, Open source, Eurostack]
+durationMinutes: 9
+ai: assisted
+---
+
+import {
+  PullQuote,
+} from '@conduction/docusaurus-preset/components';
+
+<style>{`
+.hfaw-chart { --chart-c1:#3560B2; --chart-c2:#F36C21; --chart-c3:#0082C9; margin: 2rem 0; }
+html[data-theme='dark'] .hfaw-chart { --chart-c1:#6E8FD0; --chart-c2:#E8641B; --chart-c3:#2E9AD6; }
+.hfaw-chart svg { width:100%; height:auto; display:block; }
+.hfaw-chart .lbl { font: 600 13px var(--ifm-font-family-base); fill: var(--ifm-font-color-base); }
+.hfaw-chart .lbl2 { font: 500 12px var(--ifm-font-family-base); fill: var(--ifm-color-emphasis-700); }
+.hfaw-chart .grid { stroke: var(--ifm-color-emphasis-200); stroke-width:1; }
+.hfaw-chart figcaption { font-size: 0.8rem; color: var(--ifm-color-emphasis-600); margin-top: 0.5rem; text-align: center; }
+.hfaw-tiles { display:flex; gap:16px; flex-wrap:wrap; margin: 2rem 0; }
+.hfaw-tiles > div { flex:1 1 150px; background: var(--ifm-color-emphasis-100); border-radius: 12px; padding: 20px 16px; text-align:center; }
+.hfaw-tiles strong { display:block; font-size: 2rem; font-weight: 800; color: var(--chart-c1); }
+.hfaw-tiles span { font-size: 0.85rem; color: var(--ifm-color-emphasis-700); }
+`}</style>
+
+Three AI companies are worth 2.07 trillion dollars this summer, on roughly 72 billion dollars of combined revenue. That is 44 Estonias of paper value on the income of one Estonia. In [part one](/academy/opinion/how-fucked-are-we-part-1-your-work) I looked at what the AI wave does to your daily work; this half follows the money, because the question "how fucked are we?" has a second reading: how fucked is the industry selling us all this?
+
+{/* truncate */}
+
+Same talk, same slide: "This is going to hurt". The hurt comes in two acts.
+
+## The rise
+
+The numbers first, because they have stopped registering as numbers. [Anthropic closed a 65-billion-dollar Series H in May at a 965-billion-dollar valuation](https://www.cnbc.com/2026/05/28/anthropic-open-ai-startup-value.html), briefly the most valuable private company on earth, on a revenue run-rate of 47 billion. [OpenAI raised 122 billion in March, the largest private round in history, at 852 billion](https://valueaddvc.com/blog/openai-valuation-2026-852-billion-after-the-122b-raise), on roughly 25 billion of run-rate. [xAI folded into SpaceX at a 250-billion-dollar mark](https://valueaddvc.com/blog/highest-valued-private-ai-companies-2026), with around half a billion of standalone AI revenue. Both leaders filed to go public a week apart in June. And the concentration is the real story: OpenAI and Anthropic together took 217 billion dollars in the first half of 2026, about 43 percent of every startup dollar invested on the planet, in a record half-year of 510 billion.
+
+<div className="hfaw-chart hfaw-tiles">
+  <div><strong>2.07T</strong><span>combined paper value of the big three, USD</span></div>
+  <div><strong>~72B</strong><span>their combined revenue run-rate</span></div>
+  <div><strong>43%</strong><span>of all global startup funding went to two of them, H1 2026</span></div>
+</div>
+
+To keep some feel for the scale: Anthropic's revenue run-rate, the genuinely impressive 47 billion, equals the [entire GDP of Estonia](https://data.worldbank.org/indicator/NY.GDP.MKTP.CD). Iceland's whole economy is smaller than that. The valuations, meanwhile, sit in a different universe than the revenue.
+
+<figure className="hfaw-chart">
+<svg viewBox="0 0 660 320" role="img" aria-label="Grouped bar chart comparing valuations and revenue run-rates of Anthropic, OpenAI and xAI with the national GDP of Estonia and Iceland, in billions of dollars">
+  <rect x="60" y="12" width="12" height="12" rx="2" fill="var(--chart-c1)" />
+  <text x="78" y="22" className="lbl2">Valuation</text>
+  <rect x="170" y="12" width="12" height="12" rx="2" fill="var(--chart-c2)" />
+  <text x="188" y="22" className="lbl2">Revenue run-rate</text>
+  <rect x="330" y="12" width="12" height="12" rx="2" fill="var(--chart-c3)" />
+  <text x="348" y="22" className="lbl2">National GDP 2025</text>
+  <line x1="40" y1="270" x2="630" y2="270" className="grid" />
+  <rect x="70" y="40.3" width="36" height="229.7" rx="4" fill="var(--chart-c1)"><title>Anthropic valuation: $965B</title></rect>
+  <rect x="114" y="258.8" width="36" height="11.2" rx="3" fill="var(--chart-c2)"><title>Anthropic revenue run-rate: $47B</title></rect>
+  <text x="88" y="34" textAnchor="middle" className="lbl">965B</text>
+  <text x="132" y="252" textAnchor="middle" className="lbl">47B</text>
+  <rect x="180" y="67.2" width="36" height="202.8" rx="4" fill="var(--chart-c1)"><title>OpenAI valuation: $852B</title></rect>
+  <rect x="224" y="264" width="36" height="6" rx="3" fill="var(--chart-c2)"><title>OpenAI revenue run-rate: ~$25B</title></rect>
+  <text x="198" y="61" textAnchor="middle" className="lbl">852B</text>
+  <text x="242" y="257" textAnchor="middle" className="lbl">25B</text>
+  <rect x="290" y="210.5" width="36" height="59.5" rx="4" fill="var(--chart-c1)"><title>xAI valuation: $250B</title></rect>
+  <rect x="334" y="268" width="36" height="2" fill="var(--chart-c2)"><title>xAI standalone AI revenue: ~$0.5B</title></rect>
+  <text x="308" y="204" textAnchor="middle" className="lbl">250B</text>
+  <text x="352" y="261" textAnchor="middle" className="lbl">0.5B</text>
+  <rect x="452" y="258.8" width="36" height="11.2" rx="3" fill="var(--chart-c3)"><title>Estonia GDP 2025: $47B</title></rect>
+  <text x="470" y="252" textAnchor="middle" className="lbl">47B</text>
+  <rect x="562" y="261.7" width="36" height="8.3" rx="3" fill="var(--chart-c3)"><title>Iceland GDP 2025: ~$35B</title></rect>
+  <text x="580" y="255" textAnchor="middle" className="lbl">35B</text>
+  <text x="106" y="290" textAnchor="middle" className="lbl2">Anthropic</text>
+  <text x="218" y="290" textAnchor="middle" className="lbl2">OpenAI</text>
+  <text x="328" y="290" textAnchor="middle" className="lbl2">xAI</text>
+  <text x="470" y="290" textAnchor="middle" className="lbl2">Estonia</text>
+  <text x="580" y="290" textAnchor="middle" className="lbl2">Iceland</text>
+</svg>
+<figcaption>Valuation versus revenue versus whole national economies, in billions of dollars.</figcaption>
+</figure>
+
+<PullQuote variant="hero" eyebrow="The scale problem">
+  44 Estonias of paper value, on the revenue of one Estonia.
+</PullQuote>
+
+For calibration: TARP, the fund that stopped the 2008 banking crisis, was authorised at 700 billion dollars. The big three's paper value is three of those.
+
+## The bubble has a physical footprint
+
+You do not have to take a position on whether this is a bubble to see what it is doing to the physical world. AI data centres will consume around [70 percent of the world's memory output in 2026](https://www.cnbc.com/2026/01/10/micron-ai-memory-shortage-hbm-nvidia-samsung.html), up from a quarter a few years ago. DRAM spot prices are up nearly 700 percent year over year. The three manufacturers who control 95 percent of the market have redirected their capacity to AI-grade memory; Micron left the consumer business entirely, and [prices keep climbing even as consumers hit their limit](https://www.tomshardware.com/pc-components/ram/memory-price-surge-begins-to-cool-as-consumers-hit-affordability-limit-ai-demand-still-keeps-dram-and-nand-prices-climbing-through-q3-2026). A 32-gigabyte memory kit that cost 90 dollars now costs around 529. Gartner expects the crunch to add 17 percent to PC prices and 13 percent to phones, and SK Hynix's CEO expects 2027 to be the worst supply year in the industry's history.
+
+Read that as an ordinary citizen: [your next laptop is more expensive because three companies are building server halls](https://www.technology.org/2026/07/24/memory-shortage-consumer-prices-2026/) on borrowed conviction. The bubble is not an abstraction in a spreadsheet. It is a line item in every school's device budget.
+
+## The fall does not need a crash. It needs a download.
+
+Now the other act, and it is not the one the shorts are betting on. While the big three were raising nation-state money, the open-weight world quietly closed the gap. On the Artificial Analysis index the frontier sits at 60 for Claude Fable 5 and 59 for GPT-5.6; [Moonshot's Kimi K3, weights downloadable by anyone, scores 57](https://www.interconnects.ai/p/kimi-k3-the-open-weights-escalation). A year ago the best open models scored in the low thirties. On coding benchmarks the gap is down to a couple of points at [a fraction of frontier prices](https://www.therundown.ai/p/moonshot-kimi-k3-closes-the-frontier-gap), and the estimate of how far open weights trail has shrunk from six-to-nine months to [three-to-five](https://aiweekly.co/alerts/moonshot-kimi-k3-puts-open-weights-within-months-of-frontier).
+
+Fairness requires the counterweight: on human-preference leaderboards the top fifteen are still proprietary, on hard agentic work the gap widens to double digits, and the labs are actively closing the distillation shortcut. The frontier is real. The question is how much of the market needs the frontier, and the second chart answers it.
+
+<figure className="hfaw-chart">
+<svg viewBox="0 0 660 300" role="img" aria-label="Line chart: memory needed to run a frontier-class open model at 4-bit, falling from 350 GB in early 2025 to 24 GB in late 2026, crossing the 24 GB gaming GPU line, with a projection to 12 GB">
+  <line x1="60" y1="260" x2="620" y2="260" className="grid" />
+  <line x1="60" y1="160" x2="620" y2="160" className="grid" />
+  <line x1="60" y1="60" x2="620" y2="60" className="grid" />
+  <text x="52" y="264" textAnchor="end" className="lbl2">0</text>
+  <text x="52" y="164" textAnchor="end" className="lbl2">200</text>
+  <text x="52" y="64" textAnchor="end" className="lbl2">400 GB</text>
+  <line x1="60" y1="248" x2="620" y2="248" stroke="var(--chart-c2)" strokeWidth="2" strokeDasharray="7 5" />
+  <text x="64" y="240" className="lbl2">24 GB gaming GPU (RTX 5090)</text>
+  <polyline points="70,85 160,170 250,212 340,236 430,248" fill="none" stroke="var(--chart-c1)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+  <polyline points="430,248 520,252 610,254" fill="none" stroke="var(--chart-c1)" strokeWidth="2.5" strokeDasharray="6 5" strokeLinecap="round" />
+  <circle cx="70" cy="85" r="5" fill="var(--chart-c1)"><title>Q1 2025: 350 GB</title></circle>
+  <circle cx="160" cy="170" r="5" fill="var(--chart-c1)"><title>Q3 2025: 180 GB</title></circle>
+  <circle cx="250" cy="212" r="5" fill="var(--chart-c1)"><title>Q1 2026: 96 GB</title></circle>
+  <circle cx="340" cy="236" r="5" fill="var(--chart-c1)"><title>Q2 2026: 48 GB</title></circle>
+  <circle cx="430" cy="248" r="5" fill="var(--chart-c1)"><title>Q3 2026: 24 GB, on the gaming-GPU line</title></circle>
+  <text x="70" y="72" textAnchor="middle" className="lbl">350 GB</text>
+  <text x="160" y="158" textAnchor="middle" className="lbl">180</text>
+  <text x="250" y="200" textAnchor="middle" className="lbl">96</text>
+  <text x="340" y="224" textAnchor="middle" className="lbl">48</text>
+  <text x="434" y="232" textAnchor="middle" className="lbl">24</text>
+  <text x="70" y="282" textAnchor="middle" className="lbl2">Q1 '25</text>
+  <text x="160" y="282" textAnchor="middle" className="lbl2">Q3 '25</text>
+  <text x="250" y="282" textAnchor="middle" className="lbl2">Q1 '26</text>
+  <text x="340" y="282" textAnchor="middle" className="lbl2">Q2 '26</text>
+  <text x="430" y="282" textAnchor="middle" className="lbl2">Q3 '26</text>
+  <text x="520" y="282" textAnchor="middle" className="lbl2">Q1 '27e</text>
+  <text x="610" y="282" textAnchor="middle" className="lbl2">Q3 '27e</text>
+</svg>
+<figcaption>Memory needed to run a frontier-class open model at 4-bit quantisation. Trend anchored to cited endpoints; the dashed section is a projection.</figcaption>
+</figure>
+
+Eighteen months took the memory footprint of a frontier-class open model from 350 gigabytes to 24, which is precisely the size of the graphics card a teenager buys for gaming. Capability per gigabyte is improving faster than capability itself. Follow the dashed line one more year and premium-tier intelligence runs locally on consumer hardware, at which point "having AI" decouples from "renting AI". That is the moat those two trillion dollars assume, evaporating at a slope you can measure. The fall of the big three does not need a crash on a trading floor. It needs a download button, and the download button already exists.
+
+## Europe watches from the stands
+
+And where is Europe in the biggest capital reallocation of the decade? Holding 19 percent of the tickets. Europe invested [252 billion euros of venture capital against America's 1.33 trillion over 2020 to 2025](https://x.com/AI_4_Healthcare/status/2083239499811750014). The EU has [zero venture funds above five billion dollars; the US has more than fifty](https://x.com/RobertMSterling/status/1947309985790046407). In the first half of 2026 European AI startups raised [7 percent of the American total](https://x.com/TFNBreakingNews/status/2085355524711907525), and the US investors who do show up in European rounds take 69.2 percent of the deal value. [Close to 30 percent of European-founded unicorns moved their headquarters abroad](https://x.com/ContRiftShow/status/2084292955825734041), overwhelmingly to the US, often because [their American investors required it](https://x.com/Mio_Mind/status/2024808435368292401). Luis Garicano carries the Draghi report's sharpest line: [no EU company worth more than 100 billion euros has been founded from scratch in fifty years](https://x.com/lugaricano/status/1833101650958954990), while all six American trillion-dollar companies were. And the money we do save flows west; as one European founder [put it brutally](https://x.com/levelsio/status/1855551036225630565): "I've divested completely from Europe because the ROI is so bad here." To be fair to the home team: [2025 was Europe's third-best venture year on record](https://x.com/dealroomco/status/2017178223897989596). Best of the rest is still the rest.
+
+So Europe cannot join the capex race, and here is why that may not matter: the commodity wave described above is the one part of this story that favours the players without the capital. When frontier-class intelligence runs on a 2,000-euro card, the game stops being "who can borrow 122 billion" and becomes "who can integrate, host and trust the thing", and that is infrastructure, procurement and craft. Europe's chance is not to out-build the big three. It is to be the best in the world at running what they commoditise: open weights on sovereign hardware, in gemeenten, hospitals and MKB, under our own law. The same lesson as [the governance post](/academy/opinion/feed-the-wolf-that-ships): don't crown, layer.
+
+How fucked are we, then? The big three are priced for a future where intelligence stays scarce, while their own competitors make it abundant. The bubble can deflate without taking your workday with it; that half of the story is [part one](/academy/opinion/how-fucked-are-we-part-1-your-work). Buy the commodity, skip the coronation, and keep your own hands on the hardware. The download button is right there.
+
+## Sources
+
+*Figures dated 2026 were retrieved on 10 August 2026; the VRAM trend curve is anchored to cited endpoints and its dashed section is a projection, not a published series.*
+
+1. **CNBC**. [Anthropic tops OpenAI as most valuable AI startup, nears $1 trillion valuation](https://www.cnbc.com/2026/05/28/anthropic-open-ai-startup-value.html). The $65B Series H at $965B and the $47B revenue run-rate.
+2. **ValueAddVC**. [OpenAI valuation 2026: $852B, a 34x revenue multiple](https://valueaddvc.com/blog/openai-valuation-2026-852-billion-after-the-122b-raise). The $122B round and the multiple mathematics.
+3. **ValueAddVC**. [The highest-valued private AI companies in 2026](https://valueaddvc.com/blog/highest-valued-private-ai-companies-2026). xAI at $250B inside the SpaceX deal, and both IPO filings a week apart in June.
+4. **World Bank**. [GDP, current US$](https://data.worldbank.org/indicator/NY.GDP.MKTP.CD). Estonia at $47.03B and Iceland at roughly $35B, 2025.
+5. **CNBC**. [AI memory is sold out, causing an unprecedented surge in prices](https://www.cnbc.com/2026/01/10/micron-ai-memory-shortage-hbm-nvidia-samsung.html). Data centres consuming the world's memory output; the manufacturers' pivot to HBM.
+6. **Tom's Hardware**. [Memory price surge begins to cool as consumers hit affordability limit](https://www.tomshardware.com/pc-components/ram/memory-price-surge-begins-to-cool-as-consumers-hit-affordability-limit-ai-demand-still-keeps-dram-and-nand-prices-climbing-through-q3-2026). DRAM and NAND prices climbing through Q3 2026.
+7. **Technology.org**. [Why your next laptop costs more: inside the AI memory shortage](https://www.technology.org/2026/07/24/memory-shortage-consumer-prices-2026/). The consumer fallout: PCs +17 percent, phones +13 percent.
+8. **Interconnects (Nathan Lambert)**. [Kimi K3: the open-weights escalation](https://www.interconnects.ai/p/kimi-k3-the-open-weights-escalation). The open frontier at 57 against closed at 59 and 60.
+9. **The Rundown**. [Moonshot's Kimi K3 closes the frontier gap](https://www.therundown.ai/p/moonshot-kimi-k3-closes-the-frontier-gap). Near-frontier scores at a fraction of frontier prices.
+10. **AI Weekly**. [Kimi K3 puts open weights within months of frontier](https://aiweekly.co/alerts/moonshot-kimi-k3-puts-open-weights-within-months-of-frontier). The gap estimate shrinking from six-to-nine months to three-to-five.
+11. **Robert Sterling (X)**. [European sovereign fund counts](https://x.com/RobertMSterling/status/1947309985790046407). Zero EU funds above $5bn against more than fifty in the US.
+12. **AI_4_Healthcare (X)**. [Cumulative VC 2020–2025](https://x.com/AI_4_Healthcare/status/2083239499811750014). €252bn versus €1.33tn, and the 24 versus 42 percent household-equity split.
+13. **TFN (X)**. [European AI funding H1 2026](https://x.com/TFNBreakingNews/status/2085355524711907525). $23bn against roughly $330bn, and US investors at 69.2 percent of European deal value.
+14. **ContRiftShow (X)**. [Unicorn relocations](https://x.com/ContRiftShow/status/2084292955825734041). Close to 30 percent of European-founded unicorns moved HQ abroad, 2008–2021.
+15. **Mio_Mind (X)**. [US VCs and the HQ requirement](https://x.com/Mio_Mind/status/2024808435368292401). American investors routinely requiring a US headquarters before investing.
+16. **Luis Garicano (X)**. [The Draghi line](https://x.com/lugaricano/status/1833101650958954990). No EU company above €100bn founded from scratch in fifty years.
+17. **levelsio (X)**. [The divestment quote](https://x.com/levelsio/status/1855551036225630565). "I've divested completely from Europe because the ROI is so bad here."
+18. **Dealroom (X)**. [Europe's 2025 venture year](https://x.com/dealroomco/status/2017178223897989596). The fair counterweight: $63.7bn raised, the third-highest on record.
+19. **Conduction ConNext**. "This is going to hurt" (2026 talk). The slide deck behind this two-part series, including the Crunchbase-based concentration figures and the TARP comparison.
