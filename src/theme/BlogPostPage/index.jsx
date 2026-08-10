@@ -33,6 +33,7 @@ import {
   RelatedPosts,
   Section,
   AppCrossLinks,
+  AiDisclosure,
 } from '@conduction/docusaurus-preset/components';
 import WebinarHero from '@site/src/components/WebinarHero/WebinarHero';
 import styles from './styles.module.css';
@@ -130,6 +131,21 @@ function BlogPostPageContent({children}) {
   const {metadata} = useBlogPost();
   const {frontMatter, nextItem, prevItem} = metadata;
 
+  /* ai-content-disclosure (EU AI Act art. 50): this academy layout renders
+     the MDX children directly and never mounts BlogPostItem/Content, so the
+     preset's disclosure wrapper cannot fire here; the banner is mounted in
+     this swizzle instead. Same contract as the preset's resolveAiFrontmatter
+     (which ./components does not export): absent key stays silent, an
+     unrecognised value warns at build time and renders nothing. */
+  const aiKind = ['generated', 'modified', 'assisted'].includes(frontMatter.ai)
+    ? frontMatter.ai
+    : null;
+  if (frontMatter.ai && !aiKind && typeof console !== 'undefined') {
+    console.warn(
+      `Unknown "ai" frontmatter value "${frontMatter.ai}" on ${metadata.permalink}; AI disclosure not rendered.`,
+    );
+  }
+
   const academyHref = useBaseUrl('/academy/');
   const academyTypeHref = useBaseUrl(
     '/academy/' + (frontMatter.contentType ? '?type=' + frontMatter.contentType : ''),
@@ -179,6 +195,7 @@ function BlogPostPageContent({children}) {
         : <ContentDetailHero {...heroProps} />}
 
       <div className={`content-detail-body ${styles.body}`}>
+        {aiKind && <AiDisclosure kind={aiKind} />}
         {children}
       </div>
 
