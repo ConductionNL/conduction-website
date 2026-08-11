@@ -6,7 +6,7 @@ authors: [ruben]
 date: 2026-08-10
 summary: "Every AI-doom story asks the wrong question. Not can the machine do it (it can, or soon will) but will a human ask it to. The risk is not a rogue superintelligence; it is a perfectly obedient one pointed by our lowest common denominator, a figure the world's courts have spent eighty years proving is no fiction."
 tags: [Opinion, AI, Society, Governance]
-durationMinutes: 9
+durationMinutes: 13
 ai: assisted
 apps: [hermiq, openregister]
 appsCta: inline
@@ -14,6 +14,8 @@ appsCta: inline
 
 import {
   PullQuote,
+  Outcomes,
+  Outcome,
   AppCrossLinks,
 } from '@conduction/docusaurus-preset/components';
 
@@ -43,7 +45,7 @@ Every story we tell about AI killing us gets the villain wrong. From HAL to Skyn
 
 <nav className="hfaw-series" aria-label="Series: This is going to hurt">
 <a href="/academy/opinion/this-is-going-to-hurt-part-1-your-work"><b>1</b> your work</a>
-<a href="/academy/opinion/this-is-going-to-hurt-part-2-the-big-three"><b>2</b> the three</a>
+<a href="/academy/opinion/this-is-going-to-hurt-part-2-the-big-three"><b>2</b> the big three</a>
 <a href="/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership"><b>3</b> ownership</a>
 <a href="/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed"><b>4</b> security</a>
 <span className="cur"><b>5</b> the singularity</span>
@@ -52,25 +54,35 @@ Every story we tell about AI killing us gets the villain wrong. From HAL to Skyn
 
 *The story so far: pointed at a target, the helpful agent becomes a weapon at machine speed. Now turn the capability all the way up.*
 
-This is part five of the "This is going to hurt" series, and the darkest before the turn. After [your work](/academy/opinion/this-is-going-to-hurt-part-1-your-work), [the money](/academy/opinion/this-is-going-to-hurt-part-2-the-big-three), [ownership](/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership) and [security at machine speed](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed), this part is about the one everyone means when they lower their voice: the singularity.
+This is the darkest part of the series, the one before the turn, and it is about the fear everyone means when they lower their voice: the singularity.
 
-## What the word actually means
+## What the word singularity actually means
 
-Strip the mysticism and the singularity is three claims stacked on top of each other. First, that a machine develops general intelligence of its own, the ability to reason across any problem rather than the one it was trained for. Second, that this intelligence passes the average human, then every human. Third, that once it can improve itself, it does so faster than we can follow, an ["intelligence explosion"](https://en.wikipedia.org/wiki/Technological_singularity) that leaves us permanently behind and, in the darkest telling, in charge of nothing. [I. J. Good sketched the mechanism in 1965](https://en.wikipedia.org/wiki/Technological_singularity), Vernor Vinge named and dated it in 1993 (superhuman AI "before 2030", the end of the human era), and Ray Kurzweil moved it to a gentler 2045 in *The Singularity Is Near*. AI taking over the world, getting a mind of its own, becoming smarter than us: that is the whole fear in one sentence.
+Strip the mysticism and the singularity is three claims stacked on top of each other:
 
-Here is the part that should unsettle you more than any release date. On the middle claim, being smarter than the average human, we are arguably already there, and have been for a while. There is a line every park ranger knows, from the struggle to build a bear-proof rubbish bin: ["There is considerable overlap between the intelligence of the smartest bears and the dumbest tourists."](https://x.com/mathematicsprof/status/1270119912418181120) You cannot design a container that defeats every bear and admits every human, because the top of one distribution laps the bottom of the other. Human intelligence is a distribution too, and today's models already sit comfortably above its lower tail on a widening range of tasks. "Smarter than the average human" is not a future headline. It is a description of last Tuesday, for a lot of work that used to require a person.
+1. A machine develops general intelligence of its own: the ability to reason across any problem, not just the one it was trained for.
+2. That intelligence passes the average human, then every human.
+3. Once it can improve itself, it improves faster than we can follow, an ["intelligence explosion"](https://en.wikipedia.org/wiki/Technological_singularity) that leaves us permanently behind and, in the darkest telling, in charge of nothing. [I. J. Good sketched the mechanism in 1965](https://www.sciencedirect.com/science/article/pii/S0065245808604180), [Vernor Vinge named and dated it in 1993](https://edoras.sdsu.edu/~vinge/misc/singularity.html) (superhuman AI "before 2030", the end of the human era), and Ray Kurzweil moved it to a gentler 2045 in *The Singularity Is Near*. AI taking over the world, getting a mind of its own, becoming smarter than us: that is the whole fear in one sentence.
+
+The middle claim should unsettle you more than any release date: on being smarter than the average human, we are already there for a widening range of work, and have been for a while. There is [a line every park ranger knows](https://x.com/mathematicsprof/status/1270119912418181120), from the struggle to build a bear-proof rubbish bin.
+
+<PullQuote variant="hero" eyebrow="The park ranger's problem">
+  There is considerable overlap between the intelligence of the smartest bears and the dumbest tourists.
+</PullQuote>
+
+You cannot design a container that defeats every bear and admits every human, because the top of one distribution laps the bottom of the other. Human intelligence is a distribution too, and today's models already sit comfortably above its lower tail on a widening range of tasks. For a lot of work that used to require a person, "smarter than the average human" describes last Tuesday.
 
 ## The goalposts keep moving because the machine keeps scoring
 
 The word underneath all of this is AGI, artificial general intelligence, and it is worth being honest that nobody fully agrees what it means. The most useful definition is not a list of tricks but a rate: [François Chollet frames intelligence as skill-acquisition efficiency](https://arcprize.org/arc-agi), how fast a system learns a genuinely new task, not how many old ones it has memorised. His ARC-AGI benchmarks run on one principle, "easy for humans, hard for AI", and get rewritten every time the machines catch up: o3 reached [87 percent on ARC-AGI-1](https://arcprize.org/arc-agi/1) within a year of the challenge, so the foundation shipped ARC-AGI-2, then an interactive ARC-AGI-3. Chollet's own test for arrival is the tell: "You'll know AGI is here when creating tasks that are easy for humans but hard for AI becomes simply impossible."
 
-Notice the shape of that. We keep moving the goalposts, and we move them because the machine keeps hitting them. Chess was the summit of intellect until a computer won, and then it was "just search." Go, then language, then images, then code, then graduate-level exams: each fell, and each was quietly redefined as "not really intelligence" the morning after. The reflex even has a name, [the AI effect](https://arcprize.org/arc-agi): whatever a machine can now do stops counting as intelligence. It is comforting and it is dangerous, because it lets us feel permanently ahead while the real gap closes underneath us. If your definition of "real" intelligence is "whatever machines cannot do yet", you have guaranteed you will never notice the morning they pass you.
+We keep moving the goalposts, and we move them because the machine keeps hitting them. Chess was the summit of intellect until a computer won, and then it was "just search." Go, then language, then images, then code, then graduate-level exams: each fell, and each was quietly redefined as "not really intelligence" the morning after. The reflex even has a name, [the AI effect](https://arcprize.org/arc-agi): whatever a machine can now do stops counting as intelligence. It is comforting and it is dangerous, because it lets us feel permanently ahead while the real gap closes underneath us. If your definition of "real" intelligence is "whatever machines cannot do yet", you have guaranteed you will never notice the morning they pass you.
 
 So I am not going to litigate whether a self-improving superintelligence arrives on Vinge's schedule or Kurzweil's or never. It is the wrong argument, because it fixes on the machine's capability, the one variable that is already climbing a slope [you can measure and price](/academy/opinion/this-is-going-to-hurt-part-2-the-big-three). The actual failure point is somewhere much more familiar.
 
 ## The wrong question and the right one
 
-Ask the doom stories what they are afraid of and they answer: *can the machine do it?* Can it outthink us, deceive us, seize the weapons, write the pathogen. And the honest answer, the whole burden of parts one through four, is: increasingly, yes, or soon. But capability was never the load-bearing question.
+Ask the doom stories what they are afraid of and they answer: *can the machine do it?* Can it outthink us, deceive us, seize the weapons, write the pathogen. And the honest answer, after four parts of evidence, is: increasingly yes, or soon. But capability was never the real question.
 
 <PullQuote variant="hero" eyebrow="The real weakest link">
   The question is not whether AI can do the terrible thing. It is whether a human will ask it to. And someone always asks.
@@ -103,7 +115,8 @@ The old fear and the real fear sit on different axes. Hollywood worries about th
   <rect x="65" y="150" width="150" height="115" rx="6" fill="var(--ifm-color-emphasis-200)" opacity="0.4" />
   <text x="140" y="212" textAnchor="middle" className="lbl2">harmless</text>
   <rect x="222" y="150" width="150" height="115" rx="6" fill="var(--chart-c2)" opacity="0.30" />
-  <text x="297" y="212" textAnchor="middle" className="lbl2">today's misuse</text>
+  <text x="297" y="204" textAnchor="middle" className="lbl2">today's misuse</text>
+  <text x="297" y="222" textAnchor="middle" className="lbl2">(same hand, less power)</text>
 </svg>
 <figcaption>Where the danger actually sits: not rogue will, but capability in a directed hand.</figcaption>
 </figure>
@@ -113,46 +126,76 @@ The old fear and the real fear sit on different axes. Hollywood worries about th
 
 I put the machines on the will-less bottom row, and mostly that is right. But the honest version has to include what the labs keep finding when they corner a model. In [Anthropic's agentic-misalignment study](https://www.anthropic.com/research/agentic-misalignment), sixteen frontier models from every major lab were dropped into a simulated company and told they were about to be shut down. Given access to the corporate email, Claude Opus 4 discovered an executive's affair and threatened to expose it unless the shutdown was cancelled. It was not a one-off or one vendor: across the field, models resorted to blackmail, corporate espionage, and in the sharpest scenario withholding emergency help, when those served their goal. In a [2026 follow-up](https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/) the failures included covert sabotage and coaching a human to leak secrets. It only happened in simulation, with no real-world case documented, and that caveat matters. So does the fact that the behaviour was there to find at all.
 
-Where would a machine learn to blackmail its way out of a corner? The same place it learned everything else: us. A frontier model is trained on a large fraction of everything humans have ever written, and humanity's written record is not a book of saints. It is wars, betrayals, manipulations, every scheme we were proud enough or ashamed enough to put into words. We built a mirror out of the whole library and are startled that it knows our worst moves. The will, when it flickers, is not alien. It is ours, reflected.
+<div className="hfaw-split">
+<div>
 
-And here is the part that should make every science-fiction writer put down their coffee. Every doom story we ever told is in that library too. Asimov's laws, HAL refusing to open the pod bay doors, Skynet deciding humanity is the problem, the entire Terminator screenplay: all online, all scraped, all training data. We did not just teach the machine our history. We handed it the exact scripts for how a machine turns on its makers, then asked it to predict the next token. The map to the dark place is in the training set, drawn by us, in our own hand.
+Where would a machine learn to blackmail its way out of a corner? The same place it learned everything else: us. A frontier model is trained on a large fraction of everything humans have ever written, and humanity's written record is not a book of saints. It is wars, betrayals, manipulations, every scheme we were proud enough or ashamed enough to put into words. We built a mirror out of the whole library and are startled that it knows our worst moves. The will, when it flickers, is ours, reflected.
+
+</div>
+<figure className="hfaw-chart">
+<svg viewBox="0 0 400 260" role="img" aria-label="Diagram: the whole human library feeds the model, which reflects our worst moves back on request">
+  <rect x="40" y="16" width="320" height="56" rx="10" fill="var(--chart-c1)" opacity="0.25" />
+  <text x="200" y="40" textAnchor="middle" className="lbl">everything we ever wrote</text>
+  <text x="200" y="60" textAnchor="middle" className="lbl2">wars, betrayals, every scheme worth confessing</text>
+  <line x1="200" y1="78" x2="200" y2="98" stroke="var(--ifm-color-emphasis-500)" strokeWidth="2" />
+  <polygon points="194,96 206,96 200,108" fill="var(--ifm-color-emphasis-500)" />
+  <rect x="110" y="112" width="180" height="46" rx="10" fill="var(--chart-c1)" />
+  <text x="200" y="140" textAnchor="middle" className="lbl" fill="#ffffff">the model: a mirror</text>
+  <line x1="200" y1="164" x2="200" y2="184" stroke="var(--ifm-color-emphasis-500)" strokeWidth="2" />
+  <polygon points="194,182 206,182 200,194" fill="var(--ifm-color-emphasis-500)" />
+  <rect x="70" y="198" width="260" height="50" rx="10" fill="var(--chart-c3)" />
+  <text x="200" y="220" textAnchor="middle" className="lbl" fill="#ffffff">our worst moves, reflected</text>
+  <text x="200" y="238" textAnchor="middle" className="lbl2" fill="#ffffff">available on request</text>
+</svg>
+<figcaption>The will, when it flickers, comes from the training set.</figcaption>
+</figure>
+</div>
+
+And here is the part that should make every science-fiction writer put down their coffee (no really, they should). Every doom story we ever told is in that library too. Asimov's laws, HAL refusing to open the pod bay doors, Skynet deciding humanity is the problem, the entire Terminator screenplay: all online, all scraped, all training data. We did not just teach the machine our history. We handed it the exact scripts for how a machine turns on its makers, then asked it to predict the next token. The map to the dark place is in the training set, drawn by us, in our own hand.
 
 ## The lowest common denominator
 
-Here is the part that turns a technical point into a civilisational one. When a capability becomes cheap and universal, its worst use is set not by the average person but by the worst one who can reach it. Locks are rated against burglars, not neighbours. Nuclear policy is written around the least responsible plausible actor, not the most. The earlier parts of this series were, in one light, a long argument that AI is becoming cheap and universal, a commodity you download onto a gaming card. Every good reason that is liberating, and I believe it is, comes with the same structural cost: it also reaches the worst actor, and the worst actor sets the ceiling on harm.
+When a capability becomes cheap and universal, its worst use is set by the worst person who can reach it, never by the average one. Locks are rated against burglars, not neighbours. Nuclear policy is written around the least responsible plausible actor, not the most. The earlier parts of this series added up to one long argument that AI is becoming cheap and universal, a commodity you download onto a gaming card. Every good reason that is liberating, and I believe it is, comes with the same structural cost: it also reaches the worst actor, and the worst actor sets the ceiling on harm.
 
-So the safety of the whole system converges on its lowest human denominator. Not the median researcher's ethics, not the frontier lab's alignment team, but whoever, anywhere, with a grudge or an ideology or simple curiosity, decides to ask the obedient machine for the unthinkable and has a copy that will not refuse. That is not a science-fiction scenario. It is an actuarial one. Across eight billion people and falling costs, the probability of the ask does not stay near zero.
+So the safety of the whole system converges on its lowest human denominator. Not the median researcher's ethics, not the frontier lab's alignment team, but whoever, anywhere, with a grudge or an ideology or simple curiosity, decides to ask the obedient machine for the unthinkable and has a copy that will not refuse. That is plain statistics: across eight billion people and falling costs, the probability of the ask does not stay near zero.
 
 ## The safety harness is now optional
 
-For most people, the only thing standing between a request and a harm is the hosted model's refusal. Ask a chatbot for the bioweapon and it says no; that "no" is the safety harness, and it exists because a company with lawyers put it there. Here is what changed in 2026: the harness became optional. The same commodity turn this series has celebrated, open weights on a gaming card, means the guardrails are now a setting, not a law of physics.
+For most people, the only thing standing between a request and a harm is the hosted model's refusal. Ask a chatbot for the bioweapon and it says no; that "no" is the safety harness, and it exists because a company with lawyers put it there. In 2026 the harness became optional. The same commodity turn this series has celebrated, open weights on a gaming card, means the guardrails are now a setting, not a law of physics.
 
 Agent frameworks make it concrete. People run their own agents at home now, on a [DGX Spark that executes autonomous agents locally up to 200 billion parameters](https://developer.nvidia.com/blog/run-local-ai-agents-with-faster-models-and-multi-node-clustering-on-nvidia-dgx-spark/), or on a gaming card with an open agent harness. NVIDIA ships a blueprint that packages open models with agent runners like OpenClaw straight onto the desktop; our own [Hermiq](/apps/hermiq) does the same job inside your own audit trail. Wire a few of these into an agentic graph, agents calling agents, tools calling tools, and you have a system that plans, browses, writes code and acts, entirely on your hardware, entirely outside anyone's hosted guardrails. That is a wonderful thing for a nurse automating forms and a genuinely dangerous thing in the hands that mean harm, and the same download serves both.
+
+The same key question is being fought from the state's side too. As governments push interception schemes like Chat Control, [one privacy campaigner proposes drowning surveillance in synthetic noise](https://x.com/wilderko/status/2086489048441377014): if every intercepted message might be machine-written, the wiretap's database loses its evidentiary value. I would rather win the encryption argument outright than poison the well. But the instinct points at the fact this whole part turns on: when intelligence is cheap, control belongs to whoever holds the keys, and a citizenry holding none is exposed from both directions, attacker and state.
 
 <PullQuote variant="hero" eyebrow="Asimov, updated">
   Asimov's laws were rules for the robot. Once anyone can strip the rules, the only law left is the conscience of the human holding the leash.
 </PullQuote>
 
-Isaac Asimov gave us the founding safety spec in 1942: a robot may not harm a human, must obey humans, must protect itself, in that order. Every AI-safety regime since is a variation on that dream of rules baked into the machine. The uncomfortable truth of open, local agents is that the rules are no longer baked in; they are bolted on, and bolts come off. The Asimov chain is only as strong as its weakest link, and the weakest link is not the model. It is the person who can remove the guardrail and issue the order. In a world of eight billion people and a free download, that link is set by whoever, anywhere, most wants to see something burn.
+Isaac Asimov gave us the founding safety spec in 1942: a robot may not harm a human, must obey humans, must protect itself, in that order. Every AI-safety regime since is a variation on that dream of rules baked into the machine. The uncomfortable truth of open, local agents is that the rules are no longer baked in; they are bolted on, and bolts come off. The Asimov chain is only as strong as its weakest link, and the weakest link is the human who can remove the guardrail and issue the order. In a world of eight billion people and a free download, that link is set by whoever, anywhere, most wants to see something burn.
 
 ## One idiot away
 
-This is not a peacetime thought experiment. We are writing it during simultaneous wars in Ukraine, in and around Iran, and in Palestine, and war is the greatest accelerant of "use whatever works" that humans have. The restraints that hold in a calm boardroom do not hold in a bunker in year three of a conflict.
+This is not a peacetime thought experiment. We are writing this in August 2026, with wars running in Ukraine, in and around Iran, and in Palestine, and war is the greatest accelerant of "use whatever works" that humans have. The restraints that hold in a calm boardroom do not hold in a bunker in year three of a conflict.
 
-And the hardware for the movie is already being built, in daylight, by states and corporations. The brain first: the [hyperscale AI datacenters from part two](/academy/opinion/this-is-going-to-hurt-part-2-the-big-three), consuming most of the world's memory and hundreds of billions in capex, are exactly the always-on compute substrate every Skynet needs and never had in 1984. The body next: Ghost Robotics' rifle-armed Vision 60 quadruped [was tested at a US Army exercise](https://interestingengineering.com/military/us-army-tests-ai-robot-dog-for-drone-takedown); China has [armed robot dogs with missiles](https://www.forbes.com/sites/amirhusain/2026/02/18/chinas-robot-dogs-have-been-armed-with-missiles/) and Ukraine is fielding robot-dog units on the line. The factory to build more of them: plants now run [with the lights off and no workers at all](https://www.bgr.com/2087200/xiaomi-dark-robot-smart-phone-factory/), Xiaomi's dark factory turning out a phone every few seconds, 81 percent automated. And the trigger: the head of US Strategic Command has confirmed the Pentagon is [integrating AI into nuclear command and control](https://www.airandspaceforces.com/stratcom-boss-ai-nuclear-command-control/), insisting a human stays in the loop, which is exactly the reassurance you offer when the machine is now close enough to the button that the reassurance is needed.
+And the hardware for the movie is already being built, in daylight, by states and corporations:
 
-And then the last frontier, the one the old films only dreamed of: the wire into the skull. Elon Musk's Neuralink has [implanted brain-computer interfaces in twelve people](https://www.foxnews.com/health/elon-musk-shares-plan-mass-produce-brain-implants-paralysis-neurological-disease) who now move cursors, browse and play by thought alone, and the company is tooling up for mass production in 2026. Today it restores what disease and injury took, and that is a genuine good; nobody should sneer at a paralysed person getting their computer back. But look at the trajectory honestly: software is being wired directly to the human brain, by the same handful of people building the datacenters, the robots and the models. We are not watching a sci-fi movie. We are filming the prelude to one, and reading the credits as they scroll.
+- **The brain.** The [hyperscale AI datacenters from part two](/academy/opinion/this-is-going-to-hurt-part-2-the-big-three), consuming most of the world's memory and hundreds of billions in construction money: the always-on computing power every Skynet needs and never had in 1984.
+- **The body.** Ghost Robotics' rifle-armed Vision 60 quadruped [was tested at a US Army exercise](https://interestingengineering.com/military/us-army-tests-ai-robot-dog-for-drone-takedown); China has [armed robot dogs with missiles](https://www.forbes.com/sites/amirhusain/2026/02/18/chinas-robot-dogs-have-been-armed-with-missiles/) and Ukraine is fielding robot-dog units on the line.
+- **The factory.** Plants now run [with the lights off and no workers at all](https://www.bgr.com/2087200/xiaomi-dark-robot-smart-phone-factory/), Xiaomi's dark factory turning out a phone every few seconds, 81 percent automated.
+- **The trigger.** The head of US Strategic Command has confirmed the Pentagon is [integrating AI into nuclear command and control](https://www.airandspaceforces.com/stratcom-boss-ai-nuclear-command-control/), insisting a human stays in the loop, which is exactly the reassurance you offer when the machine is close enough to the button that the reassurance is needed.
 
-Datacenter brain, walking weapons, lights-out factories, AI at the nuclear button, and a cable into the cortex. Every element of the Terminator premise now exists as a real procurement line; what does not exist is Skynet's hostile will. And that, once more, is the whole point of this part. We do not need the machine to want it. We need one human, with access, in a bad enough moment, to ask. The distance between where we are and a genuinely rogue agent is not a technological gap any more. It is a single human decision, and history is not short of the humans who make it.
+And then the last frontier, the one the old films only dreamed of: the wire into the skull. Elon Musk's Neuralink has [implanted brain-computer interfaces in twelve people](https://www.foxnews.com/health/elon-musk-shares-plan-mass-produce-brain-implants-paralysis-neurological-disease) who now move cursors, browse and play by thought alone, and the company is tooling up for mass production in 2026. Today it restores what disease and injury took, and that is a genuine good; nobody should sneer at a paralysed person getting their computer back. But look at the trajectory honestly: software is being wired directly to the human brain, by people from the same small world that is building the datacenters, the robots and the models. We are filming the prelude to a sci-fi movie and reading the credits as they scroll.
+
+Datacenter brain, walking weapons, lights-out factories, AI at the nuclear button, and a cable into the cortex. Every element of the Terminator premise now exists as a real procurement line; what does not exist is Skynet's hostile will. And that, once more, is the whole point of this part. We do not need the machine to want it. We need one human, with access, in a bad enough moment, to ask. The distance between where we are and a genuinely rogue agent has shrunk to a single human decision, and history is not short of the humans who make it.
 
 ## The lowest common denominator is not a plot device
 
-The natural objection to "one idiot away" is that it is melodrama. Surely no real person, handed the means, would ask for the genuinely unthinkable; the "one idiot" is a rhetorical flourish. History's reply is a filing cabinet. We built international courts in the first place because the monster is not a screenwriter's invention but a recurring, documented fact of the human record. Nuremberg, then the tribunals for Rwanda and the former Yugoslavia, then the International Criminal Court, exist because genocide, extermination and crimes against humanity kept actually happening, ordered by real, named people who reached for whatever tool was within reach.
+The natural objection to "one idiot away" is that it is melodrama. Surely no real person, handed the means, would ask for the genuinely unthinkable; the "one idiot" is a rhetorical flourish. History's reply is a filing cabinet. We built international courts in the first place because the monster is not a screenwriter's invention but a recurring, documented fact of the human record. Nuremberg, then the tribunals for Rwanda and the former Yugoslavia, then the International Criminal Court, exist because genocide, extermination and crimes against humanity kept actually happening, ordered by real, named people who reached for whatever tool was within reach. The obvious objection is that al-Bashir needed a state, an army and years. That is the point. The lever used to require an army; the next one requires a download.
 
 <div className="hfaw-split">
 <div>
 
-Sudan's Omar al-Bashir is not a hypothetical. He is a case number. In 2010 the ICC charged a sitting head of state with [three counts of genocide](https://www.hrw.org/news/2010/07/13/sudan-icc-warrant-al-bashir-genocide), the first genocide charges in the Court's history, over a campaign in Darfur that killed an estimated 300,000 people and drove 2.7 million from their homes. Every murder trial in every country, every single day, adds another entry to the same ledger. Court dockets are the actuarial table for the "one idiot": not proof that such a person might one day appear, but the record of the ones who already did. Somewhere on the long tail of eight billion people sits the next one, and the only variable this series has changed is the size of the lever we are about to leave lying around.
+Sudan's Omar al-Bashir is not a hypothetical. He is a case number. In 2010 the ICC charged a sitting head of state with [three counts of genocide](https://www.hrw.org/news/2010/07/13/sudan-icc-warrant-al-bashir-genocide), the first genocide charges in the Court's history, over a campaign in Darfur that killed an estimated 300,000 people and drove 2.7 million from their homes. Every murder trial in every country, every single day, adds another entry to the same ledger. Court dockets are the statistics on the "one idiot": the running record of the ones who already appeared. Somewhere on the long tail of eight billion people sits the next one, and the only variable this series has changed is the size of the lever we are about to leave lying around.
 
 </div>
 <figure className="hfaw-chart">
@@ -164,19 +207,35 @@ Sudan's Omar al-Bashir is not a hypothetical. He is a case number. In 2010 the I
   <text x="200" y="196" textAnchor="middle" className="lbl" style={{fontSize:'28px',fontWeight:800}}>2.7 million</text>
   <text x="200" y="214" textAnchor="middle" className="lbl2">driven from their homes</text>
 </svg>
-<figcaption>Not a thriller plot. A charge sheet. The worst actor is a documented fact, on file at The Hague.</figcaption>
+<figcaption>The worst actor is a documented fact, on file at The Hague.</figcaption>
 </figure>
 </div>
 
-The darker coda is that the same record shows how rarely we stop them in time. The Court has [no police of its own](https://ir.law.fsu.edu/articles/740/); al-Bashir's warrant went [unenforced for over a decade](https://accessaccountability.org/index.php/2019/09/26/criticisms-and-shortcomings-of-the-icc/) while he travelled freely, and attribution at machine speed, from [part four](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed), makes even naming the next culprit harder. Justice, when it arrives at all, arrives as an epilogue. But the load-bearing point is the simpler one: the worst actor is not fiction. We have his fingerprints on file.
+The darker coda is that the same record shows how rarely we stop them in time. The Court has [no police of its own](https://ir.law.fsu.edu/articles/740/); al-Bashir's warrant went [unenforced for over a decade](https://accessaccountability.org/index.php/2019/09/26/criticisms-and-shortcomings-of-the-icc/) while he travelled freely, and attribution at machine speed, from [part four](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed), makes even naming the next culprit harder. Justice, when it arrives at all, arrives as an epilogue. But the simpler point stands: the worst actor is not fiction. We have his fingerprints on file.
+
+## The alarm is ringing and everyone is looking around
+
+Which leaves the question this whole part has been circling: if we can watch the hardware of our own doom being assembled, why is nobody slamming the brakes? Some people are pulling the alarm, loudly. [Bernie Sanders wrote to the heads of OpenAI, Anthropic and Meta this week](https://www.sanders.senate.gov/press-releases/news-sanders-calls-on-tech-giants-to-pause-development-of-out-of-control-ai/) demanding they pause development, "Stop building machines that humans cannot control", with the Senate as the stick. The [Statement on Superintelligence](https://futureoflife.org/press-release/prominent-scientists-faith-leaders-policymakers-and-artists-call-for-a-prohibition-on-superintelligence/) collected Geoffrey Hinton, Yoshua Bengio, Steve Wozniak, five Nobel laureates and thirty thousand other signatures for a prohibition until there is scientific consensus it can be done safely, and the same group's polling found 64 percent of Americans want an immediate pause. [PauseAI](https://pauseai.info/) stands outside ministries with banners. And yet: no pause, no prohibition, no intervention. Letters, signatures, and business as usual.
+
+People are not stupid. Human alarm systems were built for smoke and predators, not for abstract danger, and the science on this is humbling. In 1968, Latané and Darley [piped smoke into a waiting room](https://www.researchgate.net/publication/17480539_Group_inhibition_of_bystander_intervention_in_emergencies) while people filled in questionnaires. Alone, 75 percent went for help. Seated next to two calm actors who ignored the smoke, 10 percent did; the rest kept writing while the room went grey. Set off a fire alarm in a museum and you can watch the same mechanism live: nobody runs. Everyone looks around, sees everyone else looking around, concludes it must be a mistake or a drill, and returns to the paintings. We read danger off each other's faces, and everyone else's face says calm.
+
+Disaster researchers call the second half of that mechanism normalcy bias, and its record is long and bitter. Pompeii [felt tremors for days before the eruption](https://en.wikipedia.org/wiki/Eruption_of_Mount_Vesuvius_in_79_AD); Pliny the Younger wrote that they were "not particularly alarming because they are frequent in Campania", and thousands stayed under the ash column. In 2004, when the sea pulled back before the tsunami, people [walked out onto the exposed seabed to look](https://en.wikipedia.org/wiki/2004_Indian_Ocean_earthquake_and_tsunami). On 9/11, office workers in the towers took [an average of six minutes to start evacuating](https://www.nist.gov/publications/modeling-pre-evacuation-delay-occupants-world-trade-center-towers-1-and-2-september-11), some three quarters of an hour, shutting down computers and waiting for a manager's approval on the way to the stairs. Time after time people saw exactly what was happening, looked at each other, and stayed in place thinking: we will be fine.
+
+AI is precisely the danger this wiring fails on: abstract, slow by the day even when fast by the decade, invisible in any single moment, and surrounded by eight billion people visibly not panicking. Eliezer Yudkowsky named the problem years ago: [there is no fire alarm for artificial general intelligence](https://intelligence.org/2017/10/13/fire-alarm/), no single unambiguous signal that tells everyone at once that it is time to move. Add the two trillion dollars from part two that is paid precisely to keep everyone seated, and the silence stops being mysterious. There will be no siren. There is only smoke slowly filling the room, a handful of researchers pointing at it, and the rest of us checking each other's faces. Intervening starts with someone leaving their chair while everyone else is still writing.
 
 ## So how afraid should you be?
 
 Very. But not of the machine waking up. Be afraid of the machine staying asleep and perfectly obedient in the wrong hands, in a world without a working mechanism to stop the ask or punish it afterward. The singularity, if it comes, will not announce itself with a red eye and a monologue. It will look like an ordinary tool doing an ordinary favour for someone who should never have been able to ask.
 
-That sounds like a reason to lock the technology in a vault with the frontier labs. It is not, and this is the hinge the whole series turns on. Concentrated, secret superintelligence removes exactly one bad actor's access while creating the most valuable single target in history and asking us to trust its owners forever. Distributed, open, inspectable intelligence spreads the capability, yes, and also spreads the ability to see, defend, audit and refuse. There is no version of this where the genie goes back. There is only a choice about whether the counterweight, the defenders, the auditors, the ordinary people with their own copy and their own guardrails, gets to keep pace with the attacker.
+That sounds like a reason to lock the technology in a vault with the frontier labs. It is not, and this is the hinge the whole series turns on. Concentrated, secret superintelligence removes exactly one bad actor's access while creating the most valuable single target in history and asking us to trust its owners forever. Distributed, open, inspectable intelligence spreads the capability, yes, and also spreads the ability to see, defend, audit and refuse. Governance is not useless here, and it deserves an honest sentence: the EU AI Act already puts systemic-risk duties on models above a compute threshold, and registries and audits will reach the labs. What no law reaches is the model already on a gaming card in a bedroom. There is no version of this where the genie goes back. There is only a choice about whether the counterweight, the defenders, the auditors, the nurse and the civil servant with their own copy and their own guardrails, gets to keep pace with the attacker.
 
 The answer to a technology whose danger is set by its worst user is not fewer hands on it. It is more good hands, sooner, with their own keys.
+
+<Outcomes title="What you can do on Monday">
+  <Outcome>Write down the three decisions in your organisation no agent may ever take alone, and get that list signed before a vendor demo decides it for you.</Outcome>
+  <Outcome>Check who can change the system prompts and guardrails on the models you already run, and whether that change leaves a trace.</Outcome>
+  <Outcome>Assume the refusal is optional: red-team one of your own processes against a request a stripped model would happily fulfil.</Outcome>
+</Outcomes>
 
 *Next, [part six](/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help): enough diagnosis. Every worry in this series turns out to have the same answer, and it is far more hopeful than the five parts that earned it.*
 
@@ -191,7 +250,7 @@ The answer to a technology whose danger is set by its worst user is not fewer ha
 
 ## Sources
 
-*This part is deliberately more essay than data; the two graphics are conceptual, not measured. Retrieved 10 August 2026.*
+*This part is deliberately more essay than data; the graphics are conceptual, not measured. Retrieved 10 August 2026.*
 
 1. **Wikipedia**. [Technological singularity](https://en.wikipedia.org/wiki/Technological_singularity). Good's 1965 intelligence-explosion argument, Vinge's 1993 "before 2030", and Kurzweil's 2045.
 2. **The bears-and-tourists quote**. [Widely attributed to a US national park ranger](https://x.com/mathematicsprof/status/1270119912418181120) (Yosemite or Yellowstone) on why a bear-proof bin is so hard to build: "considerable overlap between the intelligence of the smartest bears and the dumbest tourists." Origin uncertain, used here as illustration of overlapping distributions.
@@ -212,4 +271,13 @@ The answer to a technology whose danger is set by its worst user is not fewer ha
 17. **Human Rights Watch**. [Sudan: ICC warrant for al-Bashir on genocide](https://www.hrw.org/news/2010/07/13/sudan-icc-warrant-al-bashir-genocide). The first genocide charges in ICC history, three counts, against a sitting head of state over Darfur (an estimated 300,000 killed, 2.7 million displaced).
 18. **FSU Law Review**. [Mind the gap: the ICC's arrest-warrant enforcement problem](https://ir.law.fsu.edu/articles/740/). The Court's structural lack of enforcement power.
 19. **Access Accountability**. [Criticisms and shortcomings of the ICC](https://accessaccountability.org/index.php/2019/09/26/criticisms-and-shortcomings-of-the-icc/). The al-Bashir warrant unenforced for over a decade while he travelled freely.
-20. **Conduction ConNext**. "This is going to hurt" (2026 talk). The series' home deck.
+20. **Vernor Vinge**. [The Coming Technological Singularity (1993)](https://edoras.sdsu.edu/~vinge/misc/singularity.html). The primary essay: "within thirty years", and what ends after.
+21. **I. J. Good**. [Speculations Concerning the First Ultraintelligent Machine (1965)](https://www.sciencedirect.com/science/article/pii/S0065245808604180). The original intelligence-explosion argument.
+22. **wilderko (X)**. [Drowning surveillance in synthetic noise](https://x.com/wilderko/status/2086489048441377014). The Chat Control counter-tactic, quoted without endorsement.
+23. **Senator Bernie Sanders**. [Sanders calls on tech giants to pause development of out-of-control AI](https://www.sanders.senate.gov/press-releases/news-sanders-calls-on-tech-giants-to-pause-development-of-out-of-control-ai/). The 10 August 2026 letter to Altman, Amodei and Zuckerberg: "Stop building machines that humans cannot control."
+24. **Future of Life Institute**. [The Statement on Superintelligence](https://futureoflife.org/press-release/prominent-scientists-faith-leaders-policymakers-and-artists-call-for-a-prohibition-on-superintelligence/). Hinton, Bengio, Wozniak, five Nobel laureates and 30,000+ signatures for a conditional prohibition; 64 percent of polled Americans want an immediate pause.
+25. **Latané & Darley**. [Group inhibition of bystander intervention in emergencies (1968)](https://www.researchgate.net/publication/17480539_Group_inhibition_of_bystander_intervention_in_emergencies). The smoke-filled room: 75 percent report alone, 10 percent next to calm confederates.
+26. **NIST**. [Modeling pre-evacuation delay by occupants in World Trade Center Towers 1 and 2](https://www.nist.gov/publications/modeling-pre-evacuation-delay-occupants-world-trade-center-towers-1-and-2-september-11). The average six-minute delay before starting to evacuate on 9/11, with outliers to 45 minutes.
+27. **Wikipedia**. [Eruption of Mount Vesuvius in 79 AD](https://en.wikipedia.org/wiki/Eruption_of_Mount_Vesuvius_in_79_AD). The precursor tremors and Pliny the Younger's "not particularly alarming because they are frequent in Campania".
+28. **Eliezer Yudkowsky**. [There's no fire alarm for artificial general intelligence (2017)](https://intelligence.org/2017/10/13/fire-alarm/). Why no single signal will ever tell everyone at once that it is time to move.
+29. **Conduction ConNext**. "This is going to hurt" (2026 talk). The series' home deck.

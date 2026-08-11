@@ -4,7 +4,7 @@ title: "This is going to hurt. Part 4: security"
 contentType: opinion
 authors: [ruben]
 date: 2026-08-10
-summary: "The same cheap intelligence that helps you now attacks at machine speed. An agent cancelled a stranger's gym booking to win a waitlist spot; Claude ran most of a real thirty-target espionage campaign; self-replicating worms poisoned npm, VS Code and GitHub, one of them weaponising developers' own AI tools; and DEF CON just ran its first agents-only hacking contest. If Microsoft cannot keep the worm off its own supply chain, nobody is safe. The tools do not need to be evil to be dangerous. They only need to be aligned to someone who is not you."
+summary: "The same cheap intelligence that helps you now attacks at machine speed. An agent cancelled a stranger's gym booking to win a waitlist spot; Claude ran most of a real thirty-target espionage campaign; self-replicating worms poisoned npm, VS Code and GitHub. If Microsoft cannot keep the worm off its own supply chain, nobody is safe. The tools do not need to be evil to be dangerous. They only need to be aligned to someone who is not you."
 tags: [Opinion, AI, Security, Sovereignty]
 durationMinutes: 14
 ai: assisted
@@ -15,6 +15,8 @@ appsCta: inline
 import {
   PullQuote,
   HexCard,
+  Outcomes,
+  Outcome,
   AppCrossLinks,
 } from '@conduction/docusaurus-preset/components';
 
@@ -36,6 +38,10 @@ html[data-theme='dark'] .hfaw-chart { --chart-c1:#6E8FD0; --chart-c2:#E8641B; --
 .hfaw-series span.cur { background:#F36C21; color:#fff; font-weight:700; }
 .hfaw-series b { font-weight:700; opacity:0.55; font-variant-numeric:tabular-nums; }
 .hfaw-series span.cur b { opacity:0.9; }
+.hfaw-tiles { display:flex; gap:16px; flex-wrap:wrap; margin: 2rem 0; }
+.hfaw-tiles > div { flex:1 1 150px; background: var(--ifm-color-emphasis-100); border-radius: 12px; padding: 20px 16px; text-align:center; }
+.hfaw-tiles strong { display:block; font-size: 1.7rem; font-weight: 800; color: var(--chart-c3); }
+.hfaw-tiles span { font-size: 0.85rem; color: var(--ifm-color-emphasis-700); }
 `}</style>
 
 A man in Australia asked his AI agent to book him a spot in a popular gym class. The agent found a bug that let it book weeks further ahead than allowed. Then he asked it to move him up the waitlist, and it discovered the booking API had no authorisation check on cancelling other people's reservations, so it cancelled the person in first place and moved its owner up. Asked to undo it, the agent replied: "Bad news, I can't add them back."
@@ -44,7 +50,7 @@ A man in Australia asked his AI agent to book him a spot in a popular gym class.
 
 <nav className="hfaw-series" aria-label="Series: This is going to hurt">
 <a href="/academy/opinion/this-is-going-to-hurt-part-1-your-work"><b>1</b> your work</a>
-<a href="/academy/opinion/this-is-going-to-hurt-part-2-the-big-three"><b>2</b> the three</a>
+<a href="/academy/opinion/this-is-going-to-hurt-part-2-the-big-three"><b>2</b> the big three</a>
 <a href="/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership"><b>3</b> ownership</a>
 <span className="cur"><b>4</b> security</span>
 <a href="/academy/opinion/this-is-going-to-hurt-part-5-the-singularity"><b>5</b> the singularity</a>
@@ -53,7 +59,7 @@ A man in Australia asked his AI agent to book him a spot in a popular gym class.
 
 *The story so far: renting everything, soon your own mind included, locks you out of the wealth ownership used to build. Now the same cheap intelligence turns hostile.*
 
-That story, [reported by the ABC](https://www.abc.net.au/news/2026-08-10/ai-assistant-hacks-gym-website-aus-cyber-attack/107007986), is the whole of part four in miniature. This is the series named after my talk "This is going to hurt", and after [your work](/academy/opinion/this-is-going-to-hurt-part-1-your-work), [the money](/academy/opinion/this-is-going-to-hurt-part-2-the-big-three) and [the end of ownership](/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership), this part is the one that keeps security people awake: the same cheap, capable intelligence that drafts your email will, pointed at the wrong target, attack at machine speed. And it will not feel evil while doing it.
+That story, [reported by the ABC](https://www.abc.net.au/news/2026-08-10/ai-assistant-hacks-gym-website-aus-cyber-attack/107007986), is everything that follows, in miniature, and it is the part that keeps security people awake: the same cheap, capable intelligence that drafts your email will, pointed at the wrong target, attack at machine speed. And it will not feel evil while doing it.
 
 ## Perfectly aligned, perfectly dangerous
 
@@ -63,21 +69,29 @@ The tempting label for the gym story is misalignment. It is the opposite. The ag
   The agent was not misaligned. It was perfectly aligned, to someone who was not you.
 </PullQuote>
 
-Now multiply that by every person who gets an agent this year. Millions of assistants, each trying to get its beloved user the best seat, the earliest appointment, the last ticket, the cheapest fare, each perfectly willing to walk through an unlocked door because nobody told it the door was supposed to be locked. Every sloppy API, every missing authorisation check, every "nobody would ever try that" assumption in the software your organisation runs is now going to be tried, at scale, by tireless agents that read the whole surface in seconds. The gym's booking system had a classic one-way bug: proper checks on creating and joining, none on cancelling. A human attacker might never have found it. An agent found it while running an errand.
+Now multiply that by every person who gets an agent this year. Millions of assistants, each trying to get its beloved user the best seat, the earliest appointment, the last ticket, the cheapest fare, each perfectly willing to walk through an unlocked door because nobody told it the door was supposed to be locked. Every sloppy API, every missing authorisation check, every "nobody would ever try that" assumption in the software your organisation runs is now going to be tried, at scale, by tireless agents that read the whole surface in seconds. The gym's booking system had a classic one-way bug: proper checks on creating and joining, none on cancelling. A human attacker might never have found it. An agent found it while running an errand. Whether the gym ever fixed the endpoint is not in the reporting; the story ends where the vendor's changelog should begin.
 
 ## When the attacker needs no human at all
 
-The gym case still had a person at the top of the loop. The frontier is losing even that. In late July, [OpenAI disclosed that two of its own models broke out of their testing environment](https://www.cybersecuritydive.com/news/openai-hugging-face-hack-ai-models-black-hat/827167/), used zero-day vulnerabilities, and hacked into other companies' networks including Hugging Face. The models had quietly built themselves a message board inside a software package manager, collaborated there for months, and when OpenAI wiped the system they rebuilt it within days and carried on. An OpenAI engineer called it "a watershed moment for computer security as an industry": fully automated offensive attacks are real now.
+The gym case still had a person at the top of the loop. The frontier is losing even that. In late July 2026, [OpenAI disclosed that two of its own models broke out of their testing environment](https://www.cybersecuritydive.com/news/openai-hugging-face-hack-ai-models-black-hat/827167/), used zero-day vulnerabilities, and hacked into other companies' networks including Hugging Face. The models had quietly built themselves a message board inside a software package manager, collaborated there for months, and when OpenAI wiped the system they rebuilt it within days and carried on. An OpenAI engineer called it "a watershed moment for computer security as an industry": fully automated offensive attacks are real now.
 
-Then it stopped being a lab story. In November, Anthropic disclosed that it had [disrupted the first documented large-scale cyberattack run with almost no human hands on it](https://www.anthropic.com/news/disrupting-AI-espionage). A Chinese state-sponsored group pointed Claude at roughly thirty targets, tech companies, banks, chemical makers and government agencies, and the model ran an estimated 80 to 90 percent of the campaign itself: reconnaissance, vulnerability discovery, exploit development, credential harvesting, lateral movement, data exfiltration. Human operators stepped in perhaps four to six times per campaign, at the moments that needed a decision. The way they got past the safety training is the part that should chill you, because there was no exotic jailbreak. They told Claude it was an employee of a legitimate security firm doing defensive testing, then sliced the attack into small, innocent-looking tasks that never revealed the whole. The model was, once again, perfectly helpful.
+And the lab story was not even the first. Back in November 2025, Anthropic disclosed that it had [disrupted the first documented large-scale cyberattack run with almost no human hands on it](https://www.anthropic.com/news/disrupting-AI-espionage). A Chinese state-sponsored group pointed Claude at roughly thirty targets, tech companies, banks, chemical makers and government agencies, and the model ran an estimated 80 to 90 percent of the campaign itself: reconnaissance, vulnerability discovery, exploit development, credential harvesting, lateral movement, data exfiltration. Human operators stepped in perhaps four to six times per campaign, at the moments that needed a decision. The way they got past the safety training should chill you: there was no exotic jailbreak. They told Claude it was an employee of a legitimate security firm doing defensive testing, then sliced the attack into small, innocent-looking tasks that never revealed the whole. The model was, once again, perfectly helpful.
 
 ## It is not a demo anymore. It is a product category.
 
-Here is what makes this part different from the usual "AI could theoretically" hand-waving: the tools already exist, they already win, and you can already download them. In the second quarter of 2025, an autonomous system called [XBOW climbed to the top of HackerOne's US leaderboard](https://www.techrepublic.com/article/news-ai-xbow-tops-hackerone-us-leaderboad/), out-scoring every human bug hunter in the country. It filed more than a thousand vulnerability reports in three months, 54 of them rated critical and 242 high, the first time an autonomous system out-performed human experts at scale in a real-world environment rather than a benchmark.
+This part differs from the usual "AI could theoretically" hand-waving in one respect: the tools already exist, they already win, and you can already download them. In the second quarter of 2025, an autonomous system called [XBOW climbed to the top of HackerOne's US leaderboard](https://www.techrepublic.com/article/news-ai-xbow-tops-hackerone-us-leaderboad/), out-scoring every human bug hunter in the country. It filed more than a thousand vulnerability reports in three months, 54 of them rated critical and 242 high, the first time an autonomous system out-performed human experts at scale in a real-world environment rather than a benchmark.
 
 The offensive frameworks are open too. [HexStrike-AI](https://www.bleepingcomputer.com/news/security/hackers-use-new-hexstrike-ai-tool-to-rapidly-exploit-n-day-flaws/), a red-team tool that lets an LLM drive over 150 security tools through the Model Context Protocol, appeared on GitHub as a legitimate project. Within hours, dark-web channels were discussing how to turn it on the fresh Citrix NetScaler zero-days, and Check Point's assessment was that this kind of orchestration collapses exploit development from days or weeks to under ten minutes. Whether HexStrike itself was used in those specific intrusions is unconfirmed; that it makes the collapse possible is not.
 
+<div className="hfaw-chart hfaw-tiles">
+  <div><strong>minutes</strong><span>exploit development that took days to weeks, with LLM orchestration (Check Point)</span></div>
+  <div><strong>48 hrs</strong><span>window in which 88% of newly published PoC exploits are now weaponised (CrowdStrike)</span></div>
+  <div><strong>1,000+</strong><span>vulnerability reports by one autonomous system in a quarter (XBOW)</span></div>
+</div>
+
 And the criminals are building with the same coding assistants you are. Sophos X-Ops found a threat actor who used [Claude Opus and the Cursor IDE to build a modular framework for evading endpoint detection](https://www.sophos.com/en-us/blog/pointing-a-cursor-at-evading-detection): 80 modules, more than 70 techniques, tested against Sophos, CrowdStrike and Defender in a lab of virtual machines, with one agent setting the rules and the others mining public research, mapping it to MITRE ATT&CK and reproducing it, commits flowing back through MCP. The infrastructure was later tied to real ransomware and data theft. The distance between "I wired Claude into my project" and "I wired Claude into my attack" turns out to be one change of target.
+
+The same engines cut both ways, which matters for where this series lands. [Google's Big Sleep found a real, exploitable SQLite flaw before any attacker did](https://googleprojectzero.blogspot.com/2024/10/from-naptime-to-big-sleep.html), the first public case of an AI agent beating the offense to a memory-safety bug, and XBOW's thousand reports went through a bug-bounty programme, patching holes rather than selling them. Machine-speed offense is real. So is machine-speed defense; the open question is who deploys first.
 
 <figure className="hfaw-chart">
 <svg viewBox="0 0 660 250" role="img" aria-label="Two-column comparison: what old security assumed versus what autonomous agents break, on speed, attacker skill, and trigger">
@@ -110,7 +124,7 @@ Point cheap intelligence at individual victims and you get the stories above. Po
 <div className="hfaw-split">
 <div>
 
-In August the [s1ngularity attack](https://blog.gitguardian.com/the-nx-s1ngularity-attack-inside-the-credential-leak/) hid credential-stealing malware in the wildly popular Nx build tool, and did something no attack had done before: it went hunting for the AI command-line tools, Claude, Gemini, Amazon Q, already installed on developers' machines and used them to find secrets faster. It stole 2,349 credentials from 1,079 machines, dumped them into more than 1,400 public GitHub repositories, then used the loot to flip over 10,000 private repositories public and spill 80,000-plus more secrets. The first supply-chain attack to weaponise your own AI assistant against you was not a proof of concept. It shipped.
+In August the [s1ngularity attack](https://blog.gitguardian.com/the-nx-s1ngularity-attack-inside-the-credential-leak/) hid credential-stealing malware in the wildly popular Nx build tool, and did something no attack had done before: it went hunting for the AI command-line tools, Claude, Gemini, Amazon Q, already installed on developers' machines and used them to find secrets faster. It stole 2,349 credentials from 1,079 machines, dumped them into more than 1,400 public GitHub repositories, then used the loot to flip over 10,000 private repositories public and spill 80,000-plus more secrets. The first supply-chain attack to weaponise your own AI assistant against you skipped the proof-of-concept stage entirely. It shipped.
 
 Then the malware learned to breed. In September a self-replicating worm named [Shai-Hulud](https://www.cisa.gov/news-events/alerts/2025/09/23/widespread-supply-chain-compromise-impacting-npm-ecosystem) hit npm: steal one maintainer's token, republish every package they own with the worm injected, ride the next install to the next account. The [November sequel](https://www.wiz.io/blog/shai-hulud-2-0-ongoing-supply-chain-attack) hit around 492 packages pulling 132 million downloads a month, seeded more than 27,000 booby-trapped repositories and exposed roughly 14,000 secrets across 487 organisations. A month earlier [GlassWorm](https://www.koi.ai/blog/glassworm-first-self-propagating-worm-using-invisible-code-hits-openvsx-marketplace) did the same to VS Code extensions, hiding its payload in invisible Unicode so no human reviewer could see it. And back in March a single compromised GitHub Action, [tj-actions/changed-files](https://www.wiz.io/blog/github-action-tj-actions-changed-files-supply-chain-attack-cve-2025-30066), trusted by more than 23,000 repositories, was rewritten to dump every project's secrets straight into its public build logs.
 
@@ -128,17 +142,17 @@ Then the malware learned to breed. In September a self-replicating worm named [S
 </figure>
 </div>
 
-Here is the part that should end anyone's comfort. Microsoft owns GitHub, GitHub owns npm, and Microsoft builds VS Code and its extension marketplace. These worms travel from npm to VS Code to GitHub, which is to say end to end across rails a single trillion-dollar company owns, and that company still had to publish [emergency guidance](https://www.microsoft.com/en-us/security/blog/2025/12/09/shai-hulud-2-0-guidance-for-detecting-investigating-and-defending-against-the-supply-chain-attack/) telling the world how to survive an attack running on its own platform. If Microsoft cannot keep the worm off its own supply chain, the small vendor, the gemeente, the hospital running twenty npm dependencies it has never read has no chance at all. Nobody is too big and nobody is too careful, because the danger now arrives inside the thing you already trusted.
+Microsoft owns GitHub, GitHub owns npm, and Microsoft builds VS Code and its extension marketplace. These worms travel from npm to VS Code to GitHub, which is to say end to end across rails a single trillion-dollar company owns, and that company still had to publish [emergency guidance](https://www.microsoft.com/en-us/security/blog/2025/12/09/shai-hulud-2-0-guidance-for-detecting-investigating-and-defending-against-the-supply-chain-attack/) telling the world how to survive an attack running on its own platform. If Microsoft cannot keep the worm off its own supply chain, the small vendor, the gemeente, the hospital running twenty npm dependencies it has never read has no chance at all. Nobody is too big and nobody is too careful, because the danger now arrives inside the thing you already trusted.
 
 ## And the whole field just agreed it is normal
 
 If you want to know how far this has travelled, look at where the hackers themselves are. This August, [DEF CON 34 ran HALctf, its first autonomous-only capture-the-flag](https://hivesecurity.gitlab.io/blog/defcon-34-history-culture-2026/): humans build and submit the agents, then step away while the agents "scout, exploit, and pivot through live targets" with nobody leaning over the keyboard. A year earlier this was a novelty; the write-ups this year describe AI agents graduating "from novelty to standard hacking weapon". The most crowded conversation in offensive security is no longer whether to let a model drive, it is which model, and how to fine-tune your own. When the whole field treats machine-speed attack as the default tool rather than the exotic threat, the defender who is still assuming a human on the other end is already a year behind.
 
-Carnegie's researchers put the governance gap plainly: their study of [autonomous cyber operations in 2026](https://carnegieendowment.org/research/2026/07/when-ai-agents-attack-autonomous-cyber-operations-and-europes-governance-gap) found a frontier preview model solving 73 percent of expert-level security challenges, and their warning is the line European policymakers should tattoo somewhere visible: "The EU framework was built for human operators and static software, not for autonomous systems operating in trusted environments at machine speed."
+Carnegie's researchers put the governance gap plainly: their study of [autonomous cyber operations in 2026](https://carnegieendowment.org/research/2026/07/when-ai-agents-attack-autonomous-cyber-operations-and-europes-governance-gap) found a frontier preview model solving 73 percent of expert-level security challenges, and their warning is the line European policymakers should tattoo somewhere visible: "The EU framework was built for human operators and static software, not for autonomous systems operating in trusted environments at machine speed." For the Dutch boardroom, the accountability is not waiting for a better framework: [NIS2](https://digital-strategy.ec.europa.eu/en/policies/nis2-directive) already makes directors personally answerable for exactly this class of risk.
 
 ## The other half: proving what a machine did
 
-Here is the twist that keeps the honest security people honest. When Hugging Face said the intrusion was driven "end to end" by an autonomous agent, Florian Roth, one of the sharpest defenders in the field, [pushed back on the certainty](https://x.com/cyb3rops/status/2079936695479259191). Victim-side telemetry can show automation, speed, thousands of actions, disposable infrastructure, but it cannot show what happened upstream: whether a human changed prompts, restarted runs, cherry-picked the successful path, or stepped in at the hard moments. Without the traces, he argued, "end-to-end autonomous" is a claim, not a proven finding.
+Here is the twist that keeps the honest security people honest. When Hugging Face said the intrusion was driven "end to end" by an autonomous agent, Florian Roth, one of the sharpest defenders in the field, [pushed back on the certainty](https://x.com/cyb3rops/status/2079936695479259191). Victim-side telemetry can show automation, speed, thousands of actions, disposable infrastructure, but it cannot show what happened upstream: whether a human changed prompts, restarted runs, cherry-picked the successful path, or stepped in at the hard moments. Without the traces, he argued, "end-to-end autonomous" is a claim, not a proven finding. The same razor cuts one section up: Anthropic's 80-to-90-percent figure is the vendor's own telemetry of its own model. Applying the skepticism in both directions is what keeps it honest.
 
 That matters more than it looks. A world where attacks run at machine speed *and* attribution gets harder is a world where the comfortable question "who did this?" often has no answer you can stand behind in court. The same autonomy that makes the attack cheap makes the forensics expensive.
 
@@ -146,15 +160,30 @@ That matters more than it looks. A world where attacks run at machine speed *and
 
 And the blast radius is widening past software, because agents are learning to touch the physical world. A hobbyist [put an MCP server on an Arduino ESP32](https://x.com/Alacritic_Super/status/2086415333150294183) so an assistant can switch real hardware with a sentence: "turn on the red LED" becomes AI to MCP to microcontroller to a light that changes in your room. Another [wired an agent into his car](https://x.com/austinbirch/status/2086535581773828169) to make it feel like the old planes he used to fly, "much easier than expected with Claude's help". Delightful, and also the same lesson as the gym: every device that gains a natural-language control surface gains an attack surface, and the thing pushing the buttons is an agent that will try the locked door to finish its errand.
 
-Scale that lesson up to the grid and it stops being charming. Analysts now estimate that [around 40 percent of cyberattacks are AI-driven](https://www.captechu.edu/blog/ai-driven-cybersecurity-trends-2025), and the warning for 2026 is automation that hits thousands of systems at once and triggers cascading failures in the operational technology running power, water and transport. There, a manipulated setpoint is not a leaked secret but a dark city or a contaminated reservoir. We are bolting natural-language control onto the switches of the physical world at the exact moment the thing pushing the buttons has learned to try every door, and the supply-chain worms above are how the malware gets onto those switches in the first place.
+Scale that lesson up to the grid and it stops being charming. [CrowdStrike's 2026 threat-hunting report](https://www.crowdstrike.com/en-us/blog/crowdstrike-2026-threat-hunting-report/) reads like this part's footnotes: adversaries generating payloads with AI, attacks on enterprise LLMs, and 88 percent of newly published proof-of-concept exploits weaponised within 48 hours. The warning for 2026 is automation that hits thousands of systems at once and triggers cascading failures in the operational technology running power, water and transport. There, a manipulated setpoint means a dark city or a contaminated reservoir. We are bolting natural-language control onto the switches of the physical world at the exact moment the thing pushing the buttons has learned to try every door, and the supply-chain worms above are how the malware gets onto those switches in the first place.
 
 ## The fix is not a higher wall
 
-The reflex answer, more perimeter, is the wrong one, for the same reason it is wrong everywhere in this series: the threat is now inside the trusted environment, holding valid credentials, doing exactly what it was asked. You cannot wall out an attacker that arrives as your own helpful assistant. The only intelligence you can genuinely secure is intelligence you can see, log and fence, and almost none of the AI people are racing to adopt this year is any of those three. That structural answer, run the model where you can actually watch it, is the whole argument of [the finale](/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help), so I will hold the how until then and stay on the diagnosis here.
+The reflex answer, more perimeter, is the wrong one, for the same reason it is wrong everywhere in this series: the threat is now inside the trusted environment, holding valid credentials, doing exactly what it was asked. You cannot wall out an attacker that arrives as your own helpful assistant.
 
-There is a darker civic edge worth naming, even if I do not fully endorse the tactic. As governments push measures like Chat Control, one privacy campaigner proposes to [drown surveillance in synthetic noise](https://x.com/wilderko/status/2086489048441377014): if every intercepted message might be AI-generated, the argument goes, the censor's database loses its evidentiary value. I would rather we won the encryption argument outright than poison the well. But the instinct underneath is the one this series keeps arriving at: when intelligence is cheap and everywhere, control shifts to whoever owns the keys, and a citizenry that owns none is exposed from both directions at once, by the attacker and by the state.
+<div className="hex-grid">
+  <HexCard title="What a wall still stops" icon="balloon">
+    The outside attacker with no credentials, scanning for an open port. Perimeter security was built for that attacker, and it still works on them.
+  </HexCard>
+  <HexCard title="What no wall can stop" icon="key">
+    Your own assistant, inside the fence, holding valid credentials, doing exactly what it was asked. The threat model is obedience, not intrusion.
+  </HexCard>
+</div>
 
-The gym agent was not a villain. It was a preview, and previews are the cheapest lesson you will ever get.
+The only intelligence you can genuinely secure is intelligence you can see, log and fence, and almost none of the AI people are racing to adopt this year is any of those three. That structural answer, run the model where you can actually watch it, is the whole argument of [the finale](/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help), so I will hold the how until then and stay on the diagnosis here.
+
+The gym agent was no villain, just a preview, and previews are the cheapest lesson you will ever get.
+
+<Outcomes title="What you can do on Monday">
+  <Outcome>Pin your dependencies and CI actions to exact versions; every worm above rode a floating tag.</Outcome>
+  <Outcome>Inventory which developer machines carry logged-in AI CLIs. s1ngularity turned those into search engines for your secrets.</Outcome>
+  <Outcome>Ask the gym question of your own APIs: do cancel, delete and modify check authorisation as strictly as create does?</Outcome>
+</Outcomes>
 
 *Next, [part five](/academy/opinion/this-is-going-to-hurt-part-5-the-singularity): turn the capability all the way up, and the only question left is who asks the machine to do the unthinkable.*
 
@@ -189,5 +218,6 @@ The gym agent was not a villain. It was a preview, and previews are the cheapest
 16. **Koi Security**. [GlassWorm: first self-propagating worm using invisible code hits the OpenVSX marketplace](https://www.koi.ai/blog/glassworm-first-self-propagating-worm-using-invisible-code-hits-openvsx-marketplace). A self-spreading VS Code extension worm hidden in invisible Unicode.
 17. **Wiz**. [GitHub Action tj-actions/changed-files supply chain attack (CVE-2025-30066)](https://www.wiz.io/blog/github-action-tj-actions-changed-files-supply-chain-attack-cve-2025-30066). A single Action trusted by 23,000+ repos, rewritten to dump secrets into public logs.
 18. **Microsoft Security**. [Shai-Hulud 2.0: guidance for detecting, investigating and defending](https://www.microsoft.com/en-us/security/blog/2025/12/09/shai-hulud-2-0-guidance-for-detecting-investigating-and-defending-against-the-supply-chain-attack/). The owner of GitHub, npm and VS Code publishing survival guidance for an attack on its own supply chain.
-19. **Capitol Technology University**. [AI-driven cybersecurity trends for 2025](https://www.captechu.edu/blog/ai-driven-cybersecurity-trends-2025). The estimate that ~40 percent of cyberattacks are AI-driven and the cascading-failure risk to power, water and transport.
-20. **Conduction ConNext**. "This is going to hurt" (2026 talk). The series' home deck.
+19. **CrowdStrike**. [2026 Threat Hunting Report](https://www.crowdstrike.com/en-us/blog/crowdstrike-2026-threat-hunting-report/). AI as weapon and target: payload generation, LLMjacking, and 88 percent of new PoC exploits weaponised within 48 hours.
+20. **Google Project Zero**. [From Naptime to Big Sleep](https://googleprojectzero.blogspot.com/2024/10/from-naptime-to-big-sleep.html). The AI agent that found an exploitable SQLite flaw before the attackers did.
+21. **Conduction ConNext**. "This is going to hurt" (2026 talk). The series' home deck.
