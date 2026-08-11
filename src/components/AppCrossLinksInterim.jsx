@@ -50,8 +50,11 @@
    REMOVE together with the plugin when the preset ships description support. */
 import React from 'react';
 import {APPS_REGISTRY} from '../data/apps-registry-interim';
-import AppGlyph from '@conduction/docusaurus-preset/src/components/AppGlyph/AppGlyph.jsx';
-import styles from '@conduction/docusaurus-preset/src/components/AppCrossLinks/AppCrossLinks.module.css';
+/* Relative paths into node_modules on purpose: the preset's package.json
+   `exports` map does not expose ./src/* subpaths, and relative file paths
+   bypass the exports restriction. */
+import AppGlyph from '../../node_modules/@conduction/docusaurus-preset/src/components/AppGlyph/AppGlyph.jsx';
+import styles from '../../node_modules/@conduction/docusaurus-preset/src/components/AppCrossLinks/AppCrossLinks.module.css';
 
 const ROWS = [
   {key: 'product', surfaceKey: 'product', hrefKey: 'productHref', label: 'Open product page',   hint: 'Capabilities, pricing, install link'},
