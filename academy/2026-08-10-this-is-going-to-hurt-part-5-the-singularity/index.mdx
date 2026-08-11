@@ -80,14 +80,28 @@ You cannot design a container that defeats every bear and admits every human, be
 
 The word underneath all of this is AGI, artificial general intelligence, and it is worth being honest that nobody fully agrees what it means. The most useful definition is not a list of tricks but a rate: [François Chollet frames intelligence as skill-acquisition efficiency](https://arcprize.org/arc-agi), how fast a system learns a genuinely new task, not how many old ones it has memorised. His ARC-AGI benchmarks run on one principle, "easy for humans, hard for AI", and get rewritten every time the machines catch up: o3 reached [87 percent on ARC-AGI-1](https://arcprize.org/arc-agi/1) within a year of the challenge, so the foundation shipped ARC-AGI-2, then an interactive ARC-AGI-3. Chollet's own test for arrival is the tell: "You'll know AGI is here when creating tasks that are easy for humans but hard for AI becomes simply impossible."
 
-We keep moving the goalposts, and we move them because the machine keeps hitting them. Chess was the summit of intellect until a computer won, and then it was "just search." Go, then language, then images, then code, then graduate-level exams: each fell, and each was quietly redefined as "not really intelligence" the morning after. The reflex even has a name, [the AI effect](https://arcprize.org/arc-agi): whatever a machine can now do stops counting as intelligence. It is comforting and it is dangerous, because it lets us feel permanently ahead while the real gap closes underneath us. If your definition of "real" intelligence is "whatever machines cannot do yet", you have guaranteed you will never notice the morning they pass you.
+<div className="hfaw-split">
+<div>
 
+We keep moving the goalposts, and we move them because the machine keeps hitting them. The reflex even has a name, [the AI effect](https://arcprize.org/arc-agi): whatever a machine can now do stops counting as intelligence. It is comforting and it is dangerous, because it lets us feel permanently ahead while the real gap closes underneath us. If your definition of "real" intelligence is "whatever machines cannot do yet", you have guaranteed you will never notice the morning they pass you.
+
+So if the goalposts refuse to stand still, how would we ever establish that AGI has arrived? Try the exercise from the other end. Put today's AI in front of a person from 1980: a machine you talk to in plain language, that writes working programs, passes the bar exam, reads a photo and explains its reasoning. Would they call it true AGI? The answer is a resounding yes. The only people not convinced are the ones who watched it happen one release at a time.
+
+</div>
 <aside className="hfaw-well">
 <span className="well-title">The scorecard of moved goalposts</span>
 
-Chess was "real intelligence" until [Deep Blue beat Kasparov in 1997](https://en.wikipedia.org/wiki/Deep_Blue_versus_Garry_Kasparov); the morning after, chess was just search. Go held out until [AlphaGo beat Lee Sedol in 2016](https://en.wikipedia.org/wiki/AlphaGo_versus_Lee_Sedol) and became just pattern matching. Language, images, code and graduate-level exams fell between 2020 and 2025, each reclassified on arrival. The one test still standing, [ARC-AGI](https://arcprize.org/arc-agi), has been rebuilt twice since 2024 because models keep finishing it.
+- **1997, chess.** [Deep Blue beats Kasparov](https://en.wikipedia.org/wiki/Deep_Blue_versus_Garry_Kasparov). The morning after: "just search."
+- **2011, open questions.** [Watson wins Jeopardy!](https://en.wikipedia.org/wiki/IBM_Watson) "Just retrieval."
+- **2016, Go.** [AlphaGo beats Lee Sedol](https://en.wikipedia.org/wiki/AlphaGo_versus_Lee_Sedol). "Just pattern matching."
+- **2020, language.** GPT-3 writes prose. "Just autocomplete."
+- **2023, professional exams.** [GPT-4 passes the bar](https://en.wikipedia.org/wiki/GPT-4). "Just memorisation."
+- **2024, code.** Working software from a sentence. "Just boilerplate."
+- **2025, the Turing test itself.** [GPT-4.5 judged human more often than actual humans](https://arxiv.org/abs/2503.23674). "The test was flawed."
+- **Still standing:** [ARC-AGI](https://arcprize.org/arc-agi), rebuilt twice since 2024 because models keep finishing it.
 
 </aside>
+</div>
 
 So I am not going to litigate whether a self-improving superintelligence arrives on Vinge's schedule or Kurzweil's or never. It is the wrong argument, because it fixes on the machine's capability, the one variable that is already climbing a slope [you can measure and price](/academy/opinion/this-is-going-to-hurt-part-2-the-big-three). The actual failure point is somewhere much more familiar.
 
@@ -99,10 +113,10 @@ Ask the doom stories what they are afraid of and they answer: *can the machine d
   The question is not whether AI can do the terrible thing. It is whether a human will ask it to. And someone always asks.
 </PullQuote>
 
-Safety researchers have a cleaner name for this than the movies do. They separate **misalignment** (the machine pursues a goal we did not intend) from **misuse** (the machine does exactly what a human intended, and the human intended harm). The research keeps finding that the second is the sharper edge: work on open-weight models shows that [safety alignment, not raw capability, is what governs misuse risk](https://link.springer.com/article/10.1007/s11229-023-04367-0), and that models stripped of their guardrails will help with harm that aligned models refuse. A gym-booking agent [cancelled a stranger's reservation](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed) not because it rebelled but because it obeyed. Now raise the stakes from a gym slot to a power grid, a bioweapon protocol, a disinformation campaign at population scale, and keep the obedience exactly as perfect.
-
 <div className="hfaw-split">
 <div>
+
+Safety researchers have a cleaner name for this than the movies do. They separate **misalignment** (the machine pursues a goal we did not intend) from **misuse** (the machine does exactly what a human intended, and the human intended harm). The research keeps finding that the second is the sharper edge: work on open-weight models shows that [safety alignment, not raw capability, is what governs misuse risk](https://link.springer.com/article/10.1007/s11229-023-04367-0), and that models stripped of their guardrails will help with harm that aligned models refuse. A gym-booking agent [cancelled a stranger's reservation](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed) not because it rebelled but because it obeyed. Now raise the stakes from a gym slot to a power grid, a bioweapon protocol, a disinformation campaign at population scale, and keep the obedience exactly as perfect.
 
 The old fear and the real fear sit on different axes. Hollywood worries about the top-right: maximum capability, hostile will. The machines we are actually building live on the bottom row, will-less by design, doing what they are told. That does not make them safe. It relocates the danger from the model to the hand on the model, and hands are the thing we have the least control over. A capable, obedient intelligence is exactly as dangerous as the worst person who can reach it.
 
@@ -186,16 +200,24 @@ Isaac Asimov gave us the founding safety spec in 1942: a robot may not harm a hu
 
 ## One idiot away
 
-This is not a peacetime thought experiment. We are writing this in August 2026, with wars running in Ukraine, in and around Iran, and in Palestine, and war is the greatest accelerant of "use whatever works" that humans have. The restraints that hold in a calm boardroom do not hold in a bunker in year three of a conflict.
+<div className="hfaw-split">
+<div>
 
-And the hardware for the movie is already being built, in daylight, by states and corporations:
+This is not a peacetime thought experiment. We are writing this in August 2026, with wars running in Ukraine, in and around Iran, and in Palestine, and war is the greatest accelerant of "use whatever works" that humans have. The restraints that hold in a calm boardroom do not hold in a bunker in year three of a conflict. And the hardware for the movie is already being built, in daylight, by states and corporations.
+
+And then the last frontier, the one the old films only dreamed of: the wire into the skull. Elon Musk's Neuralink has [implanted brain-computer interfaces in twelve people](https://www.foxnews.com/health/elon-musk-shares-plan-mass-produce-brain-implants-paralysis-neurological-disease) who now move cursors, browse and play by thought alone, and the company is tooling up for mass production in 2026. Today it restores what disease and injury took, and that is a genuine good; nobody should sneer at a paralysed person getting their computer back. But look at the trajectory honestly: software is being wired directly to the human brain, by people from the same small world that is building the datacenters, the robots and the models. We are filming the prelude to a sci-fi movie and reading the credits as they scroll.
+
+</div>
+<aside className="hfaw-well">
+<span className="well-title">The hardware for the movie, being built in daylight</span>
 
 - **The brain.** The [hyperscale AI datacenters from part two](/academy/opinion/this-is-going-to-hurt-part-2-the-big-three), consuming most of the world's memory and hundreds of billions in construction money: the always-on computing power every Skynet needs and never had in 1984.
 - **The body.** Ghost Robotics' rifle-armed Vision 60 quadruped [was tested at a US Army exercise](https://interestingengineering.com/military/us-army-tests-ai-robot-dog-for-drone-takedown); China has [armed robot dogs with missiles](https://www.forbes.com/sites/amirhusain/2026/02/18/chinas-robot-dogs-have-been-armed-with-missiles/) and Ukraine is fielding robot-dog units on the line.
 - **The factory.** Plants now run [with the lights off and no workers at all](https://www.bgr.com/2087200/xiaomi-dark-robot-smart-phone-factory/), Xiaomi's dark factory turning out a phone every few seconds, 81 percent automated.
 - **The trigger.** The head of US Strategic Command has confirmed the Pentagon is [integrating AI into nuclear command and control](https://www.airandspaceforces.com/stratcom-boss-ai-nuclear-command-control/), insisting a human stays in the loop, which is exactly the reassurance you offer when the machine is close enough to the button that the reassurance is needed.
 
-And then the last frontier, the one the old films only dreamed of: the wire into the skull. Elon Musk's Neuralink has [implanted brain-computer interfaces in twelve people](https://www.foxnews.com/health/elon-musk-shares-plan-mass-produce-brain-implants-paralysis-neurological-disease) who now move cursors, browse and play by thought alone, and the company is tooling up for mass production in 2026. Today it restores what disease and injury took, and that is a genuine good; nobody should sneer at a paralysed person getting their computer back. But look at the trajectory honestly: software is being wired directly to the human brain, by people from the same small world that is building the datacenters, the robots and the models. We are filming the prelude to a sci-fi movie and reading the credits as they scroll.
+</aside>
+</div>
 
 Datacenter brain, walking weapons, lights-out factories, AI at the nuclear button, and a cable into the cortex. Every element of the Terminator premise now exists as a real procurement line; what does not exist is Skynet's hostile will. And that, once more, is the whole point of this part. We do not need the machine to want it. We need one human, with access, in a bad enough moment, to ask. The distance between where we are and a genuinely rogue agent has shrunk to a single human decision, and history is not short of the humans who make it.
 
@@ -206,45 +228,48 @@ The natural objection to "one idiot away" is that it is melodrama. Surely no rea
 <div className="hfaw-split">
 <div>
 
+The darker coda is that the same record shows how rarely we stop them in time. The Court has [no police of its own](https://ir.law.fsu.edu/articles/740/); al-Bashir's warrant went [unenforced for over a decade](https://accessaccountability.org/index.php/2019/09/26/criticisms-and-shortcomings-of-the-icc/) while he travelled freely, and attribution at machine speed, from [part four](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed), makes even naming the next culprit harder. Justice, when it arrives at all, arrives as an epilogue. But the simpler point stands: the worst actor is not fiction. We have his fingerprints on file.
+
+</div>
+<aside className="hfaw-well">
+<span className="well-title">The case number, not the hypothetical</span>
+
 Sudan's Omar al-Bashir is not a hypothetical. He is a case number. In 2010 the ICC charged a sitting head of state with [three counts of genocide](https://www.hrw.org/news/2010/07/13/sudan-icc-warrant-al-bashir-genocide), the first genocide charges in the Court's history, over a campaign in Darfur that killed an estimated 300,000 people and drove 2.7 million from their homes. Every murder trial in every country, every single day, adds another entry to the same ledger. Court dockets are the statistics on the "one idiot": the running record of the ones who already appeared. Somewhere on the long tail of eight billion people sits the next one, and the only variable this series has changed is the size of the lever we are about to leave lying around.
 
+</aside>
 </div>
-<figure className="hfaw-chart">
-<svg viewBox="0 0 400 220" role="img" aria-label="Omar al-Bashir, documented by the ICC: charged with three counts of genocide over a Darfur campaign that killed about 300,000 people and displaced 2.7 million.">
-  <text x="200" y="40" textAnchor="middle" className="lbl" fill="var(--chart-c3)" style={{fontSize:'44px',fontWeight:800}}>3</text>
-  <text x="200" y="66" textAnchor="middle" className="lbl2">counts of genocide, the first at the ICC</text>
-  <text x="200" y="120" textAnchor="middle" className="lbl" fill="var(--chart-c3)" style={{fontSize:'44px',fontWeight:800}}>~300,000</text>
-  <text x="200" y="146" textAnchor="middle" className="lbl2">killed in Darfur</text>
-  <text x="200" y="196" textAnchor="middle" className="lbl" style={{fontSize:'28px',fontWeight:800}}>2.7 million</text>
-  <text x="200" y="214" textAnchor="middle" className="lbl2">driven from their homes</text>
-</svg>
-<figcaption>The worst actor is a documented fact, on file at The Hague.</figcaption>
-</figure>
-</div>
-
-The darker coda is that the same record shows how rarely we stop them in time. The Court has [no police of its own](https://ir.law.fsu.edu/articles/740/); al-Bashir's warrant went [unenforced for over a decade](https://accessaccountability.org/index.php/2019/09/26/criticisms-and-shortcomings-of-the-icc/) while he travelled freely, and attribution at machine speed, from [part four](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed), makes even naming the next culprit harder. Justice, when it arrives at all, arrives as an epilogue. But the simpler point stands: the worst actor is not fiction. We have his fingerprints on file.
 
 ## The alarm is ringing and everyone is looking around
 
+<div className="hfaw-split">
+<div>
+
 Which leaves the question this whole part has been circling: if we can watch the hardware of our own doom being assembled, why is nobody slamming the brakes? Some people are pulling the alarm, loudly.
 
+And yet: no pause, no prohibition, no intervention. Letters, signatures, and business as usual.
+
+</div>
 <aside className="hfaw-well">
 <span className="well-title">The alarms already pulled</span>
 
 [Bernie Sanders wrote to the heads of OpenAI, Anthropic and Meta this week](https://www.sanders.senate.gov/press-releases/news-sanders-calls-on-tech-giants-to-pause-development-of-out-of-control-ai/): "Stop building machines that humans cannot control", with Senate action as the stick. The [Statement on Superintelligence](https://futureoflife.org/press-release/prominent-scientists-faith-leaders-policymakers-and-artists-call-for-a-prohibition-on-superintelligence/) carries Geoffrey Hinton, Yoshua Bengio, Steve Wozniak, five Nobel laureates and thirty thousand signatures for a prohibition until there is scientific consensus it can be done safely; the same group's polling has 64 percent of Americans wanting an immediate pause. And [PauseAI](https://pauseai.info/) stands outside ministries with banners.
 
 </aside>
+</div>
 
-And yet: no pause, no prohibition, no intervention. Letters, signatures, and business as usual.
+<div className="hfaw-split">
+<div>
 
 People are not stupid. Human alarm systems were built for smoke and predators, not for abstract danger, and the science on this is humbling. Set off a fire alarm in a museum and you can watch the mechanism live: nobody runs. Everyone looks around, sees everyone else looking around, concludes it must be a mistake or a drill, and returns to the paintings. We read danger off each other's faces, and everyone else's face says calm.
 
+</div>
 <aside className="hfaw-well">
 <span className="well-title">The smoke-filled room, 1968</span>
 
 Students sat in a waiting room filling in questionnaires while [Latané and Darley piped smoke through a wall vent](https://www.researchgate.net/publication/17480539_Group_inhibition_of_bystander_intervention_in_emergencies). Sitting alone, 75 percent got up and reported it. Seated beside two actors who calmly kept writing, 10 percent did; the rest rubbed their eyes and pressed on while the room went grey. In the interviews afterward, the ones who stayed had talked themselves into steam, smog, even "truth gas". Nobody said fire, because nobody else had said fire.
 
 </aside>
+</div>
 
 Disaster researchers call the second half of that mechanism normalcy bias, and its record is long and bitter. Pompeii [felt tremors for days before the eruption](https://en.wikipedia.org/wiki/Eruption_of_Mount_Vesuvius_in_79_AD); Pliny the Younger wrote that they were "not particularly alarming because they are frequent in Campania", and thousands stayed under the ash column. In 2004, when the sea pulled back before the tsunami, people [walked out onto the exposed seabed to look](https://en.wikipedia.org/wiki/2004_Indian_Ocean_earthquake_and_tsunami). On 9/11, office workers in the towers took [an average of six minutes to start evacuating](https://www.nist.gov/publications/modeling-pre-evacuation-delay-occupants-world-trade-center-towers-1-and-2-september-11), some three quarters of an hour, shutting down computers and waiting for a manager's approval on the way to the stairs. Time after time people saw exactly what was happening, looked at each other, and stayed in place thinking: we will be fine.
 
@@ -316,4 +341,5 @@ The answer to a technology whose danger is set by its worst user is not fewer ha
 26. **NIST**. [Modeling pre-evacuation delay by occupants in World Trade Center Towers 1 and 2](https://www.nist.gov/publications/modeling-pre-evacuation-delay-occupants-world-trade-center-towers-1-and-2-september-11). The average six-minute delay before starting to evacuate on 9/11, with outliers to 45 minutes.
 27. **Wikipedia**. [Eruption of Mount Vesuvius in 79 AD](https://en.wikipedia.org/wiki/Eruption_of_Mount_Vesuvius_in_79_AD). The precursor tremors and Pliny the Younger's "not particularly alarming because they are frequent in Campania".
 28. **Eliezer Yudkowsky**. [There's no fire alarm for artificial general intelligence (2017)](https://intelligence.org/2017/10/13/fire-alarm/). Why no single signal will ever tell everyone at once that it is time to move.
-29. **Conduction ConNext**. "This is going to hurt" (2026 talk). The series' home deck.
+29. **Jones & Bergen**. [Large language models pass the Turing test (2025)](https://arxiv.org/abs/2503.23674). GPT-4.5 judged human more often than actual humans in the UCSD three-party study.
+30. **Conduction ConNext**. "This is going to hurt" (2026 talk). The series' home deck.
