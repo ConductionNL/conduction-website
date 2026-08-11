@@ -247,7 +247,13 @@ function BlogPostPageContent({children}) {
         {children}
       </div>
 
-      {Array.isArray(frontMatter.apps) && frontMatter.apps.length > 0 && (
+      {/* Posts with an endnotes "## Sources" section set `appsCta: inline`
+          and mount <AppCrossLinks> themselves just above that heading, so
+          the app CTAs sit after the reading content and the sources render
+          beneath them as endnotes. For everything else the block is
+          appended here, after the whole body. */}
+      {Array.isArray(frontMatter.apps) && frontMatter.apps.length > 0
+        && frontMatter.appsCta !== 'inline' && (
         <div style={{marginTop: 64}}>
           <AppCrossLinks
             variant="inline"
