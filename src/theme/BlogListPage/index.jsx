@@ -44,14 +44,11 @@ import {
 } from '@conduction/docusaurus-preset/data/apps-registry';
 import PageHeading from '@site/src/components/PageHeading';
 
-/* Interim override until the preset publishes `opinion` in its
-   content-type registry: the academy ships opinion posts, but the
-   taxonomy has no chip for them, so they were only reachable from the
-   unfiltered view. Same pattern as the #165 Hermiq-glyph override. */
-const SITE_CONTENT_TYPES = [...CONTENT_TYPES, 'opinion'];
-const SITE_TYPE_LABELS = {opinion: 'Opinions'};
-
-const TYPE_SET = new Set(SITE_CONTENT_TYPES);
+/* `opinion` is an internal flavor of blog, not a reader-facing category:
+   it drives the OPINION eyebrow and the opinion hero variant, while the
+   Blogs chip matches both types (see typeMatches). The preset registry
+   deliberately has no opinion chip. */
+const TYPE_SET = new Set(CONTENT_TYPES);
 const APP_SET = new Set(Object.keys(APPS_REGISTRY));
 
 function readQuery(search, knownModules, knownSeries) {
@@ -461,8 +458,6 @@ function AcademyLandingInner({items}) {
       <ContentTypeFilter
         value={active.type}
         onChange={handleTypeChange}
-        types={SITE_CONTENT_TYPES}
-        labels={SITE_TYPE_LABELS}
         counts={typeCounts}
         allCount={items.length}
       />
