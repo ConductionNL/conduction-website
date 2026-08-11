@@ -1,5 +1,5 @@
 ---
-slug: opinion/feed-the-wolf-that-ships
+slug: blog/feed-the-wolf-that-ships
 title: "Two wolves live in every public open source project. Feed the one that ships."
 contentType: blog
 authors: [ruben]
@@ -13,7 +13,19 @@ ai: assisted
 import {
   PullQuote,
   HexCard,
+  Outcomes,
+  Outcome,
 } from '@conduction/docusaurus-preset/components';
+
+<style>{`
+.hfaw-split { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; align-items:start; margin:2rem 0; }
+.hfaw-split > div > p:first-child { margin-top:0; }
+@media (max-width:820px){ .hfaw-split { grid-template-columns:1fr; gap:1rem; } }
+.hfaw-well { background: var(--ifm-color-emphasis-100); border-left: 4px solid #F36C21; border-radius: 12px; padding: 20px 24px; margin: 0 0 2rem; font-size: 0.95rem; }
+.hfaw-well .well-title { display:block; font-weight:800; font-size: 1rem; margin-bottom: 8px; }
+.hfaw-well p { margin: 0 0 0.75rem; }
+.hfaw-well p:last-child { margin-bottom: 0; }
+`}</style>
 
 Open source government projects generally do not die from a lack of code. They die from governance. And the part that genuinely puzzles me: they die while everyone involved is doing their honest best.
 
@@ -26,6 +38,15 @@ You know the two-wolves meme. Inside every governmental open source project live
 The code wolf is a hacker at heart. It wants to ship this week, it improvises, it builds the cool thing at two in the morning because the idea would not let go. Its culture is craft and trust among peers; its stakes are personal: reputation, and the joy of the work itself. Everything you love about open source came out of this wolf's fire, and fire is by nature unpredictable. There is no innovation without risk. Jeff Bezos put it in his [2015 shareholder letter](https://s2.q4cdn.com/299287126/files/doc_financials/annual/2015-Letter-to-Shareholders.PDF) as "failure and invention are inseparable twins", and the numbers agree: Harvard's Shikhar Ghosh followed more than 2,000 venture-backed companies and found that [three out of four never return their investors' money](https://www.hbs.edu/news/Pages/item.aspx?num=487). That is what healthy innovation looks like from the outside. Mostly failure, occasionally magic.
 
 The policy wolf did not choose to be dull, and it does not want to be. Its stakes are simply different: public money, political accountability, and a press with a fixed preference, because no wolf has ever made the media for a project well done, while a failed one is front-page news. So the policy wolf learns to prize predictability. It wants to be able to explain, eighteen months from now, why nothing that went wrong came as a surprise. Within its own walls, that is wisdom.
+
+<div className="hex-grid">
+  <HexCard title="The code wolf" icon="balloon">
+    Ship this week. Trust among peers. Three out of four attempts may fail, because the fourth is the magic. Its fire is the only reason any of this exists.
+  </HexCard>
+  <HexCard title="The policy wolf" icon="key">
+    Explain, eighteen months from now, why nothing was a surprise. Public money, public scrutiny. Predictability is the product, and within its own walls that is wisdom.
+  </HexCard>
+</div>
 
 Put them in one room and they hurt each other without meaning to. The code wolf's improvisation gives the policy wolf a heart attack, because on paper, unplanned brilliance is indistinguishable from unmanaged risk. And the policy wolf's predictability smothers the code wolf's fire, because a culture where three out of four attempts are not allowed to fail is a culture where nothing new gets attempted. The whole art of public open source is getting these two to work together, and hardly anyone manages it. The interesting question is why.
 
@@ -43,7 +64,19 @@ The hopeful part: Nixpkgs itself is fine. The packages still get reviewed, the b
 
 Battlestar Galactica had a liturgy for it: all of this has happened before, and all of this will happen again. Europe keeps launching sovereign infrastructure vehicles, and as [one observer on X noted while listing them](https://x.com/_billiambennett/status/2074156226502435237), from Theseus through Bull and the European Processor Initiative to Gaia-X, there is "surprisingly little public conversation on the past failure modes".
 
-**Gaia-X** was built by believers. Its former CEO Francesco Bonfiglio [said it himself](https://www.politico.eu/article/anatomy-franco-german-tech-misfire-american-dependence/): "I joined Gaia-X because I believed in the original mission. I left Gaia-X because I didn't believe it was going in the original direction." Announced in 2019 with sincere Franco-German backing, it grew past 320 members, admitted Microsoft, Google, Amazon, Huawei, Alibaba and Palantir as full members, and within sixteen months [Politico had a dozen insiders describing infighting and postponed deadlines](https://www.politico.eu/article/chaos-and-infighting-are-killing-europes-grand-cloud-project/). Frank Karlitschek of Nextcloud put it mildly: "There's too many cooks in the kitchen." Bonfiglio ended up describing his own job as "the CEO of a consensus-based organization where consensus couldn't be achieved most of the time". [Seven years in, Gaia-X has built no data centre and sells no cloud service](https://en.ilsole24ore.com/art/europes-big-bet-on-the-cloud-remains-without-a-data-centre-AInU9xxD); it produces labels, frameworks and what Bert Hubert called ["standards for talking about standards"](https://berthub.eu/articles/posts/gaia-x-is-an-expensive-distraction/). No villains required. Give sincere people a consensus structure with 320 conflicting interests, and consensus is what they will spend their years producing instead of software.
+<div className="hfaw-split">
+<div>
+
+**Gaia-X** was built by believers. Its former CEO Francesco Bonfiglio [said it himself](https://www.politico.eu/article/anatomy-franco-german-tech-misfire-american-dependence/): "I joined Gaia-X because I believed in the original mission. I left Gaia-X because I didn't believe it was going in the original direction." Announced in 2019 with sincere Franco-German backing, it grew past 320 members, and within sixteen months [Politico had a dozen insiders describing infighting and postponed deadlines](https://www.politico.eu/article/chaos-and-infighting-are-killing-europes-grand-cloud-project/). Frank Karlitschek of Nextcloud put it mildly: "There's too many cooks in the kitchen." Bonfiglio ended up describing his own job as "the CEO of a consensus-based organization where consensus couldn't be achieved most of the time". No villains required. Give sincere people a consensus structure with 320 conflicting interests, and consensus is what they will spend their years producing instead of software.
+
+</div>
+<aside className="hfaw-well">
+<span className="well-title">Gaia-X, seven years in</span>
+
+More than 320 members, with Microsoft, Google, Amazon, Huawei, Alibaba and Palantir admitted as full members of Europe's sovereignty project. [Zero data centres built, zero cloud services sold](https://en.ilsole24ore.com/art/europes-big-bet-on-the-cloud-remains-without-a-data-centre-AInU9xxD). Deliverables: labels, frameworks, and what Bert Hubert called ["standards for talking about standards"](https://berthub.eu/articles/posts/gaia-x-is-an-expensive-distraction/).
+
+</aside>
+</div>
 
 <PullQuote attribution="Francesco Bonfiglio" role="former CEO, Gaia-X">
   I joined Gaia-X because I believed in the original mission. I left Gaia-X because I didn't believe it was going in the original direction.
@@ -63,7 +96,25 @@ Why can the two wolves not simply work together? Because each of them is right, 
 
 What the two cannot do is share one programme, and it is in neither's interest to ask the other to bend. Try it anyway and you get the worst of both worlds: experts who report instead of build, and administrators accountable for a process they cannot actually steer. One interviewee in that advisory put it in a single line: if you don't have the culture, you can't join. Someone arriving from an accountability culture has the will and the knowledge, and still misses the assumptions underneath. They go looking for a steering group where a pull request is the answer. Money does not close the gap either; I have watched a government rebuild with three times the community's budget sink anyway, because it was welded to the wrong context.
 
-There is an unsettling historical mirror for all of this. In 1944 the OSS, the CIA's predecessor, wrote the [Simple Sabotage Field Manual](https://www.gutenberg.org/ebooks/26184): instructions for ordinary citizens to quietly wreck enemy organisations from the inside. Its recipes: talk as frequently as possible and at great length. Refer all matters to committees, never fewer than five people. Haggle over precise wordings. Refer back to matters decided upon at the last meeting. Multiply the procedures and clearances involved in every instruction. Declassified in 2008, it reads, [as Corporate Rebels observed](https://www.corporate-rebels.com/blog/cia-field-manual), like the agenda of an average organisation, and it points at the claim hiding under this whole post: **bad governance is indistinguishable from sabotage**. Not because anyone means harm. The manual's genius was that sabotage should look exactly like conscientious management, and the mirror works the other way around too: conscientious management, applied to the wrong culture, does the saboteur's work for free. And that nobody means harm makes it so much harder to spot. A real saboteur can be caught; there is intent, a trail, somewhere a tell. When the same behaviour comes from sincere people doing defensible things, there is nothing to unmask and no line anyone crossed. Just a project that gets a little slower every quarter, and a room full of people who all, verifiably, did their jobs.
+<div className="hfaw-split">
+<div>
+
+There is an unsettling historical mirror for all of this. In 1944 the OSS, the CIA's predecessor, wrote the [Simple Sabotage Field Manual](https://www.gutenberg.org/ebooks/26184): instructions for ordinary citizens to quietly wreck enemy organisations from the inside. Declassified in 2008, it reads, [as Corporate Rebels observed](https://www.corporate-rebels.com/blog/cia-field-manual), like the agenda of an average organisation, and it points at the claim hiding under this whole post: **bad governance is indistinguishable from sabotage**. Not because anyone means harm. The manual's genius was that sabotage should look exactly like conscientious management, and the mirror works the other way around too: conscientious management, applied to the wrong culture, does the saboteur's work for free. And that nobody means harm makes it so much harder to spot. A real saboteur can be caught; there is intent, a trail, somewhere a tell. When the same behaviour comes from sincere people doing defensible things, there is nothing to unmask and no line anyone crossed. Just a project that gets a little slower every quarter, and a room full of people who all, verifiably, did their jobs.
+
+</div>
+<aside className="hfaw-well">
+<span className="well-title">The saboteur's checklist, 1944</span>
+
+From the [Simple Sabotage Field Manual](https://www.gutenberg.org/ebooks/26184), written for citizens wrecking enemy organisations from the inside:
+
+- Talk as frequently as possible and at great length.
+- Refer all matters to committees, never fewer than five people.
+- Haggle over precise wordings.
+- Refer back to matters decided upon at the last meeting.
+- Multiply the procedures and clearances involved in every instruction.
+
+</aside>
+</div>
 
 Governance without players is a referee on an empty field. And the sad part of that picture is that everyone in the stadium wants the same match: the officials refining the VAR protocol want a fair game, the referee is in position, the audience is still cheering. But the players slipped away, because the fun went out of the game somewhere between the third committee and the fourth postponed deadline. Every story above ends on that image, and nobody in any of them wanted it.
 
@@ -77,11 +128,26 @@ The encouraging news is that the answer does not require anyone to change cultur
 
 Fund the people who already do the work, without attaching control rights, because a funding line with a board seat creates the same dual power structure Nix just watched fail. Open procurement to the amateur clubs, the community projects and small vendors that actually have players on the pitch, instead of writing it for clubs with a licensed stadium and a legal department. Accept that rough consensus among active contributors is a legitimate way to decide things, even though no auditor will ever love it. And build your own capacity to consume, package and adapt the software, because that is the part you can run in your own culture, with your own accountability. Sécurix is the living proof: France did not ask for a seat on any Nix board, it took the project as it is and built its hardening on top. The community keeps its trust. The government keeps its predictability. Both wolves eat.
 
-Someone on X [compressed the same lesson into four words](https://x.com/meghanatweets/status/2066593382164468020): "Don't crown. Layer." Every failure above began with a coronation and a press release. Every quiet success, from Sécurix to [SURF's 100,000-user Nextcloud rollout](/academy/opinion/government-open-source-needs-an-engine), began with a layer.
+Someone on X [compressed the same lesson into four words](https://x.com/meghanatweets/status/2066593382164468020): "Don't crown. Layer." Every failure above began with a coronation and a press release. Every quiet success, from Sécurix to [SURF's 100,000-user Nextcloud rollout](/academy/blog/government-open-source-needs-an-engine), began with a layer.
+
+<div className="hfaw-split">
+<div>
 
 Most policy ends its life in a drawer, and that is fine; drawers are where policy retires. What must not go into the drawer with it is our open source future: the maintainers who burned out waiting for a mandate, the projects that spent their best years in committee. The people who still care about the technical work are the one asset no structure can produce. Everything worth doing in open source governance starts with protecting them.
 
 Fund the work. Trust the people doing it. Keep the players on the field.
+
+</div>
+<div>
+
+<Outcomes title="What you can do on Monday">
+  <Outcome>Find the community project your organisation quietly depends on and fund a maintainer, without asking for a board seat in return.</Outcome>
+  <Outcome>Rewrite one procurement requirement so a small vendor or a community without a legal department can actually bid.</Outcome>
+  <Outcome>Take one decision away from the steering group and give it to the people doing the work. Watch what breaks. Nothing will.</Outcome>
+</Outcomes>
+
+</div>
+</div>
 
 ## Sources
 
