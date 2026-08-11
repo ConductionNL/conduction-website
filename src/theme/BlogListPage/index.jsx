@@ -212,12 +212,20 @@ function postApps(post) {
   return post.content.metadata.frontMatter?.apps || [];
 }
 
+/* Opinion pieces ARE blogs to the reader: the Blogs chip matches both
+   `blog` and `opinion`, while the Opinions chip narrows to opinion only. */
+function typeMatches(postType, activeType) {
+  if (activeType === 'blog') return postType === 'blog' || postType === 'opinion';
+  return postType === activeType;
+}
+
 function countsByType(posts) {
   const counts = {};
   for (const post of posts) {
     const ct = post.content.metadata.frontMatter?.contentType;
     if (ct) counts[ct] = (counts[ct] || 0) + 1;
   }
+  counts.blog = (counts.blog || 0) + (counts.opinion || 0);
   return counts;
 }
 
@@ -283,7 +291,7 @@ function AcademyLandingInner({items}) {
   const typeCounts = useMemo(() => countsByType(items), [items]);
   const itemsAfterType = useMemo(
     () => active.type
-      ? items.filter((p) => p.content.metadata.frontMatter?.contentType === active.type)
+      ? items.filter((p) => typeMatches(p.content.metadata.frontMatter?.contentType, active.type))
       : items,
     [items, active.type],
   );
