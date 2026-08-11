@@ -228,6 +228,9 @@ module.exports = createConfig({
     /* INTERIM: Hermiq glyph override until the preset can publish to npm
        again (trusted publishing not configured). See the plugin header. */
     require.resolve('./plugins/hermiq-glyph-interim'),
+    /* INTERIM: apps-registry descriptions + AppCrossLinks description
+       rendering until the preset ships both. See the plugin header. */
+    require.resolve('./plugins/apps-registry-interim'),
     // [
     //   '@conduction/docusaurus-plugin-opencatalogi',
     //   {
