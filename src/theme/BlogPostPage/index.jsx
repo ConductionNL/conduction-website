@@ -120,6 +120,66 @@ function panelToneFor(contentType) {
   }
 }
 
+/* Configurable post hero.
+ *
+ * The header at the top of an academy detail page used to be hardcoded off
+ * `contentType`. It is now selectable per post through frontmatter, with the
+ * old contentType mapping kept as the default — a post that sets none of
+ * these keys renders exactly what it rendered before.
+ *
+ *   hero:         featured | detail | webinar | none
+ *   heroTone:     cobalt | cobalt-dark | cobalt-deep | cobalt-50 | mint | orange
+ *   heroIcon:     guide | case-study | webinar | tutorial | blog
+ *   heroImage:    site-absolute path or absolute URL; replaces the hex icon
+ *   heroImageAlt: alt text for heroImage (decorative when omitted)
+ *   heroEyebrow:  overrides the eyebrow label on the `featured` variant
+ *   heroAccent:   orange | cobalt — `featured` variant only
+ *
+ * Unrecognised values warn at build time and fall back to the default, the
+ * same contract the `ai` key follows above.
+ */
+const HERO_VARIANTS = ['featured', 'detail', 'webinar', 'none'];
+const HERO_TONES = [
+  'cobalt', 'cobalt-dark', 'cobalt-deep', 'cobalt-50', 'mint', 'orange',
+];
+const HERO_ACCENTS = ['orange', 'cobalt'];
+
+/**
+ * Warn once about an unrecognised frontmatter value and return the fallback.
+ */
+function warnUnknown(key, value, permalink, fallback) {
+  if (typeof console !== 'undefined') {
+    console.warn(
+      `Unknown "${key}" frontmatter value "${value}" on ${permalink}; falling back to "${fallback}".`,
+    );
+  }
+  return fallback;
+}
+
+/**
+ * Resolve which hero a post renders.
+ *
+ * Explicit `hero:` wins; otherwise the historical contentType mapping applies
+ * (a webinar with a usable YouTube URL gets the video hero, opinion pieces get
+ * the featured card, everything else the detail hero). `webinar` degrades to
+ * `detail` when no YouTube id can be extracted, so a mistyped videoUrl shows
+ * a normal header rather than an empty player.
+ */
+function resolveHeroVariant(frontMatter, videoId, permalink) {
+  const requested = frontMatter.hero;
+  let variant;
+  if (requested === undefined || requested === null) {
+    variant = (frontMatter.contentType === 'webinar' && videoId) ? 'webinar'
+      : frontMatter.contentType === 'opinion' ? 'featured'
+        : 'detail';
+  } else if (HERO_VARIANTS.includes(requested)) {
+    variant = requested;
+  } else {
+    variant = warnUnknown('hero', requested, permalink, 'detail');
+  }
+  return variant === 'webinar' && !videoId ? 'detail' : variant;
+}
+
 /**
  * Map a Docusaurus blog post metadata object onto ContentCard props.
  * Used for the prev/next paginator on the bottom of detail pages.
@@ -179,6 +239,25 @@ function BlogPostPageContent({children}) {
     '/academy/' + (frontMatter.contentType ? '?type=' + frontMatter.contentType : ''),
   );
 
+  /* Hero configuration, resolved before heroProps so the cover can be built
+     from it. useBaseUrl is a hook, so it runs unconditionally and gets a
+     harmless placeholder when no heroImage is set; it passes absolute URLs
+     through untouched. */
+  const heroImageSrc = useBaseUrl(frontMatter.heroImage || '/');
+  const heroTone = frontMatter.heroTone === undefined
+    ? 'cobalt'
+    : HERO_TONES.includes(frontMatter.heroTone)
+      ? frontMatter.heroTone
+      : warnUnknown('heroTone', frontMatter.heroTone, metadata.permalink, 'cobalt');
+  const heroAccent = frontMatter.heroAccent === undefined
+    ? 'orange'
+    : HERO_ACCENTS.includes(frontMatter.heroAccent)
+      ? frontMatter.heroAccent
+      : warnUnknown('heroAccent', frontMatter.heroAccent, metadata.permalink, 'orange');
+  const heroCover = frontMatter.heroImage
+    ? {src: heroImageSrc, alt: frontMatter.heroImageAlt || ''}
+    : {icon: defaultIconFor(frontMatter.heroIcon || frontMatter.contentType), tone: heroTone};
+
   const author = metadata.authors && metadata.authors[0];
   const heroProps = {
     crumb: [
@@ -197,44 +276,43 @@ function BlogPostPageContent({children}) {
     duration: metadata.readingTime
       ? Math.max(1, Math.round(metadata.readingTime)) + ' min read'
       : null,
-    cover: {
-      icon: defaultIconFor(frontMatter.contentType),
-      tone: 'cobalt',
-    },
+    cover: heroCover,
   };
 
-  const webinarVideoId = frontMatter.contentType === 'webinar'
-    ? youTubeId(frontMatter.videoUrl)
-    : null;
+  const webinarVideoId = youTubeId(frontMatter.videoUrl);
+  const heroVariant = resolveHeroVariant(
+    frontMatter,
+    webinarVideoId,
+    metadata.permalink,
+  );
 
   const related = [postMetaToCardProps(prevItem), postMetaToCardProps(nextItem)]
     .filter(Boolean);
 
   return (
     <Section spacing="default">
-      {webinarVideoId
-        ? (
-          <WebinarHero
-            {...heroProps}
-            videoEmbedUrl={`https://www.youtube.com/embed/${webinarVideoId}`}
-            videoTitle={heroProps.title}
-          />
-        )
-        : frontMatter.contentType === 'opinion'
-          ? (
-            <FeaturedCard
-              eyebrow={frontMatter.contentType}
-              title={heroProps.title}
-              lede={heroProps.summary}
-              ctaLabel=""
-              author={heroProps.author}
-              date={heroProps.date}
-              contentType={frontMatter.contentType}
-              durationMinutes={frontMatter.durationMinutes}
-              thumbnail={heroProps.cover}
-            />
-          )
-          : <ContentDetailHero {...heroProps} />}
+      {heroVariant === 'webinar' && (
+        <WebinarHero
+          {...heroProps}
+          videoEmbedUrl={`https://www.youtube.com/embed/${webinarVideoId}`}
+          videoTitle={heroProps.title}
+        />
+      )}
+      {heroVariant === 'featured' && (
+        <FeaturedCard
+          eyebrow={frontMatter.heroEyebrow ?? frontMatter.contentType}
+          title={heroProps.title}
+          lede={heroProps.summary}
+          ctaLabel=""
+          author={heroProps.author}
+          date={heroProps.date}
+          contentType={frontMatter.contentType}
+          durationMinutes={frontMatter.durationMinutes}
+          thumbnail={heroProps.cover}
+          accent={heroAccent}
+        />
+      )}
+      {heroVariant === 'detail' && <ContentDetailHero {...heroProps} />}
 
       <div className={`content-detail-body ${styles.body}`}>
         {aiKind && (
