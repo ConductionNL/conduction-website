@@ -53,6 +53,7 @@ const AI_MARK_COPY = {
   },
 };
 import WebinarHero from '@site/src/components/WebinarHero/WebinarHero';
+import {glyphFor} from './heroGlyphs';
 import styles from './styles.module.css';
 
 /**
@@ -64,6 +65,27 @@ function youTubeId(url) {
   const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]{6,})/);
   return m ? m[1] : null;
 }
+
+/**
+ * Resolve the hero glyph for a post.
+ *
+ * A `heroIcon` naming an entry in ./heroGlyphs wins. The five contentType
+ * names still resolve, so `heroIcon: tutorial` keeps working. Anything else
+ * warns at build time and falls back to the contentType icon, which means a
+ * typo shows the old generic glyph rather than an empty hex.
+ */
+function heroIconFor(heroIcon, contentType, permalink) {
+  const named = glyphFor(heroIcon);
+  if (named) return named;
+  if (heroIcon && !CONTENT_TYPE_ICONS.includes(heroIcon)) {
+    warnUnknown('heroIcon', heroIcon, permalink, contentType || 'blog');
+  }
+  return defaultIconFor(heroIcon && CONTENT_TYPE_ICONS.includes(heroIcon)
+    ? heroIcon
+    : contentType);
+}
+
+const CONTENT_TYPE_ICONS = ['guide', 'case-study', 'webinar', 'tutorial', 'blog'];
 
 function defaultIconFor(contentType) {
   const stroke = {strokeWidth: 1.6, fill: 'none', stroke: 'currentColor'};
@@ -129,7 +151,9 @@ function panelToneFor(contentType) {
  *
  *   hero:         featured | detail | webinar | none
  *   heroTone:     cobalt | cobalt-dark | cobalt-deep | cobalt-50 | mint | orange
- *   heroIcon:     guide | case-study | webinar | tutorial | blog
+ *   heroIcon:     a name from ./heroGlyphs (wolf, pipeline, vault, …), or one
+ *                 of the contentType icons (guide | case-study | webinar |
+ *                 tutorial | blog)
  *   heroImage:    site-absolute path or absolute URL; replaces the hex icon
  *   heroImageAlt: alt text for heroImage (decorative when omitted)
  *   heroEyebrow:  overrides the eyebrow label on the `featured` variant
@@ -198,7 +222,9 @@ function postMetaToCardProps(meta) {
     date: meta.date,
     tags: (meta.tags || []).slice(0, 2).map((t) => t.label || t),
     thumbnail: {
-      icon: defaultIconFor(fm.contentType),
+      /* Same glyph the post's own hero uses, so a card and the page it links
+         to agree. No warning here — the post's own page already emits one. */
+      icon: glyphFor(fm.heroIcon) || defaultIconFor(fm.contentType),
       panelTone: panelToneFor(fm.contentType),
     },
   };
@@ -256,7 +282,10 @@ function BlogPostPageContent({children}) {
       : warnUnknown('heroAccent', frontMatter.heroAccent, metadata.permalink, 'orange');
   const heroCover = frontMatter.heroImage
     ? {src: heroImageSrc, alt: frontMatter.heroImageAlt || ''}
-    : {icon: defaultIconFor(frontMatter.heroIcon || frontMatter.contentType), tone: heroTone};
+    : {
+      icon: heroIconFor(frontMatter.heroIcon, frontMatter.contentType, metadata.permalink),
+      tone: heroTone,
+    };
 
   const author = metadata.authors && metadata.authors[0];
   const heroProps = {
