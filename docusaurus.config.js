@@ -225,6 +225,9 @@ module.exports = createConfig({
       require.resolve('./plugins/academy-modules'),
       {contentDir: 'academy', routeBasePath: '/academy'},
     ],
+    /* INTERIM: Hermiq glyph override until the preset can publish to npm
+       again (trusted publishing not configured). See the plugin header. */
+    require.resolve('./plugins/hermiq-glyph-interim'),
     // [
     //   '@conduction/docusaurus-plugin-opencatalogi',
     //   {
