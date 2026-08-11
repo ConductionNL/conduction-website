@@ -220,6 +220,9 @@ function BlogPostPageContent({children}) {
             videoTitle={heroProps.title}
           />
         )
+        /* `opinion` is deprecated (2026-08-11) — every post was retyped to
+           `blog`; the array tolerates stragglers so an old habit never
+           costs a post its hero. */
         : ['opinion', 'blog'].includes(frontMatter.contentType)
           ? (
             <FeaturedCard
