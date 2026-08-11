@@ -220,7 +220,7 @@ function BlogPostPageContent({children}) {
             videoTitle={heroProps.title}
           />
         )
-        : frontMatter.contentType === 'opinion'
+        : ['opinion', 'blog'].includes(frontMatter.contentType)
           ? (
             <FeaturedCard
               eyebrow={frontMatter.contentType}
