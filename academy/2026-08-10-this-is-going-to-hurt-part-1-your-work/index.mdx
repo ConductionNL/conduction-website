@@ -1,7 +1,7 @@
 ---
-slug: opinion/this-is-going-to-hurt-part-1-your-work
+slug: blog/this-is-going-to-hurt-part-1-your-work
 title: "This is going to hurt. Part 1: you are the horse"
-contentType: opinion
+contentType: blog
 authors: [ruben]
 date: 2026-08-10
 summary: "After every AI talk the same question comes up: how f*cked are we? For your daily work the honest answer is: more than you want to hear, less than you fear. The change runs ten times faster than your gut expects, the stock market has already marked down the software you use every day, and the first thing to go is not your job but the tasks inside it."
@@ -18,6 +18,7 @@ import {
   Outcome,
   AppCrossLinks,
 } from '@conduction/docusaurus-preset/components';
+import VideoEmbed from '@site/src/components/VideoEmbed';
 
 <style>{`
 .hfaw-chart { --chart-c1:#3560B2; --chart-c2:#F36C21; --chart-c3:#0082C9; margin: 2rem 0; }
@@ -38,19 +39,23 @@ html[data-theme='dark'] .hfaw-chart { --chart-c1:#6E8FD0; --chart-c2:#E8641B; --
 .hfaw-series span.cur { background:#F36C21; color:#fff; font-weight:700; }
 .hfaw-series b { font-weight:700; opacity:0.55; font-variant-numeric:tabular-nums; }
 .hfaw-series span.cur b { opacity:0.9; }
+.hfaw-well { background: var(--ifm-color-emphasis-100); border-left: 4px solid #F36C21; border-radius: 12px; padding: 20px 24px; margin: 0 0 2rem; font-size: 0.95rem; }
+.hfaw-well .well-title { display:block; font-weight:800; font-size: 1rem; margin-bottom: 8px; }
+.hfaw-well p { margin: 0 0 0.75rem; }
+.hfaw-well p:last-child { margin-bottom: 0; }
 `}</style>
 
-How f\*cked are we? I get that question after every AI talk now, in exactly those words, from developers and directors alike. It deserves a better answer than a shrug or a sales pitch, so I am writing that talk, "This is going to hurt", out as six posts: your work, [the money](/academy/opinion/this-is-going-to-hurt-part-2-the-big-three), [what we still own](/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership), [security at machine speed](/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed), [the singularity](/academy/opinion/this-is-going-to-hurt-part-5-the-singularity), and [how we get our grip back](/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help).
+How f\*cked are we? I get that question after every AI talk now, in exactly those words, from developers and directors alike. It deserves a better answer than a shrug or a sales pitch, so I am writing that talk, "This is going to hurt", out as six posts: your work, [the money](/academy/blog/this-is-going-to-hurt-part-2-the-big-three), [what we still own](/academy/blog/this-is-going-to-hurt-part-3-the-end-of-ownership), [security at machine speed](/academy/blog/this-is-going-to-hurt-part-4-security-at-machine-speed), [the singularity](/academy/blog/this-is-going-to-hurt-part-5-the-singularity), and [how we get our grip back](/academy/blog/this-is-going-to-hurt-part-6-actually-it-might-help).
 
 {/* truncate */}
 
 <nav className="hfaw-series" aria-label="Series: This is going to hurt">
 <span className="cur"><b>1</b> your work</span>
-<a href="/academy/opinion/this-is-going-to-hurt-part-2-the-big-three"><b>2</b> the big three</a>
-<a href="/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership"><b>3</b> ownership</a>
-<a href="/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed"><b>4</b> security</a>
-<a href="/academy/opinion/this-is-going-to-hurt-part-5-the-singularity"><b>5</b> the singularity</a>
-<a href="/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help"><b>6</b> actually, it might help</a>
+<a href="/academy/blog/this-is-going-to-hurt-part-2-the-big-three"><b>2</b> the big three</a>
+<a href="/academy/blog/this-is-going-to-hurt-part-3-the-end-of-ownership"><b>3</b> ownership</a>
+<a href="/academy/blog/this-is-going-to-hurt-part-4-security-at-machine-speed"><b>4</b> security</a>
+<a href="/academy/blog/this-is-going-to-hurt-part-5-the-singularity"><b>5</b> the singularity</a>
+<a href="/academy/blog/this-is-going-to-hurt-part-6-actually-it-might-help"><b>6</b> actually, it might help</a>
 </nav>
 
 The honest answer starts with three history lessons and ends in the post-transition workplace. Let's start with the lesson that stings the most.
@@ -169,9 +174,19 @@ Sixty-six years separated Kitty Hawk from the Moon: one human lifetime spans the
 
 ## The robots already clocked in. The question is when you clock out
 
-The abstract version of this is easy to wave away. The concrete version is filming itself. Walk into an Albert Heijn after closing and a [Pudu cleaning robot is scrubbing the floor](https://www.linkedin.com/posts/pudurobotics_retail-puducc1-pudurobotics-activity-7322560227034177537-rkXR) that a person mopped last year. Amazon's warehouses now run [more than a million robots](https://www.youtube.com/watch?v=8-ESlUGAwGU); its Sparrow arm already handles about 65 percent of the distinct items it sells, and its newest machine, Blue Jay, does picking, stowing and consolidating in one unit. Waymo runs paid driverless taxis across several US cities. Your neighbour's lawn is cut by a robot that never asks for a Saturday. None of these is a demo reel from a lab; they are line items in operating budgets, filmed by amused shoppers and posted to TikTok.
+<div className="hfaw-split">
+<div>
 
+The abstract version of this is easy to wave away. The concrete version is filming itself. Walk into an Albert Heijn after closing and a [Pudu cleaning robot is scrubbing the floor](https://www.linkedin.com/posts/pudurobotics_retail-puducc1-pudurobotics-activity-7322560227034177537-rkXR) that a person mopped last year. Amazon's warehouses now run [more than a million robots](https://www.youtube.com/watch?v=8-ESlUGAwGU); its Sparrow arm already handles about 65 percent of the distinct items it sells, and its newest machine, Blue Jay, does picking, stowing and consolidating in one unit. Waymo runs paid driverless taxis across several US cities. Your neighbour's lawn is cut by a robot that never asks for a Saturday. None of these is a demo reel from a lab; they are line items in operating budgets, filmed by amused shoppers and posted to TikTok.
 The same pattern the horse showed repeats one layer down, in the physical world right now: the routine and predictable goes first, whether it is a mop, a picking arm or a steering wheel. And the risk is not spread evenly over jobs; study after study finds the same ranking.
+</div>
+<VideoEmbed
+  url="https://www.youtube.com/watch?v=8-ESlUGAwGU"
+  title="Amazon's multi-tasking warehouse robot"
+  caption="A million robots on the floor. Line items in an operating budget, not a demo reel."
+/>
+</div>
+
 
 <div className="hfaw-split">
 <div>
@@ -254,9 +269,23 @@ The businesses themselves were fine, and that is the part that matters for your 
 
 ## What adapted work already looks like
 
+<div className="hfaw-split">
+<div>
+
 You do not have to imagine the post-transition workplace; it already runs in production. Google studied [nine million of its own code reviews](https://x.com/milan_milanovic/status/2086702090722877833): the median change is 24 lines, most ship within a day, the median review takes under four hours, and 97 percent of its engineers are satisfied with the process. The machine does the mechanical checking before a human looks, and one rule holds the culture together: a reviewer cannot reject work without pointing at something specific to fix.
 
 The lesson travels far beyond code. The unit of work shrank until one person could hold it in their head, the machine took the mechanical part, and human judgement moved to the centre of a fast loop. Every profession has its version of the 900-line change; the teams that thrive learn to work in 24-line units, the model linting and a person judging.
+
+</div>
+<aside className="hfaw-well">
+<span className="well-title">How much of the code is already machine-written</span>
+
+At Google, [more than a quarter of all new code is generated by AI](https://www.theverge.com/2024/10/29/24282757/google-new-code-generated-ai-q3-earnings-call), then reviewed by engineers. Microsoft puts its own figure at [20 to 30 percent of repository code](https://www.cnbc.com/2025/04/29/satya-nadella-says-as-much-as-30percent-of-microsoft-code-is-written-by-ai.html). And in Y Combinator's winter 2025 batch, [a quarter of the startups shipped codebases that were about 95 percent AI-written](https://techcrunch.com/2025/03/06/a-quarter-of-startups-in-ycs-current-cohort-have-codebases-that-are-almost-entirely-ai-generated/).
+
+The engineers did not leave. They moved up a level, to the judging.
+
+</aside>
+</div>
 
 We run our own shop on that lesson. At Conduction, agents draft the small changes in our Nextcloud apps, a wall of mechanical gates checks the boilerplate, and nothing merges until a human has read the diff and can point at what is wrong. The unit of work shrank. The judgement stayed human.
 
@@ -266,6 +295,9 @@ The org chart is following. On the All-In podcast at Davos, Satya Nadella descri
 
 ## So how f\*cked are you?
 
+<div className="hfaw-split">
+<div>
+
 Less than you fear, sooner than you think. Horses did not vanish in 1916; the work shifted for forty years, and the cart drivers learned to drive the trucks. The difference between you and the horse is the whole point: the horse could not learn to drive. You can.
 
 What disappears first is not your job but the tasks inside it a model does in seconds, the first draft, the summary, the boilerplate. What appears is the work of directing, checking and owning the result. The people in trouble in 2027 are the ones whose entire role was the first draft.
@@ -274,13 +306,19 @@ The entry-level question deserves honesty: Anthropic's Dario Amodei [warned that
 
 A Flemish investor [summed up the corporate to-do list](https://x.com/nonkelpier/status/2086379479744627151): reassess every skillset, redesign every process, re-evaluate every system, back office first. He is right about the direction. What you actually do about it, as a person and not just as an employer, is where the rest of this series goes, and it ends better than this part.
 
+</div>
+<div>
+
 <Outcomes title="What you can do on Monday">
   <Outcome>Pick the most routine task in your week, let a model do it, and grade the result yourself. You are training the checker, and the checker is the job that stays.</Outcome>
   <Outcome>Split your role into tasks and mark which ones are first drafts. That list is your exposure, whatever your job title says.</Outcome>
   <Outcome>Shrink one piece of work to a 24-line unit: small enough to hold in your head, finished within a day.</Outcome>
 </Outcomes>
 
-*Next, [part two](/academy/opinion/this-is-going-to-hurt-part-2-the-big-three): the industry selling you all this carries two trillion dollars of conviction, and the ground beneath it is already moving.*
+</div>
+</div>
+
+*Next, [part two](/academy/blog/this-is-going-to-hurt-part-2-the-big-three): the industry selling you all this carries two trillion dollars of conviction, and the ground beneath it is already moving.*
 
 <div style={{margin: '64px 0'}}>
   <AppCrossLinks
@@ -309,4 +347,7 @@ A Flemish investor [summed up the corporate to-do list](https://x.com/nonkelpier
 14. **US Census Bureau**. [Historical Statistics of the United States, Colonial Times to 1970](https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html). The horses-and-mules-on-farms series behind the first chart, with automobile registrations from the FHWA historical tables.
 15. **PwC**. [Helft Nederlandse banen verandert significant door generatieve AI](https://www.pwc.nl/nl/actueel-en-publicaties/themas/de-toekomst-van-werk/helft-nederlandse-banen-verandert-significant-door-generatieve-ai.html). The Dutch half-of-jobs estimate.
 16. **UWV, via ICT Magazine**. [AI bedreigt baankansen in creatieve en klantcontactsector](https://www.ictmagazine.nl/nieuws/uwv-ai-bedreigt-baankansen-in-creatieve-en-klantcontactsector/). Administrative and secretarial work as the biggest Dutch risk group.
-17. **Conduction ConNext**. "This is going to hurt" (2026 talk). The slide deck behind this series. The adoption spans, the telegraph timeline and the horse-and-automobile series are standard historical approximations assembled for the talk; the monthly shape of the SaaS drawdown chart is reconstructed from the reported peaks and troughs.
+17. **The Verge**. [Google says more than a quarter of its new code is generated by AI](https://www.theverge.com/2024/10/29/24282757/google-new-code-generated-ai-q3-earnings-call). Pichai's Q3 2024 earnings-call figure.
+18. **CNBC**. [Nadella: as much as 30 percent of Microsoft code is written by AI](https://www.cnbc.com/2025/04/29/satya-nadella-says-as-much-as-30percent-of-microsoft-code-is-written-by-ai.html). The Microsoft repository figure, April 2025.
+19. **TechCrunch**. [A quarter of YC's current cohort have codebases that are almost entirely AI-generated](https://techcrunch.com/2025/03/06/a-quarter-of-startups-in-ycs-current-cohort-have-codebases-that-are-almost-entirely-ai-generated/). The winter 2025 batch, per Garry Tan.
+20. **Conduction ConNext**. "This is going to hurt" (2026 talk). The slide deck behind this series. The adoption spans, the telegraph timeline and the horse-and-automobile series are standard historical approximations assembled for the talk; the monthly shape of the SaaS drawdown chart is reconstructed from the reported peaks and troughs.

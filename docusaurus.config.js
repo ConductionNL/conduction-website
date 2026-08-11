@@ -253,6 +253,18 @@ module.exports = createConfig({
              final slug, no chains. */
           {from: '/academy/governance-open-source-nix-implosion', to: '/academy/opinion/feed-the-wolf-that-ships'},
           {from: '/academy/opinion/governance-is-the-silent-killer-of-open-source', to: '/academy/opinion/feed-the-wolf-that-ships'},
+          /* "This is going to hurt" reclassified from opinion to blog
+             (2026-08-11). The six parts shipped at /academy/opinion/… on
+             2026-08-10 and were live for a day, so every old URL points at
+             its new /academy/blog/ address. /academy/blog/ itself is a
+             static stub → /academy/?type=blog (see static/academy/blog/,
+             same pattern as static/academy/opinion/). */
+          {from: '/academy/opinion/this-is-going-to-hurt-part-1-your-work', to: '/academy/blog/this-is-going-to-hurt-part-1-your-work'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-2-the-big-three', to: '/academy/blog/this-is-going-to-hurt-part-2-the-big-three'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership', to: '/academy/blog/this-is-going-to-hurt-part-3-the-end-of-ownership'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed', to: '/academy/blog/this-is-going-to-hurt-part-4-security-at-machine-speed'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-5-the-singularity', to: '/academy/blog/this-is-going-to-hurt-part-5-the-singularity'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help', to: '/academy/blog/this-is-going-to-hurt-part-6-actually-it-might-help'},
           /* All opinion posts moved under /academy/opinion/ (2026-08-10).
              Keep the published URLs working. /academy/opinion/ itself is a
              static stub → /academy/?type=opinion (see static/academy/opinion/,
