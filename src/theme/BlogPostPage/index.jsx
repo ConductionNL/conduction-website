@@ -20,7 +20,7 @@ import React from 'react';
 import clsx from 'clsx';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import {HtmlClassNameProvider, ThemeClassNames} from '@docusaurus/theme-common';
+import {HtmlClassNameProvider, ThemeClassNames, useColorMode} from '@docusaurus/theme-common';
 import {
   BlogPostProvider,
   useBlogPost,
@@ -42,16 +42,22 @@ import {
    a byline-subtle mark linking to /ai). */
 const AI_MARK_COPY = {
   en: {
-    generated: 'This page was generated with AI.',
-    modified: 'This page was partially modified with AI.',
-    assisted: 'This page was written with AI assistance.',
+    generated: 'This page was generated with AI. Read what that means and how Conduction uses AI.',
+    modified:
+      'This page was partially modified with AI. Read what that means and how Conduction uses AI.',
+    assisted:
+      'This page was written using AI assistance, for example for spelling and research. Read what that means and how Conduction uses AI.',
   },
   nl: {
-    generated: 'Deze pagina is gegenereerd met AI.',
-    modified: 'Deze pagina is gedeeltelijk aangepast met AI.',
-    assisted: 'Deze pagina is geschreven met hulp van AI.',
+    generated:
+      'Deze pagina is gegenereerd met AI. Lees wat dat betekent en hoe Conduction AI gebruikt.',
+    modified:
+      'Deze pagina is gedeeltelijk aangepast met AI. Lees wat dat betekent en hoe Conduction AI gebruikt.',
+    assisted:
+      'Deze pagina is geschreven met hulp van AI, bijvoorbeeld voor spelling en onderzoek. Lees wat dat betekent en hoe Conduction AI gebruikt.',
   },
 };
+
 import WebinarHero from '@site/src/components/WebinarHero/WebinarHero';
 import {glyphFor} from './heroGlyphs';
 import styles from './styles.module.css';
@@ -254,10 +260,25 @@ function BlogPostPageContent({children}) {
   const aiCopy = aiKind
     ? (AI_MARK_COPY[aiLocale] || AI_MARK_COPY.en)[aiKind]
     : null;
+  /* The Commission's own mark, in its black/white transparent treatments.
+     A brand-grey hexagon was tried here and reverted: at byline size the
+     grey-on-white container plus knocked-out letterforms lost too much
+     contrast to read. The official mark is darker, higher-contrast and
+     already familiar, which is the whole point of a disclosure. */
+  /* ONE <img>, chosen in JS rather than two rendered and one hidden in CSS.
+     The previous approach shipped both treatments and hid one with a
+     `display: none` that lost on specificity to the sizing rule below it, so
+     both rendered. That is not merely a duplicate: the file names mislead.
+     `*-black-transparent.svg` is a half-opacity BLACK disc with WHITE
+     letters, while `*-white-transparent.svg` is a half-opacity white disc
+     with near-black (#1d1d1b) letters — so on a light page the "white" mark
+     shows up as a second set of dark AI letters beside the first. Rendering
+     one element makes the failure structurally impossible. */
+  const {colorMode} = useColorMode();
   const aiIconBase =
     {generated: 'ai-generated', modified: 'ai-modified', assisted: 'ai'}[aiKind] || 'ai';
-  const aiIconLight = useBaseUrl(`/img/ai-disclosure/${aiIconBase}-black-transparent.svg`);
-  const aiIconDark = useBaseUrl(`/img/ai-disclosure/${aiIconBase}-white-transparent.svg`);
+  const aiTreatment = colorMode === 'dark' ? 'white' : 'black';
+  const aiIcon = useBaseUrl(`/img/ai-disclosure/${aiIconBase}-${aiTreatment}-transparent.svg`);
   const aiPageHref = useBaseUrl('/ai');
 
   const academyHref = useBaseUrl('/academy/');
@@ -346,8 +367,7 @@ function BlogPostPageContent({children}) {
       <div className={`content-detail-body ${styles.body}`}>
         {aiKind && (
           <a href={aiPageHref} className={styles.aiMark}>
-            <img src={aiIconLight} alt="" className={styles.aiMarkIconLight} />
-            <img src={aiIconDark} alt="" className={styles.aiMarkIconDark} />
+            <img src={aiIcon} alt="" className={styles.aiMarkIcon} />
             <span>{aiCopy}</span>
           </a>
         )}

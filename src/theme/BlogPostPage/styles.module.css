@@ -79,6 +79,10 @@
   text-decoration: underline;
 }
 
+/* One mark, its treatment chosen in JS (see index.jsx). There is no
+   light/dark pair to toggle here any more, which is deliberate: the pair
+   was hidden with a `display: none` that lost on specificity to this very
+   rule, so both treatments rendered at once. */
 .body .aiMark img {
   display: inline-block;
   height: 22px;
@@ -87,8 +91,3 @@
   border-radius: 0;
   box-shadow: none;
 }
-
-.aiMarkIconDark { display: none; }
-
-:global(html[data-theme='dark']) .aiMarkIconLight { display: none; }
-:global(html[data-theme='dark']) .aiMarkIconDark { display: inline-block; }
