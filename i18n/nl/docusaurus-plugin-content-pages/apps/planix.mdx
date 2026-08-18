@@ -1,10 +1,10 @@
 ---
 title: Planix, Conduction
-description: Flow-gebaseerd kanban project- en taakbeheer voor Nextcloud dev- en IT-teams. Borden, backlog, tijdregistratie, op gedeelde registers.
+description: Borden, backlog en uren voor teams die dingen bouwen en repareren, op je eigen Nextcloud. Een kolom houdt maar zoveel kaarten, dus het team maakt af voordat het begint. Beta.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -12,14 +12,15 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   appId="planix"
   crumb={[{label: 'Apps', href: '/apps'}, 'Planix']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.2"
+  version="v0.2.11"
   locales="NL · EN"
   title="Planix"
-  tagline={<>Flow-gebaseerd kanban project- en taakbeheer voor <span className="next-blue">Nextcloud</span> dev- en IT-teams. De kloof tussen de eenvoud van Deck en de complexiteit van Jira, gedicht.</>}
-  intro={<>Planix is een open-source kanban project- en taakbeheer-app voor de Nextcloud-workspace, gebouwd als thin client op OpenRegister. Het beheert projecten, taken, kanbanborden met WIP-limieten, backlogs en tijdregistraties — een gerichte workflow-tool voor interne dev- en IT-teams, ingebouwd in de Nextcloud-omgeving die ze al gebruiken voor bestanden, chat en agenda. Waar Nextcloud Deck geen backlogbeheer, geen tijdregistratie en geen WIP-limieten kent, dicht Planix die kloof zonder de complexiteit van Jira. Uitgegeven onder EUPL-1.2.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://planix.conduction.nl'}}
-  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/planix'}}
+  tagline={<>Borden, backlog en uren voor teams die dingen bouwen en repareren, op je eigen <span className="next-blue">Nextcloud</span>. Maak af voordat je begint.</>}
+  intro={<>Planix is een open-source projectbord voor het team dat je product bouwt of je systemen draaiende houdt. Elk project krijgt een bord met kolommen die jij kiest. Een kolom houdt maar zoveel kaarten, dus de zesde wacht en de bottleneck laat zichzelf zien. Ideeën gaan in de backlog, niet in iemands hoofd. De uren op de taak zijn aan het eind van de maand de uren per project. Gemaakt voor ontwikkel- en IT-teams, simpel genoeg voor iedereen die werk in fases doet. Uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/planix'}}
+  illustration={<AppMock app="planix" />}
 />
 
 <Section spacing="default">
@@ -27,36 +28,42 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="Wat het doet"
-        title="Kanban, backlog en tijdregistratie op één bord."
+        title="Bord, backlog, uren, afhankelijkheden. Eén plek per project."
         align="stack"
-        lede="Elk project krijgt één kanbanbord met configureerbare kolommen, WIP-limieten en een backlog voor werk dat nog niet is ingepland. Taken hebben prioriteiten, labels, deadlines en afhankelijkheden. Alles staat in OpenRegister als gekoppelde data, zodat andere Conduction-apps zoals Procest ernaar kunnen verwijzen."
+        lede="Planix houdt het werk van een project op één bord. Sleep een kaart van links naar rechts terwijl het vordert. Bewaar de ideeën voor later in de backlog. Schrijf de uren op de taak waarvoor je ze maakte. Zie wat vastzit, en waarom, zonder statusoverleg."
       />
       <FeatureList>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="6" height="16"/><rect x="10" y="4" width="6" height="10"/><rect x="17" y="4" width="4" height="7"/></svg>}
-          title="Kanbanbord met WIP-limieten."
-        >
-          Configureerbare kolommen, drag-and-drop kaarten, WIP-limieten per kolom met een zachte visuele waarschuwing, en een filter op toegewezene, label of prioriteit.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 5l8 5-8 5"/><path d="M14 5h6v14h-6z"/></svg>}
-          title="Backlog voor niet-ingepland werk."
-        >
-          Taken zonder kolom staan in de backlog. Sorteer op prioriteit of deadline en sleep ze naar het bord zodra ze klaar zijn om te starten.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
-          title="Tijdregistratie en urenoverzicht."
-        >
-          Stel een tijdsinschatting in per taak, registreer werkelijke tijd in sessies, en bekijk een persoonlijk urenoverzicht gegroepeerd op datum met dag- en weektotalen.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.2 7.2L12 15.8M15.8 7.2L12 15.8"/></svg>}
-          title="Afhankelijkheden tussen taken."
-        >
-          Markeer een taak als geblokkeerd door een andere. Planix toont een geblokkeerd-badge op de kaart en weigert zelf-, duplicaat- en cyclische afhankelijkheden server-side.
-        </FeatureItem>
-      </FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="6" height="16"/><rect x="10" y="4" width="6" height="10"/><rect x="17" y="4" width="4" height="7"/></svg>}
+      title="Een kolom houdt vijf kaarten. De zesde wacht."
+    >
+      Vandaag begint iedereen aan alles en wordt niets afgemaakt. In plaats daarvan geef je een kolom een limiet. Staan er al vijf kaarten in "Mee bezig", dan kleurt de kolom rood en wacht de zesde. Het team maakt af voordat het begint, en jij ziet de bottleneck op het bord in plaats van erover te horen in een overleg. De limiet is een waarschuwing, geen muur: een kaart kan er nog altijd overheen als het moet.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 5l8 5-8 5"/><path d="M14 5h6v14h-6z"/></svg>}
+      title="Ideeën gaan in de backlog, niet in iemands hoofd."
+    >
+      Een klant vraagt iets tijdens een telefoongesprek. Vandaag leeft dat in het geheugen van wie toevallig opnam. In plaats daarvan gaat het in de backlog met een prioriteit en een deadline. Sorteer op wat het belangrijkst is, en sleep het op het bord op de dag dat het team ruimte heeft. Niets raakt kwijt tussen "goed idee" en "op het bord".
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      title="De uren op de taak zijn aan het eind van de maand de uren per project."
+    >
+      Geef een taak een schatting, schrijf de uren die je eraan besteedde, en je urenstaat groepeert ze per dag en week. Aan het eind van de maand staan de uren per project er al, niets reconstrueren uit je geheugen of de chatgeschiedenis. Schatting tegenover werkelijkheid laat zien waar de planning optimistisch was.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.2 7.2L12 15.8M15.8 7.2L12 15.8"/></svg>}
+      title="Een taak die op een andere wacht, draagt een badge. Niemand begint aan het dak voor de muren."
+    >
+      Markeer een taak als geblokkeerd door een andere. De kaart toont een badge "Geblokkeerd" tot de andere klaar is, op het bord en in de lijst, zodat niemand hem te vroeg oppakt. Planix weigert een lus waarin twee taken op elkaar wachten, dus de badge spreekt altijd de waarheid.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>}
+      title="Morgen af komt in beeld voordat het gisteren af had gemoeten."
+    >
+      Elke kaart draagt zijn deadline als een badge die van kleur verandert naarmate de dag dichterbij komt. De persoon aan wie de taak is toegewezen krijgt een Nextcloud-melding vóór de deadline, met een voorlooptijd die jij instelt. Over alle projecten heen laat de tijdlijn zien wat wanneer loopt.
+    </FeatureItem>
+  </FeatureList>
     </div>
     <AppCrossLinks
       variant="rail"
@@ -68,31 +75,187 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <PartnersForApp slug="planix" />
 
+<RotatingCards
+  eyebrow="Drie manieren waarop Planix zijn plek verdient"
+  title="Het werkt zoals jij werkt. En het werkt voor jou."
+  lede="Drie dingen waar je normaal extra voor betaalt. In Planix zitten ze ingebouwd."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automatiseer',
+      title: 'Een kaart bereikt "Klaar". De rest gebeurt vanzelf.',
+      summary: 'Vandaag: een taak is af en iemand moet eraan denken de klant te informeren, de sheet bij te werken en de volgende te starten. In plaats daarvan stel je het één keer in. Zodra een kaart naar "Klaar" gaat, verliest de taak die erop wachtte zijn badge en landt hij op de lijst van de volgende persoon. Een kaart die langer dan drie dagen in "Review" staat, zet een seintje op het bureau van de lead. Elke vrijdag een lijst met taken zonder geschreven uren. Niets vergeten, geen nabellen, geen programmeerwerk.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Jouw kolommen, jouw labels, jouw limieten.',
+      summary: 'Een supportteam wil "Wacht op klant" als kolom. Een bouwteam wil "Testen" tussen "Mee bezig" en "Klaar". Een studio wil een label per klant. Voeg de kolom toe, stel de limiet in, voeg het label toe, en geef elk project een eigen kleur. In de draaiende app, in minuten, en je wijzigingen blijven bij elke update bewaard. Een bord dat past bij hoe je team echt werkt, niet een waar je het team omheen buigt.',
+      cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
+      panel: <AppMock app="openbuild" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Praat ermee',
+      title: 'Vraag wat vastzit. Krijg de lijst, geen overleg.',
+      summary: 'Vraag "wat loopt achter op het websiteproject?" en je krijgt de kaarten, met wie ze heeft. Vraag "hoeveel uur ging er deze maand in de app?" en het getal staat er. De assistent leest dezelfde taken en uren die jij mag zien, en vraagt het voordat hij iets wijzigt. Kaarten verplaatsen en uren schrijven blijft bij jou.',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'jij: wat loopt achter op het websiteproject?',
+        'assistent: 3 taken over tijd, 2 bij Sanne, 1 geblokkeerd op het logo',
+        'jij: hoeveel uur ging erin deze maand?',
+        'assistent: 46 uur geschreven, 52 geschat',
+      ]} cursor mode="leest alleen, vraagt het voordat hij iets wijzigt" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Wat je als eerste ziet"
+  title="Je eigen werk, vóór het bord van iemand anders."
+  lede="Open Planix en je dashboard toont je open taken en taken over tijd, de projecten die je het laatst aanraakte, en wat deze week af moet. Klik op een getal en je staat in de lijst."
+  widgets={[
+    {
+      title: 'Mijn open taken en taken over tijd',
+      desc: 'Open, over tijd, mee bezig en vandaag afgerond. Vier getallen, elk één klik verwijderd van de taken erachter.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-orange-knvb)'}}>2</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>over tijd</div>
+          </div>
+          {[
+            {label: 'open', val: '70%', tone: 'var(--c-cobalt-300)'},
+            {label: 'mee bezig', val: '40%', tone: 'var(--c-lavender-300)'},
+            {label: 'vandaag klaar', val: '25%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Deze week af',
+      desc: 'Taken die de komende zeven dagen af moeten, dichtstbij eerst, met het project waar ze bij horen. Vandaag en morgen zijn uitgelicht.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', stage: 'vandaag'},
+            {tone: 'var(--c-orange-knvb)', stage: 'morgen'},
+            {tone: 'var(--c-lavender-300)', stage: 'do'},
+            {tone: 'var(--c-mint-500)', stage: 'vr'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Recente projecten',
+      desc: 'De vijf projecten waarin je het laatst werkte, elk met het aantal taken en hoe ver het is.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {label: 'website', val: '80%', tone: 'var(--c-mint-500)'},
+            {label: 'app v2', val: '45%', tone: 'var(--c-lavender-300)'},
+            {label: 'migratie', val: '20%', tone: 'var(--c-cobalt-300)'},
+            {label: 'support', val: '60%', tone: 'var(--c-forest-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="Zo sluit Planix aan op je werkplek"
+  title="Meldingen, activiteit en de mensen buiten. Al van jou."
+  lede="Het bord staat waar je team al zijn meldingen en zijn activiteitenoverzicht leest. Dat is het punt van een werkplek."
+  layout="side"
+  defaultOpen="notify"
+  items={[
+    {
+      id: 'notify',
+      title: 'Een herinnering in het Nextcloud-belletje, niet in weer een andere app',
+      summary: 'Een taak moet over twee dagen af. De persoon aan wie hij is toegewezen ziet het in dezelfde Nextcloud-meldingen als een gedeeld bestand of een vermelding in de chat. Jij stelt de voorlooptijd in, zij kunnen het uitzetten. Elke wijziging aan een taak verschijnt in het activiteitenoverzicht, dus "wie heeft deze kaart verplaatst?" heeft een antwoord.',
+      cta: {label: 'Lees de docs', href: 'https://planix.conduction.nl'},
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
+            <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+          </div>
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Over 2 dagen af</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>Nieuwe kassa live zetten, project Webshop</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'procest',
+      title: 'Een zaak in Procest wordt een project op het bord',
+      summary: 'Een vergunningaanvraag of een klacht in Procest vraagt om echt werk. Geef het project en zijn taken het zaaknummer, en iedereen op het bord weet voor welke zaak het werk is. Vanuit de taak spring je naar de zaak. Een project rechtstreeks vanuit de zaak starten staat op de planning.',
+      cta: {label: 'Bekijk Procest', href: '/apps/procest'},
+      panel: <AppMock app="procest" />,
+    },
+    {
+      id: 'portal',
+      title: 'Een externe schrijft zijn uren vanuit het portaal',
+      summary: 'De freelancer of het bureau dat je inhuurde heeft geen plek in je Nextcloud nodig. Via het portaal zien ze de taken en projecten die van hen zijn, en schrijven ze daar hun uren op. Jij ziet de uren op dezelfde taak als die van je eigen team, en verder is niets van jou voor hen zichtbaar.',
+      cta: {label: 'Bekijk Portaliq', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Werkt goed met"
-    title="De apps waarop Planix leunt."
+    eyebrow="Past goed bij"
+    title="Twee apps die het werk voorbij het bord brengen."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Projecten, taken, kolommen, labels en tijdregistraties als typed registers — bevraagbaar door andere apps."
-    />
-    <PairCard
       href="/apps/procest"
       icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
       name="Procest"
-      why="Optionele zaakreferentie op projecten en taken koppelt een Procest-zaak aan een Planix-bord."
+      why="Zaakafhandeling. Geef een project het zaaknummer en het bord weet voor welke zaak het werk is."
+    />
+    <PairCard
+      href="/apps/portaliq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 13h8"/></svg>}
+      name="Portaliq"
+      why="De voordeur voor mensen buiten. Externen zien hun taken en schrijven hun uren zonder plek in je Nextcloud."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="De kanban-tool tussen Deck en Jira."
-  lede={<>Planix geeft dev- en IT-teams flow-gebaseerde kanban, backlogbeheer en tijdregistratie, soeverein en rechtstreeks ingebouwd in Nextcloud. Open-source, op je eigen data.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  title="Projectborden op je eigen Nextcloud."
+  lede={<>Open source. Gratis te installeren. Je projecten en uren blijven op je eigen server. Planix draait op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
 />

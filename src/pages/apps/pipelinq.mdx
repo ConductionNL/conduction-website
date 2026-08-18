@@ -1,6 +1,6 @@
 ---
 title: PipelinQ, Conduction
-description: CRM with clients, lead pipeline, quotes, and contactmomenten. Built on OpenRegister, no separate sales database, no extra login.
+description: CRM, quotes and deals, in the same Nextcloud you already work in. Start leads from email, keep clients in your contacts, no separate sales database.
 hide_table_of_contents: true
 ---
 
@@ -12,14 +12,14 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   appId="pipelinq"
   crumb={[{label: 'Apps', href: '/apps'}, 'PipelinQ']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.5"
+  version="v0.6"
   locales="NL · EN"
   title="PipelinQ"
-  tagline={<>CRM on your <span className="next-blue">Nextcloud</span>. Clients, contacts, leads, quotes. Everything as a typed register, no separate sales database, no second login. Your sales team works where your delivery team already is.</>}
-  intro={<>Pipelinq is an open-source CRM for the Nextcloud workspace. It runs a drag-and-drop lead pipeline with configurable stages, values and close probabilities, a client and contact register with a full 360° history, service-request intake, and contactmoment logging. Clients, contacts, leads and requests are typed OpenRegister schemas. Released under EUPL-1.2 and maintained by Conduction.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://pipelinq.conduction.nl'}}
-  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/pipelinq'}}
+  tagline={<>CRM, quotes and deals, in the same <span className="next-blue">Nextcloud</span> you already work in. No separate sales database, no second login.</>}
+  intro={<>PipelinQ is an open-source CRM for the Nextcloud workspace. It runs a drag-and-drop lead pipeline with configurable stages, values and close probabilities. Clients get a full 360° view: leads, requests, quotes and every call, mail and visit. Every change is logged, so you always know who did what. Open source, released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/pipelinq'}}
   illustration={<AppMock app="pipelinq" />}
 />
 
@@ -28,34 +28,34 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="What it does"
-        title="Clients, pipeline, quotes, contactmomenten — one CRM."
+        title="Clients, pipeline, quotes, contact history. One CRM."
         align="stack"
-        lede="PipelinQ manages clients and contact persons, tracks leads through a visual pipeline, turns quotes into contracts, and logs every contactmoment. Sales and operational dashboards sit on top, with scheduled CSV/reporting exports."
+        lede="PipelinQ manages clients and contact persons, tracks leads through a visual pipeline, turns quotes into contracts, and logs every call, mail and visit. Sales and operational dashboards sit on top."
       />
       <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
-      title="Lead pipeline with a drag-and-drop kanban board."
+      title="Drag leads through your own stages."
     >
-      Move leads through configurable stages with values and close probabilities. The Pipeline board and the Sales dashboard show pipeline-by-stage, revenue-over-time and win-rate live from the same records.
+      Configurable stages with values and close probabilities. The Pipeline board and the Sales dashboard show pipeline-by-stage, revenue-over-time and win-rate live from the same records.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 18a5 5 0 0 1 10 0"/></svg>}
-      title="Clients and contacts as a typed register."
+      title="Every client in one place, with their whole history."
     >
-      OpenRegister schemas for clients and contact persons, with a 360° client view (leads, requests, contactmomenten, projects, complaints). Two-way sync with the native Nextcloud Contacts app via CardDAV.
+      A 360° client view: leads, requests, contact history, projects, complaints, all on one screen. Every client is also a Nextcloud contact, so the phone number on your phone is the one in the CRM.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
       title="Quotes that become the contract."
     >
-      A quotation and its contract are one record — once it's accepted, the same lines, price and client carry over with no re-entry. Recurring-revenue metrics feed the dashboard once a contract is active.
+      A quotation and its contract are one record. Once it is accepted, the same lines, price and client carry over with no re-entry. Recurring-revenue metrics feed the dashboard once a contract is active.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
       title="Contactmomenten and reporting."
     >
-      Log calls, emails, visits and other client interactions with an outcome and channel, and schedule CSV (or Parquet/JSONL) data exports for reporting outside Pipelinq.
+      Log calls, emails and visits with an outcome and channel. Export to a spreadsheet, or schedule a nightly export for your accountant.
     </FeatureItem>
   </FeatureList>
     </div>
@@ -71,32 +71,37 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <RotatingCards
   eyebrow="Three ways PipelinQ earns its place"
-  title="Pipeline, register-linked, dashboards built in."
-  lede="Scroll the cards. Each pins as you reach it; the next slides up to cover."
+  title="It works the way you work. And it works for you."
+  lede="Three things you would normally pay extra for. In PipelinQ they are built in."
   cards={[
     {
-      tone: 'lavender',
-      eyebrow: 'Lead pipeline',
-      title: 'Drag leads through your stages.',
-      summary: 'Configurable stages with values and close probabilities, a Pipeline kanban board, and quote-to-contract handling in the same record set.',
-      cta: {label: 'See PipelinQ', href: '/apps/pipelinq'},
-      panel: <AppMock app="pipelinq" />,
-    },
-    {
       tone: 'forest',
-      eyebrow: 'Register-linked',
-      title: 'Clients and leads as typed registers.',
-      summary: 'Clients, contacts, leads and requests are typed OpenRegister schemas with an audit trail. The CRM stops being a silo, and duplicate-detection flags matching clients on save.',
-      cta: {label: 'See OpenRegister', href: '/apps/openregister'},
+      eyebrow: 'Automate',
+      title: 'A quote is accepted. The rest happens by itself.',
+      summary: 'Today: you accept the quote, then open three other screens to create the project, plan the kick-off and tell the team. With a flow you set that up once. The moment the quote is accepted, the project exists, the kick-off task is on the right desk and the discount over ten percent waits for your approval before anything goes out. Every Monday at nine, a list of leads nobody touched for two weeks. Nothing forgotten, no chasing, no coding.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
       panel: <AppMock app="openregister" />,
     },
     {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'Your CRM, exactly your way. Without a developer.',
+      summary: 'An installer needs a site-visit step before the quote. A wholesaler wants delivery region on every client. A consultancy needs the hourly rate on the lead. Add the field, add the step, drag the widget you look at first to the top, hide what you never use. In the running app, in minutes, and your changes stay with every update. That is a CRM that fits your business, not one you fit into.',
+      cta: {label: 'How customising works', href: '/apps/openbuild'},
+      panel: <AppMock app="openbuild" />,
+    },
+    {
       tone: 'workspace',
-      eyebrow: 'Built-in dashboards',
-      title: 'Sales and operational overviews out of the box.',
-      summary: 'A Sales dashboard (revenue, win rate, weighted forecast) and an Operational dashboard (open leads, requests, resolution time) read the same registers live — no separate BI tool required.',
-      cta: {label: 'See PipelinQ', href: '/apps/pipelinq'},
-      panel: <AppMock app="pipelinq" />,
+      eyebrow: 'Talk to it',
+      title: 'Chat away while your CRM does the work.',
+      summary: 'Back in the car after a client visit. Type "log my call with Jansen, they want the quote in May" and it is done: call logged, follow-up planned, reminder drafted. Ask "which deals went quiet this month?" and get the list, not a report to build. Every action in PipelinQ can be handed to an assistant, and you decide per assistant what it may do. Nothing changes without your say-so.',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: log my call with Jansen BV, they want the quote in May',
+        'assistant: call logged on Jansen BV, outcome positive',
+        'assistant: follow-up planned for 1 May',
+        'assistant: quote reminder drafted for your review',
+      ]} cursor mode="asks before it changes anything" />,
     },
   ]}
 />
@@ -108,7 +113,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   widgets={[
     {
       title: 'Pipeline by stage',
-      desc: 'Open pipeline value grouped by stage, plus a weighted-forecast KPI. Live, not nightly batch.',
+      desc: 'Open pipeline value per stage, and how much you will probably close this quarter. Updated the moment a deal moves.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
@@ -182,29 +187,49 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <Showcase
   eyebrow="How PipelinQ plugs into the workspace"
-  title="Sales runs on the workspace your delivery team already uses."
-  lede="Real integrations that keep PipelinQ inside Nextcloud — contacts, quotes-as-contracts, and a handoff to billing."
+  title="Mail, contacts, calendar and files. Already yours."
+  lede="Your CRM lives where your email, address book, calendar and documents already live. That is the point of a workspace."
   layout="side"
-  defaultOpen="contacts-sync"
+  defaultOpen="mail"
   items={[
     {
-      id: 'contacts-sync',
-      title: 'Nextcloud Contacts sync',
-      summary: 'Clients and contact persons sync two-way with the native Contacts app via CardDAV, so names, emails and phone numbers stay in one place.',
+      id: 'mail',
+      title: 'Start a lead from an email',
+      summary: 'Open a message in Nextcloud Mail and click "New lead from this email". The subject becomes the title, the sender and a snippet land in the notes, and the message stays linked. Every five minutes PipelinQ also links client email automatically, even by company domain. Open a client and the correspondence is just there.',
+      cta: {label: 'Read the docs', href: 'https://pipelinq.conduction.nl'},
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
+            <div style={{height: 4, width: '75%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '55%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '85%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+          </div>
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>New lead from this email</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>linked to Jansen BV</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'contacts',
+      title: 'Your clients are your contacts',
+      summary: 'No more two address books that slowly drift apart. Every client and contact person in PipelinQ is a Nextcloud contact. Change a phone number in the CRM and it is right on your phone when you call from the car. Your existing contacts import in a couple of clicks, so day one already has your whole network in it.',
       cta: {label: 'Read the docs', href: 'https://pipelinq.conduction.nl'},
       panel: <AppMock app="pipelinq" />,
     },
     {
-      id: 'quote-to-contract',
-      title: 'One record from quote to contract',
-      summary: 'A quotation and its contract share one record — accepting a quote carries the lines, price and client straight into the contract, with recurring-revenue metrics once it is active.',
+      id: 'calendar',
+      title: 'Meetings on the record',
+      summary: 'Plan the follow-up meeting right from the lead and it is in your Nextcloud Calendar, linked to the record, so the notes are one click away when the meeting starts. Let clients book a slot themselves: PipelinQ checks your team calendars for free time and puts the confirmed appointment in the right agenda. No back-and-forth emails to find a date.',
       cta: {label: 'Read the docs', href: 'https://pipelinq.conduction.nl'},
       panel: <AppMock app="pipelinq" />,
     },
     {
-      id: 'reporting-export',
-      title: 'Scheduled CSV export',
-      summary: 'Export leads, clients and contactmomenten on a schedule as CSV (or Parquet/JSONL) for reporting outside Pipelinq.',
+      id: 'files',
+      title: 'Quotes and contracts on the record',
+      summary: 'The signed quote, the contract, the site photos: on the client, not lost in someone\'s mailbox. Each client, lead and task keeps its own folder in Files, and the text inside is searchable. Found a contract in Files and wonder who it belongs to? It tells you, and takes you to the client.',
       cta: {label: 'Read the docs', href: 'https://pipelinq.conduction.nl'},
       panel: <AppMock app="pipelinq" />,
     },
@@ -214,28 +239,28 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="Two apps that complete the CRM workflow."
+    title="Two apps that complete the deal."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/procest"
-      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>}
-      name="Procest"
-      why="Case management for the direct request-to-case handoff. A dedicated bridge is in development."
+      href="/apps/shillinq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4"/></svg>}
+      name="Shillinq"
+      why="Bookkeeping and invoicing. Hand a won deal to billing from the client record."
     />
     <PairCard
       href="/apps/openregister"
       icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
       name="OpenRegister"
-      why="The data foundation. Clients, leads and quotes as typed registers with an audit log."
+      why="Where your data lives. Every record, every change, safely on your own server."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
   title="CRM on your own Nextcloud."
-  lede={<>No separate SaaS, no second login. PipelinQ runs on the same <span className="next-blue">Nextcloud</span> where your delivery team already works.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+  lede={<>Open source. Free to install. GDPR-compliant by default. PipelinQ runs on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
 />

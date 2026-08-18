@@ -1,67 +1,63 @@
 ---
 title: OpenBuild, Conduction
-description: Citizen-developer app-bouwer voor Nextcloud. Stel apps samen uit registers, koppelvlakken en workflows. Zonder PHP.
+description: Laat elke Conduction-app passen bij je bedrijf, zonder ontwikkelaar. Voeg een veld toe, voeg een stap toe, verplaats een widget, in de draaiende app. Of bouw in tien minuten een kleine app van jezelf.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AgentTrace, McpToolShelf, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+export const app = getApp('openbuild');
 
 <DetailHero
+  background="cobalt"
   appId="openbuild"
-  crumb={[{label: 'Apps', href: '/apps'}, 'OpenBuild']}
+  crumb={[{label: 'Apps', href: '/apps'}, app.name]}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.5"
+  version="v0.10"
   locales="NL · EN"
-  title="OpenBuild"
-  tagline={<>Een app-bouwer voor citizen developers op <span className="next-blue">Nextcloud</span>. Stel je eigen app samen uit de Technical Core — OpenRegister-schema's, OpenConnector-API's, Procest-workflows en DocuDesk-documenten. Geen PHP, geen scaffolding.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://openbuild.conduction.nl'}}
-  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/openbuild'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9-9 9z"/><path d="M9 12h6M12 9v6"/></svg>}
+  title={app.name}
+  tagline={<>Laat elke app passen bij je bedrijf, zonder ontwikkelaar. Voeg een veld toe, voeg een stap toe, verplaats een widget, in de draaiende app op je eigen <span className="next-blue">Nextcloud</span>.</>}
+  intro={<>{app.name} is de appbouwer voor de Nextcloud-werkplek. Open een Conduction-app, klik op bewerken en verander wat er op de pagina staat: een veld, een stap, een widget, een menu-item. Je aanpassingen blijven staan bij elke update. Iets nodig wat de apps niet doen? Bouw een kleine app van jezelf: geef hem een naam, voeg de velden toe, zeg wie hem ziet, en hij staat in de bovenbalk. Probeer aanpassingen eerst op een testkopie, publiceer als je tevreden bent, één klik terug als dat niet zo is. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/openbuild'}}
+  illustration={<AppMock app="openbuild" />}
 />
-
-OpenBuild is een open-source app-bouwer voor citizen developers in de Nextcloud-workspace. Gebruikers stellen een werkende app samen uit getypeerde OpenRegister-registers, OpenConnector-koppelvlakken, Procest-workflows en DocuDesk-sjablonen. Daarna leg je in een browser-designer de lijst-, detail- en formulier-pagina's neer. Configuration-over-code manifest-overrides overleven upgrades, versie-snapshots draaien foute edits terug, ZIP- of GitHub-exports verhuizen apps tussen instances, en RBAC houdt per-record toegang afgedwongen via OpenRegister. Uitgegeven onder EUPL-1.2, onderhouden door Conduction sinds 2019.
 
 <Section spacing="default">
   <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="Wat het doet"
-        title="Bouw je eigen app, zonder code."
+        title="Jouw apps, op jouw manier. In minuten, niet in een project."
         align="stack"
-        lede="OpenBuild laat niet-technische gebruikers eigen apps samenstellen uit de bouwstenen van het Conduction-ecosysteem. Schema's uit OpenRegister, integraties uit OpenConnector, workflows uit Procest, documenten uit DocuDesk. Een wizard staat de app op, drie tiers (development, staging, productie) leveren een productiepad, en de bovenbalk-entry verschijnt zodra je publiceert. Export naar een echte Nextcloud-app volgt in fase 2."
+        lede="Elke Conduction-app is opgebouwd uit pagina's, velden en widgets die je zelf kunt aanpassen. Geen ticket naar een ontwikkelaar, geen wachten op de volgende release, geen aanpassingen die je bij de volgende update kwijt bent."
       />
       <FeatureList>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>}
-          title="Wizard in drie stappen."
+          icon={<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>}
+          title="Voeg het veld toe dat jouw bedrijf nodig heeft."
         >
-          Slug, versie-ketting, rechten. Klikken op klaar geeft je een werkende app, eigen registers voor development, staging en productie, en de eerste pagina-set. Geen JSON, geen scaffolding.
+          Nu: een groothandel houdt de bezorgregio bij in een spreadsheet naast het CRM. Straks: open de klantpagina, klik op bewerken, voeg het veld toe. Elke klant heeft nu een bezorgregio, en je kunt erop filteren en rapporteren. Klaar in vijf minuten, geen ontwikkelaar aan te pas gekomen.
         </FeatureItem>
         <FeatureItem
           icon={<svg viewBox="0 0 24 24"><path d="M3 12h6l3-7 3 14 3-7h3"/></svg>}
-          title="Workflows declaratief, geen service-code."
+          title="Voeg de stap toe die jouw proces heeft."
         >
-          State machines, aggregaties, berekeningen en notificaties leven in de schema-metadata. Geen PHP-service per app, conform ADR-031.
+          Een installateur schouwt altijd eerst de locatie vóór de offerte. Voeg de schouwstap toe aan de pipeline, en elke lead gaat erdoorheen. Zet de widget waar je het eerst naar kijkt bovenaan het dashboard. Verberg wat je team nooit gebruikt. Het is jouw app, dus hij volgt jouw proces.
         </FeatureItem>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8M6 8v8M18 8v8M8 18h8"/></svg>}
-          title="Dev, staging, productie per app."
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>}
+          title="Bouw een kleine app van jezelf. Tien minuten."
         >
-          Elke versie krijgt z'n eigen register. Promote tussen tiers met drie strategieën. Rollback is één klik op de productionVersion-pointer.
+          Een wagenparklijst met keuringsdata. Een sleutellijst voor kantoor. Een lijst met certificaten en wanneer ze verlopen. Geef de app een naam, voeg de velden toe, zeg wie hem mag zien. Tien minuten later staat hij in de bovenbalk, naast Bestanden en Mail, met dezelfde login en dezelfde regels als al het andere.
         </FeatureItem>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9-9 9z"/><path d="M12 3v18M3 12h18"/></svg>}
-          title="Eén Nextcloud, één bovenbalk."
+          icon={<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>}
+          title="Probeer het op een testkopie. Publiceer. Eén klik terug."
         >
-          Elke gepubliceerde app krijgt automatisch een eigen top-bar-entry naast Files en Mail. Met per-app icoon, eigen rechten en geen extra installatie.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>}
-          title="Virtuele app eerst, echte app als optie."
-        >
-          Virtuele apps draaien in de OpenBuild-shell. Klaar voor productie? Exporteer naar een echte Nextcloud-app met eigen ID en namespace (Phase 2).
+          Elke app heeft een testkopie en een live versie. Pas de testkopie aan, bekijk hem, laat een collega meekijken. Publiceer als het klopt. Toch iets mis? Eén klik brengt de vorige versie terug. Niemand werkt in een half afgemaakte app.
         </FeatureItem>
       </FeatureList>
     </div>
@@ -73,115 +69,180 @@ OpenBuild is een open-source app-bouwer voor citizen developers in de Nextcloud-
   </div>
 </Section>
 
-<McpToolShelf
-  eyebrow="AI chat tools"
-  title="Wat OpenBuild aan de workspace-AI toevoegt."
-  lede="Installeer OpenBuild en de chat krijgt acht tools waarmee de AI virtuele apps bouwt: een app aanmaken, een schema toevoegen, een pagina opzetten, een widget plaatsen, een versie promoveren. Elke aanroep loopt onder de eigen rol van de gebruiker en wordt geaudit."
-  tools={[
+<PartnersForApp slug="openbuild" />
+
+<RotatingCards
+  eyebrow={`Drie manieren waarop ${app.name} zijn plek verdient`}
+  title="Het werkt zoals jij werkt. En het werkt voor je."
+  lede="Drie dingen waar je normaal een ontwikkelaar voor betaalt. Hier doe je ze zelf, in de draaiende app."
+  cards={[
     {
-      icon: <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>,
-      name: 'Virtuele apps opsommen',
-      id: 'openbuild.listApps',
-      description: 'Toon de virtuele apps in je organisatie met hun status en versie.',
-      status: 'stable',
+      tone: 'forest',
+      eyebrow: 'Automatiseer',
+      title: 'Jouw nieuwe veld, jouw nieuwe stap, en de automatisering die ze gebruikt.',
+      summary: 'Je hebt een keuringsdatum toegevoegd aan de wagenparklijst. Teken nu wat ermee moet gebeuren: dertig dagen voor de datum een taak voor de wagenparkbeheerder, en de auto gemarkeerd als aan de beurt. Een regel met een voorwaarde, geen programmeerwerk. Je hebt een schouwstap toegevoegd aan de pipeline: zodra de schouw klaar is, ligt de offertetaak op het juiste bureau. Velden en stappen die je vandaag toevoegt, zijn dezelfde dag klaar voor automatisering.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
     },
     {
-      icon: <svg viewBox="0 0 24 24"><path d="M5 4h14v6H5zM5 14h14v6H5zM9 4v16"/></svg>,
-      name: 'App-manifest ophalen',
-      id: 'openbuild.getAppManifest',
-      description: 'Haal het runtime-manifest van één gepubliceerde virtuele app op via de slug.',
-      status: 'stable',
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Honderd procent jouw app. Tot de laatste widget.',
+      summary: 'Elke pagina van elke Conduction-app staat open voor aanpassing. Hernoem een veld zodat het zegt wat je team het noemt. Zet het telefoonnummer van de klant waar het oog het eerst valt. Haal de widget die niemand leest van het dashboard. Geef de app je eigen icoon. Bepaal per groep wie welke pagina ziet. Alles wat je aanpast blijft apart van wat wij leveren, dus de volgende update landt en jouw aanpassingen blijven staan.',
+      cta: {label: 'Lees de docs', href: 'https://openbuild.conduction.nl'},
+      panel: <AppMock app="openbuild" />,
     },
     {
-      icon: <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>,
-      name: 'Nieuwe app aanmaken',
-      id: 'openbuild.createApp',
-      description: 'Maak een nieuwe virtuele app met een eerste draft-versie. Kies het versie-pad: single, dev-prod of dev-staging-prod.',
-      status: 'stable',
-    },
-    {
-      icon: <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>,
-      name: 'Versie promoveren',
-      id: 'openbuild.promoteVersion',
-      description: 'Promoveer een virtuele app van bijvoorbeeld development naar productie. Default-strategie laat de doelversie leeg.',
-      status: 'stable',
-    },
-    {
-      icon: <svg viewBox="0 0 24 24"><path d="M3 7h18M6 12h12M9 17h6"/></svg>,
-      name: 'Schema toevoegen of bijwerken',
-      id: 'openbuild.upsertSchema',
-      description: 'Voeg een JSON Schema toe of werk het bij. De slug krijgt automatisch app- en versie-prefix.',
-      status: 'stable',
-    },
-    {
-      icon: <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>,
-      name: 'Pagina toevoegen of bijwerken',
-      id: 'openbuild.upsertPage',
-      description: 'Maak of werk een pagina bij in het draft-manifest. Type is dashboard, index, detail of form.',
-      status: 'stable',
-    },
-    {
-      icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>,
-      name: 'Widget plaatsen',
-      id: 'openbuild.addWidget',
-      description: 'Voeg een widget toe aan een pagina: stat-counter, grafiek, lijst of een ander type uit de catalogus.',
-      status: 'stable',
-    },
-    {
-      icon: <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>,
-      name: 'Menu-item toevoegen of bijwerken',
-      id: 'openbuild.upsertMenuItem',
-      description: 'Maak of werk een top-level menu-item bij in het draft-manifest. Route, volgorde en icoon stel je per item in.',
-      status: 'stable',
+      tone: 'workspace',
+      eyebrow: 'Praat ermee',
+      title: 'Beschrijf de app die je nodig hebt. Keur het ontwerp goed.',
+      summary: 'Typ "ik wil een lijst met bedrijfsauto\'s met kenteken, bestuurder en keuringsdatum, zichtbaar voor het kantoorteam". De assistent maakt een ontwerp: de velden, de lijstpagina, de detailpagina, de toegang. Jij bekijkt het ontwerp en keurt het goed, of vraagt om een aanpassing. Er wordt niets gebouwd voordat jij het zegt. Zodra de app live is, praat je er op dezelfde manier mee: "welke auto\'s moeten deze maand gekeurd worden?"',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'jij: ik wil een lijst met bedrijfsauto\'s met kenteken, bestuurder en keuringsdatum',
+        'assistent: ontwerp klaar: 3 velden, een lijstpagina, een detailpagina',
+        'assistent: zichtbaar voor groep "kantoor". Goedkeuren, of iets aanpassen?',
+      ]} cursor mode="maakt een ontwerp, jij keurt goed" />,
     },
   ]}
-  showIds={false}
-  trace={<AgentTrace
-    lines={[
-      {kind: 'tool', text: 'openbuild - createApp (MCP)(name: "Subsidie-aanvraag",'},
-      {kind: 'continuation', text: 'preset: "dev-prod", description: "Aanvragen + behandeling")'},
-      {kind: 'note', bullet: 'done', text: 'App aangemaakt, draft v0.1 klaar'},
-      {kind: 'tool', text: 'openbuild - upsertSchema (MCP)(appSlug: "subsidie-aanvraag",'},
-      {kind: 'continuation', text: 'slug: "aanvraag", properties: { naam, bedrag, status }, required: ["naam"])'},
-      {kind: 'note', bullet: 'done', text: 'Schema toegevoegd aan development-versie'},
-      {kind: 'status', text: 'Pagina opbouwen'},
-    ]}
-    cursor
-    mode="audit log on (elke aanroep wordt vastgelegd)"
-  />}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets die we meeleveren"
+  title="Jouw apps en jouw aanpassingen, in één oogopslag."
+  lede="Installeer het en het dashboard toont de apps die je bouwde, wat er op de testkopie klaarstaat en wie wat aanpaste."
+  widgets={[
+    {
+      title: 'Jouw apps',
+      desc: 'Elke app die je bouwde of aanpaste, met de live versie en de testkopie. Klik om de ontwerper te openen.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-mint-500)', state: 'live'},
+            {tone: 'var(--c-orange-knvb)', state: 'testkopie'},
+            {tone: 'var(--c-mint-500)', state: 'live'},
+            {tone: 'var(--c-lavender-300)', state: 'concept'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '60%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '40%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.state}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Wacht op publicatie',
+      desc: 'Aanpassingen op een testkopie die nog niet live zijn. Publiceer vanaf hier, of open eerst de testkopie.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 24, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>3</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.05em', color: 'var(--c-cobalt-500)'}}>aanpassingen op test</div>
+          </div>
+          {[{w: '80%'}, {w: '55%'}, {w: '65%'}].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <div style={{height: 4, width: row.w, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            </div>
+          ))}
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Publiceren</div>
+        </div>
+      ),
+    },
+    {
+      title: 'Wie wat aanpaste',
+      desc: 'De laatste bewerkingen aan je apps: welke pagina, welk veld, door wie, en wanneer. Ongedaan maken is één klik weg.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {['var(--c-forest-300)', 'var(--c-lavender-300)', 'var(--c-mint-300)', 'var(--c-terracotta-300)'].map((tone, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 18, height: 18, borderRadius: 2, background: tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 3}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '45%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{height: 3, width: 22, background: 'var(--c-cobalt-100)', borderRadius: 1}}></div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow={`Zo sluit ${app.name} aan op je werkplek`}
+  title="Jouw apps, jouw gegevens, en een manier om te delen wat je bouwde."
+  lede="Het brengt geen tweede systeem mee. Het past de apps aan die je al hebt, werkt op de gegevens die al van jou zijn, en laat je een afgemaakte app aan een ander kantoor geven."
+  layout="side"
+  defaultOpen="apps"
+  items={[
+    {
+      id: 'apps',
+      title: 'De apps die je al gebruikt',
+      summary: 'Je CRM, je facturatie, je dossiers: elke Conduction-app is opgebouwd uit pagina\'s die je in de ontwerper kunt openen. Klik op bewerken op de pagina waar je naar kijkt, pas aan, sla op. De aanpassing is van jou en blijft staan bij updates. Begin met het CRM: voeg de bezorgregio toe, voeg de schouw toe, en zie de pipeline jouw proces volgen.',
+      cta: {label: 'Bekijk PipelinQ', href: '/apps/pipelinq'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'data',
+      title: 'Je eigen gegevens',
+      summary: 'Een veld dat je toevoegt is een echt veld. Het staat in de lijst, in de filters, in de rapporten, en elke wijziging erin wordt gelogd zoals al het andere. Een app die je bouwt bewaart zijn gegevens op dezelfde plek als je andere apps, met dezelfde toegangsregels en dezelfde back-ups. Wie een dossier mag zien wordt per dossier bepaald, niet per scherm.',
+      cta: {label: 'Waar je gegevens wonen', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      id: 'share',
+      title: 'Deel een app die je bouwde',
+      summary: 'Een goede wagenparklijst gebouwd? Publiceer hem naar je eigen GitHub-account en elke andere Nextcloud kan hem installeren. Een partner houdt een winkel met apps bij voor zijn klanten. Of neem de app als schoon pakket mee en geef hem aan een ontwikkelaar om verder te bouwen. Niets houdt je vast.',
+      cta: {label: 'Lees de docs', href: 'https://openbuild.conduction.nl'},
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
+            <div style={{height: 4, width: '60%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '80%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+          </div>
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Publiceren naar GitHub</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>wagenparklijst v1.2 gepubliceerd</div>
+          </div>
+        </div>
+      ),
+    },
+  ]}
 />
 
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Werkt goed met"
-    title="De apps die OpenBuild aan elkaar knoopt."
+    eyebrow="Past goed bij"
+    title="Twee apps die je als eerste aanpast."
     align="stack"
   />
   <PairRow>
     <PairCard
+      href="/apps/pipelinq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
+      name="PipelinQ"
+      why="CRM, offertes en deals. Voeg het veld toe, voeg de stap toe, en de pipeline volgt jouw proces."
+    />
+    <PairCard
       href="/apps/openregister"
       icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
       name="OpenRegister"
-      why="Elk virtueel app-manifest en alle objecten zijn OpenRegister-rijen."
-    />
-    <PairCard
-      href="/apps/openconnector"
-      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-      name="OpenConnector"
-      why="Externe API's en bestand-bronnen koppelen zonder code."
-    />
-    <PairCard
-      href="/apps/procest"
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
-      name="Procest"
-      why="Workflows en goedkeurings-stappen voor virtual-app processen."
+      why="Waar je gegevens wonen. Elk veld dat je toevoegt en elke app die je bouwt bewaart zijn gegevens hier."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="Citizen-developer apps, in één Nextcloud."
-  lede={<>OpenBuild geeft niet-technische gebruikers de bouwblokken om eigen apps samen te stellen. Schema's, koppelvlakken, workflows, allemaal in handen van wie het probleem kent.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  title="Apps die passen bij je bedrijf, op je eigen Nextcloud."
+  lede={<>Open source. Gratis te installeren. Pas de apps aan die je hebt, of bouw de app die je mist, op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
 />

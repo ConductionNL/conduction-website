@@ -1,27 +1,28 @@
 ---
 title: Hermiq, Conduction
-description: Plan autonome AI-agents in Nextcloud. Chat, geheugen, skills en menselijke goedkeuring, afgeleverd in Nextcloud Talk.
+description: De assistent die in elke Conduction-app werkt. Praat ermee vanuit Nextcloud Talk, ook op je telefoon. Geef het klussen op een vast moment. Jij bepaalt per assistent wat die mag, en alles wordt gelogd, op je eigen server.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+export const app = getApp('hermiq');
 
 <DetailHero
   background="cobalt"
   appId="hermiq"
-  crumb={[{label: 'Apps', href: '/apps'}, 'Hermiq']}
+  crumb={[{label: 'Apps', href: '/apps'}, app.name]}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
   version="v0.1"
   locales="NL · EN"
-  title="Hermiq"
-  tagline={<>Plan autonome AI-agents in <span className="next-blue">Nextcloud</span>. Geef een agent een prompt, tools en skills, en laat hem dagelijks, elk uur, of op een flow-trigger draaien — afgeleverd rechtstreeks in Nextcloud Talk.</>}
-  intro={<>Hermiq brengt autonome AI-agents naar de Nextcloud-workspace. Definieer een agent, geef hem MCP-tools en installeerbare skills, en laat hem volgens een schema draaien — dagelijkse rapportages, inbox-triage, monitoring, ochtendbriefings. Agents chatten via een live streaming-gesprek, houden sessiegeschiedenis en consoliderend geheugen bij, en kunnen achter een menselijke goedkeuringswachtrij gezet worden voordat ze handelen. Elke agent, run, geheugen en skill wordt opgeslagen als een OpenRegister-object, dus alles is van nature beheerd, controleerbaar en multi-tenant. Uitgegeven onder EUPL-1.2, onderhouden door Conduction.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://hermiq.conduction.nl'}}
-  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/hermiq'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>}
+  title={app.name}
+  tagline={<>De assistent die in elke app op je <span className="next-blue">Nextcloud</span> werkt. Chat ermee, geef het klussen op een vast moment, en bepaal precies wat het mag.</>}
+  intro={<>{app.name} is de AI-assistent voor de Nextcloud-werkplek. Praat ermee vanuit Nextcloud Talk, ook vanaf je telefoon in de auto. Het kan handelen in elke Conduction-app: het gesprek loggen, de opvolging plannen, het antwoord klaarzetten, de lijst ophalen. Geef het klussen op een vast moment: elke maandag om acht uur de offertes die niemand heeft opgevolgd. Jij bepaalt per assistent wat die mag. Wijzigen staat uit tot jij het toestaat, gevoelige stappen wachten op jouw goedkeuring, en alles wat het doet wordt gelogd. Het draait op je eigen server, en standaard draait de AI zelf daar ook, dus er gaat niets naar buiten. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/hermiq'}}
+  illustration={<AppMock app="hermiq" />}
 />
 
 <Section spacing="default">
@@ -29,40 +30,40 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="Wat het doet"
-        title="Autonome agents, op je eigen Nextcloud."
+        title="Chat erop los terwijl je apps het werk doen."
         align="stack"
-        lede="Hermiq maakt van een prompt, een set tools en een schema een werkende agent. Geen externe agent-hosting, geen aparte vectordatabase — agents, hun geheugen en hun skills leven allemaal als OpenRegister-objecten in je eigen Nextcloud-omgeving."
+        lede="Een assistent die je CRM, je facturen, je bestanden, je mail en je agenda kent. Jij praat, het handelt. Jij stelt de regels, het houdt zich eraan. Alles blijft op je eigen server."
       />
       <FeatureList>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>}
-          title="Agents met tools en skills."
+          icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
+          title="Praat ermee waar je al praat. Ook op je telefoon."
         >
-          Definieer een agent met een prompt, een model, MCP-tools en installeerbare skills uit de agentskills.io-catalogus. Beheer ze via de Agents-catalogus en het detailscherm.
+          Terug in de auto na een klantbezoek. Open Nextcloud Talk op je telefoon en typ "log mijn gesprek met Jansen, ze willen de offerte in mei". Het gesprek is gelogd, de opvolging gepland, de herinnering klaargezet. Vraag "welke deals zijn deze maand stil gevallen?" en je krijgt de lijst, geen rapport dat je zelf moet bouwen. In een groepsgesprek antwoordt het alleen als je het noemt.
         </FeatureItem>
         <FeatureItem
           icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
-          title="Geplande runs, afgeleverd in Talk."
+          title="Klussen op een vast moment. Maandag om acht uur, klaar."
         >
-          Koppel een schema aan een agent — dagelijks, elk uur, of flow-getriggerd — en de uitkomst landt in een Nextcloud Talk-gesprek (of een notificatie als Talk niet is geïnstalleerd).
+          Nu: iemand denkt eraan de open offertes na te kijken, of niemand. Straks: elke maandag om acht uur zet de assistent de offertes die niemand heeft opgevolgd in je saleschat. Elke ochtend om zeven uur een briefing in de teamchat: wat vandaag moet, wat er vannacht binnenkwam. Reageer in die chat en het pakt op waar het rapport ophield.
         </FeatureItem>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
-          title="Chat, sessies en geheugen."
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>}
+          title="Het kan handelen in elke Conduction-app."
         >
-          Chat met elke agent via een live streaming-gesprek. Sessies bewaren de volledige gespreksgeschiedenis; consoliderend geheugen houdt langlopende agents binnen hun context-budget.
+          Log het gesprek in het CRM. Zet het actiepunt in de notulen. Zoek het contract in Bestanden. Zet de schouw in de agenda. Zet het antwoord klaar in Mail. Elke actie die een app biedt, kan de assistent voor je doen, als jou, met jouw rechten. Wat jij niet kon, kan het ook niet.
         </FeatureItem>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
-          title="Menselijke goedkeuringswachtrij."
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>}
+          title="Jij bepaalt wat het mag. Alles wordt gelogd."
         >
-          Stuur gevoelige agent-acties naar een reviewer-inbox voordat ze uitgevoerd worden. Keur per actie goed of af, met een kill switch op organisatieniveau.
+          Per assistent vink je aan wat die mag lezen en wat die mag wijzigen. Wijzigen staat uit tot jij het aanzet. Gevoelige stappen, zoals een mail naar een klant sturen, wachten eerst in je goedkeuringsbak. Elke stap die het zet, komt in een logboek dat je terug kunt lezen. Eén schakelaar stopt alle assistenten tegelijk.
         </FeatureItem>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-          title="Beheerd via OpenRegister."
+          icon={<svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/></svg>}
+          title="Op je eigen server. Er gaat niets naar buiten."
         >
-          Elke agent, run, geheugen en skill is een OpenRegister-object — gecontroleerd, RBAC'd en multi-tenant, met een run-analyseoverzicht en een quotum- en audit-export per organisatie voor tenant-beheerders.
+          De assistent draait op je Nextcloud, en standaard draait de AI zelf op je eigen hardware. Je klantgegevens reizen niet naar een cloud-AI, tenzij jij daarvoor kiest. Namen en nummers worden weggehaald voordat er iets in het logboek belandt. Gebouwd voor de EU AI Act, dus het papierwerk ligt klaar als iemand ernaar vraagt.
         </FeatureItem>
       </FeatureList>
     </div>
@@ -76,25 +77,186 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <PartnersForApp slug="hermiq" />
 
+<RotatingCards
+  eyebrow={`Drie manieren waarop ${app.name} zijn plek verdient`}
+  title="Het werkt zoals jij werkt. En het werkt voor je."
+  lede="Drie dingen waar je normaal een extra paar handen voor inhuurt. Hier zitten ze bij de werkplek."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automatiseer',
+      title: 'Maandag om acht uur staat de lijst in de chat. Niemand hoefde eraan te denken.',
+      summary: 'Geef de assistent een klus en een tijdstip. Elke maandag: de offertes die niemand heeft opgevolgd, per verkoper, in de saleschat. Elke ochtend: de briefing, wat vandaag moet en wat er vannacht binnenkwam. Elke eerste van de maand: de facturen over de vervaldatum, met klant en bedrag. Of zet het als stap in een automatisering die je tekende: komt er een klacht binnen, dan zet het een samenvatting op het dossier voordat iemand het opent. Elke run wordt gelogd, en het doet alleen wat jij toestond.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Jouw assistent, jouw regels, jouw instructies.',
+      summary: 'Maak één assistent voor sales, één voor kantoor, één voor de wagenparkbeheerder. Per assistent vink je aan wat die mag lezen en wat die mag wijzigen: deze logt gesprekken, die leest alleen. Geef het je eigen instructies: hoe je klanten aanspreekt, welke producten je dit kwartaal naar voren schuift, wat het nooit mag doen. Voeg een vaardigheid toe en het leert een nieuwe taak. Van gedachten veranderd? Vink uit, en het stopt diezelfde minuut.',
+      cta: {label: 'Zo werken de rechten', href: 'https://hermiq.conduction.nl/docs/tool-grants'},
+      panel: <AppMock app="hermiq" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Praat ermee',
+      title: 'Vanaf je telefoon, in de auto, in Nextcloud Talk.',
+      summary: 'Geen nieuwe app om op je telefoon te zetten. De assistent zit in Nextcloud Talk als een collega. Typ "plan een opvolging met Bakker volgende week dinsdag om tien uur" en het staat in je agenda. Vraag "wat hebben we met De Vries afgesproken?" en het leest het terug uit het dossier. In een groepschat spreekt het alleen als je het noemt. Elk bericht draait als jou, met jouw rechten, dus het ziet nooit meer dan jij.',
+      cta: {label: 'Zo werkt de Talk-bot', href: 'https://hermiq.conduction.nl/docs/talk-chat-bridge'},
+      panel: <AgentTrace lines={[
+        'jij: log mijn gesprek met Jansen BV, ze willen de offerte in mei',
+        'assistent: gesprek gelogd op Jansen BV, uitkomst positief',
+        'assistent: opvolging gepland voor 1 mei',
+        'assistent: offerteherinnering klaargezet voor je akkoord',
+      ]} cursor mode="vraagt eerst voordat het iets verandert" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets die we meeleveren"
+  title="Wat je assistenten deden, en wat op je wacht."
+  lede="Installeer het en het dashboard toont de runs van vandaag, wat jouw goedkeuring nodig heeft en wat elke assistent mag doen."
+  widgets={[
+    {
+      title: 'Runs vandaag',
+      desc: 'Hoeveel klussen er draaiden, hoeveel goed afliepen en hoe lang ze duurden. Per assistent, klik door voor het logboek.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 24, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>38</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.05em', color: 'var(--c-mint-500)'}}>97% ok</div>
+          </div>
+          {[
+            {label: 'sales', val: '70%', tone: 'var(--c-cobalt-300)'},
+            {label: 'kantoor', val: '45%', tone: 'var(--c-lavender-300)'},
+            {label: 'wagenpark', val: '25%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 50}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Wacht op jouw goedkeuring',
+      desc: 'Stappen die een assistent wil zetten maar niet zonder jou mag. Keur elke stap goed of af, met de reden die het gaf.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', what: 'mail sturen'},
+            {tone: 'var(--c-orange-knvb)', what: 'mail sturen'},
+            {tone: 'var(--c-lavender-300)', what: 'offerte wijzigen'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 2 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '65%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '45%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.what}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Wat elke assistent mag',
+      desc: 'Per assistent: wat die leest, wat die mag wijzigen en wat altijd jouw goedkeuring nodig heeft. Pas het hier aan.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {label: 'CRM lezen', on: true},
+            {label: 'gesprekken loggen', on: true},
+            {label: 'mail sturen', on: false},
+            {label: 'offertes wijzigen', on: false},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 12, height: 14, clipPath: 'var(--hex-pointy-top)', background: row.on ? 'var(--c-mint-500)' : 'var(--c-cobalt-100)', flexShrink: 0}}></span>
+              <div style={{flex: 1, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-700)'}}>{row.label}</div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: row.on ? 'var(--c-mint-500)' : 'var(--c-cobalt-400)'}}>{row.on ? 'toegestaan' : 'uit'}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow={`Zo sluit ${app.name} aan op je werkplek`}
+  title="Talk, mail, agenda, contacten, bestanden. En elke Conduction-app."
+  lede="De assistent woont waar je team al werkt. Het leest en handelt in de tools die je hebt, als jou, met jouw rechten."
+  layout="side"
+  defaultOpen="talk"
+  items={[
+    {
+      id: 'talk',
+      title: 'Nextcloud Talk, op desktop en telefoon',
+      summary: 'De assistent is een deelnemer in je Talk-gesprekken. Chat er één op één mee, of noem het in een teamruimte. Zijn geplande rapporten landen in de ruimte die jij kiest, en een reactie in die ruimte zet het gesprek voort. Niets te installeren op je telefoon: de Talk-app die je hebt is genoeg. Elke beurt draait als degene die hem typte.',
+      cta: {label: 'Lees de docs', href: 'https://hermiq.conduction.nl'},
+      panel: <AgentTrace lines={[
+        'salesruimte, maandag 08:00',
+        'assistent: 6 offertes zonder opvolging deze week',
+        'assistent: de oudste is Bakker BV, 23 dagen',
+        'jij: plan een gesprek met Bakker voor morgen 10:00',
+        'assistent: gepland, staat in je agenda',
+      ]} cursor mode="draait als jou" />,
+    },
+    {
+      id: 'groupware',
+      title: 'Mail, agenda, contacten en bestanden',
+      summary: 'Het leest je Nextcloud Mail en zet het antwoord klaar. Het zet de opvolging in je Nextcloud Agenda. Het vindt het contact en past het telefoonnummer aan. Het zoekt het contract op in Bestanden en leest je de clausule voor. Alle tools die je al hebt, geen ervan vervangen. Mail sturen is een gevoelige stap, dus het wacht op jouw goedkeuring.',
+      cta: {label: 'Lees de docs', href: 'https://hermiq.conduction.nl'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'apps',
+      title: 'Elke actie in elke Conduction-app',
+      summary: 'Log een gesprek in het CRM. Start de vergadering en voeg een actiepunt toe in Decidesk. Zoek een zaak op in Procest. Vind de factuur in Shillinq. Elke actie die een Conduction-app biedt, is beschikbaar voor de assistent, en jij bepaalt per assistent welke die krijgt. Zelfs zonder enige automatisering is de chat een manier om je apps aan te sturen.',
+      cta: {label: 'Bekijk alle apps', href: '/apps'},
+      panel: <AppMock app="decidesk" />,
+    },
+    {
+      id: 'automation',
+      title: 'Een stap in je automatisering',
+      summary: 'Teken een automatisering en zet de assistent erin als stap. Er komt een klacht binnen: het vat het bericht samen op het dossier en stelt een categorie voor. Een offerte is akkoord: het zet de kick-off-mail klaar zodat jij hem kunt sturen. Gestructureerde antwoorden landen terug op het dossier, zodat de volgende stap ze kan gebruiken.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+  ]}
+/>
+
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Werkt goed met"
-    title="De apps waarop Hermiq leunt."
+    eyebrow="Past goed bij"
+    title="Twee apps om het werk te geven."
     align="stack"
   />
   <PairRow>
     <PairCard
+      href="/apps/pipelinq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
+      name="PipelinQ"
+      why="CRM, offertes en deals. Log het gesprek, plan de opvolging, toon de stille deals, vanuit de chat."
+    />
+    <PairCard
       href="/apps/openregister"
       icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
       name="OpenRegister"
-      why="Agents, geheugen, skills en runs opgeslagen als beheerde, gecontroleerde registers."
+      why="Waar je gegevens wonen, en waar het logboek van elke assistentactie wordt bewaard."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="AI-agents die in je Nextcloud leven."
-  lede={<>Hermiq plant autonome AI-agents op je eigen infrastructuur, beheerd via OpenRegister en afgeleverd in Nextcloud Talk. Open-source, op je eigen data.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  title="Een assistent op je eigen Nextcloud."
+  lede={<>Open source. Gratis te installeren. Draait op je eigen server, en standaard draait de AI zelf daar ook. Werkt in elke Conduction-app op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
 />

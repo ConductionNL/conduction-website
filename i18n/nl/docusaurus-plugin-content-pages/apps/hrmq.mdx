@@ -1,10 +1,10 @@
 ---
 title: HRMQ, Conduction
-description: Open-source HR- en salarisadministratie op Nextcloud. Een Nederlandse loonrekenengine, loonaangifte en pensioenaangifte, plus de dagelijkse HR-workflows.
+description: HR en salarisadministratie op je eigen Nextcloud. Iemand meldt zich ziek en de datums die de wet eist staan dezelfde dag in het dossier. Een contract loopt over zestig dagen af en je hoort het nu. Uren één keer erin, loonstrook en journaalpost eruit. Beta.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -15,13 +15,12 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   version="v0.2"
   locales="NL · EN"
   title="HRMQ"
-  tagline={<>Open-source HR- en salarisadministratie op <span className="next-blue">Nextcloud</span>. Een open-source Nederlandse loonrekenengine, loonaangifte en pensioenaangifte, en de dagelijkse HR-workflows — urenregistratie, verlof, verzuim, zelfservice — daaromheen.</>}
-  intro={<>HRMQ is een open-source HR- en salarisadministratie-app voor Nederlandse en EU-werkgevers, gebouwd op de OpenRegister-datalaag. Het middelpunt is een Nederlandse loonrekenengine — rekenvoorschriften-gebaseerd bruto-naar-nettoverlonen voor belastingjaar 2026, niet gecertificeerd, elke uitkomst voorzien van een engineversie — die de loonaangifte-flow, UPA-pensioenaangifte voor de door APG geadministreerde fondsen, en grootboekboeking en SEPA-nettobetaling naar shillinq voedt. Daaromheen zit de dagelijkse HR-stapel: urenregistratie en declaraties met een goedkeurings-flow, verlof- en verzuimcasusmanagement (Poortwachter), medewerker- en managerzelfservice, urenregistratie onder de Arbeidstijdenwet, in- en uitdienst-wizards, een lichtgewicht ATS, beoordelingscycli, een organogram, HR-documenten via DocuDesk, en een assetregister. Een machine-controleerbaar regelcorpus — EU-arbeidsrichtlijnen, ILO-verdragen, AVG voor medewerkersgegevens, en Nederlands arbeids- en loonheffingenrecht — toetst dit alles op verzoek. Uitgegeven onder EUPL-1.2, onderhouden door Conduction.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Bekijk de documentatie', href: 'https://hrmq.conduction.nl'}}
-  tertiaryCta={{label: 'Bekijk op Codeberg', href: 'https://codeberg.org/Conduction/hrmq'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+  tagline={<>HR en salarisadministratie op je eigen <span className="next-blue">Nextcloud</span>. De termijnen die de wet stelt staan in je agenda op de dag dat ze gaan tellen.</>}
+  intro={<>HRMQ doet de HR-administratie van een Nederlandse werkgever. Uren, declaraties en verlof met een goedkeuringsstap. Ziektedossiers met de wettelijke datums al ingevuld. Contracten die je waarschuwen voordat ze aflopen. Een loonberekening die uren en salaris omzet in een loonstrook, een loonaangiftecijfer en een journaalpost uit dezelfde getallen. Werving, onboarding, offboarding en de laptops daartussen. Gebouwd voor de Nederlandse regels, eerlijk over wat nog niet gecertificeerd is. Uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/hrmq'}}
+  illustration={<AppMock app="hrmq" />}
 />
 
 <Section spacing="default">
@@ -29,36 +28,48 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="Wat het doet"
-        title="De eerste open-source Nederlandse loonengine, plus de aangiftes die erop volgen."
+        title="Ziekte, contracten, salaris, mensen. De datums die geld kosten, op tijd."
         align="stack"
-        lede="HRMQ rekent bruto-naar-netto loon door en voert het resultaat rechtstreeks door naar loonaangifte, pensioenaangifte en de boekhouding — in plaats van te stoppen bij een loonstrook."
+        lede="Het Nederlandse arbeidsrecht is een kalender vol termijnen. Mis er een en het kost een boete, een rechtszaak of een maand extra salaris. HRMQ zet de datums in het dossier op het moment dat ze gaan tellen, controleert je dossiers op verzoek tegen de regels, en laat zien wat jou vandaag nodig heeft."
       />
       <FeatureList>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h2M14 14h4M8 17h6"/></svg>}
-          title="Een Nederlandse loonrekenengine — open source."
-        >
-          Rekenvoorschriften-gebaseerd bruto-naar-nettoverlonen voor belastingjaar 2026. Er bestond nog geen open-source Nederlandse loonengine — de dichtstbijzijnde vergelijkbare oplossing, die van Odoo, is Enterprise-only. Elke uitkomst draagt een <code>engineVersion</code> en een expliciete niet-gecertificeerd-disclaimer, en <code>occ hrmq:payroll:verify</code> draait hetzelfde regelcorpus als eigen zelfcontrole.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>}
-          title="Loonaangifte, van concept tot verzonden."
-        >
-          Een concept → controle → bevestigen → verzenden-flow voor de loonaangifte, met tijdvakcodes volgens Belastingdienst LH 210 en de wettelijke deadline (einde tijdvak plus één kalendermaand, geen weekendverlenging) bewaakt en gemeld als geversioneerde regels. Digipoort-verzending zelf blijft buiten scope — dit is de administratie eromheen.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/><path d="M9 3.5 12 7l3-3.5"/></svg>}
-          title="UPA-pensioenaangifte voor de APG-fondsen."
-        >
-          Een pensioenaangifte per periode en fonds voor ABP, SPW, bpfBOUW, Schoonmaak, PFAB en PWRI, met een controlestap die pas vrijgeeft nadat de bijbehorende loonrun daadwerkelijk is goedgekeurd, geboekt en uitbetaald — plus referentie-integriteits-, volledigheids- en deadline-signaleringsregels in het corpus.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>}
-          title="Grootboekboeking en SEPA-nettobetaling, naar shillinq."
-        >
-          Elke goedgekeurde loonrun levert een sluitende journaalpost van vier regels (bruto loonkosten, werkgeverslasten, loonheffing-schuld, netto-loonschuld) en een conceptbetaalrun met IBAN's en nettobedragen van medewerkers, geleverd aan de boekhoud-app shillinq. HRMQ levert de loon-input; shillinq beheert de goedkeuring, de SEPA-export en de bankreconciliatie.
-        </FeatureItem>
-      </FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>}
+      title="Iemand meldt zich ziek. De vier datums die de wet eist staan dezelfde dag in het dossier."
+    >
+      Vandaag telt iemand weken op een wandkalender en hoopt er geen te missen. In plaats daarvan voer je de eerste ziektedag in en vult HRMQ de datums in die de wet bij ziekte eist: de probleemanalyse in week 6, het plan van aanpak in week 8, de melding bij het UWV in week 42, de eerstejaarsevaluatie in week 52. Mis er geen, betaal geen boete. De gedeelde agenda toont alleen "afwezig" en een naam. Nooit waarom.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>}
+      title="Een tijdelijk contract loopt over zestig dagen af. Je hoort het nu, niet op de laatste dag."
+    >
+      Een contract loopt af en niemand heeft bedacht wat er daarna gebeurt. Vandaag kom je erachter als de medewerker het vraagt. In plaats daarvan staat elk tijdelijk contract dat binnen zestig dagen afloopt zonder opvolger op je dashboard. Voor contracten van zes maanden of langer bewaakt HRMQ de aanzegging die de wet een maand voor het einde eist. Doe je die te laat, dan ben je tot een maand salaris verschuldigd. Doe je hem op tijd en noteer je de datum, dan verdwijnt de waarschuwing.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h2M14 14h4M8 17h6"/></svg>}
+      title="Voer uren en salaris één keer in. Loonstrook, loonaangiftecijfer en journaalpost komen eruit."
+    >
+      Keur de uren goed, draai de salarisrun, en de loonstrook, de cijfers voor de loonaangifte, de pensioenaanlevering en de journaalpost komen allemaal uit dezelfde berekening. Niets overtypen in een tweede systeem, geen getallen die van elkaar afwijken. De journaalpost en de betaalbatch landen in Shillinq om te boeken en te betalen. Eerlijk gezegd: de loonberekening volgt de officiële Nederlandse regels van 2026, maar is nog niet gecertificeerd, en dat staat op elke loonstrook.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/></svg>}
+      title="Een afgewezen kandidaat heeft een verwijderdatum op het moment dat je afwijst."
+    >
+      De privacywet zegt dat het dossier van een afgewezen sollicitant na vier weken weg moet, of na een jaar als hij instemde met je talentenpool. Vandaag moet iemand daaraan denken. In plaats daarvan staat de verwijderdatum op de sollicitatie zodra je hem op afgewezen zet, en de controle vertelt je wanneer die is verstreken. Vacatures, sollicitaties en gesprekken lopen door één pijplijn. Niemand hoeft aan de AVG te denken.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>}
+      title="Een laptop die nog op naam staat van iemand wiens laatste dag vrijdag was. Je ziet het voordat hij weg is."
+    >
+      Laptops, telefoons, auto's, gereedschap en toegangspassen zijn dossiers met een naam erop. Start een offboarding en HRMQ controleert dat niets na de laatste dag nog op naam staat. Start een onboarding en de checklist staat er: identiteit gecontroleerd, contract getekend, loonbelastingverklaring binnen vóór de eerste salarisrun. Elk punt is een vakje waar de controle naar kijkt, geen regel in iemands takenlijst.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg>}
+      title="Iedereen ziet zijn eigen uren, verlof, declaraties en loonstroken. Managers zien hun team."
+    >
+      Een medewerker schrijft uren, dient een declaratie in met de bon, vraagt verlof aan en downloadt een loonstrook, allemaal vanaf zijn eigen pagina. Zijn manager keurt goed, wijst af of heropent vanuit een wachtrij die alleen het eigen team toont. Elke beslissing blijft in het dossier. HR ziet alles, en de controle loopt op verzoek over het geheel.
+    </FeatureItem>
+  </FeatureList>
     </div>
     <AppCrossLinks
       variant="rail"
@@ -70,131 +81,190 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <PartnersForApp slug="hrmq" />
 
-<Section spacing="default">
-  <SectionHead
-    eyebrow="Dagelijkse HR"
-    title="Urenregistratie, verlof, verzuim en zelfservice."
-    align="stack"
-    lede="De workflows die medewerkers en managers wekelijks gebruiken, elk met een eigen goedkeuringsspoor op het OpenRegister-record."
-  />
-  <FeatureList>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
-      title="Urenregistratie met goedkeurings-flow."
-    >
-      Medewerkers loggen uren per periode en project. Managers beoordelen ingediende urenstaten en keuren goed, af, of heropenen ze — de volledige statusgeschiedenis blijft op het record staan.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      title="Declaraties met goedkeurings-flow."
-    >
-      Medewerkers dienen declaraties in met bedrag, categorie en bon. Na goedkeuring gaat de declaratie naar vergoed — een aparte flow ten opzichte van urenregistratie, met een eigen goedkeuringsspoor.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>}
-      title="Verlof en verzuim, met Poortwachter-mijlpalen."
-    >
-      Verlofaanvragen krijgen een wettelijk-minimum verlofsaldo (4× de contractuele wekelijkse uren volgens BW 7:634, dat op 1 juli van het volgende jaar vervalt) getoetst door drie machine-controleerbare regels. Ziektecasussen volgen de Wet-verbetering-poortwachter-mijlpalen — probleemanalyse in week 6, plan van aanpak in week 8, de 42-weken-ziekmelding bij UWV, de eerstejaarsevaluatie in week 52 — als afgeleide, geregelde datums, nooit medische gegevens. Goedgekeurd verzuim synct naar een gewone Nextcloud-agenda die alleen "Afwezig" of "Verlof" toont, nooit een reden of diagnose.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg>}
-      title="Medewerker- en managerzelfservice."
-    >
-      Een Mijn HR-omgeving toont elke medewerker alleen zijn eigen gegevens — verlof, uren, declaraties, loonstroken. Managers krijgen teamgebonden goedkeuringswachtrijen en dashboard-KPI's gefilterd op hun eigen team, gecontroleerd door een regel die de teamkoppeling toetst aan het organogram.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg>}
-      title="Urenregistratie onder de Arbeidstijdenwet."
-    >
-      Klokregistraties per medewerker per dag met opgeslagen gewerkte uren, getoetst aan drie ATW-regels: minimaal 11 uur dagelijkse rust tussen werkdagen (art. 5:3), maximaal 12 uur per dienst (art. 5:7), en de wettelijke pauzetijden (art. 5:4). Een MijnAanwezigheid-zelfservicepagina toont de eigen klokgeschiedenis van de medewerker.
-    </FeatureItem>
-  </FeatureList>
-</Section>
+<RotatingCards
+  eyebrow="Drie manieren waarop HRMQ zijn plek verdient"
+  title="Het werkt zoals jij werkt. En het werkt voor jou."
+  lede="Drie dingen waar je normaal extra voor betaalt. In HRMQ zitten ze ingebouwd."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automatiseer',
+      title: 'Een ziektedossier bereikt week vijf. Het plan ligt al op iemands bureau.',
+      summary: 'Vandaag: HR houdt een spreadsheet met ziektedossiers bij en kijkt erin als iemand eraan denkt. In plaats daarvan stel je het één keer in. Een week voordat de probleemanalyse moet zijn gedaan, landt er een taak op het bureau van de manager. Een contract dat zijn laatste zestig dagen ingaat, zet "beslissen over verlenging" op de lijst van de eigenaar. Een declaratie boven jouw grens wacht op een tweede goedkeuring voordat er iets wordt betaald. Elke maandag een lijst met verlofaanvragen die niemand beantwoordde. Niets vergeten, geen nabellen, geen programmeerwerk.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Een bakkerij, een zorginstelling of een bureau. Dezelfde app, jouw velden.',
+      summary: 'Een zorginstelling wil het BHV-certificaat bij elke medewerker. Een bouwbedrijf wil het kenteken op het bedrijfsmiddel. Een bureau wil de klant op elke urenregel. Voeg het veld toe, verberg het blok dat je nooit gebruikt, sleep de widget die je als eerste bekijkt naar boven. In de draaiende app, in minuten, en je wijzigingen blijven bij elke update bewaard. Een HR-administratie die past bij jouw bedrijf, niet een waar jij in moet passen.',
+      cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
+      panel: <AppMock app="openbuild" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Praat ermee',
+      title: 'Vraag welke contracten dit kwartaal aflopen. Krijg de lijst, geen rapport.',
+      summary: 'Vraag "welke contracten lopen de komende zestig dagen af?" en de namen staan er. Vraag "hoeveel open ziektedossiers hebben we?" en je krijgt het getal, niet de diagnoses, want die worden nooit opgeslagen. De assistent leest dezelfde dossiers die jij mag zien en vraagt het voordat hij iets wijzigt. Goedkeuren, betalen en aannemen blijft bij jou.',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'jij: welke contracten lopen de komende zestig dagen af?',
+        'assistent: 2 tijdelijke contracten, allebei zonder opvolger',
+        'jij: is de aanzegging al de deur uit?',
+        'assistent: één wel, op 3 mei. Één nog niet, moet vóór 15 juni',
+      ]} cursor mode="leest alleen, vraagt het voordat hij iets wijzigt" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets die we meeleveren"
+  title="Wat jou vandaag nodig heeft, op het dashboard dat je al opent."
+  lede="Installeer HRMQ en het dashboard past zich aan je rol aan. Een medewerker ziet zijn eigen uren en aanvragen. Een manager ziet wat op goedkeuring wacht. HR ziet de ziektedossiers die de langdurige grens naderen en de contracten die bijna aflopen."
+  widgets={[
+    {
+      title: 'Wacht op jouw goedkeuring',
+      desc: 'Voor de manager. Uren, declaraties en verlofaanvragen van je eigen team, wachtend op een ja of nee. Klik en je staat in de wachtrij.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-orange-knvb)'}}>7</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>goed te keuren</div>
+          </div>
+          {[
+            {label: 'uren', val: '60%', tone: 'var(--c-cobalt-300)'},
+            {label: 'declaraties', val: '35%', tone: 'var(--c-lavender-300)'},
+            {label: 'verlof', val: '20%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Contracten die bijna aflopen',
+      desc: 'Voor HR. Tijdelijke contracten die binnen zestig dagen aflopen, eerste eerst, met of de aanzegging de deur uit is.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', stage: '12 dagen'},
+            {tone: 'var(--c-orange-knvb)', stage: '31 dagen'},
+            {tone: 'var(--c-lavender-300)', stage: '48 dagen'},
+            {tone: 'var(--c-mint-500)', stage: '59 dagen'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Open ziektedossiers',
+      desc: 'Voor HR. Open dossiers, en de dossiers die de grens van 42 weken naderen waarop de melding bij het UWV moet. Daarnaast de verlofaanvragen die nog openstaan en de verlofuren die deze maand zijn goedgekeurd.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>4</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>open dossiers</div>
+          </div>
+          {[
+            {label: 'week 42', val: '25%', tone: 'var(--c-orange-knvb)'},
+            {label: 'verlof open', val: '45%', tone: 'var(--c-lavender-300)'},
+            {label: 'goedgekeurd', val: '70%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 62}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="Zo sluit HRMQ aan op je werkplek"
+  title="Agenda, boekhouding en documenten. Al van jou."
+  lede="Wie er weg is, wat de salarissen kosten, en het contract op papier. HRMQ geeft elk daarvan door aan de plek waar je team al kijkt. Dat is het punt van een werkplek."
+  layout="side"
+  defaultOpen="calendar"
+  items={[
+    {
+      id: 'calendar',
+      title: 'Wie er weg is, in de agenda die iedereen al deelt',
+      summary: 'Keur een verlofaanvraag goed en hij staat dezelfde minuut in een gedeelde Nextcloud Agenda. Een ziektedossier verschijnt als "afwezig" met een naam. Verder niets, geen reden, geen diagnose, nooit. Het team plant eromheen vanuit de agenda die het al opent, en HR beantwoordt nooit meer "is Sanne er donderdag?".',
+      cta: {label: 'Lees de docs', href: 'https://hrmq.conduction.nl'},
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
+            <div style={{height: 4, width: '55%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '80%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+          </div>
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Verlof, Sanne de Vries</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>gedeelde agenda Team, geen reden zichtbaar</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'shillinq',
+      title: 'De salarisrun landt vanzelf in de boekhouding',
+      summary: 'Elke goedgekeurde salarisrun levert een sluitende journaalpost en een conceptbetaalbatch met het rekeningnummer en nettoloon van elke medewerker. Allebei landen ze in Shillinq. Je boekhouder ziet de loonkosten waar de rest van de kosten staat, en betaalt de batch van daaruit. Niemand typt de totalen over.',
+      cta: {label: 'Bekijk Shillinq', href: '/apps/shillinq'},
+      panel: <AppMock app="shillinq" />,
+    },
+    {
+      id: 'docudesk',
+      title: 'Het contract, de loonstrook en de jaaropgave, als documenten',
+      summary: 'Arbeidscontract, aanbiedingsbrief, werkgeversverklaring, getuigschrift, loonstrook en jaaropgave worden via DocuDesk uit het dossier gegenereerd en er weer op opgeslagen. De medewerker downloadt zijn loonstrook vanaf zijn eigen pagina. Pas het briefpapier één keer aan en elk nieuw document draagt het.',
+      cta: {label: 'Bekijk DocuDesk', href: '/apps/docudesk'},
+      panel: <AppMock app="docudesk" />,
+    },
+  ]}
+/>
 
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Personeelszaken"
-    title="Van eerste tot laatste werkdag, plus de documenten en assets ertussenin."
-    align="stack"
-    lede="Casusgestuurde HR-processen met geregelde checklists, een organogram waar andere onderdelen op leunen, en documenten die zichzelf genereren uit dezelfde registers."
-  />
-  <FeatureList>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
-      title="In- en uitdienst-wizards."
-    >
-      Indiensttreding volgt de WID-identiteitscontrole, de BW 7:652-proeftijdgrenzen, en de loonheffingenverklaring vóór de eerste loonrun. Uitdiensttreding volgt de transitievergoedingsberekening, de uitbetaling van het verlofsaldo, en de getuigschriftverplichting. Elk is een declaratieve casus met geregelde checklistvelden, geen vrije-tekst to-do-lijst.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/></svg>}
-      title="Werving: vacatures en sollicitaties."
-    >
-      Publiceer vacatures en laat sollicitaties door een fasepijplijn lopen waarin afwijzen vanuit elke actieve fase bereikbaar is. Sollicitantgegevens staan in één object met één bewaartermijn-klok — de bewaartermijn-richtlijn van de Autoriteit Persoonsgegevens (verwijderen binnen 4 weken na afwijzing, tot 1 jaar met expliciete toestemming) is een opgeslagen, geregeld feit.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 20 12 16.5 6.5 20 8 13.5 3 9l6.5-.5z"/></svg>}
-      title="Beoordelingen en beoordelingscycli."
-    >
-      Eén beoordeling per medewerker per cyclus bevat rating, sterktes, ontwikkelpunten en afspraken in één dossier — geen aparte doelenentiteit om synchroon te houden. Functiescheiding wordt afgedwongen bij het vaststellen, en een regel toetst dat een vastgestelde beoordeling met rating en afspraken daadwerkelijk een ontslagdossier vormt onder BW 7:669.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="19" r="2"/><path d="M12 7v5M12 12l-6 5M12 12l6 5"/></svg>}
-      title="Een organogram waar andere onderdelen op leunen."
-    >
-      Een zelfverwijzende afdelingshiërarchie en periodegebonden plaatsingen die medewerkers aan afdelingen koppelen, getoetst op een cyclusvrije structuur. Datzelfde organogram onderbouwt de managerzelfservice-afbakening en de asset-controleregels.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>}
-      title="HR-documenten, gegenereerd via DocuDesk."
-    >
-      Arbeidsovereenkomst, aanbiedingsbrief, werkgeversverklaring, getuigschrift, loonstrook en jaaropgaaf renderen allemaal vanuit DocuDesk-sjablonen en komen terug op het record als document of loonstrook-PDF — HRMQ stelt de data samen, DocuDesk rendert het, en de functie degradeert netjes als DocuDesk niet geïnstalleerd is.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>}
-      title="Een assetregister met beheerregistratie."
-    >
-      Laptops, telefoons, voertuigen, gereedschap en toegangspassen als records met periodegebonden uitgiftes die assets aan medewerkers koppelen, getoetst zodat niets uitgegeven blijft staan na iemands uitdiensttreding.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>}
-      title="Signalering bij aflopende contracten."
-    >
-      Het regelcorpus signaleert een tijdelijk contract dat binnen 60 dagen afloopt zonder opvolger, en handhaaft de aanzegplicht — schriftelijke kennisgeving één maand voordat een tijdelijk contract van zes maanden of langer eindigt, volgens BW 7:668.
-    </FeatureItem>
-  </FeatureList>
-</Section>
-
-<Section spacing="default">
-  <SectionHead
-    eyebrow="Werkt goed met"
-    title="Drie apps die de HR- en salarisstapel compleet maken."
+    eyebrow="Past goed bij"
+    title="Twee apps die HR en salaris compleet maken."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Medewerker-, contract-, loonrun-, loonstrook-, aangifte-, verlof- en asset-objecten als typed registers."
-    />
-    <PairCard
       href="/apps/shillinq"
       icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>}
       name="Shillinq"
-      why="Elke goedgekeurde loonrun boekt een grootboekpost en een SEPA-betaalrun rechtstreeks in de boekhouding."
+      why="Boekhouding en betalingen. Elke goedgekeurde salarisrun boekt zijn journaalpost en betaalbatch rechtstreeks in de boekhouding."
     />
     <PairCard
       href="/apps/docudesk"
       icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
       name="DocuDesk"
-      why="Contracten, verklaringen, loonstroken en jaaropgaven renderen vanuit DocuDesk-sjablonen gekoppeld aan HRMQ's registers."
+      why="Contracten, verklaringen, loonstroken en jaaropgaven als documenten, gegenereerd uit het dossier en er weer op opgeslagen."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="HR- en salarisadministratie die je compliance-team kan controleren."
-  lede={<>HRMQ draait een Nederlandse loonengine, loonaangifte en pensioenaangifte, en de dagelijkse HR-workflows op één register — onderbouwd door een regelengine die in één auditrun laat zien welke arbeidsrecht- en loonheffingenregels je data daadwerkelijk naleeft. Open-source, op je eigen Nextcloud.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  title="HR en salarisadministratie op je eigen Nextcloud."
+  lede={<>Open source. Gratis te installeren. Personeelsgegevens blijven op je eigen server. HRMQ draait op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
 />

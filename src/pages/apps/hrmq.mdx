@@ -1,10 +1,10 @@
 ---
 title: HRMQ, Conduction
-description: Open-source HR and payroll administration on Nextcloud. A Dutch payroll calculation engine, wage-tax and pension filing, plus the everyday HR workflows.
+description: HR and payroll on your own Nextcloud. Someone reports sick and the dates the law demands are on the case the same day. A contract ends in sixty days and you hear now. Hours in once, payslip and journal entry out. Beta.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -15,11 +15,12 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   version="v0.2"
   locales="NL · EN"
   title="HRMQ"
-  tagline={<>Open-source HR and payroll administration on <span className="next-blue">Nextcloud</span>. An open-source Dutch payroll calculation engine, wage-tax and pension filing, and the everyday HR workflows — timesheets, leave, verzuim, self-service — that run around it.</>}
-  intro={<>HRMQ is an open-source HR and payroll app for Dutch and EU employers, built on the OpenRegister data layer. At its centre is a Dutch payroll calculation engine — rekenvoorschriften-based gross-to-net verlonen for the 2026 tax year, not certified, every output stamped with an engine version — that feeds a loonaangifte wage-tax filing lifecycle, UPA pension filing for the APG-administered funds, and GL posting and SEPA net-pay batches into shillinq. Around that sits the everyday HR stack: timesheets and expense claims with an approval workflow, leave and verzuim (Poortwachter) case management, employee and manager self-service, Arbeidstijdenwet time-attendance, onboarding and offboarding wizards, a lightweight ATS, performance reviews, an org chart, HR documents through DocuDesk, and an asset register. A machine-checkable rule corpus — EU labour directives, ILO conventions, GDPR for employee data, and Dutch labour and wage-tax law — audits all of it on demand. Released under EUPL-1.2 and maintained by Conduction.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://hrmq.conduction.nl'}}
-  tertiaryCta={{label: 'View on Codeberg', href: 'https://codeberg.org/Conduction/hrmq'}}
+  tagline={<>HR and payroll on your own <span className="next-blue">Nextcloud</span>. The deadlines the law sets are on your calendar the day they start counting.</>}
+  intro={<>HRMQ runs the HR administration of a Dutch employer. Hours, expenses and leave with an approval step. Sickness cases with the statutory dates already filled in. Contracts that warn you before they end. A payroll calculation that turns hours and salary into a payslip, a wage tax figure and a journal entry from the same numbers. Recruiting, onboarding, offboarding and the laptops in between. Built for the Dutch rules, honest about what is not certified yet. Released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/hrmq'}}
+  illustration={<AppMock app="hrmq" />}
 />
 
 <Section spacing="default">
@@ -27,36 +28,48 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="What it does"
-        title="The first open-source Dutch payroll engine, plus the filings it feeds."
+        title="Sickness, contracts, payroll, people. The dates that cost money, on time."
         align="stack"
-        lede="HRMQ calculates gross-to-net payroll and carries the result straight into wage-tax filing, pension filing, and the books — instead of stopping at a payslip."
+        lede="Dutch employment law is a calendar of deadlines. Miss one and it costs a fine, a lawsuit or a month of extra salary. HRMQ puts the dates on the record the moment they start counting, checks your files against the rules on demand, and shows you what needs you today."
       />
       <FeatureList>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h2M14 14h4M8 17h6"/></svg>}
-          title="A Dutch payroll calculation engine — open source."
-        >
-          Rekenvoorschriften-based gross-to-net verlonen for the 2026 tax year. No open-source Dutch payroll engine existed before this one — the nearest comparable, Odoo's, is Enterprise-only. Every output carries an <code>engineVersion</code> and an explicit not-certified disclaimer, and <code>occ hrmq:payroll:verify</code> runs the same rule corpus as its own self-check.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>}
-          title="Loonaangifte, from draft to sent."
-        >
-          A create → review → confirm → send lifecycle for the wage-tax filing, with tijdvakcodes per Belastingdienst LH 210 and the statutory deadline (period end plus one calendar month, no weekend extension) tracked and alerted as versioned rules. Digipoort transport itself stays out of scope — this is the administration around it.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/><path d="M9 3.5 12 7l3-3.5"/></svg>}
-          title="UPA pension filing for the APG funds."
-        >
-          A pension filing per period and fund for ABP, SPW, bpfBOUW, Schoonmaak, PFAB, and PWRI, with a review step that's gated on the referenced payroll run actually being approved, posted, and paid — plus reference-integrity, monthly-completeness, and deadline-alert rules in the corpus.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>}
-          title="GL posting and SEPA net-pay, into shillinq."
-        >
-          Every approved payroll run produces a balanced four-line journal entry (bruto loonkosten, werkgeverslasten, loonheffing-schuld, netto-loonschuld) and a draft payment run with employee IBANs and net amounts, delivered into the shillinq bookkeeping app. HRMQ contributes the payroll-shaped input; shillinq owns the approval, the SEPA export, and the bank reconciliation.
-        </FeatureItem>
-      </FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>}
+      title="Someone reports sick. The four dates the law demands are on the case the same day."
+    >
+      Today someone counts weeks on a wall calendar and hopes not to miss one. Instead, you enter the first sick day and HRMQ fills in the dates Dutch sickness law demands: the problem analysis in week 6, the plan of action in week 8, the report to the benefits agency in week 42, the first-year review in week 52. Miss none, pay no fine. The shared calendar shows only "absent" and a name. Never why.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>}
+      title="A fixed-term contract ends in sixty days. You hear now, not on the last day."
+    >
+      A contract runs out and nobody planned what happens next. Today you find out when the person asks. Instead, every fixed-term contract ending within sixty days with no successor is on your dashboard. For contracts of six months or more, HRMQ tracks the written notice the law requires one month before the end. Send it late and you owe up to a month of salary. Send it on time and note the date, and the warning goes away.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h2M14 14h4M8 17h6"/></svg>}
+      title="Enter hours and salary once. Payslip, wage tax figure and journal entry come out."
+    >
+      Approve the hours, run payroll, and the payslip, the wage tax return figures, the pension filing and the journal entry all come from the same calculation. No re-keying into a second system, no numbers that disagree. The journal entry and the payment batch land in Shillinq for booking and paying. Honest line: the payroll calculation follows the official Dutch 2026 rules but is not certified yet, and it says so on every payslip.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/></svg>}
+      title="A rejected candidate has a deletion date the moment you reject."
+    >
+      Privacy law says a rejected applicant's file goes after four weeks, or after a year if they agreed to stay in your talent pool. Today someone has to remember. Instead, the deletion date is on the application the moment you move it to rejected, and the check tells you when it has passed. Vacancies, applications and interviews run through one pipeline. Nobody has to remember GDPR.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>}
+      title="A laptop still checked out to someone whose last day was Friday. You see it before they go."
+    >
+      Laptops, phones, cars, tools and access passes are records with a name on them. Start an offboarding and HRMQ checks that nothing stays checked out past the last day. Start an onboarding and the checklist is there: identity checked, contract signed, tax form in before the first payroll. Each item is a box the check looks at, not a line in someone's to-do list.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg>}
+      title="Everyone sees their own hours, leave, expenses and payslips. Managers see their team."
+    >
+      An employee logs hours, submits an expense claim with the receipt, requests leave and downloads a payslip, all from their own page. Their manager approves, rejects or reopens from a queue that shows only their own team. Every decision stays on the record. HR sees everything, and the check runs across all of it on demand.
+    </FeatureItem>
+  </FeatureList>
     </div>
     <AppCrossLinks
       variant="rail"
@@ -68,131 +81,190 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <PartnersForApp slug="hrmq" />
 
-<Section spacing="default">
-  <SectionHead
-    eyebrow="Everyday HR"
-    title="Timesheets, leave, verzuim, and self-service."
-    align="stack"
-    lede="The workflows employees and managers touch every week, each with its own approval trail on the OpenRegister-backed record."
-  />
-  <FeatureList>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
-      title="Timesheets with an approval workflow."
-    >
-      Employees log hours per period and project. Managers review submitted timesheets and approve, reject, or reopen them — the full state history stays on the record.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      title="Expense claims with an approval workflow."
-    >
-      Employees submit expense claims with amount, category, and receipt. Once approved, the claim moves to reimbursed — a separate workflow from timesheets, with its own approval trail.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>}
-      title="Leave and verzuim, with Poortwachter milestones."
-    >
-      Leave requests carry a statutory-minimum leave balance (4× contractual weekly hours per BW 7:634, lapsing 1 July the following year) checked by three machine-checkable rules. Sickness cases track the Wet-verbetering-poortwachter milestones — probleemanalyse in week 6, plan van aanpak in week 8, the 42-weken ziekmelding at UWV, the eerstejaarsevaluatie in week 52 — as derived, rule-audited dates, never medical data. Approved absence syncs to a plain Nextcloud calendar showing only "Afwezig" or "Verlof", never a reason or diagnosis.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg>}
-      title="Employee and manager self-service."
-    >
-      A Mijn HR surface shows each employee only their own records — leave, timesheets, expenses, payslips. Managers get team-scoped approval queues and dashboard KPIs filtered to their own team, kept honest by a rule that checks the team stamp against the org chart.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg>}
-      title="Time & attendance under the Arbeidstijdenwet."
-    >
-      Per-employee clock records with stored worked hours, checked against three ATW rules: at least 11 hours of daily rest between working days (art. 5:3), at most 12 hours per shift (art. 5:7), and the statutory break tiers (art. 5:4). A MijnAanwezigheid self-service page shows the employee's own clock history.
-    </FeatureItem>
-  </FeatureList>
-</Section>
+<RotatingCards
+  eyebrow="Three ways HRMQ earns its place"
+  title="It works the way you work. And it works for you."
+  lede="Three things you would normally pay extra for. In HRMQ they are built in."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automate',
+      title: 'A sick case reaches week five. The plan is already on someone\'s desk.',
+      summary: 'Today: HR keeps a spreadsheet of sick cases and checks it when they remember. Instead, set it up once. A week before the problem analysis is due, a task lands on the manager\'s desk. A contract that enters its last sixty days puts "decide on renewal" on the owner\'s list. An expense claim over your limit waits for a second approval before anything is paid. Every Monday, a list of leave requests nobody answered. Nothing forgotten, no chasing, no coding.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'A bakery, a care home or an agency. Same app, your fields.',
+      summary: 'A care home wants the emergency-response certificate on every employee. A construction firm wants the vehicle plate on the asset. An agency wants the client on every timesheet line. Add the field, hide the block you never use, drag the widget you check first to the top. In the running app, in minutes, and your changes stay with every update. HR administration that fits your business, not one you fit into.',
+      cta: {label: 'How customising works', href: '/apps/openbuild'},
+      panel: <AppMock app="openbuild" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Talk to it',
+      title: 'Ask which contracts end this quarter. Get the list, not a report.',
+      summary: 'Ask "which contracts end in the next sixty days?" and the names are there. Ask "how many open sick cases do we have?" and you get the number, not the diagnoses, because those are never stored. The assistant reads the same records you are allowed to see and asks before it changes anything. Approving, paying and hiring stay with you.',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: which contracts end in the next sixty days?',
+        'assistant: 2 fixed-term contracts, both without a successor',
+        'you: has the written notice gone out?',
+        'assistant: one yes, on 3 May. One not yet, due before 15 June',
+      ]} cursor mode="reads only, asks before it changes anything" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="What needs you today, on the dashboard you already open."
+  lede="Install HRMQ and the dashboard fits your role. An employee sees their own hours and requests. A manager sees what waits for approval. HR sees the sick cases nearing the long-term limit and the contracts about to end."
+  widgets={[
+    {
+      title: 'Waiting for your approval',
+      desc: 'For the manager. Hours, expense claims and leave requests from your own team, waiting for a yes or no. Click and you are on the queue.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-orange-knvb)'}}>7</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>to approve</div>
+          </div>
+          {[
+            {label: 'hours', val: '60%', tone: 'var(--c-cobalt-300)'},
+            {label: 'expenses', val: '35%', tone: 'var(--c-lavender-300)'},
+            {label: 'leave', val: '20%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Contracts about to end',
+      desc: 'For HR. Fixed-term contracts ending within sixty days, soonest first, with whether the written notice went out.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', stage: '12 days'},
+            {tone: 'var(--c-orange-knvb)', stage: '31 days'},
+            {tone: 'var(--c-lavender-300)', stage: '48 days'},
+            {tone: 'var(--c-mint-500)', stage: '59 days'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Open sick cases',
+      desc: 'For HR. Open cases, and the ones nearing the 42-week limit where the report to the benefits agency is due. Next to it, leave requests still open and leave hours approved this month.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>4</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>open cases</div>
+          </div>
+          {[
+            {label: 'week 42', val: '25%', tone: 'var(--c-orange-knvb)'},
+            {label: 'leave open', val: '45%', tone: 'var(--c-lavender-300)'},
+            {label: 'approved', val: '70%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 62}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="How HRMQ plugs into the workspace"
+  title="Calendar, books and documents. Already yours."
+  lede="Who is away, what payroll costs, and the contract on paper. HRMQ hands each of them to the place your team already looks. That is the point of a workspace."
+  layout="side"
+  defaultOpen="calendar"
+  items={[
+    {
+      id: 'calendar',
+      title: 'Who is away, in the calendar everyone already shares',
+      summary: 'Approve a leave request and it is in a shared Nextcloud Calendar the same minute. A sick case appears as "absent" with a name. Nothing else, no reason, no diagnosis, ever. The team plans around it from the calendar they already open, and HR never answers "is Sanne in on Thursday?" again.',
+      cta: {label: 'Read the docs', href: 'https://hrmq.conduction.nl'},
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
+            <div style={{height: 4, width: '55%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '80%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+          </div>
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Leave, Sanne de Vries</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>shared calendar Team, no reason shown</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'shillinq',
+      title: 'Payroll lands in the books by itself',
+      summary: 'Every approved payroll run produces a balanced journal entry and a draft payment batch with every employee\'s account number and net pay. Both land in Shillinq. Your bookkeeper sees the salary costs where the rest of the costs are, and pays the batch from there. Nobody types the totals over.',
+      cta: {label: 'See Shillinq', href: '/apps/shillinq'},
+      panel: <AppMock app="shillinq" />,
+    },
+    {
+      id: 'docudesk',
+      title: 'The contract, the payslip and the annual statement, as documents',
+      summary: 'Employment contract, offer letter, employer statement, reference, payslip and annual statement are generated from the record through DocuDesk and stored back on it. The employee downloads their payslip from their own page. Change the letterhead once and every new document carries it.',
+      cta: {label: 'See DocuDesk', href: '/apps/docudesk'},
+      panel: <AppMock app="docudesk" />,
+    },
+  ]}
+/>
 
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="People operations"
-    title="From first day to last, plus the documents and assets in between."
-    align="stack"
-    lede="Case-managed HR processes with rule-audited checklists, an org chart other features resolve against, and documents that render themselves from the same registers."
-  />
-  <FeatureList>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
-      title="Onboarding and offboarding wizards."
-    >
-      Onboarding tracks the WID identity check, BW 7:652 proeftijd limits, and the loonheffingenverklaring before the first payroll run. Offboarding tracks the transitievergoeding calculation, leave-balance payout, and the getuigschrift obligation. Each is a declarative case with rule-audited checklist fields, not a free-text to-do list.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/></svg>}
-      title="Recruiting: vacancies and applications."
-    >
-      Publish vacancies and run applications through a stage pipeline where rejection is reachable from every active stage. Candidate PII lives in one object with one retention clock — the Autoriteit Persoonsgegevens sollicitatie-bewaartermijn (delete within 4 weeks of rejection, up to 1 year with explicit opt-in) is a stored, rule-checked fact.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 20 12 16.5 6.5 20 8 13.5 3 9l6.5-.5z"/></svg>}
-      title="Performance reviews and cycles."
-    >
-      A review per employee per cycle carries rating, sterktes, ontwikkelpunten, and agreements inside one dossier — no separate goal entity to keep in sync. Separation of duties is enforced on vaststellen, and a rule checks that a finalised review with a rating and agreements actually forms an ontslagdossier under BW 7:669.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="19" r="2"/><path d="M12 7v5M12 12l-6 5M12 12l6 5"/></svg>}
-      title="An org chart that other features resolve against."
-    >
-      A self-referencing unit hierarchy and effective-dated placements linking employees to units, integrity-checked for a cycle-free structure. The same org chart grounds manager self-service scoping and asset-custody checks.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>}
-      title="HR documents, generated through DocuDesk."
-    >
-      Arbeidsovereenkomst, aanbiedingsbrief, werkgeversverklaring, getuigschrift, loonstrook, and jaaropgaaf all render from DocuDesk templates and land back on the record as documents or payslip PDFs — HRMQ assembles the data, DocuDesk renders it, and the feature degrades gracefully when DocuDesk isn't installed.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>}
-      title="An asset register with custody tracking."
-    >
-      Laptops, phones, vehicles, tools, and access passes as records with effective-dated uitgiftes linking assets to employees, integrity-checked so nothing stays checked out past someone's offboarding date.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>}
-      title="Contract-expiry signals."
-    >
-      The rule corpus flags a fixed-term contract ending within 60 days with no successor lined up, and enforces the aanzegplicht — written notice one month before a six-month-plus fixed term ends, per BW 7:668.
-    </FeatureItem>
-  </FeatureList>
-</Section>
-
-<Section spacing="default">
-  <SectionHead
     eyebrow="Pairs well with"
-    title="Three apps that complete the HR and payroll stack."
+    title="Two apps that complete HR and payroll."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Employee, contract, payroll-run, payslip, filing, leave, and asset objects as typed registers."
-    />
-    <PairCard
       href="/apps/shillinq"
       icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>}
       name="Shillinq"
-      why="Every approved payroll run posts a GL journal entry and a draft SEPA payment run straight into the books."
+      why="Bookkeeping and payments. Every approved payroll run posts its journal entry and payment batch straight into the books."
     />
     <PairCard
       href="/apps/docudesk"
       icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
       name="DocuDesk"
-      why="Contracts, verklaringen, loonstroken, and jaaropgaven render from DocuDesk templates bound to HRMQ's registers."
+      why="Contracts, statements, payslips and annual statements as documents, generated from the record and stored back on it."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="Payroll and HR administration your compliance team can check."
-  lede={<>HRMQ runs a Dutch payroll engine, wage-tax and pension filing, and the everyday HR workflows on one register — backed by a rule engine that tells you, in one audit run, which labour-law and wage-tax rules your data actually satisfies. Open-source, on your own Nextcloud.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+  title="HR and payroll on your own Nextcloud."
+  lede={<>Open source. Free to install. Employee data stays on your own server. HRMQ runs on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
 />
