@@ -4,7 +4,7 @@ description: Borden, backlog en uren voor teams die dingen bouwen en repareren, 
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, KanbanMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -18,9 +18,9 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   tagline={<>Borden, backlog en uren voor teams die dingen bouwen en repareren, op je eigen <span className="next-blue">Nextcloud</span>. Maak af voordat je begint.</>}
   intro={<>Planix is een open-source projectbord voor het team dat je product bouwt of je systemen draaiende houdt. Elk project krijgt een bord met kolommen die jij kiest. Een kolom houdt maar zoveel kaarten, dus de zesde wacht en de bottleneck laat zichzelf zien. Ideeën gaan in de backlog, niet in iemands hoofd. De uren op de taak zijn aan het eind van de maand de uren per project. Gemaakt voor ontwikkel- en IT-teams, simpel genoeg voor iedereen die werk in fases doet. Uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
   primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=planix'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/planix'}}
-  illustration={<AppMock app="planix" />}
+  illustration={<KanbanMock />}
 />
 
 <Section spacing="default">
@@ -73,12 +73,10 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   </div>
 </Section>
 
-<PartnersForApp slug="planix" />
-
 <RotatingCards
-  eyebrow="Drie manieren waarop Planix zijn plek verdient"
+  eyebrow="Vier manieren waarop Planix zijn plek verdient"
   title="Het werkt zoals jij werkt. En het werkt voor jou."
-  lede="Drie dingen waar je normaal extra voor betaalt. In Planix zitten ze ingebouwd."
+  lede="Vier dingen waar je normaal extra voor betaalt. In Planix zitten ze ingebouwd."
   cards={[
     {
       tone: 'forest',
@@ -86,7 +84,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Een kaart bereikt "Klaar". De rest gebeurt vanzelf.',
       summary: 'Vandaag: een taak is af en iemand moet eraan denken de klant te informeren, de sheet bij te werken en de volgende te starten. In plaats daarvan stel je het één keer in. Zodra een kaart naar "Klaar" gaat, verliest de taak die erop wachtte zijn badge en landt hij op de lijst van de volgende persoon. Een kaart die langer dan drie dagen in "Review" staat, zet een seintje op het bureau van de lead. Elke vrijdag een lijst met taken zonder geschreven uren. Niets vergeten, geen nabellen, geen programmeerwerk.',
       cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -94,7 +92,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Jouw kolommen, jouw labels, jouw limieten.',
       summary: 'Een supportteam wil "Wacht op klant" als kolom. Een bouwteam wil "Testen" tussen "Mee bezig" en "Klaar". Een studio wil een label per klant. Voeg de kolom toe, stel de limiet in, voeg het label toe, en geef elk project een eigen kleur. In de draaiende app, in minuten, en je wijzigingen blijven bij elke update bewaard. Een bord dat past bij hoe je team echt werkt, niet een waar je het team omheen buigt.',
       cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
-      panel: <AppMock app="openbuild" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -109,13 +107,21 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         'assistent: 46 uur geschreven, 52 geschat',
       ]} cursor mode="leest alleen, vraagt het voordat hij iets wijzigt" />,
     },
+    {
+      tone: 'mint',
+      eyebrow: 'Laat klanten zichzelf helpen',
+      title: 'Je klant volgt het project zonder jou te bellen.',
+      summary: <>De klant die de website bestelde heeft geen plek in je Nextcloud nodig. Via <a href="/apps/portaliq">Portaliq</a> logt hij in op zijn eigen portaal en ziet hij zijn projecten en hoe ver elk project is, de taken die op hem wachten, en de uren die al zijn besteed tegenover de schatting. De externe die je inhuurde schrijft vanuit hetzelfde portaal uren op zijn eigen taken. Minder "hoe staat het ervoor?"-telefoontjes, en het antwoord is altijd het bord van vandaag, niet de mail van vorige week.</>,
+      cta: {label: 'Bekijk het klantportaal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Wat je als eerste ziet"
-  title="Je eigen werk, vóór het bord van iemand anders."
-  lede="Open Planix en je dashboard toont je open taken en taken over tijd, de projecten die je het laatst aanraakte, en wat deze week af moet. Klik op een getal en je staat in de lijst."
+  title="We leveren de widgets die je nodig hebt"
+  lede={<>Open Planix en je dashboard toont je open taken en taken over tijd, de projecten die je het laatst aanraakte, en wat deze week af moet. Klik op een getal en je staat in de lijst. Ontwerp je eigen widgets met <a href="/apps/openbuild">OpenBuild</a>, of bouw je eigen dashboard van al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
       title: 'Mijn open taken en taken over tijd',
@@ -216,15 +222,15 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     },
     {
       id: 'procest',
-      title: 'Een zaak in Procest wordt een project op het bord',
-      summary: 'Een vergunningaanvraag of een klacht in Procest vraagt om echt werk. Geef het project en zijn taken het zaaknummer, en iedereen op het bord weet voor welke zaak het werk is. Vanuit de taak spring je naar de zaak. Een project rechtstreeks vanuit de zaak starten staat op de planning.',
+      title: 'Een zaak wordt een project op het bord',
+      summary: <>Een vergunningaanvraag of een klacht in <a href="/apps/procest">Procest</a> vraagt om echt werk. Geef het project en zijn taken het zaaknummer, en iedereen op het bord weet voor welke zaak het werk is. Vanuit de taak spring je naar de zaak. Een project rechtstreeks vanuit de zaak starten staat op de planning.</>,
       cta: {label: 'Bekijk Procest', href: '/apps/procest'},
       panel: <AppMock app="procest" />,
     },
     {
       id: 'portal',
       title: 'Een externe schrijft zijn uren vanuit het portaal',
-      summary: 'De freelancer of het bureau dat je inhuurde heeft geen plek in je Nextcloud nodig. Via het portaal zien ze de taken en projecten die van hen zijn, en schrijven ze daar hun uren op. Jij ziet de uren op dezelfde taak als die van je eigen team, en verder is niets van jou voor hen zichtbaar.',
+      summary: <>De freelancer of het bureau dat je inhuurde heeft geen plek in je Nextcloud nodig. Via <a href="/apps/portaliq">Portaliq</a> zien ze de taken en projecten die van hen zijn, en schrijven ze daar hun uren op. Jij ziet de uren op dezelfde taak als die van je eigen team, en verder is niets van jou voor hen zichtbaar.</>,
       cta: {label: 'Bekijk Portaliq', href: '/apps/portaliq'},
       panel: <AppMock app="portaliq" />,
     },
@@ -234,28 +240,36 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Past goed bij"
-    title="Twee apps die het werk voorbij het bord brengen."
+    title="Bouw ermee, vraag ernaar, zie het op je dashboard."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/procest"
-      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
-      name="Procest"
-      why="Zaakafhandeling. Geef een project het zaaknummer en het bord weet voor welke zaak het werk is."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Vorm je eigen kolommen, labels en schermen zonder ontwikkelaar. Het bord past bij je team, niet andersom."
     />
     <PairCard
-      href="/apps/portaliq"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 13h8"/></svg>}
-      name="Portaliq"
-      why="De voordeur voor mensen buiten. Externen zien hun taken en schrijven hun uren zonder plek in je Nextcloud."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7v3a7 7 0 0 1-14 0V9a7 7 0 0 1 7-7Z"/><path d="M9 22h6"/><circle cx="9.5" cy="10" r="1"/><circle cx="14.5" cy="10" r="1"/></svg>}
+      name="Hermiq"
+      why="De assistent voor je werkplek. Vraag wat vastzit of hoeveel uur een project kostte, en krijg de lijst, geen overleg."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Je eigen dashboard over al je apps. Je taken over tijd en de deadlines van deze week, naast de rest van je dag."
     />
   </PairRow>
 </Section>
+
+<PartnersForApp slug="planix" />
 
 <CtaBanner
   title="Projectborden op je eigen Nextcloud."
   lede={<>Open source. Gratis te installeren. Je projecten en uren blijven op je eigen server. Planix draait op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
   primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=planix'}}
 />

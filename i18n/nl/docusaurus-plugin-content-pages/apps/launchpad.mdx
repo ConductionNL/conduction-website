@@ -4,7 +4,7 @@ description: Bouw dashboards uit je eigen data, zonder dat IT eraan te pas komt.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, RotatingCards, AppMock, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, RotatingCards, AppMock, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -18,7 +18,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   tagline={<>Bouw dashboards uit je eigen data, zonder dat IT eraan te pas komt. Eén startscherm voor kantoor, de werkvloer en jou. Op de <span className="next-blue">Nextcloud</span> die je team al opent.</>}
   intro={<>LaunchPad is een open-source dashboard-app voor de Nextcloud-werkplek. Sleep de tegels en widgets die je elke dag gebruikt op een raster. Sla het op als je startscherm. Geef elk team een eigen bord, of rol er één uit naar alle veertig medewerkers tegelijk. Toon een kaart alleen aan financiën, of alleen op vrijdagochtend. Zet het orderbord op de tv in het magazijn zonder login. Uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
   primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=launchpad'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/launchpad'}}
   illustration={<AppMock app="launchpad" />}
 />
@@ -73,12 +73,10 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   </div>
 </Section>
 
-<PartnersForApp slug="launchpad" />
-
 <RotatingCards
-  eyebrow="Drie manieren waarop LaunchPad zijn plek verdient"
+  eyebrow="Vier manieren waarop LaunchPad zijn plek verdient"
   title="Het werkt zoals jij werkt. En het werkt voor je."
-  lede="Drie dingen waar je normaal extra voor betaalt. In LaunchPad zitten ze ingebouwd."
+  lede="Vier dingen waar je normaal extra voor betaalt. In LaunchPad zitten ze ingebouwd."
   cards={[
     {
       tone: 'forest',
@@ -86,7 +84,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Een nieuwe collega begint. Het startscherm staat al klaar.',
       summary: 'Nu: iemand loopt met de nieuwe collega acht bladwijzers langs en hoopt dat ze blijven hangen. Straks is het kantoorbord één keer naar het hele team gepusht. Voeg iemand toe aan de groep en het bord staat klaar voor de eerste koffie. De vrijdaglunchkaart laat zich om negen uur zien en verbergt zich om twaalf uur. De decemberbanner draait en verdwijnt vanzelf. Niets om te onthouden, geen mailrondje op donderdag.',
       cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
-      panel: <AppMock app="launchpad-tiles" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -94,7 +92,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Bouw dashboards uit je eigen data. Zonder dat IT eraan te pas komt.',
       summary: 'Hier is LaunchPad voor. De werkplaats wil de open orders en de leverkalender op één scherm. De receptie wil de bezoekerslijst en de zaalreserveringen. Jij wilt omzet, kas en de drie dingen die vandaag moeten. Sleep de kaarten, geef ze een maat, sla op. Op woensdag van gedachten veranderd? Pas het bord zelf aan. Niemand hoeft een ticket in te dienen om een widget te verplaatsen.',
       cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
-      panel: <AppMock app="launchpad-widgets" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -110,13 +108,21 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         'assistent: orders 2291, 2294 en 2301, allemaal voor Bakker BV',
       ]} cursor mode="leest wat je apps publiceren" />,
     },
+    {
+      tone: 'mint',
+      eyebrow: 'Laat klanten zichzelf helpen',
+      title: 'Je team krijgt een bord. Je klanten een portaal.',
+      summary: <>Binnen begint elk team de dag op zijn eigen bord. Buiten geef je klanten hetzelfde gemak met <a href="/apps/portaliq">Portaliq</a>: een portaal in jouw huisstijl waar ze hun contracten en producten zien, offertes aanvragen en tekenen, en hun tickets volgen. Dezelfde dossiers, twee voordeuren: één voor de mensen die het werk doen, één voor de mensen voor wie je het doet. De waar-blijft-het-telefoontjes stoppen aan beide kanten.</>,
+      cta: {label: 'Geef klanten hun eigen portaal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets die we hosten"
-  title="Elke app brengt zijn eigen mee. LaunchPad zet ze op één bord."
-  lede="LaunchPad is het bord waarop de widget van elke andere app verschijnt. Zet ze erop, sleep ze op maat, deel ze met het team. De widget zelf komt uit de app die hem meelevert."
+  title="We leveren de widgets die je nodig hebt"
+  lede={<>LaunchPad is het bord waarop de widget van elke andere app verschijnt: elke widget hieronder, plus elke widget die je andere apps meeleveren. Zet ze erop, sleep ze op maat, deel ze met het team. Ontwerp je eigen widgets met <a href="/apps/openbuild">OpenBuild</a>. Het dashboard uit al je gegevens? Dat is deze app.</>}
   widgets={[
     {
       title: 'Vandaag uit je agenda',
@@ -162,7 +168,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     },
     {
       title: 'Elke widget die je apps al meeleveren',
-      desc: 'Mail, chat, taken, meldingen, en de dealtegel uit PipelinQ. Staat het op het Nextcloud-dashboard, dan staat het hier, op jouw raster, naast je tegels.',
+      desc: <>Mail, chat, taken, meldingen, en de dealtegel uit <a href="/apps/pipelinq">PipelinQ</a>. Staat het op het Nextcloud-dashboard, dan staat het hier, op jouw raster, naast je tegels.</>,
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6, fontFamily: 'var(--conduction-typography-font-family-body)'}}>
           {[
@@ -182,6 +188,14 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         </div>
       ),
     },
+    {title: 'Dealoverzicht', desc: <>Uit <a href="/apps/pipelinq">PipelinQ</a>: je open deals nog voor je het CRM opent.</>},
+    {title: 'Je volgende vergadering', desc: <>Uit <a href="/apps/decidesk">DeciDesk</a>: de volgende vergadering met agenda, één klik weg.</>},
+    {title: 'Dossiers over de datum', desc: <>Uit <a href="/apps/procest">Procest</a>: de dossiers voorbij hun datum, vooraan in beeld.</>},
+    {title: 'Deadline-alarmen', desc: <>Uit <a href="/apps/procest">Procest</a>: wat bijna afloopt terwijl er nog tijd is.</>},
+    {title: 'Meest bekeken', desc: <>Uit <a href="/apps/opencatalogi">OpenCatalogi</a>: welke van je publicaties mensen echt lezen.</>},
+    {title: 'Anonimisering', desc: <>Uit <a href="/apps/docudesk">DocuDesk</a>: bestanden met gevonden persoonsgegevens, wachtend op een besluit.</>},
+    {title: 'BBV-naleving', desc: <>Uit <a href="/apps/shillinq">Shillinq</a>: je boekhouding getoetst aan de regels voor de publieke sector.</>},
+    {title: 'Status koppelingen', desc: <>Uit <a href="/apps/openregister">OpenRegister</a>: of je koppelingen draaiden, in één oogopslag.</>},
   ]}
 />
 
@@ -195,7 +209,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     {
       id: 'native-widgets',
       title: 'Elke Nextcloud-widget, op jouw bord',
-      summary: 'Mail, agenda, bestanden, chat, taken, meldingen. Wat je Nextcloud-apps op het standaarddashboard tonen, verschijnt in LaunchPad, op een raster dat jij bepaalt. Deals die bijna sluiten uit PipelinQ, je volgende vergadering en open stemmingen uit DeciDesk. Installeer de app, en de widget staat in de kiezer.',
+      summary: <>Mail, agenda, bestanden, chat, taken, meldingen. Wat je Nextcloud-apps op het standaarddashboard tonen, verschijnt in LaunchPad, op een raster dat jij bepaalt. Deals die bijna sluiten uit <a href="/apps/pipelinq">PipelinQ</a>, je volgende vergadering en open stemmingen uit <a href="/apps/decidesk">DeciDesk</a>. Installeer de app, en de widget staat in de kiezer.</>,
       cta: {label: 'Lees de docs', href: 'https://launchpad.conduction.nl'},
       panel: <AppMock app="launchpad-widgets" />,
     },
@@ -219,28 +233,36 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Past goed bij"
-    title="Twee apps waarvan de cijfers op het startscherm horen."
+    title="Drie apps die het bord van jou maken."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/pipelinq"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
-      name="PipelinQ"
-      why="Pipelinewaarde en deals die bijna sluiten, op het bord dat sales als eerste opent."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Ontwerp de widget die je bord mist, en pas je apps daarop aan."
     />
     <PairCard
-      href="/apps/decidesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>}
-      name="DeciDesk"
-      why="Je volgende vergadering en de stemmingen die op je wachten, op het bord dat je elke ochtend opent."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>}
+      name="Hermiq"
+      why="Vraag het over je hele bord en krijg één antwoord, geen vijf tabbladen."
+    />
+    <PairCard
+      href="/apps/portaliq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg>}
+      name="Portaliq"
+      why="Het bord is voor je team. Het portaal is voor je klanten, op dezelfde dossiers."
     />
   </PairRow>
 </Section>
+
+<PartnersForApp slug="launchpad" />
 
 <CtaBanner
   title="Dashboards op je eigen Nextcloud."
   lede={<>Open source. Gratis te installeren. Zet LaunchPad in je <span className="next-blue">Nextcloud</span> en rol een bord uit naar een groep. Je team heeft een startscherm dat het zelf bijhoudt.</>}
   primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=launchpad'}}
 />

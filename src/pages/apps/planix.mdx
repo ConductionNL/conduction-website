@@ -4,7 +4,7 @@ description: Boards, backlog and hours for teams that build and fix things, on y
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, KanbanMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -18,9 +18,9 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   tagline={<>Boards, backlog and hours for teams that build and fix things, on your own <span className="next-blue">Nextcloud</span>. Finish before you start.</>}
   intro={<>Planix is an open-source project board for the team that builds your product or keeps your systems running. Every project gets a board with columns you choose. A column holds only so many cards, so the sixth one waits and the bottleneck shows itself. Ideas go in the backlog, not in someone's head. Hours logged on the task are the hours per project at month end. Made for development and IT teams, plain enough for anyone who runs work in stages. Released under EUPL-1.2 and maintained by Conduction.</>}
   primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=planix'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/planix'}}
-  illustration={<AppMock app="planix" />}
+  illustration={<KanbanMock />}
 />
 
 <Section spacing="default">
@@ -73,12 +73,10 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   </div>
 </Section>
 
-<PartnersForApp slug="planix" />
-
 <RotatingCards
-  eyebrow="Three ways Planix earns its place"
+  eyebrow="Four ways Planix earns its place"
   title="It works the way you work. And it works for you."
-  lede="Three things you would normally pay extra for. In Planix they are built in."
+  lede="Four things you would normally pay extra for. In Planix they are built in."
   cards={[
     {
       tone: 'forest',
@@ -86,7 +84,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'A card reaches "Done". The rest happens by itself.',
       summary: 'Today: a task is finished and someone remembers to tell the client, update the sheet and start the next one. Instead, set it up once. The moment a card moves to "Done", the task that was waiting on it loses its badge and lands on the next person\'s list. A card that sits in "Review" for more than three days puts a nudge on the lead\'s desk. Every Friday, a list of tasks with no hours logged. Nothing forgotten, no chasing, no coding.',
       cta: {label: 'How automation works', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -94,7 +92,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Your columns, your labels, your limits.',
       summary: 'A support team wants "Waiting for client" as a column. A build team wants "Testing" between "Doing" and "Done". A studio wants a label per client. Add the column, set its limit, add the label, and give each project its own colour. In the running app, in minutes, and your changes stay with every update. A board that fits how your team really works, not one you bend the team around.',
       cta: {label: 'How customising works', href: '/apps/openbuild'},
-      panel: <AppMock app="openbuild" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -109,13 +107,21 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         'assistant: 46 hours logged, 52 estimated',
       ]} cursor mode="reads only, asks before it changes anything" />,
     },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'Your client follows the project without calling you.',
+      summary: <>The client who asked for the website does not need a seat in your Nextcloud. Through <a href="/apps/portaliq">Portaliq</a> they log in to their own portal and see their projects and how far along each one is, the tasks that wait on them, and the hours already spent against the estimate. The contractor you hired logs hours on their own tasks from the same portal. Fewer "how is it going?" calls, and the answer is always today's board, not last week's mail.</>,
+      cta: {label: 'See the client portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
   ]}
 />
 
 <WidgetShelf
   eyebrow="What you see first"
-  title="Your own work, before anyone else's board."
-  lede="Open Planix and your dashboard shows your open and overdue tasks, the projects you touched last, and what is due this week. Click a number and you are on the list."
+  title="We ship the widgets you need"
+  lede={<>Open Planix and your dashboard shows your open and overdue tasks, the projects you touched last, and what is due this week. Click a number and you are on the list. Design your own widgets with <a href="/apps/openbuild">OpenBuild</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
       title: 'My open and overdue tasks',
@@ -216,15 +222,15 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     },
     {
       id: 'procest',
-      title: 'A case in Procest becomes a project on the board',
-      summary: 'A permit application or a complaint in Procest needs real work done. Give the project and its tasks the case number, and everyone on the board knows which case the work is for. From the task you jump to the case. Starting a project straight from the case is on the roadmap.',
+      title: 'A case becomes a project on the board',
+      summary: <>A permit application or a complaint in <a href="/apps/procest">Procest</a> needs real work done. Give the project and its tasks the case number, and everyone on the board knows which case the work is for. From the task you jump to the case. Starting a project straight from the case is on the roadmap.</>,
       cta: {label: 'See Procest', href: '/apps/procest'},
       panel: <AppMock app="procest" />,
     },
     {
       id: 'portal',
       title: 'A contractor logs their hours from the portal',
-      summary: 'The freelancer or the agency you hired does not need a seat in your Nextcloud. Through the portal they see the tasks and projects that are theirs, and log the hours on them. You see the hours on the same task as your own team\'s, and nothing else of yours is visible to them.',
+      summary: <>The freelancer or the agency you hired does not need a seat in your Nextcloud. Through <a href="/apps/portaliq">Portaliq</a> they see the tasks and projects that are theirs, and log the hours on them. You see the hours on the same task as your own team's, and nothing else of yours is visible to them.</>,
       cta: {label: 'See Portaliq', href: '/apps/portaliq'},
       panel: <AppMock app="portaliq" />,
     },
@@ -234,28 +240,36 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="Two apps that carry the work beyond the board."
+    title="Build with it, ask about it, see it on your dashboard."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/procest"
-      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
-      name="Procest"
-      why="Case handling. Give a project the case number and the board knows which case the work is for."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Shape your own columns, labels and screens without a developer. The board fits your team, not the other way round."
     />
     <PairCard
-      href="/apps/portaliq"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 13h8"/></svg>}
-      name="Portaliq"
-      why="The front door for people outside. Contractors see their tasks and log their hours without a seat in your Nextcloud."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7v3a7 7 0 0 1-14 0V9a7 7 0 0 1 7-7Z"/><path d="M9 22h6"/><circle cx="9.5" cy="10" r="1"/><circle cx="14.5" cy="10" r="1"/></svg>}
+      name="Hermiq"
+      why="The assistant for your workspace. Ask what is stuck or how many hours a project took, and get the list, not a meeting."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Your own dashboard across all your apps. Your overdue tasks and this week's deadlines, next to the rest of your day."
     />
   </PairRow>
 </Section>
+
+<PartnersForApp slug="planix" />
 
 <CtaBanner
   title="Project boards on your own Nextcloud."
   lede={<>Open source. Free to install. Your projects and hours stay on your own server. Planix runs on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
   primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=planix'}}
 />

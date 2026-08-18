@@ -4,7 +4,7 @@ description: Maak je data vindbaar en herbruikbaar, ook buiten je organisatie. E
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 export const app = getApp('opencatalogi');
@@ -19,8 +19,8 @@ export const app = getApp('opencatalogi');
   title={app.name}
   tagline={<>Maak je data vindbaar en herbruikbaar, ook buiten je organisatie. Publiceer één keer vanuit je eigen <span className="next-blue">Nextcloud</span>, word overal gevonden.</>}
   intro={<>{app.name} is de openbare catalogus voor overheden. Besluiten, datasets, rapporten en diensten gaan openbaar vanuit dezelfde Nextcloud waar het team al werkt. Een inwoner zoekt één keer en vindt jouw document en dat van de buurgemeente. De landelijke open-data-index wordt voor je gevuld. Elk item heeft zijn eigen bewaartermijn en gaat op tijd weer offline. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction sinds 2019.</>}
-  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/opencatalogi'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=opencatalogi'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/opencatalogi'}}
   illustration={<AppMock app="opencatalogi" />}
 />
@@ -75,12 +75,10 @@ export const app = getApp('opencatalogi');
   </div>
 </Section>
 
-<PartnersForApp slug="opencatalogi" />
-
 <RotatingCards
-  eyebrow={`Drie manieren waarop ${app.name} zijn plek verdient`}
+  eyebrow={`Vier manieren waarop ${app.name} zijn plek verdient`}
   title="Het werkt zoals jij werkt. En het werkt voor jou."
-  lede="Drie dingen waar je normaal extra voor betaalt. Hier zitten ze erin."
+  lede="Vier dingen waar je normaal extra voor betaalt. Hier zitten ze erin."
   cards={[
     {
       tone: 'forest',
@@ -88,7 +86,7 @@ export const app = getApp('opencatalogi');
       title: 'De raad besluit op dinsdag. Woensdag is het openbaar, vanzelf.',
       summary: 'Nu: iemand houdt een lijst bij van wat wanneer openbaar moet, en wat wanneer weer offline moet. In plaats daarvan: je tekent het één keer uit. Stel de publicatiedatum in, en het item gaat die dag openbaar. Stel de bewaartermijn in, en het gaat die dag offline, met een notitie waarom. Een publicatie waarvan de termijn bijna afloopt, staat vóór de datum op de lijst van de archiefmedewerker. Een partij van tweehonderd documenten die is vrijgegeven voor publicatie? In één keer gepubliceerd, en elk ervan gelogd. Niets vergeten, geen nabellen, geen programmeerwerk.',
       cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -96,7 +94,7 @@ export const app = getApp('opencatalogi');
       title: 'Jouw leeszaal, jouw velden, jouw uitstraling. Zonder ontwikkelaar.',
       summary: 'Een provincie wil het waterschap op elke dataset. Een gemeente wil een besluitnummer op elk besluit. Een ministerie wil een pagina per thema, in de eigen huisstijl. Voeg het veld toe, voeg de pagina toe, bouw het menu, kies het thema. In de draaiende app, in minuten, en je aanpassingen blijven bij elke update staan.',
       cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
-      panel: <AppMock app="openbuild" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -110,13 +108,21 @@ export const app = getApp('opencatalogi');
         'assistent: wil je de links, of een samenvatting van elk?',
       ]} cursor mode="leest de catalogus, wijzigt niets" />,
     },
+    {
+      tone: 'mint',
+      eyebrow: 'Laat klanten zichzelf helpen',
+      title: 'De mensen voor wie je werkt zoeken het zelf op. Zonder aanvraagformulier.',
+      summary: <>De catalogus is de openbare voordeur, en <a href="/apps/portaliq">Portaliq</a> is de persoonlijke. Achter een login zien inwoners en bedrijven wat voor hen geldt: de aanvragen die ze deden, de contracten die ze hebben, de facturen die ze betaalden of nog moeten betalen. Een offerte vragen en tekenen kan op dezelfde plek. De balie is 's avonds ook open, en je inbox blijft rustig.</>,
+      cta: {label: 'Bekijk het klantportaal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets die we meeleveren"
-  title="Op het dashboard dat je team al opent."
-  lede="Installeer het en het startscherm toont wat het publiek leest, wat nog wacht om naar buiten te gaan, en welke items bijna hun bewaartermijn bereiken."
+  title="We leveren de widgets die je nodig hebt"
+  lede={<>Installeer het en het startscherm toont wat het publiek leest, wat nog wacht om naar buiten te gaan, en welke items bijna hun bewaartermijn bereiken. Meer nodig? Ontwerp je eigen widgets met <a href="/apps/openbuild">OpenBuild</a>, of bouw je eigen dashboard uit al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
       title: 'Meest gelezen publicaties',
@@ -170,6 +176,26 @@ export const app = getApp('opencatalogi');
         </div>
       ),
     },
+    {title: 'Populaire zoektermen', desc: 'Waar het publiek naar zoekt, zodat je publiceert wat ze echt zoeken.'},
+    {title: 'Bezoek', desc: 'Bezoek aan je leeszaal door de tijd, geteld zonder iemand te volgen.'},
+    {title: 'Activiteit', desc: 'Wat er is gepubliceerd, gewijzigd en offline gehaald, dag voor dag.'},
+    {title: 'Publicaties', desc: 'Alles wat je hebt gepubliceerd, in één lopende telling.'},
+    {title: 'Concept', desc: 'Items in concept die nog niet openbaar zijn, wachtend op een besluit.'},
+    {title: 'Gepubliceerd', desc: 'Wat nu live staat, over al je catalogi heen.'},
+    {title: 'Gedepubliceerd', desc: 'Wat offline ging, wanneer, en waarom.'},
+    {title: 'Per categorie', desc: 'Publicaties per categorie, zodat gaten meteen opvallen.'},
+    {title: 'Werklijsten', desc: 'Drie lijsten met items die een hand nodig hebben: controleren, verrijken, besluiten.'},
+    {title: 'Weergaven per publicatie', desc: 'Hoe vaak één publicatie is gelezen, op de publicatie zelf.'},
+    {title: 'Downloads per publicatie', desc: 'Hoe vaak het document erachter is gedownload.'},
+    {title: 'Publicaties per organisatie', desc: 'Wat één organisatie heeft gepubliceerd, in één lijst.'},
+    {title: 'Catalogi per organisatie', desc: 'De catalogi die één organisatie draait.'},
+    {title: 'Themagebruik', desc: 'Welke thema\'s waar worden gebruikt, voordat je er één wijzigt.'},
+    {title: 'Themavoorbeeld', desc: 'Hoe een thema eruitziet voordat je het op een live pagina zet.'},
+    {title: 'Begrippenkaart', desc: 'Hoe je publieke begrippen samenhangen, getekend als kaart.'},
+    {title: 'Paginaboom', desc: 'De pagina\'s van je leeszaal, in hun hiërarchie.'},
+    {title: 'Menuboom', desc: 'De menu\'s van je leeszaal, klaar om te herschikken.'},
+    {title: 'Conceptbijlagen', desc: 'Bijlagen in concept die nog naar buiten moeten, op je Nextcloud startscherm.'},
+    {title: 'Conceptpublicaties', desc: 'Publicaties in concept die op een besluit wachten, op je Nextcloud startscherm.'},
   ]}
 />
 
@@ -185,15 +211,7 @@ export const app = getApp('opencatalogi');
       title: 'Het document, de foto\'s en de links, op de publicatie',
       summary: 'Een publicatie is geen formulier. Het is het rapport zelf, de kaart die erbij hoort, de foto\'s van de locatie en de links naar de onderliggende besluiten. Sleep ze vanuit Bestanden op de publicatie, en ze zijn de openbare download. Iedereen downloadt dezelfde versie die jij ziet. Werk het bestand bij, en de openbare download is het nieuwe bestand.',
       cta: {label: 'Lees de docs', href: 'https://opencatalogi.conduction.nl'},
-      panel: <MockScene
-        width={680}
-        height={420}
-        items={[
-          {type: 'sidebar', kind: 'opencatalogi-publication-history', x: 200, y: 10,  size: 'md', z: 1},
-          {type: 'widget',  kind: 'nextcloud-files',                  x: 0,   y: 0,   size: 'sm', z: 2},
-          {type: 'widget',  kind: 'opencatalogi-publications',        x: 0,   y: 230, size: 'sm', z: 2},
-        ]}
-      />,
+      panel: <LeafMock leaf="files" />,
     },
     {
       id: 'schedule',
@@ -222,35 +240,37 @@ export const app = getApp('opencatalogi');
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Past goed bij"
-    title="Drie apps die de catalogus vullen."
+    title="Drie apps die de catalogus nog meer van jou maken."
     align="stack"
-    lede="De catalogus publiceert wat de rest van de werkplek maakt. Deze drie maken het, schonen het op en brengen het binnen."
+    lede="Vorm de leeszaal, stel er vragen aan, en zet de cijfers op je eigen dashboard."
   />
   <PairRow>
     <PairCard
-      href="/apps/procest"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4"/></svg>}
-      name="Procest"
-      why="Zaakbehandeling voor overheden. Het besluit op een zaak is de publicatie in de catalogus."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Pas pagina's, velden en menu's van je leeszaal aan in de draaiende app. Een provincie en een ministerie draaien dezelfde app, elk op hun eigen manier."
     />
     <PairCard
-      href="/apps/docudesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      name="DocuDesk"
-      why="Maakt namen en persoonsnummers zwart voordat een document openbaar gaat."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 1 1-4-6.9"/><path d="M12 8v4l3 2"/></svg>}
+      name="Hermiq"
+      why="De assistent die publicaties vindt en bewaarvragen beantwoordt woont hier. Jij bepaalt wie het mag vragen."
     />
     <PairCard
-      href="/apps/openconnector"
-      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-      name="OpenConnector"
-      why="Haalt publicaties binnen uit de systemen die je al hebt, zodat niemand ze overtypt."
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Stel je eigen dashboard samen uit de cataloguswidgets hierboven, naast alles wat je organisatie verder draait."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="opencatalogi" />
+
 <CtaBanner
   title="Je openbare catalogus, op je eigen Nextcloud."
   lede={<>Open source. Gratis te installeren. Standaard AVG-proof. Publiceer vanuit dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt, en word overal gevonden.</>}
-  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/opencatalogi'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=opencatalogi'}}
 />

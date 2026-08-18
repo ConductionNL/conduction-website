@@ -4,7 +4,7 @@ description: Zaakbeheer voor vergunningen, bezwaren, klachten en handhaving, op 
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -17,8 +17,8 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   title="Procest"
   tagline={<>Zaakbeheer voor vergunningen, bezwaren, klachten en handhaving, op je eigen <span className="next-blue">Nextcloud</span>. Elke wettelijke termijn geteld vanaf dag één.</>}
   intro={<>Procest is open-source zaakbeheer voor Nederlandse gemeenten en andere overheden. Behandelaars zien hun zaken en taken op één plek. Inwoners volgen hun eigen zaak. Elke wettelijke termijn wordt geteld, gemeld en vastgelegd. Het volgt de Nederlandse standaard voor zaakgericht werken (ZGW), dus het past op de systemen die je al draait. Uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
-  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/procest'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=procest'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/procest'}}
   illustration={<AppMock app="procest" />}
 />
@@ -30,14 +30,14 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         eyebrow="Wat het doet"
         title="Zaken, termijnen, besluiten, inwoners. Eén zaaksysteem."
         align="stack"
-        lede="Procest behandelt bouwvergunningen, inspecties, handhaving, sloopmeldingen, bezwaar en beroep, klachten en verzoeken onder de Wet open overheid (Woo). Elk zaaktype richt je zelf in. De termijnklok, het besluit en het dossier komen erbij."
+        lede="Procest behandelt bouwvergunningen, inspecties, handhaving, sloopmeldingen, bezwaar en beroep, klachten en Woo-verzoeken. Elk zaaktype richt je zelf in. De termijnklok, het besluit en het dossier komen mee."
       />
       <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
-      title="De termijn die nooit meer wordt gemist."
+      title="De termijn die nooit wordt gemist."
     >
-      Een vergunning heeft wettelijk acht weken. Procest begint op dag één te tellen. Twee weken voor het einde hoort de behandelaar het. Bij één week hoort de teamleider het ook. Bij twee dagen krijgt de manager de rode vlag. Verstrijkt de dag toch, dan wordt de zaak als verlopen gemarkeerd, weet iedereen op de zaak ervan en staat vast dat dit is gebeurd. Geen vergunning van rechtswege omdat iemand op vakantie was. Vraag je de aanvrager om aanvullende informatie, dan pauzeert de klok. Loopt een besluit toch uit, dan berekent Procest de dwangsom die de wet voorschrijft.
+      Een vergunning heeft wettelijk acht weken. Procest telt vanaf dag één. Twee weken voor het einde hoort de behandelaar het. Bij één week hoort de teamleider het ook. Bij twee dagen krijgt de manager de rode vlag. Verstrijkt de dag toch, dan staat de zaak op te laat, weet iedereen op de zaak ervan, en is vastgelegd dat dit gebeurde. Geen vergunning van rechtswege omdat iemand op vakantie was. Vraag je de aanvrager om meer informatie, dan pauzeert de klok. Komt een besluit toch te laat, dan rekent Procest de dwangsom uit die de wet voorschrijft.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 3h7v7"/></svg>}
@@ -49,13 +49,13 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       icon={<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 18a5 5 0 0 1 10 0"/></svg>}
       title="Inwoners zien wat jij ziet."
     >
-      De inwoner opent zijn zaak en ziet dezelfde status als de behandelaar. De "waar blijft mijn vergunning?"-telefoontjes stoppen. Is er een inspectie nodig, dan kiest hij zelf een moment via een openbare link, en dat landt in de agenda van de inspecteur.
+      De inwoner opent zijn zaak en ziet dezelfde status als de behandelaar. De telefoontjes "waar blijft mijn vergunning?" stoppen. Is een inspectie nodig, dan kiest hij zelf een moment via een openbare link, en het staat in de agenda van de inspecteur.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
       title="Het volledige dossier, twee jaar later."
     >
-      Een bezwaar komt binnen, twee jaar na het besluit. Eén klik opent het hele dossier: elk document, elke statuswijziging, elk besluit en wie het nam. Exporteer het in één keer voor de bezwaarcommissie of de rechter.
+      Een bezwaar komt twee jaar na het besluit. Eén klik opent het hele dossier: elk document, elke statuswijziging, elk besluit en wie het nam. Exporteer het in één keer voor de bezwaarcommissie of de rechter.
     </FeatureItem>
   </FeatureList>
     </div>
@@ -67,54 +67,60 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   </div>
 </Section>
 
-<PartnersForApp slug="procest" />
-
 <RotatingCards
-  eyebrow="Drie manieren waarop Procest zijn plek verdient"
-  title="Het werkt zoals jij werkt. En het werkt voor jou."
-  lede="Drie dingen waar je normaal extra voor betaalt. In Procest zitten ze erin."
+  eyebrow="Vier manieren waarop Procest zijn plek verdient"
+  title="Het werkt zoals jij werkt. En het werkt voor je."
+  lede="Vier dingen waar je normaal extra voor betaalt. In Procest zitten ze erin."
   cards={[
     {
       tone: 'forest',
       eyebrow: 'Automatiseer',
       title: 'Een zaak is klaar voor besluit. De ondertekening is al onderweg.',
-      summary: 'Nu: de behandelaar rondt de beoordeling af en loopt met het dossier naar wie mag tekenen. In plaats daarvan stel je het één keer in. Zodra een zaak "klaar voor besluit" bereikt, ligt de tekentaak op het bureau van degene met het mandaat. Een vergunning boven jouw grens wacht op een tweede paar ogen voordat er iets de deur uitgaat. Een zaak die drie weken stilstaat, staat maandag op de lijst van de teamleider. Niets vergeten, geen nabellen, geen programmeerwerk.',
+      summary: 'Nu: de behandelaar rondt de beoordeling af en loopt met het dossier naar wie mag tekenen. Stel het in plaats daarvan één keer in. Zodra een zaak op "klaar voor besluit" staat, ligt de tekentaak bij degene met het mandaat. Een vergunning boven jouw grens wacht op een tweede paar ogen voor er iets de deur uit gaat. Een zaak die drie weken stilstaat, staat maandag op de lijst van de teamleider. Niets vergeten, geen nabellen, geen regel code.',
       cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
       eyebrow: 'Maak het van jou',
       title: 'Jouw zaaktypen, jouw velden, jouw schermen.',
-      summary: 'Een kleine gemeente wil de wijk op elke zaak. Een omgevingsdienst wil de foto\'s van de inspecteur bovenaan het dossier. Een waterschap behandelt nooit bezwaren en wil die pagina uit het menu. Voeg het veld toe, verplaats het blok, verberg wat je nooit gebruikt. In de draaiende app, in minuten, en je aanpassingen blijven bij elke update staan.',
+      summary: 'Een kleine gemeente wil de wijk op elke zaak. Een omgevingsdienst wil de foto\'s van de inspecteur bovenaan het dossier. Een waterschap behandelt nooit bezwaren en wil die pagina uit het menu. Voeg het veld toe, verplaats het blok, verberg wat je nooit gebruikt. In de draaiende app, in minuten, en je aanpassingen blijven bij elke update.',
       cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
-      panel: <AppMock app="openbuild" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
       eyebrow: 'Praat ermee',
-      title: 'Vraag welke zaken open staan. Krijg de lijst, niet een rapport.',
-      summary: 'Vraag "welke zaken zitten nog in intake?" en je krijgt de lijst. Vraag "wat is er gebeurd op zaak 2026-0042?" en je krijgt de geschiedenis, stap voor stap, met wie wat deed. Vraag welke termijnen deze week vallen en de assistent leest dezelfde klok als het dashboard. Hij leest. Een zaak wijzigen blijft bij de behandelaar.',
+      title: 'Vraag welke zaken openstaan. Krijg de lijst, geen rapport.',
+      summary: 'Vraag "welke zaken staan nog in intake?" en je krijgt de lijst. Vraag "wat is er gebeurd op zaak 2026-0042?" en je krijgt de historie, stap voor stap, met wie wat deed. Vraag welke termijnen deze week vallen en de assistent leest dezelfde klok als het dashboard. Hij leest. Een zaak wijzigen blijft bij de behandelaar.',
       cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
       panel: <AgentTrace lines={[
-        'jij: welke zaken zitten nog in intake?',
+        'jij: welke zaken staan nog in intake?',
         'assistent: 6 zaken in intake, oudste 11 dagen',
         'jij: wat is er gebeurd op 2026-0042?',
-        'assistent: ontvangen 3 maart, toegewezen 4 maart, aanvullende informatie gevraagd 12 maart',
-        'assistent: klok gepauzeerd sinds 12 maart, nog 34 dagen',
+        'assistent: ontvangen 3 maart, toegewezen 4 maart, meer informatie gevraagd 12 maart',
+        'assistent: klok gepauzeerd sinds 12 maart, 34 dagen over',
       ]} cursor mode="leest alleen, wijzigt nooit een zaak" />,
+    },
+    {
+      tone: 'mint',
+      eyebrow: 'Laat klanten zichzelf helpen',
+      title: 'Inwoners en bedrijven openen hun eigen zaak. Zonder jou te bellen.',
+      summary: <>Geef de mensen voor wie je werkt hun eigen deur. Via <a href="/apps/portaliq">Portaliq</a> logt een inwoner of bedrijf in en ziet zijn eigen zaken, de aanbestedingen waaraan hij meedoet en de facturen die hij betaalde of nog moet betalen. Het ontbrekende document uploadt hij zelf en de zaak loopt door. De balie is 's avonds ook open, en niemand hoefde de telefoon te pakken.</>,
+      cta: {label: 'Bekijk het klantportaal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
     },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets die we meeleveren"
-  title="Termijnen, verlopen zaken en je taken. Op het dashboard."
-  lede="Installeer Procest en elke behandelaar ziet bij het inloggen de termijnen die eraan komen, de zaken die al te laat zijn en zijn eigen taken. Geen aparte inbox."
+  title="We leveren de widgets die je nodig hebt"
+  lede={<>Installeer Procest en elke behandelaar ziet bij het inloggen de termijnen die eraan komen, de zaken die al te laat zijn en de eigen taken. Geen aparte inbox. Meer nodig? Ontwerp je eigen widgets met <a href="/apps/openbuild">OpenBuild</a>, of bouw je eigen dashboard uit al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
       title: 'Termijnmeldingen',
-      desc: 'Zaken waarvan de wettelijke termijn deze week valt. De zaak die je vandaag nodig heeft, staat bovenaan.',
+      desc: 'Zaken waarvan de wettelijke termijn deze week valt. De zaak die jou vandaag nodig heeft staat bovenaan.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
@@ -132,8 +138,8 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       ),
     },
     {
-      title: 'Verlopen',
-      desc: 'Zaken over hun termijn, oudste eerst. Klik er een aan en je zit op de zaak.',
+      title: 'Te laat',
+      desc: 'Zaken over hun termijn, oudste eerst. Ook op je Nextcloud startscherm.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {['vergunning', 'handhaving', 'vergunning', 'melding'].map((_, i) => (
@@ -151,7 +157,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     },
     {
       title: 'Mijn taken',
-      desc: 'Je eigen taken over alle zaken heen, op datum. Vink er een af en de zaak gaat verder.',
+      desc: 'Je eigen taken over alle zaken heen, vervaldatum eerst. Vink er één af en de zaak loopt door.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6, fontFamily: 'var(--conduction-typography-font-family-body)'}}>
           {[
@@ -172,56 +178,69 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         </div>
       ),
     },
+    {title: 'Stilgevallen zaken', desc: 'Zaken die al weken niet bewegen, zodat niets stil in een la sterft.'},
+    {title: 'Doorlooptijd', desc: 'Hoe lang elk zaaktype echt duurt, van intake tot besluit.'},
+    {title: 'Wettelijke klok', desc: 'De wettelijke klok op een bezwaar, met pauzes en opschortingen.'},
+    {title: 'Adaptief zaakplan', desc: 'Het plan op de zaak past zichzelf aan als de zaak van koers wijzigt.'},
+    {title: 'Zaakassistent', desc: 'Stel de zaak een vraag en krijg het antwoord recht uit het dossier.'},
+    {title: 'Zaken per status', desc: 'Alle lopende zaken, gegroepeerd op waar ze staan.'},
+    {title: 'Zaken per type', desc: 'Vergunningen, klachten, handhaving: hoeveel van elk op je bord ligt.'},
+    {title: 'Nieuwe zaken', desc: 'Wat er vandaag en deze week binnenkwam, voor iemand ernaar vraagt.'},
+    {title: 'Afgerond', desc: 'Wat je team afrondde, zodat ook het geleverde werk zichtbaar blijft.'},
+    {title: 'Open zaken', desc: 'Elke lopende zaak in één lijst, gefilterd zoals jij wilt.'},
+    {title: 'Taakherinneringen', desc: 'Taken die hun vervaldatum naderen, gemeld voor ze te laat zijn.'},
+    {title: 'Open taken op de zaak', desc: 'Wat er nog moet gebeuren op de zaak die je open hebt.'},
+    {title: 'Zaakdocumenten', desc: 'Elk document op de zaak, met elke versie bewaard.'},
+    {title: 'Zaakbesluiten', desc: 'De besluiten op de zaak en wie ze nam.'},
+    {title: 'Deelzaken', desc: 'De kleinere zaken onder de grote, in één oogopslag.'},
+    {title: 'Uren op de zaak', desc: 'De uren geschreven op de zaak, klaar voor kostenverhaal.'},
+    {title: 'Voorstellen', desc: 'Conceptbesluiten die wachten op degene met het mandaat.'},
+    {title: 'Locaties', desc: 'De adressen en plekken waar de zaak over gaat, bij het dossier.'},
+    {title: 'Initiatiefnemer', desc: 'Wie de zaak startte en hoe je diegene bereikt, direct op de zaak.'},
+    {title: 'Adviesaanvragen', desc: 'Advies gevraagd aan de bezwaarcommissie en wat terugkwam.'},
+    {title: 'Commissietoewijzingen', desc: 'Welke bezwaren bij welk commissielid liggen.'},
+    {title: 'In beraad', desc: 'De zaken die de commissie nu bespreekt.'},
+    {title: 'Partnerorganisaties', desc: 'De andere organisaties die met je aan de zaak werken.'},
+    {title: 'Handhavingsstappen', desc: 'Waar elke handhavingszaak staat op de landelijke handhavingsladder.'},
+    {title: 'Zakenoverzicht', desc: 'De stand van al je zaken op je Nextcloud startscherm.'},
+    {title: 'Zaak starten', desc: 'Start een nieuwe zaak direct vanaf je Nextcloud startscherm.'},
   ]}
 />
 
 <Showcase
   eyebrow="Zo sluit Procest aan op je werkplek"
   title="Mail, agenda, contacten en bestanden. Al van jou."
-  lede="De zaak staat waar je e-mail, je agenda en je documenten al staan. Dat is het idee van een werkplek."
+  lede="De zaak leeft waar je e-mail, je agenda en je documenten al leven. Dat is het punt van een werkplek."
   layout="side"
   defaultOpen="mail"
   items={[
     {
       id: 'mail',
-      title: 'De e-mail bij de zaak',
-      summary: 'Een inwoner antwoordt op je verzoek om aanvullende informatie. Open het bericht in Nextcloud Mail, koppel het aan de zaak, en het staat in het dossier naast de documenten. Antwoord vanuit een sjabloon en het zaaknummer, de naam en de datums staan al ingevuld als concept. Met DocuDesk erbij wordt gekoppelde mail als document in het dossier gearchiveerd, dus het staat er nog als het bezwaar komt.',
+      title: 'De e-mail op de zaak',
+      summary: <>Een inwoner reageert op je verzoek om meer informatie. Open het bericht in Nextcloud Mail, koppel het aan de zaak, en het staat in het zaakdossier naast de documenten. Antwoord vanuit een sjabloon en het zaaknummer, de naam en de datums staan al ingevuld als concept. Met <a href="/apps/docudesk">DocuDesk</a> erbij wordt gekoppelde mail als document in het dossier gearchiveerd, zodat het er nog is als het bezwaar komt.</>,
       cta: {label: 'Lees de docs', href: 'https://procest.conduction.nl'},
-      panel: (
-        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
-          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
-            <div style={{height: 4, width: '75%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
-            <div style={{height: 3, width: '55%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
-            <div style={{height: 3, width: '85%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
-          </div>
-          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Koppel aan zaak</div>
-          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
-            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
-            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>gekoppeld aan zaak 2026-0042</div>
-          </div>
-        </div>
-      ),
+      panel: <LeafMock leaf="mail" />,
     },
     {
       id: 'calendar',
       title: 'Hoorzittingen en afspraken in de agenda',
-      summary: 'Plan de hoorzitting of het locatiebezoek vanuit de zaak en het staat in je Nextcloud Agenda, gekoppeld aan de zaak. Laat inwoners zelf hun inspectiemoment boeken: Procest biedt de vrije momenten aan en zet de bevestigde afspraak in de agenda van de inspecteur. Geen heen-en-weer bellen om een datum te vinden.',
+      summary: 'Plan de hoorzitting of het locatiebezoek vanuit de zaak en het staat in je Nextcloud Agenda, gekoppeld aan de zaak. Laat inwoners zelf hun inspectiemoment boeken: Procest biedt de vrije momenten aan en zet de bevestigde afspraak in de agenda van de inspecteur. Geen heen-en-weer gebel om een datum.',
       cta: {label: 'Lees de docs', href: 'https://procest.conduction.nl'},
-      panel: <AppMock app="procest" />,
+      panel: <LeafMock leaf="calendar" />,
     },
     {
       id: 'contacts',
       title: 'De mensen op de zaak zijn je contacten',
-      summary: 'De aanvrager, de bezwaarmaker, de buurman die klaagde: elke persoon op een zaak is een Nextcloud-contact, verbonden met de zaak. Zoek op wie erbij betrokken is zonder een tweede adresboek te openen. Het telefoonnummer op de zaak is het nummer in je contacten.',
+      summary: 'De aanvrager, de bezwaarmaker, de buurman die klaagde: elke persoon op een zaak is een Nextcloud contact, verbonden met de zaak. Zoek op wie betrokken is zonder een tweede adresboek te openen. Het telefoonnummer op de zaak is het nummer in je contacten.',
       cta: {label: 'Lees de docs', href: 'https://procest.conduction.nl'},
-      panel: <AppMock app="procest" />,
+      panel: <LeafMock leaf="contacts" />,
     },
     {
       id: 'files',
       title: 'De tekeningen en het besluit, in het dossier',
-      summary: 'Elke zaak heeft een eigen map in Bestanden. De tekeningen, de foto\'s van de locatie, de besluitbrief: op de zaak, doorzoekbaar, met elke versie bewaard. Een tekening gevonden in Bestanden en je vraagt je af bij welke zaak die hoort? Dat staat erbij, en je bent er met één klik.',
+      summary: 'Elke zaak heeft zijn eigen map in Bestanden. De tekeningen, de foto\'s van de locatie, de besluitbrief: op de zaak, doorzoekbaar, met elke versie bewaard. Vond je een tekening in Bestanden en vraag je je af bij welke zaak die hoort? Het vertelt het je, en brengt je erheen.',
       cta: {label: 'Lees de docs', href: 'https://procest.conduction.nl'},
-      panel: <AppMock app="procest" />,
+      panel: <LeafMock leaf="files" />,
     },
   ]}
 />
@@ -229,28 +248,36 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Past goed bij"
-    title="Twee apps die afmaken wat een zaak begint."
+    title="Drie apps die Procest nog meer van jou maken."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/decidesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg>}
-      name="DeciDesk"
-      why="Een zaak die een formeel besluit van raad of bestuur nodig heeft, krijgt dat daar, en de zaak toont de uitkomst en de geschiedenis."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Pas schermen, velden en zaaktypen aan in de draaiende app. Geen ontwikkelaar nodig, en je aanpassingen overleven elke update."
     />
     <PairCard
-      href="/apps/shillinq"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4"/></svg>}
-      name="Shillinq"
-      why="Bereken de leges voor een vergunning uit je eigen tarief en factureer ze, zonder de zaak over te typen."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 1 1-4-6.9"/><path d="M12 8v4l3 2"/></svg>}
+      name="Hermiq"
+      why="De assistent die vragen over je zaken beantwoordt woont hier. Geef hem meer vaardigheden als je team ernaar toegroeit."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Stel je eigen dashboard samen uit de zaakwidgets hierboven, naast alles wat je organisatie verder draait."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="procest" />
+
 <CtaBanner
   title="Zaakbeheer op je eigen Nextcloud."
   lede={<>Open source. Gratis te installeren. Je zaakdossiers blijven op je eigen server. Procest draait op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
-  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/procest'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=procest'}}
 />

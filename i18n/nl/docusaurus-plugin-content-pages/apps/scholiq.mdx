@@ -4,7 +4,7 @@ description: Cursussen, certificaten en aanwezigheid op je eigen Nextcloud. Voor
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -17,8 +17,8 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   title="Scholiq"
   tagline={<>Cursussen, certificaten en aanwezigheid op je eigen <span className="next-blue">Nextcloud</span>. Voor scholen, en voor de verplichte trainingen die je bedrijf of gemeente moet aantonen.</>}
   intro={<>Scholiq is een open-source leeromgeving. Scholen gebruiken het voor cursussen, beoordelingen en aanwezigheid. Bedrijven en overheden gebruiken het voor verplichte trainingen: schrijf iedereen in, bewaar het getekende bewijs en weet vóór een audit welke certificaten bijna verlopen. Uitwisseling met de landelijke onderwijssystemen staat op de roadmap. Uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
-  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/scholiq'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=scholiq'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/scholiq'}}
   illustration={<AppMock app="scholiq" />}
 />
@@ -73,12 +73,10 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   </div>
 </Section>
 
-<PartnersForApp slug="scholiq" />
-
 <RotatingCards
-  eyebrow="Drie manieren waarop Scholiq zijn plek verdient"
+  eyebrow="Vier manieren waarop Scholiq zijn plek verdient"
   title="Het werkt zoals jij werkt. En het werkt voor jou."
-  lede="Drie dingen waar je normaal extra voor betaalt. In Scholiq zitten ze erin."
+  lede="Vier dingen waar je normaal extra voor betaalt. In Scholiq zitten ze erin."
   cards={[
     {
       tone: 'forest',
@@ -86,7 +84,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Een certificaat verloopt bijna. De herhaling is al gepland.',
       summary: 'Nu: iemand houdt een spreadsheet met vervaldatums bij en hoopt er op tijd in te kijken. In plaats daarvan stel je het één keer in. De dag dat een certificaat zijn laatste negentig dagen ingaat, ligt een taak om de herhaling te boeken op het bureau van de manager. Gaat een leerling over de verzuimgrens, dan staat het nabelgesprek op de lijst van de mentor. Een cursus die meer kost dan jouw grens wacht op goedkeuring voordat iemand wordt ingeschreven. Niets vergeten, geen nabellen uit het hoofd, geen programmeerwerk.',
       cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -94,7 +92,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Een school, een ziekenhuis of een rijschool. Zelfde app, jouw manier.',
       summary: 'Een rijschool wil de rijbewijscategorie op elke leerling. Een ziekenhuis wil de afdeling op elke inschrijving. Een basisschool gebruikt nooit punten en badges en wil ze uit beeld. Voeg het veld toe, verberg het blok, sleep de widget waar je het eerst naar kijkt naar boven. In de draaiende app, in minuten, en je aanpassingen blijven bij elke update staan.',
       cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
-      panel: <AppMock app="openbuild" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -109,13 +107,21 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         'assistent: 3 modules, een halve dag, 2 jaar geldig',
       ]} cursor mode="leest alleen, schrijft nooit in of beoordeelt" />,
     },
+    {
+      tone: 'mint',
+      eyebrow: 'Laat klanten zichzelf helpen',
+      title: 'Leerlingen en ouders zoeken zelf hun cijfers op. Zonder het kantoor te bellen.',
+      summary: <>Geef leerlingen en ouders hun eigen deur. Via <a href="/apps/portaliq">Portaliq</a> loggen ze in en zien ze hun cijfers, hun inschrijvingen en het rapport zodra het is gepubliceerd. Ze schrijven zichzelf in voor de volgende cursus en de bevestiging landt op hun dossier. De administratie stopt met screenshots doorsturen, en niemand wacht op openingstijden.</>,
+      cta: {label: 'Bekijk het klantportaal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets die we meeleveren"
-  title="Een dashboard dat in één oogopslag bij je rol past."
-  lede="Installeer Scholiq en een leerling ziet zijn trainingen, een docent ziet wat er beoordeeld moet worden, en een beheerder ziet waar de aanwezigheid wegzakt. Zelfde app, drie dashboards."
+  title="We leveren de widgets die je nodig hebt"
+  lede={<>Installeer Scholiq en een leerling ziet zijn trainingen, een docent ziet wat er beoordeeld moet worden, en een beheerder ziet waar de aanwezigheid wegzakt. Zelfde app, drie dashboards. Meer nodig? Ontwerp je eigen widgets met <a href="/apps/openbuild">OpenBuild</a>, of bouw je eigen dashboard uit al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
       title: 'Mijn verplichte trainingen',
@@ -188,6 +194,42 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         </div>
       ),
     },
+    {title: 'Vaardighedenkloof', desc: 'Vereiste versus behaalde competenties, zodat je ziet wie wat mist voor de functie.'},
+    {title: 'Studieadviesrisico', desc: 'Leerlingen met kans op een negatief studieadvies, met de conceptwaarschuwing klaar.'},
+    {title: 'Betrokkenheidsscore', desc: 'Gemiddelde betrokkenheid per cursus, zodat je een klas ziet wegzakken vóór het examen.'},
+    {title: 'Open betrokkenheidsvlaggen', desc: 'Leerlingen van wie de betrokkenheid onder jouw grens zakte.'},
+    {title: 'Leerling 360', desc: 'Eén leerling, het hele verhaal: inschrijvingen, cijfers, plannen, incidenten en welzijnsnotities in één tijdlijn.'},
+    {title: 'Naleving verplichte trainingen', desc: 'Wie de verplichte cursussen per regelgeving afrondde, en wie nog moet.'},
+    {title: 'Certificaten', desc: 'De certificaten die een leerling heeft, elk met geldigheid.'},
+    {title: 'Groepsvlaggen', desc: 'Openstaande vlaggen per groep, zodat de mentor ze het eerst ziet.'},
+    {title: 'Mijn punten', desc: 'Voor de leerling. Punten, niveau en reeks, als je beloningen aanzet.'},
+    {title: 'Cursussen', desc: 'Elke cursus die je draait, in één telling voor de beheerder.'},
+    {title: 'Groepen', desc: 'Je klassen en groepen, met hun grootte.'},
+    {title: 'Leerlingen', desc: 'Iedereen die bij je leert, over cursussen en groepen heen.'},
+    {title: 'Actieve inschrijvingen', desc: 'Wie waarvoor is ingeschreven, op dit moment.'},
+    {title: 'Mijn cursussen', desc: 'Voor de docent. De cursussen die je geeft, één klik van het materiaal.'},
+    {title: 'Sessies om af te tekenen', desc: 'Voor de docent. De sessies die nog op aanwezigheid wachten.'},
+    {title: 'Mijn groepen', desc: 'Voor de docent. Jouw klassen, met de vlaggen die jou nodig hebben.'},
+    {title: 'Inschrijvingen van de leerling', desc: 'De inschrijvingen van de leerling die je open hebt.'},
+    {title: 'Aanwezigheid van de leerling', desc: 'Aanwezigheid en verzuim van één leerling, tegen de grens.'},
+    {title: 'Lessen van de cursus', desc: 'De lessen in de cursus, in lesvolgorde.'},
+    {title: 'Inschrijvingen op de cursus', desc: 'Wie in de cursus zit en hoe ver ze zijn.'},
+    {title: 'Opdrachten van de cursus', desc: 'De opdrachten in de cursus en wat er binnenkwam.'},
+    {title: 'Toetsen van de cursus', desc: 'De toetsen en examens op de cursus, met resultaten.'},
+    {title: 'Opleidingsoverzicht', desc: 'De kerncijfers en lijsten van een hele opleiding.'},
+    {title: 'Groepsoverzicht', desc: 'De kerncijfers en lijsten van één klas of groep.'},
+    {title: 'Inschrijvingsoverzicht', desc: 'Eén inschrijving van start tot certificaat.'},
+    {title: 'Sessieoverzicht', desc: 'Eén sessie met aanwezigheid en materiaal.'},
+    {title: 'Verklaringen', desc: 'Het getekende bewijs per regelgeving, klaar voor de export.'},
+    {title: 'Externe trainingen', desc: 'Certificaten die elders zijn behaald, in het dossier zodat ze meetellen.'},
+    {title: 'Verplichte cursussen', desc: 'De cursussen die een regelgeving vereist, en voor wie ze gelden.'},
+    {title: 'BPV-overeenkomst', desc: 'De stageovereenkomst tussen leerling, school en bedrijf.'},
+    {title: 'BPV-beoordelingen', desc: 'Hoe de leerling het doet bij het stagebedrijf.'},
+    {title: 'Bezoekverslagen', desc: 'De verslagen van stagebezoeken, bij de stage.'},
+    {title: 'Vlaggenlijsten', desc: 'Elke grens die je instelde, met de leerlingen die eroverheen gingen.'},
+    {title: 'Vragenbank', desc: 'Je vragenbank voor toetsen, geordend per vak.'},
+    {title: 'Toetspaneel', desc: 'Eén toets met vragen, deelnemers en scores.'},
+    {title: 'Portfolio', desc: 'Het werk dat een leerling verzamelde om te laten zien wat hij kan.'},
   ]}
 />
 
@@ -203,7 +245,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Materiaal, inzendingen en bewijs in Bestanden',
       summary: 'Elke cursus, les, sessie en opdracht heeft een eigen map in Bestanden. De slides bij de les, het ingeleverde werk bij de inzending, het getekende bewijs bij de verklaring. Leerlingen vinden het materiaal waar de cursus is. Docenten openen de inzending en het bestand staat er. Niets reist per e-mail.',
       cta: {label: 'Lees de docs', href: 'https://scholiq.conduction.nl'},
-      panel: <AppMock app="scholiq" />,
+      panel: <LeafMock leaf="files" />,
     },
     {
       id: 'talk',
@@ -245,28 +287,36 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Past goed bij"
-    title="Twee apps die leren buiten het klaslokaal brengen."
+    title="Drie apps die Scholiq nog meer van jou maken."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/portaliq"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 13h8"/></svg>}
-      name="Portaliq"
-      why="Ouders en leerlingen zien cijfers, aanwezigheid en rapporten in hun eigen portaal, niet in de backoffice van de school."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Pas schermen, velden en pagina's aan in de draaiende app. Een school en een rijschool draaien dezelfde app, elk op hun eigen manier."
     />
     <PairCard
-      href="/apps/docudesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      name="DocuDesk"
-      why="Maak van rapporten en certificaten documenten die je kunt printen, ondertekenen en archiveren."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 1 1-4-6.9"/><path d="M12 8v4l3 2"/></svg>}
+      name="Hermiq"
+      why="De assistent die vragen over cursussen en certificaten beantwoordt woont hier. Geef hem meer vaardigheden als je groeit."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Stel je eigen dashboard samen uit de leerwidgets hierboven, naast alles wat je organisatie verder draait."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="scholiq" />
+
 <CtaBanner
   title="Leren op je eigen Nextcloud."
   lede={<>Open source. Gratis te installeren. Cijfers en certificaten blijven op je eigen server. Scholiq draait op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
-  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/scholiq'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=scholiq'}}
 />

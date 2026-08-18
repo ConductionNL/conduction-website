@@ -4,7 +4,7 @@ description: Een wachtwoordkluis in je eigen Nextcloud. Eén kluis per persoon, 
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -17,8 +17,8 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   title="Doriath"
   tagline={<>Een wachtwoordkluis in je eigen <span className="next-blue">Nextcloud</span>. Eén kluis per persoon, delen per team, en een plek voor de wachtwoorden die je systemen gebruiken.</>}
   intro={<>Doriath bewaart de wifi-code, de banklogin en het wachtwoord van het leveranciersportaal waar je team al werkt. Alles is versleuteld, zodat zelfs je eigen beheerder het niet kan lezen. Raak je je hoofdwachtwoord kwijt, dan kan niemand je kluis openen, ook wij niet. Deel een wachtwoord met een team, trek het met één klik weer in, en krijg een waarschuwing voordat een certificaat verloopt. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
-  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/doriath'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=doriath'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/doriath'}}
   illustration={<AppMock app="doriath" />}
 />
@@ -73,8 +73,6 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   </div>
 </Section>
 
-<PartnersForApp slug="doriath" />
-
 <RotatingCards
   eyebrow="Drie manieren waarop Doriath zijn plek verdient"
   title="Het werkt zoals jij werkt. En het houdt zijn eigen geheimen."
@@ -86,7 +84,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Een certificaat loopt bijna af. Je hoort het dertig dagen van tevoren.',
       summary: 'Vandaag: een certificaat verloopt op zondag en de website toont maandag een rode waarschuwing. In plaats daarvan bewaakt Doriath elke einddatum voor je. Dertig dagen van tevoren krijg je een waarschuwing, en certificaten die Doriath uitgaf vernieuw je met één klik. Zet een verlooptermijn op een map en elk wachtwoord erin krijgt een herinnering als de tijd om is. Markeer het als gewisseld en de klok begint opnieuw. Niets vergeten, geen spreadsheet met einddatums.',
       cta: {label: 'Lees de docs', href: 'https://doriath.conduction.nl'},
-      panel: <AppMock app="doriath" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -94,7 +92,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Delen per team, regels per organisatie.',
       summary: 'Sales deelt de leveranciersportalen, financiën deelt de banklogins, IT deelt de servers. Elk team krijgt een eigen map, en het lidmaatschap volgt de groepen die je al in Nextcloud hebt. Je beheerder stelt de wachtwoordregels één keer in: minimale lengte, wanneer een wachtwoord moet wisselen, wie een systeem mag aanmelden. Alle anderen openen gewoon de kluis, in de browser of via de browserextensie die de login voor ze invult.',
       cta: {label: 'Lees de docs', href: 'https://doriath.conduction.nl'},
-      panel: <AppMock app="doriath" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -113,8 +111,8 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <WidgetShelf
   eyebrow="Wat de kluis je laat zien"
-  title="Open de kluis en het dringende staat bovenaan."
-  lede="Installeer Doriath en het overzicht laat zien wat jou nodig heeft: wachtwoorden die aan een wissel toe zijn, wat collega's met je deelden, en de gezondheid van elk wachtwoord dat je bewaart."
+  title="We leveren de widgets die je nodig hebt"
+  lede={<>Installeer Doriath en het kluisoverzicht laat zien wat jou als eerste nodig heeft: wissels die eraan komen, wat collega's met je deelden, en wat er veranderde terwijl je weg was. Ontwerp je eigen widgets met <a href="/apps/openbuild">OpenBuild</a>, of bouw je eigen dashboard van al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
       title: 'Wissel nodig',
@@ -164,15 +162,14 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       ),
     },
     {
-      title: 'Wachtwoordgezondheid',
-      desc: 'Zwakke, hergebruikte en gelekte wachtwoorden, gecontroleerd in je eigen browser. De server ziet nooit een waarde.',
+      title: 'Totaal geheimen',
+      desc: 'Alles wat je bewaart in één telling: je eigen items, wat teams delen, en de wachtwoorden van je systemen.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {[
-            {label: 'sterk', val: '70%', tone: 'var(--c-mint-500)'},
-            {label: 'zwak', val: '20%', tone: 'var(--c-orange-knvb)'},
-            {label: 'hergebruikt', val: '15%', tone: 'var(--c-lavender-300)'},
-            {label: 'gelekt', val: '5%', tone: 'var(--c-cobalt-300)'},
+            {label: 'van jou', val: '70%', tone: 'var(--c-mint-500)'},
+            {label: 'teams', val: '45%', tone: 'var(--c-lavender-300)'},
+            {label: 'systemen', val: '25%', tone: 'var(--c-cobalt-300)'},
           ].map((row, i) => (
             <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
               <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 50}}>{row.label}</div>
@@ -183,6 +180,18 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
           ))}
         </div>
       ),
+    },
+    {
+      title: 'Mappen',
+      desc: 'Je eigen mappen en de teammappen waar je in zit, zodat je in één blik ziet hoe de kluis is ingedeeld.',
+    },
+    {
+      title: 'Recente activiteit',
+      desc: 'Wie wat deelde en welke items veranderden, nieuwste eerst. Handig na een week weg.',
+    },
+    {
+      title: 'Snelle acties',
+      desc: 'Voeg een wachtwoord toe, deel er een, of vraag er een op bij een leverancier, direct vanuit het overzicht.',
     },
   ]}
 />
@@ -233,28 +242,36 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Past goed bij"
-    title="Twee apps waarvan Doriath de wachtwoorden bewaart."
+    title="Bouw ermee, vraag ernaar, zie het op je dashboard."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openconnector"
-      icon={<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>}
-      name="OpenConnector"
-      why="Koppelt je andere systemen. De wachtwoorden die die koppelingen gebruiken staan in Doriath, niet in een instellingenscherm."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Bouw je eigen apps en schermen op je werkplek. De sleutels en wachtwoorden die ze nodig hebben staan in Doriath, nooit in de app zelf."
     />
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Waar de rest van je gegevens staat. Heeft een app een systeemwachtwoord nodig, dan leent hij het van Doriath en bewaart hij nooit een kopie."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7v3a7 7 0 0 1-14 0V9a7 7 0 0 1 7-7Z"/><path d="M9 22h6"/><circle cx="9.5" cy="10" r="1"/><circle cx="14.5" cy="10" r="1"/></svg>}
+      name="Hermiq"
+      why="De assistent voor je werkplek. Hij kan je vertellen wat deze maand verloopt. Een wachtwoord lezen kan hij nooit."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Je eigen dashboard over al je apps. De wisselwaarschuwingen van Doriath staan er direct op, naast de rest van je dag."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="doriath" />
+
 <CtaBanner
   title="Een wachtwoordkluis op je eigen Nextcloud."
   lede={<>Open source. Gratis te installeren. Versleuteld, zodat alleen jij het kunt lezen. Doriath draait op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
-  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/doriath'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=doriath'}}
 />

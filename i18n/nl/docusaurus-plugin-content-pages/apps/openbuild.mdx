@@ -4,7 +4,7 @@ description: Laat elke Conduction-app passen bij je bedrijf, zonder ontwikkelaar
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, getApp} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 export const app = getApp('openbuild');
@@ -19,8 +19,8 @@ export const app = getApp('openbuild');
   title={app.name}
   tagline={<>Laat elke app passen bij je bedrijf, zonder ontwikkelaar. Voeg een veld toe, voeg een stap toe, verplaats een widget, in de draaiende app op je eigen <span className="next-blue">Nextcloud</span>.</>}
   intro={<>{app.name} is de appbouwer voor de Nextcloud-werkplek. Open een Conduction-app, klik op bewerken en verander wat er op de pagina staat: een veld, een stap, een widget, een menu-item. Je aanpassingen blijven staan bij elke update. Iets nodig wat de apps niet doen? Bouw een kleine app van jezelf: geef hem een naam, voeg de velden toe, zeg wie hem ziet, en hij staat in de bovenbalk. Probeer aanpassingen eerst op een testkopie, publiceer als je tevreden bent, één klik terug als dat niet zo is. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
-  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/openbuild'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=openbuild'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/openbuild'}}
   illustration={<AppMock app="openbuild" />}
 />
@@ -69,12 +69,10 @@ export const app = getApp('openbuild');
   </div>
 </Section>
 
-<PartnersForApp slug="openbuild" />
-
 <RotatingCards
-  eyebrow={`Drie manieren waarop ${app.name} zijn plek verdient`}
+  eyebrow={`Vier manieren waarop ${app.name} zijn plek verdient`}
   title="Het werkt zoals jij werkt. En het werkt voor je."
-  lede="Drie dingen waar je normaal een ontwikkelaar voor betaalt. Hier doe je ze zelf, in de draaiende app."
+  lede="Vier dingen waar je normaal een ontwikkelaar voor betaalt. Hier doe je ze zelf, in de draaiende app."
   cards={[
     {
       tone: 'forest',
@@ -82,7 +80,7 @@ export const app = getApp('openbuild');
       title: 'Jouw nieuwe veld, jouw nieuwe stap, en de automatisering die ze gebruikt.',
       summary: 'Je hebt een keuringsdatum toegevoegd aan de wagenparklijst. Teken nu wat ermee moet gebeuren: dertig dagen voor de datum een taak voor de wagenparkbeheerder, en de auto gemarkeerd als aan de beurt. Een regel met een voorwaarde, geen programmeerwerk. Je hebt een schouwstap toegevoegd aan de pipeline: zodra de schouw klaar is, ligt de offertetaak op het juiste bureau. Velden en stappen die je vandaag toevoegt, zijn dezelfde dag klaar voor automatisering.',
       cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -90,7 +88,7 @@ export const app = getApp('openbuild');
       title: 'Honderd procent jouw app. Tot de laatste widget.',
       summary: 'Elke pagina van elke Conduction-app staat open voor aanpassing. Hernoem een veld zodat het zegt wat je team het noemt. Zet het telefoonnummer van de klant waar het oog het eerst valt. Haal de widget die niemand leest van het dashboard. Geef de app je eigen icoon. Bepaal per groep wie welke pagina ziet. Alles wat je aanpast blijft apart van wat wij leveren, dus de volgende update landt en jouw aanpassingen blijven staan.',
       cta: {label: 'Lees de docs', href: 'https://openbuild.conduction.nl'},
-      panel: <AppMock app="openbuild" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -104,16 +102,24 @@ export const app = getApp('openbuild');
         'assistent: zichtbaar voor groep "kantoor". Goedkeuren, of iets aanpassen?',
       ]} cursor mode="maakt een ontwerp, jij keurt goed" />,
     },
+    {
+      tone: 'mint',
+      eyebrow: 'Laat klanten zichzelf helpen',
+      title: 'De app die je bouwde, met een voordeur voor klanten.',
+      summary: <>Je team werkt in de apps die jij vorm gaf. Geef klanten hun eigen venster op dezelfde dossiers met <a href="/apps/portaliq">Portaliq</a>: een portaal in jouw huisstijl waar ze hun contracten en producten zien, offertes aanvragen en tekenen, en hun tickets volgen. Jij bepaalt wat een klant ziet, op dezelfde manier als je dat voor je team bepaalt. Geen tweede systeem om te bouwen, geen gegevens die naar buiten worden gekopieerd.</>,
+      cta: {label: 'Geef klanten hun eigen portaal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets die we meeleveren"
-  title="Jouw apps en jouw aanpassingen, in één oogopslag."
-  lede="Installeer het en het dashboard toont de apps die je bouwde, wat er op de testkopie klaarstaat en wie wat aanpaste."
+  title="We leveren de widgets die je nodig hebt"
+  lede={<>Installeer het en het dashboard toont de apps die je bouwde, wat je publiceerde en wat je team het laatst aanraakte. En dit is de plek waar je je eigen widgets ontwerpt, voor elke app op de werkplek. Zet ze allemaal op één bord met <a href="/apps/launchpad">LaunchPad</a>, je eigen dashboard uit al je gegevens.</>}
   widgets={[
     {
-      title: 'Jouw apps',
+      title: 'Apps',
       desc: 'Elke app die je bouwde of aanpaste, met de live versie en de testkopie. Klik om de ontwerper te openen.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
@@ -136,8 +142,8 @@ export const app = getApp('openbuild');
       ),
     },
     {
-      title: 'Wacht op publicatie',
-      desc: 'Aanpassingen op een testkopie die nog niet live zijn. Publiceer vanaf hier, of open eerst de testkopie.',
+      title: 'Gepubliceerde versies',
+      desc: 'Elke versie die je publiceerde, en wat er nog op een testkopie klaarstaat. Eén klik terug naar de vorige versie.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
           <div style={{display: 'flex', alignItems: 'baseline', gap: 6}}>
@@ -154,8 +160,8 @@ export const app = getApp('openbuild');
       ),
     },
     {
-      title: 'Wie wat aanpaste',
-      desc: 'De laatste bewerkingen aan je apps: welke pagina, welk veld, door wie, en wanneer. Ongedaan maken is één klik weg.',
+      title: 'Recente apps',
+      desc: 'De apps die je team het laatst aanraakte: welke pagina, welk veld, door wie, en wanneer.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {['var(--c-forest-300)', 'var(--c-lavender-300)', 'var(--c-mint-300)', 'var(--c-terracotta-300)'].map((tone, i) => (
@@ -171,6 +177,7 @@ export const app = getApp('openbuild');
         </div>
       ),
     },
+    {title: 'Hybride apps', desc: 'Apps die onze pagina\'s mengen met die van jou, zodat je uitbreidt in plaats van opnieuw bouwt.'},
   ]}
 />
 
@@ -221,28 +228,36 @@ export const app = getApp('openbuild');
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Past goed bij"
-    title="Twee apps die je als eerste aanpast."
+    title="Drie apps die afmaken wat jij bouwt."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/pipelinq"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
-      name="PipelinQ"
-      why="CRM, offertes en deals. Voeg het veld toe, voeg de stap toe, en de pipeline volgt jouw proces."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>}
+      name="Hermiq"
+      why="Beschrijf de app die je nodig hebt en keur het ontwerp goed. Praat daarna met wat je bouwde."
     />
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Waar je gegevens wonen. Elk veld dat je toevoegt en elke app die je bouwt bewaart zijn gegevens hier."
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Jouw widgets en jouw apps op één startscherm, voor het hele team."
+    />
+    <PairCard
+      href="/apps/portaliq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg>}
+      name="Portaliq"
+      why="Een klantportaal op de dossiers achter je apps. Klanten helpen zichzelf, in jouw huisstijl."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="openbuild" />
+
 <CtaBanner
   title="Apps die passen bij je bedrijf, op je eigen Nextcloud."
   lede={<>Open source. Gratis te installeren. Pas de apps aan die je hebt, of bouw de app die je mist, op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
-  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/openbuild'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=openbuild'}}
 />

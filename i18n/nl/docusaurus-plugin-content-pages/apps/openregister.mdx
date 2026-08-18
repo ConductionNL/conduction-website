@@ -4,7 +4,7 @@ description: Alle objecten, registers en documenten op één plek, die jij zelf 
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock, getApp} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 export const app = getApp('openregister');
@@ -19,8 +19,8 @@ export const app = getApp('openregister');
   title={app.name}
   tagline={<>Alle objecten, registers en documenten op één plek, die jij zelf beheert. Op je eigen <span className="next-blue">Nextcloud</span>.</>}
   intro={<>{app.name} is de gedeelde gegevensopslag onder elke Conduction-app. Je klanten, offertes, facturen, projecten en zaken staan er één keer in, op je eigen server. Elke app leest en schrijft dezelfde gegevens, dus een wijziging op één plek is een wijziging overal. Het draait ook je automatisering: teken wat er moet gebeuren, en het gebeurt. Elke wijziging wordt gelogd met wie, wat en wanneer. Open source, uitgebracht onder EUPL-1.2 en sinds 2019 onderhouden door Conduction.</>}
-  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/openregister'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=openregister'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/openregister'}}
   illustration={<AppMock app="openregister" />}
 />
@@ -69,12 +69,10 @@ export const app = getApp('openregister');
   </div>
 </Section>
 
-<PartnersForApp slug="openregister" />
-
 <RotatingCards
-  eyebrow={`Drie manieren waarop ${app.name} zijn plek verdient`}
+  eyebrow={`Vier manieren waarop ${app.name} zijn plek verdient`}
   title="Het werkt zoals jij werkt. En het werkt voor je."
-  lede="Drie dingen waar je normaal extra voor betaalt. Hier zitten ze ingebouwd, voor elke app op je werkplek."
+  lede="Vier dingen waar je normaal extra voor betaalt. Hier zitten ze ingebouwd, voor elke app op je werkplek."
   cards={[
     {
       tone: 'forest',
@@ -82,7 +80,7 @@ export const app = getApp('openregister');
       title: 'Een factuur blijft onbetaald. De herinnering ligt al op iemands bureau.',
       summary: 'Nu: iemand kijkt elke week de openstaande facturen na en belt met de hand na. Straks: je tekent het één keer. Elke ochtend controleert het de openstaande facturen. Veertien dagen over de vervaldatum landt een opvolgtaak bij de juiste collega, en het klantdossier laat het zien. Een afboeking boven vijfhonderd euro wacht op jouw goedkeuring voordat er iets verandert. Elke eerste van de maand de lijst met achterstallige facturen per klant. Elke stap wordt gelogd, en elke run doet alleen wat de persoon die hem instelde mag. Niets vergeten, geen nabellen, geen programmeerwerk.',
       cta: {label: 'Lees de docs', href: 'https://openregister.conduction.nl'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -90,7 +88,7 @@ export const app = getApp('openregister');
       title: 'Voeg het veld toe dat jouw bedrijf nodig heeft. Zonder ontwikkelaar.',
       summary: 'Een groothandel wil een bezorgregio op elke klant. Een installateur wil een schouwstap vóór de offerte. Voeg het veld toe, voeg de stap toe, zet de widget waar je het eerst naar kijkt bovenaan. In de draaiende app, in minuten, en je aanpassingen blijven bij elke update staan. Een kleine app van jezelf nodig, zoals een wagenparklijst met keuringsdata? Geef hem een naam, voeg de velden toe, zeg wie hem ziet, en hij staat in de bovenbalk.',
       cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
-      panel: <AppMock app="openbuild" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -104,17 +102,25 @@ export const app = getApp('openregister');
         'assistent: zal ik voor elk een opvolggesprek inplannen?',
       ]} cursor mode="vraagt eerst voordat het iets verandert" />,
     },
+    {
+      tone: 'mint',
+      eyebrow: 'Laat klanten zichzelf helpen',
+      title: 'Klanten zien hun eigen dossiers. In hun eigen portaal.',
+      summary: <>De dossiers staan hier al: contracten, bestellingen, aanvragen, facturen. Geef klanten er hun eigen ingang naartoe met <a href="/apps/portaliq">Portaliq</a>: een portaal in jouw huisstijl waar ze hun contracten en producten zien, offertes aanvragen en tekenen, en hun tickets volgen. Geen kopie van de gegevens, geen aparte portaaldatabase. Je team en je klanten kijken naar hetzelfde dossier, en de waar-blijft-het-telefoontjes stoppen.</>,
+      cta: {label: 'Geef klanten hun eigen portaal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets die we meeleveren"
-  title="Op het dashboard dat je team al opent."
-  lede="Installeer het en het startscherm laat zien wat er in je gegevens veranderde, waar mensen naar zoeken en waar de gegevens een opschoonbeurt nodig hebben."
+  title="We leveren de widgets die je nodig hebt"
+  lede={<>Installeer het en het dashboard laat zien hoeveel gegevens je hebt, wat er veranderde en waar mensen naar zoeken. Ontwerp je eigen widgets met <a href="/apps/openbuild">OpenBuild</a>, of bouw je eigen dashboard uit al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
-      title: 'Recente wijzigingen',
-      desc: 'De laatste dossiers die je team aanmaakte of wijzigde, in elke app. Wie het deed, en wanneer.',
+      title: 'Gebeurtenissen',
+      desc: 'De laatste wijzigingen in elke app. Wie wat deed, en wanneer.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {['var(--c-forest-300)', 'var(--c-lavender-300)', 'var(--c-mint-300)', 'var(--c-terracotta-300)', 'var(--c-forest-300)'].map((tone, i) => (
@@ -131,8 +137,8 @@ export const app = getApp('openregister');
       ),
     },
     {
-      title: 'Activiteit deze week',
-      desc: 'Hoeveel dossiers er deze week bijkwamen, per app. Klik door voor het detail.',
+      title: 'Objecten',
+      desc: 'Hoeveel dossiers er in je werkplek staan, en hoe hard dat groeit.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
           <div style={{display: 'flex', alignItems: 'baseline', gap: 6}}>
@@ -148,7 +154,7 @@ export const app = getApp('openregister');
       ),
     },
     {
-      title: 'Meest gezocht',
+      title: 'Populaire zoektermen',
       desc: 'Waar je team het vaakst naar zoekt. Laat zien wat lastig te vinden is, zodat je het kunt oplossen.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
@@ -163,6 +169,13 @@ export const app = getApp('openregister');
         </div>
       ),
     },
+    {title: 'Registers', desc: 'Je gegevensverzamelingen in één oogopslag, met aantallen per verzameling.'},
+    {title: 'Objecttypen', desc: 'De soorten dossiers die je bijhoudt, en hoeveel van elk.'},
+    {title: 'Zoekopdrachten', desc: 'Hoe vaak je team zoekt, dag voor dag.'},
+    {title: 'Objecten per register', desc: 'Welke verzamelingen de meeste dossiers bevatten.'},
+    {title: 'Objecten per type', desc: 'Je dossiers uitgesplitst naar soort.'},
+    {title: 'Gegevensverdeling', desc: 'Eén grafiek van waar je gegevens staan.'},
+    {title: 'Status koppelingen', desc: 'Op het Nextcloud-startscherm: of je koppelingen draaiden, in één oogopslag.'},
   ]}
 />
 
@@ -195,7 +208,7 @@ export const app = getApp('openregister');
       title: 'Je CRM gebruikt je echte contacten en agenda.',
       summary: "Heeft je CRM een contact nodig, dan gebruikt het je Nextcloud-adresboek. Heeft het een afspraak nodig, dan schrijft het in je Nextcloud-agenda. Open een lead en zie de afspraken erover. Klik op een contact en start een Talk-gesprek. Eén login dekt het allemaal, en niemand houdt een tweede adresboek bij.",
       cta: {label: 'Lees de docs', href: 'https://openregister.conduction.nl/docs/Integrations/calendar'},
-      panel: <AppMock app="pipelinq" />
+      panel: <LeafMock leaf="contacts" />
     },
     {
       id: 'project-knowledge',
@@ -214,7 +227,7 @@ export const app = getApp('openregister');
     {
       id: 'beyond-the-workspace',
       title: 'Systemen van buiten, in hetzelfde beeld.',
-      summary: "Je boekhoudpakket, het bestelsysteem van je leverancier, een openbare databron: via OpenConnector voeden ze dezelfde gegevens, op momenten die jij bepaalt. Het systeem van buiten blijft wat het is. Je werkplek behandelt zijn gegevens als onderdeel van het klantdossier, met hetzelfde logboek en dezelfde rechten.",
+      summary: <>Je boekhoudpakket, het bestelsysteem van je leverancier, een openbare databron: via <a href="/apps/openconnector">OpenConnector</a> voeden ze dezelfde gegevens, op momenten die jij bepaalt. Het systeem van buiten blijft wat het is. Je werkplek behandelt zijn gegevens als onderdeel van het klantdossier, met hetzelfde logboek en dezelfde rechten.</>,
       cta: {label: 'Bekijk OpenConnector', href: '/apps/openconnector'},
       panel: <MockScene
         width={680}
@@ -233,22 +246,22 @@ export const app = getApp('openregister');
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Past goed bij"
-    title="Drie apps die op dezelfde gegevens bouwen."
+    title="Drie apps die dezelfde gegevens aan het werk zetten."
     align="stack"
-    lede="Dit zijn de gegevens onder elke Conduction-app. Deze drie vullen ze, tonen ze en zetten ze aan het werk."
+    lede="Geef de dossiers vorm, praat ermee, en zie ze op één startscherm."
   />
   <PairRow>
     <PairCard
-      href="/apps/pipelinq"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
-      name="PipelinQ"
-      why="CRM, offertes en deals. Elke klant is hier een dossier en een contact in je adresboek."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Voeg velden, schermen en kleine eigen apps toe bovenop deze gegevens. Zonder ontwikkelaar."
     />
     <PairCard
-      href="/apps/openconnector"
-      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-      name="OpenConnector"
-      why="Haalt gegevens binnen uit de systemen die je al hebt. Boekhouding, leveranciers, openbare bronnen."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>}
+      name="Hermiq"
+      why="Stel je gegevens een vraag, of geef ze een taak. Jij bepaalt wat elke assistent mag."
     />
     <PairCard
       href="/apps/launchpad"
@@ -268,9 +281,11 @@ export const app = getApp('openregister');
   />
 </Section>
 
+<PartnersForApp slug="openregister" />
+
 <CtaBanner
   title="Jouw gegevens, op je eigen Nextcloud."
   lede={<>Open source. Gratis te installeren. Standaard AVG-proof. Elke Conduction-app draait op dezelfde gegevens, op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
-  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/openregister'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=openregister'}}
 />

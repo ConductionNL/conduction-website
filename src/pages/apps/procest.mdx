@@ -4,7 +4,7 @@ description: Case management for permits, objections, complaints and enforcement
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -17,8 +17,8 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   title="Procest"
   tagline={<>Case management for permits, objections, complaints and enforcement, on your own <span className="next-blue">Nextcloud</span>. Every legal deadline counted from day one.</>}
   intro={<>Procest is open-source case management for Dutch municipalities and other public bodies. Case workers see their cases and tasks in one place. Residents follow their own case. Every legal deadline is counted, warned about and written down. It follows the Dutch case-management exchange standard (ZGW), so it fits the systems you already run. Released under EUPL-1.2 and maintained by Conduction.</>}
-  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/procest'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=procest'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/procest'}}
   illustration={<AppMock app="procest" />}
 />
@@ -67,12 +67,10 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   </div>
 </Section>
 
-<PartnersForApp slug="procest" />
-
 <RotatingCards
-  eyebrow="Three ways Procest earns its place"
+  eyebrow="Four ways Procest earns its place"
   title="It works the way you work. And it works for you."
-  lede="Three things you would normally pay extra for. In Procest they are built in."
+  lede="Four things you would normally pay extra for. In Procest they are built in."
   cards={[
     {
       tone: 'forest',
@@ -80,7 +78,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'A case is ready for decision. The sign-off is already on its way.',
       summary: 'Today: the case worker finishes the assessment, then walks the file to whoever may sign. Instead, set it up once. The moment a case reaches "ready for decision", the sign-off task is on the desk of the person with the mandate. A permit above your threshold waits for a second pair of eyes before anything goes out. A case that has not moved in three weeks turns up on the team leader\'s list on Monday. Nothing forgotten, no chasing, no coding.',
       cta: {label: 'How automation works', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -88,7 +86,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Your case types, your fields, your screens.',
       summary: 'A small municipality wants the neighbourhood on every case. An environmental service wants the inspector\'s photos at the top of the file. A water board never handles objections and wants that page out of the menu. Add the field, move the block, hide what you never use. In the running app, in minutes, and your changes stay with every update.',
       cta: {label: 'How customising works', href: '/apps/openbuild'},
-      panel: <AppMock app="openbuild" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -104,13 +102,21 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         'assistant: clock paused since 12 March, 34 days left',
       ]} cursor mode="reads only, never changes a case" />,
     },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'Residents and businesses open their own case. Without calling you.',
+      summary: <>Give the people you work for their own door. Through <a href="/apps/portaliq">Portaliq</a> a resident or business logs in and sees their own cases, the tenders they take part in and the invoices they have paid or still owe. They upload the missing document themselves and the case moves on. The counter is open in the evening too, and nobody had to pick up a phone.</>,
+      cta: {label: 'See the client portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets we ship"
-  title="Deadlines, overdue cases and your tasks. On the dashboard."
-  lede="Install Procest and every case worker sees the deadlines coming up, the cases already late and their own tasks the moment they log in. No separate inbox."
+  title="We ship the widgets you need"
+  lede={<>Install Procest and every case worker sees the deadlines coming up, the cases already late and their own tasks the moment they log in. No separate inbox. Want more? Design your own widgets with <a href="/apps/openbuild">OpenBuild</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
       title: 'Deadline alerts',
@@ -133,7 +139,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     },
     {
       title: 'Overdue',
-      desc: 'Cases past their deadline, oldest first. Click one and you are on the case.',
+      desc: 'Cases past their deadline, oldest first. Also on your Nextcloud home screen.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {['permit', 'enforcement', 'permit', 'notice'].map((_, i) => (
@@ -172,6 +178,32 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         </div>
       ),
     },
+    {title: 'Stalled cases', desc: 'Cases that have not moved in weeks, so nothing dies quietly in a drawer.'},
+    {title: 'Throughput time', desc: 'How long each case type really takes, from intake to decision.'},
+    {title: 'Statutory clock', desc: 'The legal clock on an objection, including pauses and suspensions.'},
+    {title: 'Adaptive case plan', desc: 'The plan on the case adjusts itself when the case changes course.'},
+    {title: 'Case assistant', desc: 'Ask the case a question and get the answer straight from the file.'},
+    {title: 'Cases by status', desc: 'All running cases, grouped by where they stand.'},
+    {title: 'Cases by type', desc: 'Permits, complaints, enforcement: how much of each is on your plate.'},
+    {title: 'New cases', desc: 'What came in today and this week, before anyone asks.'},
+    {title: 'Completed', desc: 'What your team finished, so the work done stays visible too.'},
+    {title: 'Open cases', desc: 'Every running case in one list, filtered the way you want.'},
+    {title: 'Task due reminders', desc: 'Tasks nearing their due date, flagged before they are late.'},
+    {title: 'Open tasks on the case', desc: 'What still has to happen on the case you have open.'},
+    {title: 'Case documents', desc: 'Every document on the case, with every version kept.'},
+    {title: 'Case decisions', desc: 'The decisions taken on the case and who took them.'},
+    {title: 'Sub-cases', desc: 'The smaller cases hanging under the big one, at a glance.'},
+    {title: 'Hours on the case', desc: 'The hours written on the case, ready for cost recovery.'},
+    {title: 'Proposals', desc: 'Draft decisions waiting for the person with the mandate.'},
+    {title: 'Locations', desc: 'The addresses and places the case is about, on the map of the file.'},
+    {title: 'Initiator', desc: 'Who started the case and how to reach them, right on the case.'},
+    {title: 'Advice requests', desc: 'Advice asked from the objections committee and what came back.'},
+    {title: 'Committee assignments', desc: 'Which objections sit with which committee member.'},
+    {title: 'In deliberation', desc: 'The cases the committee is discussing right now.'},
+    {title: 'Partner organisations', desc: 'The other organisations working with you on the case.'},
+    {title: 'Enforcement steps', desc: 'Where each enforcement case sits on the national enforcement ladder.'},
+    {title: 'Cases overview', desc: 'The state of all your cases on your Nextcloud home screen.'},
+    {title: 'Start case', desc: 'Start a new case straight from your Nextcloud home screen.'},
   ]}
 />
 
@@ -185,43 +217,30 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     {
       id: 'mail',
       title: 'The email on the case',
-      summary: 'A resident replies to your request for more information. Open the message in Nextcloud Mail, link it to the case, and it sits in the case file next to the documents. Reply from a template and the case number, the name and the dates are already filled in as a draft. With DocuDesk installed, linked mail is archived to the file as a document, so it is still there when the objection comes.',
+      summary: <>A resident replies to your request for more information. Open the message in Nextcloud Mail, link it to the case, and it sits in the case file next to the documents. Reply from a template and the case number, the name and the dates are already filled in as a draft. With <a href="/apps/docudesk">DocuDesk</a> installed, linked mail is archived to the file as a document, so it is still there when the objection comes.</>,
       cta: {label: 'Read the docs', href: 'https://procest.conduction.nl'},
-      panel: (
-        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
-          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
-            <div style={{height: 4, width: '75%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
-            <div style={{height: 3, width: '55%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
-            <div style={{height: 3, width: '85%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
-          </div>
-          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Link to case</div>
-          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
-            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
-            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>linked to case 2026-0042</div>
-          </div>
-        </div>
-      ),
+      panel: <LeafMock leaf="mail" />,
     },
     {
       id: 'calendar',
       title: 'Hearings and appointments in the calendar',
       summary: 'Plan the hearing or the site visit from the case and it is in your Nextcloud Calendar, linked to the case. Let residents book their own inspection slot: Procest offers the free slots and puts the confirmed appointment in the inspector\'s agenda. No phone tag to find a date.',
       cta: {label: 'Read the docs', href: 'https://procest.conduction.nl'},
-      panel: <AppMock app="procest" />,
+      panel: <LeafMock leaf="calendar" />,
     },
     {
       id: 'contacts',
       title: 'The people on the case are your contacts',
       summary: 'The applicant, the objector, the neighbour who complained: every person on a case is a Nextcloud contact, connected to the case. Look up who is involved without opening a second address book. The phone number on the case is the one in your contacts.',
       cta: {label: 'Read the docs', href: 'https://procest.conduction.nl'},
-      panel: <AppMock app="procest" />,
+      panel: <LeafMock leaf="contacts" />,
     },
     {
       id: 'files',
       title: 'The drawings and the decision, in the file',
       summary: 'Every case keeps its own folder in Files. The drawings, the site photos, the decision letter: on the case, searchable, with every version kept. Found a drawing in Files and wonder which case it belongs to? It tells you, and takes you there.',
       cta: {label: 'Read the docs', href: 'https://procest.conduction.nl'},
-      panel: <AppMock app="procest" />,
+      panel: <LeafMock leaf="files" />,
     },
   ]}
 />
@@ -229,28 +248,36 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="Two apps that finish what a case starts."
+    title="Three apps that make Procest more yours."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/decidesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg>}
-      name="DeciDesk"
-      why="A case that needs a formal decision by the council or board gets it there, and the case shows the outcome and its history."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Change screens, fields and case types in the running app. No developer needed, and your changes survive every update."
     />
     <PairCard
-      href="/apps/shillinq"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4"/></svg>}
-      name="Shillinq"
-      why="Calculate the fee for a permit from your own tariff and bill it, without retyping the case."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 1 1-4-6.9"/><path d="M12 8v4l3 2"/></svg>}
+      name="Hermiq"
+      why="The assistant that answers questions about your cases lives here. Give it more skills as your team grows into it."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Compose your own dashboard from the case widgets above, next to everything else your organisation runs."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="procest" />
+
 <CtaBanner
   title="Case management on your own Nextcloud."
   lede={<>Open source. Free to install. Your case files stay on your own server. Procest runs on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
-  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/procest'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=procest'}}
 />

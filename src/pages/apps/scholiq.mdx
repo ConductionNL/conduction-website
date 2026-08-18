@@ -4,7 +4,7 @@ description: Courses, certificates and attendance on your own Nextcloud. For sch
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -17,8 +17,8 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   title="Scholiq"
   tagline={<>Courses, certificates and attendance on your own <span className="next-blue">Nextcloud</span>. For schools, and for the mandatory training your company or council has to prove.</>}
   intro={<>Scholiq is an open-source learning environment. Schools use it to run courses, grade work and track attendance. Companies and public bodies use it for mandatory training: enrol everyone, keep the signed proof, and know before an audit which certificates are about to run out. Exchange with the national education systems is on the roadmap. Released under EUPL-1.2 and maintained by Conduction.</>}
-  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/scholiq'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=scholiq'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/scholiq'}}
   illustration={<AppMock app="scholiq" />}
 />
@@ -73,12 +73,10 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   </div>
 </Section>
 
-<PartnersForApp slug="scholiq" />
-
 <RotatingCards
-  eyebrow="Three ways Scholiq earns its place"
+  eyebrow="Four ways Scholiq earns its place"
   title="It works the way you work. And it works for you."
-  lede="Three things you would normally pay extra for. In Scholiq they are built in."
+  lede="Four things you would normally pay extra for. In Scholiq they are built in."
   cards={[
     {
       tone: 'forest',
@@ -86,7 +84,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'A certificate is about to expire. The refresher is already planned.',
       summary: 'Today: someone keeps a spreadsheet of expiry dates and hopes to check it in time. Instead, set it up once. The day a certificate enters its last ninety days, a task to book the refresher lands on the manager\'s desk. When a learner crosses the absence limit, the follow-up call is on the mentor\'s list. A course that costs more than your limit waits for approval before anyone is enrolled. Nothing forgotten, no chasing from memory, no coding.',
       cta: {label: 'How automation works', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -94,7 +92,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'A school, a hospital or a driving school. Same app, your way.',
       summary: 'A driving school wants the licence category on every learner. A hospital wants the ward on every enrolment. A primary school never uses points and badges and wants them out of sight. Add the field, hide the block, drag the widget you check first to the top. In the running app, in minutes, and your changes stay with every update.',
       cta: {label: 'How customising works', href: '/apps/openbuild'},
-      panel: <AppMock app="openbuild" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -109,13 +107,21 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         'assistant: 3 modules, half a day, valid for 2 years',
       ]} cursor mode="reads only, never enrols or grades" />,
     },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'Learners and parents look up their own grades. Without calling the office.',
+      summary: <>Give learners and parents their own door. Through <a href="/apps/portaliq">Portaliq</a> they log in and see their grades, their enrolments and the report card the moment it is published. They enrol for the next course themselves and the confirmation lands on their record. The front office stops forwarding screenshots, and nobody waits for office hours.</>,
+      cta: {label: 'See the client portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets we ship"
-  title="A dashboard that fits your role on sight."
-  lede="Install Scholiq and a learner sees their training, a teacher sees what needs grading, and an administrator sees where attendance slips. Same app, three dashboards."
+  title="We ship the widgets you need"
+  lede={<>Install Scholiq and a learner sees their training, a teacher sees what needs grading, and an administrator sees where attendance slips. Same app, three dashboards. Want more? Design your own widgets with <a href="/apps/openbuild">OpenBuild</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
       title: 'My mandatory training',
@@ -188,6 +194,42 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         </div>
       ),
     },
+    {title: 'Skills gap', desc: 'Required versus attained competencies, so you see who misses what for the job.'},
+    {title: 'Study advice risk', desc: 'Learners at risk of a negative study advice, with the draft warning ready.'},
+    {title: 'Engagement score', desc: 'Average engagement per course, so you see a class drift before the exam does.'},
+    {title: 'Open engagement flags', desc: 'Learners whose engagement dropped below the limit you set.'},
+    {title: 'Learner 360', desc: 'One learner, the whole story: enrolments, grades, plans, incidents and wellbeing notes in one timeline.'},
+    {title: 'Mandatory-training compliance', desc: 'Who completed the mandatory courses per regulation, and who still has to.'},
+    {title: 'Credentials', desc: 'The certificates a learner holds, each with its validity.'},
+    {title: 'Cohort flags', desc: 'Raised flags per cohort, so the mentor sees them first.'},
+    {title: 'My points', desc: 'For the learner. Points, level and streak, if you switched rewards on.'},
+    {title: 'Courses', desc: 'Every course you run, in one count for the administrator.'},
+    {title: 'Cohorts', desc: 'Your classes and groups, with their sizes.'},
+    {title: 'Learners', desc: 'Everyone learning with you, across courses and cohorts.'},
+    {title: 'Active enrolments', desc: 'Who is enrolled in what, right now.'},
+    {title: 'My courses', desc: 'For the teacher. The courses you teach, one click from the materials.'},
+    {title: 'Sessions to mark', desc: 'For the teacher. The sessions still waiting for attendance.'},
+    {title: 'My cohorts', desc: 'For the teacher. Your classes, with the flags that need you.'},
+    {title: 'Learner enrolments', desc: 'The enrolments on the learner you have open.'},
+    {title: 'Learner attendance', desc: 'Presence and absence for one learner, against the limit.'},
+    {title: 'Course lessons', desc: 'The lessons in the course, in teaching order.'},
+    {title: 'Course enrolments', desc: 'Who is in the course and how far along they are.'},
+    {title: 'Course assignments', desc: 'The assignments in the course and what came in.'},
+    {title: 'Course assessments', desc: 'The tests and exams on the course, with results.'},
+    {title: 'Programme overview', desc: 'The key numbers and lists for a whole programme.'},
+    {title: 'Cohort overview', desc: 'The key numbers and lists for one class or group.'},
+    {title: 'Enrolment overview', desc: 'One enrolment from start to certificate.'},
+    {title: 'Session overview', desc: 'One session with its attendance and materials.'},
+    {title: 'Attestations', desc: 'The signed proof per regulation, ready for the export.'},
+    {title: 'External training', desc: 'Certificates earned elsewhere, on file so they count too.'},
+    {title: 'Mandatory courses', desc: 'The courses a regulation requires, and who they apply to.'},
+    {title: 'Work placement agreement', desc: 'The placement agreement between learner, school and company.'},
+    {title: 'Work placement assessments', desc: 'How the learner is doing at the placement company.'},
+    {title: 'Visit reports', desc: 'The reports of placement visits, on the placement.'},
+    {title: 'Raised-flag lists', desc: 'Every threshold you set, with the learners who crossed it.'},
+    {title: 'Item bank', desc: 'Your question bank for tests, organised per subject.'},
+    {title: 'Assessment panel', desc: 'One test with its questions, takers and scores.'},
+    {title: 'Portfolio', desc: 'The work a learner collected to show what they can do.'},
   ]}
 />
 
@@ -203,7 +245,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Materials, submissions and evidence in Files',
       summary: 'Every course, lesson, session and assignment keeps its own folder in Files. The slides on the lesson, the handed-in work on the submission, the signed evidence on the attestation. Learners find the materials where the course is. Teachers open the submission and the file is there. Nothing travels by email.',
       cta: {label: 'Read the docs', href: 'https://scholiq.conduction.nl'},
-      panel: <AppMock app="scholiq" />,
+      panel: <LeafMock leaf="files" />,
     },
     {
       id: 'talk',
@@ -245,28 +287,36 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="Two apps that carry learning beyond the classroom."
+    title="Three apps that make Scholiq more yours."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/portaliq"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 13h8"/></svg>}
-      name="Portaliq"
-      why="Parents and learners see grades, attendance and report cards in their own portal, not in the school's back office."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Change screens, fields and pages in the running app. A school and a driving school run the same app, each their own way."
     />
     <PairCard
-      href="/apps/docudesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      name="DocuDesk"
-      why="Turn report cards and certificates into documents you can print, sign and archive."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 1 1-4-6.9"/><path d="M12 8v4l3 2"/></svg>}
+      name="Hermiq"
+      why="The assistant that answers questions about courses and certificates lives here. Give it more skills as you grow."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Compose your own dashboard from the learning widgets above, next to everything else your organisation runs."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="scholiq" />
+
 <CtaBanner
   title="Learning on your own Nextcloud."
   lede={<>Open source. Free to install. Grades and certificates stay on your own server. Scholiq runs on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
-  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/scholiq'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=scholiq'}}
 />
