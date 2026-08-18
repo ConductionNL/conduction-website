@@ -1,25 +1,28 @@
 ---
 title: OpenBuild, Conduction
-description: Citizen-developer app builder for Nextcloud. Compose apps from registers, connectors, workflows, no PHP.
+description: Make every Conduction app fit your business, without a developer. Add a field, add a step, move a widget, in the running app. Or build a small app of your own in ten minutes.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AgentTrace, McpToolShelf, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+export const app = getApp('openbuild');
 
 <DetailHero
   background="cobalt"
   appId="openbuild"
-  crumb={[{label: 'Apps', href: '/apps'}, 'OpenBuild']}
+  crumb={[{label: 'Apps', href: '/apps'}, app.name]}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.5"
+  version="v0.10"
   locales="NL · EN"
-  title="OpenBuild"
-  tagline={<>An app builder for citizen developers on <span className="next-blue">Nextcloud</span>. Compose your own app from the Technical Core — OpenRegister schemas, OpenConnector APIs, Procest workflows, and DocuDesk documents. No PHP, no scaffolding.</>}
-  intro={<>OpenBuild is an open-source citizen-developer app builder for the Nextcloud workspace. Users compose a working app from typed OpenRegister registers, OpenConnector connectors, Procest workflows, and DocuDesk templates, then lay out list, detail, and form pages in a browser-based designer. Configuration-over-code manifest overrides survive upgrades, version snapshots roll back bad edits, ZIP or GitHub exports move apps between instances, and RBAC keeps per-record access enforced through OpenRegister. Released under EUPL-1.2 and maintained by Conduction since 2019.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://openbuild.conduction.nl'}}
-  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/openbuild'}}
+  title={app.name}
+  tagline={<>Make every app fit your business, without a developer. Add a field, add a step, move a widget, in the running app on your own <span className="next-blue">Nextcloud</span>.</>}
+  intro={<>{app.name} is the app builder for the Nextcloud workspace. Open any Conduction app, click edit, and change what is on the page: a field, a step, a widget, a menu item. Your changes stay through every update. Need something the apps do not do? Build a small app of your own: name it, add the fields, say who sees it, and it is in the top bar. Try changes on a test copy first, publish when happy, one click back if not. Open source, released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/openbuild'}}
+  illustration={<AppMock app="openbuild" />}
 />
 
 <Section spacing="default">
@@ -27,40 +30,34 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="What it does"
-        title="Build your own app, no code required."
+        title="Your apps, your way. In minutes, not in a project."
         align="stack"
-        lede="OpenBuild lets non-technical users compose their own apps from the building blocks of the Conduction ecosystem. Schemas from OpenRegister, integrations from OpenConnector, workflows from Procest, documents from DocuDesk. A wizard sets up the app, three tiers (development, staging, production) provide a production path, and the top-bar entry appears as soon as you publish. Export to a real Nextcloud app comes in phase 2."
+        lede="Every Conduction app is built from pages, fields and widgets you can change yourself. No ticket to a developer, no waiting for the next release, no losing your changes at the next update."
       />
       <FeatureList>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>}
-          title="Three-step wizard."
+          icon={<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>}
+          title="Add the field your business needs."
         >
-          Slug, version chain, permissions. Click done and you have a working app, dedicated registers for development, staging and production, and the first page set. No JSON, no scaffolding.
+          Today: a wholesaler keeps the delivery region in a spreadsheet next to the CRM. Instead: open the client page, click edit, add the field. Every client now has a delivery region, and you can filter and report on it. Done in five minutes, no developer involved.
         </FeatureItem>
         <FeatureItem
           icon={<svg viewBox="0 0 24 24"><path d="M3 12h6l3-7 3 14 3-7h3"/></svg>}
-          title="Workflows declarative, no service code."
+          title="Add the step your process has."
         >
-          State machines, aggregations, calculations and notifications live in the schema metadata. No PHP service per app, per ADR-031.
+          An installer always visits the site before the quote. Add the site-visit step to the pipeline, and every lead passes through it. Move the widget you look at first to the top of the dashboard. Hide what your team never uses. It is your app, so it follows your process.
         </FeatureItem>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8M6 8v8M18 8v8M8 18h8"/></svg>}
-          title="Dev, staging, production per app."
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>}
+          title="Build a small app of your own. Ten minutes."
         >
-          Each version gets its own register. Promote between tiers with three strategies. Rollback is one click on the productionVersion pointer.
+          A vehicle list with inspection dates. A key list for the office. A list of certificates and when they expire. Name the app, add the fields, say who may see it. Ten minutes later it sits in the top bar, next to Files and Mail, with the same login and the same rules as everything else.
         </FeatureItem>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9-9 9z"/><path d="M12 3v18M3 12h18"/></svg>}
-          title="One Nextcloud, one top bar."
+          icon={<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>}
+          title="Try it on a test copy. Publish. One click back."
         >
-          Each published app gets its own top-bar entry automatically, next to Files and Mail. With per-app icon, own permissions, no extra installation.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>}
-          title="Virtual app first, real app as an option."
-        >
-          Virtual apps run in the OpenBuild shell. Ready for production? Export to a real Nextcloud app with its own ID and namespace (Phase 2).
+          Every app has a test copy and a live version. Change the test copy, look at it, let a colleague look at it. Publish when it is right. Something wrong after all? One click brings the previous version back. Nobody works in a half-finished app.
         </FeatureItem>
       </FeatureList>
     </div>
@@ -74,115 +71,178 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <PartnersForApp slug="openbuild" />
 
-<McpToolShelf
-  eyebrow="AI chat tools"
-  title="What OpenBuild adds to the workspace AI."
-  lede="Install OpenBuild and the chat gets eight tools so the AI builds virtual apps: create an app, add a schema, set up a page, place a widget, promote a version. Every call runs under your own role and is audited."
-  tools={[
+<RotatingCards
+  eyebrow={`Three ways ${app.name} earns its place`}
+  title="It works the way you work. And it works for you."
+  lede="Three things you would normally pay a developer for. Here you do them yourself, in the running app."
+  cards={[
     {
-      icon: <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>,
-      name: 'List virtual apps',
-      id: 'openbuild.listApps',
-      description: 'Show the virtual apps in your organization with their status and version.',
-      status: 'stable',
+      tone: 'forest',
+      eyebrow: 'Automate',
+      title: 'Your new field, your new step, and the automation that uses them.',
+      summary: 'You added an inspection date to the vehicle list. Now draw what should happen with it: thirty days before the date, a task for the fleet manager, and the vehicle marked as due. A rule with a condition, no coding. You added a site-visit step to the pipeline: the moment the visit is done, the quote task is on the right desk. Fields and steps you add today are ready for automation the same day.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
     },
     {
-      icon: <svg viewBox="0 0 24 24"><path d="M5 4h14v6H5zM5 14h14v6H5zM9 4v16"/></svg>,
-      name: 'Get app manifest',
-      id: 'openbuild.getAppManifest',
-      description: 'Fetch the runtime manifest of one published virtual app by slug.',
-      status: 'stable',
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'One hundred percent your app. Down to the last widget.',
+      summary: 'Every page of every Conduction app is open for change. Rename a field so it says what your team calls it. Put the customer\'s phone number where the eye lands first. Take the widget nobody reads off the dashboard. Give the app your own icon. Decide per group who sees which page. Everything you change is kept apart from what we ship, so the next update lands and your changes stay.',
+      cta: {label: 'Read the docs', href: 'https://openbuild.conduction.nl'},
+      panel: <AppMock app="openbuild" />,
     },
     {
-      icon: <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>,
-      name: 'Create new app',
-      id: 'openbuild.createApp',
-      description: 'Create a new virtual app with a first draft version. Choose the version path: single, dev-prod, or dev-staging-prod.',
-      status: 'stable',
-    },
-    {
-      icon: <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>,
-      name: 'Promote version',
-      id: 'openbuild.promoteVersion',
-      description: 'Promote a virtual app from, for example, development to production. Default strategy leaves the target version empty.',
-      status: 'stable',
-    },
-    {
-      icon: <svg viewBox="0 0 24 24"><path d="M3 7h18M6 12h12M9 17h6"/></svg>,
-      name: 'Add or update schema',
-      id: 'openbuild.upsertSchema',
-      description: 'Add or update a JSON schema. The slug automatically gets app and version prefix.',
-      status: 'stable',
-    },
-    {
-      icon: <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>,
-      name: 'Add or update page',
-      id: 'openbuild.upsertPage',
-      description: 'Create or update a page in the draft manifest. Type is dashboard, index, detail, or form.',
-      status: 'stable',
-    },
-    {
-      icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>,
-      name: 'Place widget',
-      id: 'openbuild.addWidget',
-      description: 'Add a widget to a page: stat-counter, chart, list, or another type from the catalog.',
-      status: 'stable',
-    },
-    {
-      icon: <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>,
-      name: 'Add or update menu item',
-      id: 'openbuild.upsertMenuItem',
-      description: 'Create or update a top-level menu item in the draft manifest. Route, order, and icon are set per item.',
-      status: 'stable',
+      tone: 'workspace',
+      eyebrow: 'Talk to it',
+      title: 'Describe the app you need. Approve the draft.',
+      summary: 'Type "I need a list of company cars with plate, driver and inspection date, visible to the office team". The assistant drafts the app: the fields, the list page, the detail page, the access. You look at the draft and approve it, or ask for a change. Nothing is built until you say so. Once it is live, you talk to the app the same way: "which cars are due for inspection this month?"',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: I need a list of company cars with plate, driver and inspection date',
+        'assistant: draft ready: 3 fields, a list page, a detail page',
+        'assistant: visible to group "office". Approve, or change something?',
+      ]} cursor mode="drafts, you approve" />,
     },
   ]}
-  showIds={false}
-  trace={<AgentTrace
-    lines={[
-      {kind: 'tool', text: 'openbuild - createApp (MCP)(name: "Grant application",'},
-      {kind: 'continuation', text: 'preset: "dev-prod", description: "Applications + processing")'},
-      {kind: 'note', bullet: 'done', text: 'App created, draft v0.1 ready'},
-      {kind: 'tool', text: 'openbuild - upsertSchema (MCP)(appSlug: "grant-application",'},
-      {kind: 'continuation', text: 'slug: "application", properties: { name, amount, status }, required: ["name"])'},
-      {kind: 'note', bullet: 'done', text: 'Schema added to development version'},
-      {kind: 'status', text: 'Building page'},
-    ]}
-    cursor
-    mode="audit log on (every call is recorded)"
-  />}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="Your apps and your changes, at a glance."
+  lede="Install it and its dashboard shows the apps you built, what is waiting on the test copy, and who changed what."
+  widgets={[
+    {
+      title: 'Your apps',
+      desc: 'Every app you built or changed, with its live version and its test copy. Click to open the designer.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-mint-500)', state: 'live'},
+            {tone: 'var(--c-orange-knvb)', state: 'test copy'},
+            {tone: 'var(--c-mint-500)', state: 'live'},
+            {tone: 'var(--c-lavender-300)', state: 'draft'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '60%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '40%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.state}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Waiting to publish',
+      desc: 'Changes on a test copy that are not live yet. Publish from here, or open the test copy first.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 24, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>3</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.05em', color: 'var(--c-cobalt-500)'}}>changes on test</div>
+          </div>
+          {[{w: '80%'}, {w: '55%'}, {w: '65%'}].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <div style={{height: 4, width: row.w, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            </div>
+          ))}
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Publish</div>
+        </div>
+      ),
+    },
+    {
+      title: 'Who changed what',
+      desc: 'The last edits to your apps: which page, which field, by whom, and when. Undo is one click away.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {['var(--c-forest-300)', 'var(--c-lavender-300)', 'var(--c-mint-300)', 'var(--c-terracotta-300)'].map((tone, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 18, height: 18, borderRadius: 2, background: tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 3}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '45%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{height: 3, width: 22, background: 'var(--c-cobalt-100)', borderRadius: 1}}></div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow={`How ${app.name} plugs into the workspace`}
+  title="Your apps, your data, and a way to share what you built."
+  lede="It does not bring a second system. It changes the apps you already have, works on the data you already own, and lets you hand a finished app to another office."
+  layout="side"
+  defaultOpen="apps"
+  items={[
+    {
+      id: 'apps',
+      title: 'The apps you already use',
+      summary: 'Your CRM, your invoicing, your case files: every Conduction app is built from pages you can open in the designer. Click edit on the page you are looking at, change it, save. The change is yours and it stays through updates. Start with the CRM: add the delivery region, add the site visit, and watch the pipeline follow your process.',
+      cta: {label: 'See PipelinQ', href: '/apps/pipelinq'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'data',
+      title: 'Your own data',
+      summary: 'A field you add is a real field. It shows in the list, in the filters, in the reports, and every change to it is logged like everything else. An app you build stores its records in the same place as your other apps, with the same access rules and the same backups. Who may see a record is decided per record, not per screen.',
+      cta: {label: 'Where your data lives', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      id: 'share',
+      title: 'Share an app you built',
+      summary: 'Built a good vehicle list? Publish it to your own GitHub account and any other Nextcloud can install it. A partner keeps a store of apps for their clients. Or take the app as a clean package and hand it to a developer to take further. Nothing locks you in.',
+      cta: {label: 'Read the docs', href: 'https://openbuild.conduction.nl'},
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
+            <div style={{height: 4, width: '60%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '80%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+          </div>
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Publish to GitHub</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>vehicle-list v1.2 published</div>
+          </div>
+        </div>
+      ),
+    },
+  ]}
 />
 
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="The apps that OpenBuild ties together."
+    title="Two apps you will change first."
     align="stack"
   />
   <PairRow>
     <PairCard
+      href="/apps/pipelinq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
+      name="PipelinQ"
+      why="CRM, quotes and deals. Add the field, add the step, and the pipeline follows your process."
+    />
+    <PairCard
       href="/apps/openregister"
       icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
       name="OpenRegister"
-      why="Every virtual app manifest and all objects are OpenRegister rows."
-    />
-    <PairCard
-      href="/apps/openconnector"
-      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-      name="OpenConnector"
-      why="Connect external APIs and file sources without code."
-    />
-    <PairCard
-      href="/apps/procest"
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
-      name="Procest"
-      why="Workflows and approval steps for virtual app processes."
+      why="Where your data lives. Every field you add and every app you build stores its records here."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="Citizen-developer apps, in one Nextcloud."
-  lede={<>OpenBuild gives non-technical users the building blocks to compose their own apps. Schemas, connectors, workflows, all in the hands of those who know the problem.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+  title="Apps that fit your business, on your own Nextcloud."
+  lede={<>Open source. Free to install. Change the apps you have, or build the one you miss, on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
 />

@@ -1,25 +1,27 @@
 ---
 title: DocuDesk, Conduction
-description: Generate, anonymise, sign, and template documents on Nextcloud. Templates ship for the most-used Dutch government documents.
+description: Generate, sign and anonymise documents, without handing them to a third party. Contracts and letters fill themselves from your records, clients sign on their phone, personal data is blacked out for you.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+export const app = getApp('docudesk');
 
 <DetailHero
   background="cobalt"
   appId="docudesk"
-  crumb={[{label: 'Apps', href: '/apps'}, 'DocuDesk']}
+  crumb={[{label: 'Apps', href: '/apps'}, app.name]}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.0.34"
+  version="v0.0.46"
   locales="NL · EN"
-  title="DocuDesk"
-  tagline={<>Document generation, anonymisation, signing, and templating on <span className="next-blue">Nextcloud</span>. Starter templates ship for common Dutch government documents (beschikkingen, brieven, kwartaalrapportages). Pulls fields straight from your registers.</>}
-  intro={<>DocuDesk is an open-source document-processing app for the Nextcloud workspace. It generates PDF, ODF (.odt), or HTML documents from Twig templates, anonymizes personal data through a configurable entity-detection backend, signs documents with eIDAS signature levels, and keeps a full audit trail for GDPR and WOO publication consent. All processing runs locally on the customer's Nextcloud instance, so sensitive files never leave the premises. Released under EUPL-1.2 and maintained by Conduction since 2019.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://docudesk.conduction.nl'}}
-  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/docudesk'}}
+  title={app.name}
+  tagline={<>Generate, sign and anonymise documents, without handing them to a third party. On your own <span className="next-blue">Nextcloud</span>.</>}
+  intro={<>{app.name} makes the paperwork of your business write itself. Contracts, letters and decisions fill themselves from the records you already keep. Clients sign from a link, on any device, and the signed copy lands where it belongs. Personal data in a file is blacked out for you before it goes out the door. Nothing leaves your own server. Open source, released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/docudesk'}}
   illustration={<AppMock app="docudesk" />}
 />
 
@@ -28,40 +30,40 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="What it does"
-        title="Generate, anonymise, sign. From the same template."
+        title="Documents that write themselves, sign themselves, and keep their secrets."
         align="stack"
-        lede="DocuDesk reads register fields straight into Twig templates and renders PDF, ODF, or HTML output, anonymises documents before they reach your registers, and signs outbound documents with eIDAS signature levels. One install covers the whole document lifecycle."
+        lede="Letters and contracts come out of your own templates, filled from your own records. Signing happens on the phone. Personal data is blacked out before a file leaves the building. And every step is logged."
       />
       <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      title="Templates with register-aware fields."
+      title="The contract fills itself from the client record."
     >
-      Drop a register's schema in, DocuDesk auto-binds the fields. Twig/HTML templates render as PDF, ODF, or HTML. Regenerate any time, registers stay the system of record.
+      Today: someone copies the client's name, address and amount into the contract, and one day types the amount wrong. Instead: pick the client and the template. The name, address and amount are already in the contract. Nobody types them a second time, so nobody types them wrong. Your own house style, in Dutch or English, as a PDF or a Word file.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg>}
-      title="PII anonymisation, configurable backend."
+      title="Personal data blacked out for you, on your own server."
     >
-      Entity detection routed through OpenRegister to a configurable backend — regex, OpenAnonymiser, Presidio, or an LLM. Drop a document, get a redacted version that's safe for the register.
+      Today: a resident's file has to go out under the Woo, the Dutch open government act. Someone sits down with a marker pen and a scanner. Instead: drop the file in. Names, addresses and personal numbers are found and blacked out for you. You check the result and confirm what stays hidden. Scanned pages and photos work too. The file never leaves your own server.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
-      title="eIDAS digital signing."
+      title="Signed on the phone. Filed on the record."
     >
-      SES, AdES, and QES signature levels, sequential or parallel multi-signer workflows. Signing requests, signer records, and audit entries are stored as OpenRegister objects.
+      Today: print, sign, scan, mail, wait, and chase. Instead: the client gets a link and signs on their phone. Two or more signers, in turn or at once. The signed copy lands on the client record, and every step of the signing is in the log. Nothing to print, nothing to chase.
     </FeatureItem>
     <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
-      title="Starter templates, extend your own."
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      title="The objection window is counted for you."
     >
-      Ships with example templates for common government documents (beschikking, algemene brief, kwartaalrapportage). Wet open overheid-aware; add your own templates per register schema.
+      Before a document goes public, the people in it may object. Today: someone keeps a spreadsheet of dates. Instead: the four-week window starts the moment you record the decision, and the deadline is on the item. Nearing the date, the right colleague is reminded. The decision and its history are kept for the auditor.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
-      title="Audit log per document."
+      title="Every version kept, every change visible."
     >
-      Every generation, edit, signing, archival action leaves a tamper-evident trail. Compliance evidence ships with the install.
+      Two versions of a contract, and nobody remembers what changed? Put them side by side and the differences light up. Every letter, every signature and every blacked-out passage leaves a trace of who did it and when. That is your answer at audit time, and it ships with the install.
     </FeatureItem>
   </FeatureList>
     </div>
@@ -76,45 +78,52 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <PartnersForApp slug="docudesk" />
 
 <RotatingCards
-  eyebrow="Three ways DocuDesk earns its place"
-  title="Generate, anonymise, sign, on the same registers."
-  lede="Scroll the cards. Each pins as you reach it; the next slides up to cover."
+  eyebrow={`Three ways ${app.name} earns its place`}
+  title="It works the way you work. And it works for you."
+  lede="Three things you would normally pay extra for. Here they are built in."
   cards={[
     {
-      tone: 'terracotta',
-      eyebrow: 'Generate',
-      title: 'Templates that read your registers.',
-      summary: 'Drop a register schema into a Twig/HTML template, DocuDesk auto-binds the fields and renders PDF, ODF, or HTML. Regenerate any time. Starter templates ship with the install; extend with your own.',
-      cta: {label: 'See DocuDesk', href: '/apps/docudesk'},
-      panel: <AppMock app="docudesk" />,
-    },
-    {
       tone: 'forest',
-      eyebrow: 'Anonymise',
-      title: 'PII stripped before it lands.',
-      summary: 'A configurable entity-detection backend — regex, OpenAnonymiser, Presidio, or an LLM — routed through OpenRegister. Documents are redacted before they touch a register. Citation-stable IDs survive the redaction.',
-      cta: {label: 'See OpenRegister', href: '/apps/openregister'},
+      eyebrow: 'Automate',
+      title: 'The client signs. The rest happens by itself.',
+      summary: 'Today: you check your mailbox to see who signed, then update the client record by hand. Instead: you draw it once. The moment the contract is signed, the client record shows it and the kick-off task is on the right desk. Declined? A follow-up call lands on the account manager\'s list. Not signed after two weeks? The account manager gets a task to chase it. An objection arrives during the four-week window? Publication is put on hold and a task lands with the case officer. Nothing forgotten, no chasing, no coding.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
       panel: <AppMock app="openregister" />,
     },
     {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'Your letters, your fields, your screens. Without a developer.',
+      summary: 'A notary needs a second signer on every deed. A housing corporation wants the complex number on every letter. A municipality wants the case number on the objection screen. Add the field, add the step, put the list you check first at the top, hide what you never use. In the running app, in minutes, and your changes stay with every update.',
+      cta: {label: 'How customising works', href: '/apps/openbuild'},
+      panel: <AppMock app="openbuild" />,
+    },
+    {
       tone: 'workspace',
-      eyebrow: 'Sign + audit',
-      title: 'eIDAS signing, full audit trail.',
-      summary: 'Documents sign with SES, AdES, or QES signature levels through sequential or parallel signer workflows. Every generation, edit, signing action leaves a tamper-evident entry in the audit log.',
-      cta: {label: 'See LaunchPad', href: '/apps/launchpad'},
-      panel: <AppMock app="launchpad-bi" />,
+      eyebrow: 'Talk to it',
+      title: 'Say what you need. Approve before it goes out.',
+      summary: 'Type "draft the maintenance contract for Jansen from the standard template" and the draft is there, name, address and price filled in. Say "change the price in the Jansen offer to 4,200" and it changes that line, nothing else. Ask for a chart in the quarterly report and it is in the Word file. Every action here can be handed to an assistant. You decide what it may do, and it asks before anything goes out.',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: draft the maintenance contract for Jansen BV from the standard template',
+        'assistant: draft ready, client details and price filled from the record',
+        'assistant: saved as a Word file on the Jansen BV record',
+        'assistant: convert it to PDF for signing?',
+        'you: yes',
+        'assistant: PDF ready, next to the Word file',
+      ]} cursor mode="asks before it changes anything" />,
     },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets we ship"
-  title="On every Nextcloud dashboard."
-  lede="Install DocuDesk and these widgets show up on the home screen of every team member who handles documents."
+  title="On the dashboard your team already opens."
+  lede="Install it and the home screen shows what waits for a signature, which files still hold personal data, and where an objection window is about to close."
   widgets={[
     {
-      title: 'Anonymise dropzone',
-      desc: 'Drop an inbound email or file here. DocuDesk strips PII before the document touches the register.',
+      title: 'Anonymise here',
+      desc: 'Drop a file on the home screen. Personal data is found and blacked out, and the safe copy is ready to check.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'stretch'}}>
           <div style={{height: 90, border: '2px dashed var(--c-cobalt-300)', borderRadius: 'var(--radius-md)', background: 'var(--c-cobalt-50)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8}}>
@@ -130,8 +139,8 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       ),
     },
     {
-      title: 'Pending signatures',
-      desc: 'Documents awaiting your signature, sorted by deadline. One click to sign at the required eIDAS level.',
+      title: 'Waiting for a signature',
+      desc: 'Documents that still need someone to sign, the oldest first. Yours at the top, one click to sign.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {[
@@ -153,20 +162,20 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       ),
     },
     {
-      title: 'Recent documents',
-      desc: 'Last documents you generated or signed. Type pill (PDF / ODF), filename, and a one-click reopen.',
+      title: 'Files with personal data',
+      desc: 'The files you processed, how much personal data each held, and whether the safe copy is done.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {[
-            {pill: 'PDF',  pillBg: 'var(--c-terracotta-100)', pillFg: 'var(--c-terracotta-700)'},
-            {pill: 'ODF',  pillBg: 'var(--c-cobalt-100)',     pillFg: 'var(--c-cobalt-700)'},
-            {pill: 'PDF',  pillBg: 'var(--c-terracotta-100)', pillFg: 'var(--c-terracotta-700)'},
-            {pill: 'HTML', pillBg: 'var(--c-mint-100)',       pillFg: 'var(--c-mint-700)'},
+            {n: '7',  done: true},
+            {n: '12', done: true},
+            {n: '3',  done: false},
+            {n: '0',  done: true},
           ].map((row, i) => (
             <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
-              <span style={{display: 'inline-block', padding: '2px 6px', background: row.pillBg, color: row.pillFg, borderRadius: 2, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, fontWeight: 700, letterSpacing: '0.04em'}}>{row.pill}</span>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.done ? 'var(--c-mint-500)' : 'var(--c-orange-knvb)', flexShrink: 0}}></span>
               <div style={{flex: 1, height: 4, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
-              <div style={{height: 3, width: 22, background: 'var(--c-cobalt-100)', borderRadius: 1}}></div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, color: 'var(--c-cobalt-700)', minWidth: 18, textAlign: 'right'}}>{row.n}</div>
             </div>
           ))}
         </div>
@@ -176,41 +185,55 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 />
 
 <Showcase
-  eyebrow="How DocuDesk plugs into the workspace"
-  title="One install, every document path."
-  lede="Three integration paths that put DocuDesk between the Nextcloud apps your team already uses and the LLM provider you trust."
+  eyebrow={`How ${app.name} plugs into the workspace`}
+  title="Your files, your mail, your client records. Already yours."
+  lede="It works on the files you already have, fills letters from the records you already keep, and hands the result to the apps and people who need it."
   layout="side"
-  defaultOpen="mail-files"
+  defaultOpen="files"
   items={[
     {
       id: 'files',
-      title: 'Files and dossiers',
-      summary: 'Anonymise a single document, or scan a whole folder as a batch. Each redacted file is linked back to its source with a queryable OpenRegister record, and a per-dossier grondslagen (legal-basis) summary tracks which entities were redacted and why.',
+      title: 'It works on your files, where they are',
+      summary: 'Pick a file from your Files and anonymise it, or point it at a whole folder and let it work through the lot in the background. The safe copy sits next to the original. Every generated letter, signed contract and blacked-out file is a normal file in your Nextcloud: share it, version it, find it back with search. Nothing is copied to a second system.',
       cta: {label: 'Read the docs', href: 'https://docudesk.conduction.nl'},
-      panel: <AppMock app="docudesk" />,
-    },
-    {
-      id: 'windmill-n8n',
-      title: 'Windmill and n8n',
-      summary: 'Trigger document generation as a workflow step. Windmill or n8n pulls fields from a register, calls DocuDesk\'s API to render the template, and routes the signed PDF wherever the flow wants.',
-      cta: {label: 'See OpenConnector', href: '/apps/openconnector'},
-      panel: <AppMock app="openconnector" />,
-    },
-    {
-      id: 'entity-detection',
-      title: 'Configurable entity detection',
-      summary: 'PII detection runs through a backend you choose via OpenRegister — deterministic regex, OpenAnonymiser, Microsoft Presidio, or an LLM. Every redaction is written to the audit log with the detected entity type and the operator or automation that approved it.',
-      cta: {label: 'See OpenRegister', href: '/apps/openregister'},
-      panel: <AgentTrace
-        lines={[
-          {kind: 'note',  bullet: 'done', text: 'Document received'},
-          {kind: 'tool',  text: 'entityDetection - scan(file: subsidie-aanvraag.pdf, backend: presidio)'},
-          {kind: 'note',  bullet: 'info', text: 'Detected 7 PII spans', muted: '(BSN, PERSON, ADDRESS)'},
-          {kind: 'status', text: 'Writing redacted version, sealing original'},
+      panel: <MockScene
+        width={680}
+        height={420}
+        items={[
+          {type: 'sidebar', kind: 'docudesk-pii-map',   x: 200, y: 10,  size: 'md', z: 1},
+          {type: 'widget',  kind: 'nextcloud-files',    x: 0,   y: 0,   size: 'sm', z: 2},
+          {type: 'widget',  kind: 'docudesk-anonymise', x: 0,   y: 230, size: 'sm', z: 2},
         ]}
-        cursor
-        mode="audit log on (every redaction recorded)"
       />,
+    },
+    {
+      id: 'records',
+      title: 'Letters filled from the records you already keep',
+      summary: 'The client in your CRM, the case in your case system, the tenant in your housing file: pick the record and the template, and the letter is ready. When a permit is granted, the decision letter is ready to send, in your house style, with the case details already in it. Two hundred letters for two hundred residents? Same template, one run, and you are told when they are done.',
+      cta: {label: 'See the CRM', href: '/apps/pipelinq'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'mail',
+      title: 'Ready for your mailbox',
+      summary: 'A letter can come out as a PDF, a Word file, or as text ready to paste into an email. You send it from the mailbox you already use, so the reply lands where your team reads it. Someone who has to sign gets a notification and a reminder before the deadline. You are told the moment everyone has signed.',
+      cta: {label: 'Read the docs', href: 'https://docudesk.conduction.nl'},
+      panel: <MockScene
+        width={680}
+        height={420}
+        items={[
+          {type: 'sidebar', kind: 'docudesk-signatures',   x: 220, y: 10,  size: 'md', z: 1},
+          {type: 'widget',  kind: 'nextcloud-mail',        x: 0,   y: 0,   size: 'sm', z: 2},
+          {type: 'widget',  kind: 'docudesk-pending-sign', x: 0,   y: 230, size: 'sm', z: 2},
+        ]}
+      />,
+    },
+    {
+      id: 'portal',
+      title: 'Outside signers sign through your portal',
+      summary: 'A client or supplier does not need an account on your Nextcloud. They open the link in your customer portal, read the document and sign or decline, on their phone. Who signed and when goes on the record. Two signers who each have to sign in turn? It waits for the first before it asks the second.',
+      cta: {label: 'See the portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
     },
   ]}
 />
@@ -218,34 +241,34 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="Three apps that compound the install."
+    title="Three apps that feed it, and one it feeds."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="The data foundation. DocuDesk templates bind to register schema fields directly."
+      href="/apps/pipelinq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
+      name="PipelinQ"
+      why="CRM, quotes and deals. The client details in the contract come from here, so they are right."
     />
     <PairCard
-      href="/apps/openconnector"
-      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-      name="OpenConnector"
-      why="Routes inbound mail and outbound signed documents in and out of your zaaksysteem."
+      href="/apps/portaliq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4"/></svg>}
+      name="Portaliq"
+      why="Your customer portal. Clients and suppliers sign there, on their phone, without an account on your Nextcloud."
     />
     <PairCard
       href="/apps/opencatalogi"
       icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
       name="OpenCatalogi"
-      why="Publishes generated documents to the public catalogue when they're WOO-disclosed."
+      why="Publish what may go public. Once a document is blacked out and cleared, this is where it is found."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="One install, the whole document lifecycle."
-  lede={<>Install DocuDesk from the <span className="next-blue">Nextcloud</span> app store, point it at your registers, drop in the template pack. Your team is generating WOO-ready documents the same morning.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://docudesk.conduction.nl'}}
+  title="Your documents, on your own Nextcloud."
+  lede={<>Open source. Free to install. GDPR-compliant by default. Contracts, letters and signatures on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
 />
