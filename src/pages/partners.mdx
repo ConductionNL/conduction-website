@@ -19,16 +19,16 @@ export function PartnerDirectoryBlock() {
   // this parameter, so the visitor lands on the partners that actually ship
   // the app they came from.
   const params = new URLSearchParams(search);
-  const appSlug = params.get('app');
+  // Only a slug the registry knows gets acknowledged; anything else is
+  // ignored so a stale link never shows a made-up name or an empty page.
+  const app = params.get('app') ? getApp(params.get('app')) : null;
+  const appName = app?.name || null;
   const solutionSlug = params.get('solution');
-  const appName = appSlug ? (getApp(appSlug)?.name || appSlug) : null;
   const shown = appName
     ? partners.filter(p => (p.apps || []).some(a => a.toLowerCase() === appName.toLowerCase()))
     : solutionSlug
       ? partners.filter(p => (p.solutions || []).some(s => s.toLowerCase() === solutionSlug.toLowerCase()))
       : partners;
-  // Fall back to the full directory when the filter matches nobody, so a
-  // stale or unknown slug never produces an empty page.
   const effective = shown.length > 0 ? shown : partners;
   const filterLabel = shown.length > 0 ? (appName || solutionSlug) : null;
   return (
@@ -36,6 +36,10 @@ export function PartnerDirectoryBlock() {
       {filterLabel ? (
         <p style={{margin: '0 0 var(--space-4)'}}>
           Showing partners for <strong>{filterLabel}</strong>. <Link to="/partners">Show all partners</Link>
+        </p>
+      ) : appName ? (
+        <p style={{margin: '0 0 var(--space-4)'}}>
+          Every partner below can help you get started with <strong>{appName}</strong>.
         </p>
       ) : null}
       <PartnerDirectory
