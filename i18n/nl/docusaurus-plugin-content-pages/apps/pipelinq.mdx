@@ -1,86 +1,266 @@
 ---
 title: PipelinQ, Conduction
-description: CRM met klanten, lead-pipeline, offertes en contactmomenten. Gebouwd op OpenRegister, geen aparte sales-database, geen extra login.
+description: CRM, offertes en deals, in dezelfde Nextcloud waar je werkt. Start leads vanuit je e-mail, houd klanten in je contacten, geen aparte salesdatabase.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
+  background="cobalt"
   appId="pipelinq"
   crumb={[{label: 'Apps', href: '/apps'}, 'PipelinQ']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.5"
+  version="v0.6"
   locales="NL · EN"
   title="PipelinQ"
-  tagline={<>CRM op je <span className="next-blue">Nextcloud</span>. Klanten, contacten, leads, offertes. Allemaal als getypeerd register, geen aparte sales-database, geen tweede login. Je sales-team werkt waar je delivery-team al zit.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://pipelinq.conduction.nl'}}
-  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/pipelinq'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>}
+  tagline={<>CRM, offertes en deals, in dezelfde <span className="next-blue">Nextcloud</span> waar je werkt. Geen aparte salesdatabase, geen tweede login.</>}
+  intro={<>PipelinQ is een open-source CRM voor de Nextcloud-werkplek. Je sleept leads door een pipeline met je eigen fases, waardes en slagingskansen. Klanten krijgen een volledig 360°-beeld: leads, aanvragen, offertes en elk gesprek, elke mail en elk bezoek. Elke wijziging wordt gelogd, dus je weet altijd wie wat deed. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/pipelinq'}}
+  illustration={<AppMock app="pipelinq" />}
 />
 
 <Section spacing="default">
-  <SectionHead
-    eyebrow="Wat het doet"
-    title="Klanten, pipeline, offertes, contactmomenten — één CRM."
-    align="stack"
-    lede="PipelinQ beheert klanten en contactpersonen, volgt leads door een visuele pipeline, maakt van een offerte een contract, en logt elk contactmoment. Sales- en operationele dashboards zitten er standaard bij, met geplande CSV-exports voor rapportage."
-  />
-  <FeatureList>
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="Klanten, pipeline, offertes, contacthistorie. Eén CRM."
+        align="stack"
+        lede="PipelinQ beheert klanten en contactpersonen, volgt leads door een visuele pipeline, maakt van offertes contracten en logt elk gesprek, elke mail en elk bezoek. Sales- en operationele dashboards zitten erbovenop."
+      />
+      <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
-      title="Lead-pipeline met drag-and-drop kanbanbord."
+      title="Sleep leads door je eigen fases."
     >
-      Verplaats leads door configureerbare fases met waarde en sluitingskans. Het pipelinebord en het sales-dashboard tonen pipeline-per-fase, omzet-over-tijd en win-rate live uit dezelfde records.
+      Fases die je zelf instelt, met waarde en slagingskans. Het pipelinebord en het salesdashboard tonen pipeline per fase, omzet over tijd en winratio live uit dezelfde gegevens.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 18a5 5 0 0 1 10 0"/></svg>}
-      title="Klanten en contacten als getypeerd register."
+      title="Elke klant op één plek, met de hele geschiedenis."
     >
-      OpenRegister-schema's voor klanten en contactpersonen, met een 360°-klantbeeld (leads, verzoeken, contactmomenten, projecten, klachten). Tweerichtingssynchronisatie met de native Nextcloud Contacten-app via CardDAV.
+      Een 360°-klantbeeld: leads, aanvragen, contacthistorie, projecten, klachten, alles op één scherm. Elke klant is ook een Nextcloud-contact, dus het nummer op je telefoon is het nummer in het CRM.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
       title="Offertes die het contract worden."
     >
-      Een offerte en het bijbehorende contract zijn één record — zodra hij wordt geaccepteerd, gaan dezelfde regels, prijs en klant automatisch over, zonder dubbele invoer. Terugkerende-omzetcijfers voeden het dashboard zodra een contract actief is.
+      Een offerte en het contract zijn één dossier. Na akkoord gaan dezelfde regels, prijs en klant mee, zonder overtypen. Zodra een contract loopt, voeden de terugkerende omzetcijfers het dashboard.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
       title="Contactmomenten en rapportage."
     >
-      Log telefoongesprekken, e-mails, bezoeken en andere klantinteracties met een uitkomst en kanaal, en plan CSV- (of Parquet/JSONL-) data-exports voor rapportage buiten Pipelinq.
+      Log gesprekken, e-mails en bezoeken met uitkomst en kanaal. Exporteer naar een spreadsheet, of plan een nachtelijke export voor je accountant.
     </FeatureItem>
   </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['pipelinq']}
+      surface="product"
+    />
+  </div>
 </Section>
+
+<PartnersForApp slug="pipelinq" />
+
+<RotatingCards
+  eyebrow="Drie manieren waarop PipelinQ zijn plek verdient"
+  title="Het werkt zoals jij werkt. En het werkt voor je."
+  lede="Drie dingen waar je normaal extra voor betaalt. In PipelinQ zitten ze ingebouwd."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automatiseer',
+      title: 'Een offerte is akkoord. De rest gaat vanzelf.',
+      summary: 'Nu: je zet de offerte op akkoord en opent dan drie andere schermen om het project aan te maken, de kick-off te plannen en het team te informeren. Met een flow stel je dat één keer in. Op het moment dat de offerte akkoord is, bestaat het project, ligt de kick-off-taak op het juiste bureau en wacht de korting boven tien procent op jouw goedkeuring voordat er iets de deur uit gaat. Elke maandag om negen uur een lijst met leads die twee weken niemand heeft aangeraakt. Niets vergeten, geen nabellen, geen programmeerwerk.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Jouw CRM, precies op jouw manier. Zonder ontwikkelaar.',
+      summary: 'Een installateur heeft een schouwstap nodig vóór de offerte. Een groothandel wil de bezorgregio op elke klant. Een adviesbureau wil het uurtarief op de lead. Voeg het veld toe, voeg de stap toe, sleep de widget waar je het eerst naar kijkt naar boven, verberg wat je nooit gebruikt. In de draaiende app, in minuten, en je aanpassingen blijven bij elke update staan. Dat is een CRM dat past bij je bedrijf, niet een waar jij je in moet wringen.',
+      cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
+      panel: <AppMock app="openbuild" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Praat ermee',
+      title: 'Chat erop los terwijl je CRM het werk doet.',
+      summary: 'Terug in de auto na een klantbezoek. Typ "log mijn gesprek met Jansen, ze willen de offerte in mei" en het is geregeld: gesprek gelogd, opvolging gepland, herinnering klaargezet. Vraag "welke deals zijn deze maand stil gevallen?" en je krijgt de lijst, geen rapport dat je zelf moet bouwen. Elke actie in PipelinQ kun je aan een assistent geven, en jij bepaalt per assistent wat die mag. Er verandert niets zonder jouw akkoord.',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'jij: log mijn gesprek met Jansen BV, ze willen de offerte in mei',
+        'assistent: gesprek gelogd op Jansen BV, uitkomst positief',
+        'assistent: opvolging gepland voor 1 mei',
+        'assistent: offerteherinnering klaargezet voor je akkoord',
+      ]} cursor mode="vraagt eerst voordat het iets verandert" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets die we meeleveren"
+  title="Sales op het dashboard dat je team al opent."
+  lede="Installeer PipelinQ en de sales- en operationele dashboards staan in de app. Pipelinewaarde eerst, deals die bijna sluiten daarna, open aanvragen eronder."
+  widgets={[
+    {
+      title: 'Pipeline per fase',
+      desc: 'Open pipelinewaarde per fase, en hoeveel je dit kwartaal waarschijnlijk sluit. Bijgewerkt zodra een deal verschuift.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 24, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>€ 487k</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.05em', color: 'var(--c-mint-500)'}}>+12%</div>
+          </div>
+          {[
+            {label: 'lead', val: '40%', tone: 'var(--c-cobalt-300)'},
+            {label: 'gekwalificeerd', val: '60%', tone: 'var(--c-lavender-300)'},
+            {label: 'voorstel', val: '75%', tone: 'var(--c-mint-500)'},
+            {label: 'gewonnen', val: '50%', tone: 'var(--c-forest-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 50}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Deals die bijna sluiten',
+      desc: 'Open leads gesorteerd op verwachte sluitdatum, met klant en waarde in één oogopslag.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-mint-500)', stage: 'deze week'},
+            {tone: 'var(--c-lavender-300)', stage: 'volgende week'},
+            {tone: 'var(--c-mint-500)', stage: 'deze week'},
+            {tone: 'var(--c-orange-knvb)', stage: 'te laat'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Hete leads',
+      desc: 'De grootste leads op waarde. Klik door naar het klantdossier.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {val: '€ 84k', tone: 'var(--c-orange-knvb)'},
+            {val: '€ 62k', tone: 'var(--c-mint-500)'},
+            {val: '€ 48k', tone: 'var(--c-lavender-300)'},
+            {val: '€ 31k', tone: 'var(--c-cobalt-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 12, height: 14, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '65%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '45%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>{row.val}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="Zo sluit PipelinQ aan op je werkplek"
+  title="Mail, contacten, agenda en bestanden. Al van jou."
+  lede="Je CRM woont waar je e-mail, adresboek, agenda en documenten al wonen. Dat is het hele punt van een werkplek."
+  layout="side"
+  defaultOpen="mail"
+  items={[
+    {
+      id: 'mail',
+      title: 'Start een lead vanuit een e-mail',
+      summary: 'Open een bericht in Nextcloud Mail en klik op "Nieuwe lead uit deze e-mail". Het onderwerp wordt de titel, de afzender en een fragment landen in de notities, en het bericht blijft gekoppeld. Elke vijf minuten koppelt PipelinQ klantmail ook automatisch, zelfs op bedrijfsdomein. Open een klant en de correspondentie staat er gewoon.',
+      cta: {label: 'Lees de docs', href: 'https://pipelinq.conduction.nl'},
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
+            <div style={{height: 4, width: '75%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '55%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '85%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+          </div>
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Nieuwe lead uit deze e-mail</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>gekoppeld aan Jansen BV</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'contacts',
+      title: 'Je klanten zijn je contacten',
+      summary: 'Geen twee adresboeken meer die langzaam uit elkaar groeien. Elke klant en contactpersoon in PipelinQ is een Nextcloud-contact. Wijzig een telefoonnummer in het CRM en het klopt op je telefoon als je vanuit de auto belt. Je bestaande contacten importeer je in een paar klikken, dus op dag één zit je hele netwerk er al in.',
+      cta: {label: 'Lees de docs', href: 'https://pipelinq.conduction.nl'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'calendar',
+      title: 'Afspraken in het dossier',
+      summary: 'Plan de vervolgafspraak direct vanuit de lead en die staat in je Nextcloud Agenda, gekoppeld aan het dossier, zodat de notities één klik weg zijn als de afspraak begint. Laat klanten zelf een moment boeken: PipelinQ kijkt in de agenda\'s van je team naar vrije tijd en zet de bevestigde afspraak in de juiste agenda. Geen heen-en-weer-mails om een datum te vinden.',
+      cta: {label: 'Lees de docs', href: 'https://pipelinq.conduction.nl'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'files',
+      title: 'Offertes en contracten in het dossier',
+      summary: 'De getekende offerte, het contract, de foto\'s van de locatie: bij de klant, niet zoek in iemands mailbox. Elke klant, lead en taak heeft een eigen map in Bestanden, en de tekst erin is doorzoekbaar. Een contract gevonden in Bestanden en je vraagt je af van wie het is? Het vertelt het je, en brengt je naar de klant.',
+      cta: {label: 'Lees de docs', href: 'https://pipelinq.conduction.nl'},
+      panel: <AppMock app="pipelinq" />,
+    },
+  ]}
+/>
 
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Werkt goed met"
-    title="Twee apps die het CRM-werkproces compleet maken."
+    eyebrow="Past goed bij"
+    title="Twee apps die de deal compleet maken."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/procest"
-      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>}
-      name="Procest"
-      why="Zaakafhandeling voor de directe verzoek-naar-zaak-overdracht. Een dedicated koppeling is in ontwikkeling."
+      href="/apps/shillinq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4"/></svg>}
+      name="Shillinq"
+      why="Boekhouden en factureren. Geef een gewonnen deal vanuit het klantdossier door aan facturatie."
     />
     <PairCard
       href="/apps/openregister"
       icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
       name="OpenRegister"
-      why="De data-fundering. Klanten, leads en offertes als getypeerde registers met audit log."
+      why="Waar je gegevens wonen. Elk dossier, elke wijziging, veilig op je eigen server."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
   title="CRM op je eigen Nextcloud."
-  lede={<>Geen aparte SaaS, geen tweede login. PipelinQ draait op dezelfde <span className="next-blue">Nextcloud</span> waar je delivery-team al werkt.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  lede={<>Open source. Gratis te installeren. Standaard AVG-proof. PipelinQ draait op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
 />

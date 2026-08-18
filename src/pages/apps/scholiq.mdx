@@ -1,10 +1,10 @@
 ---
 title: Scholiq, Conduction
-description: Learning record + LMS on Nextcloud. Cohorts, courses, attendance, grading, certificates, compliance training.
+description: Courses, certificates and attendance on your own Nextcloud. For schools, and for the mandatory training your company or council has to prove. Certificates warn before they expire.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -12,14 +12,15 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   appId="scholiq"
   crumb={[{label: 'Apps', href: '/apps'}, 'Scholiq']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.x"
+  version="v0.2.13"
   locales="NL · EN"
   title="Scholiq"
-  tagline={<>Learning record system and LMS on <span className="next-blue">Nextcloud</span>. Courses, enrolments, attendance, grading, certificates. For schools, training providers and compliance teams who won't park their learning process at an external SaaS.</>}
-  intro={<>Scholiq is an open-source education app for the Nextcloud workspace. It runs as a learning record system for Dutch primary and secondary schools, as a full LMS for higher education, and as a compliance-training engine for MKB and government bodies. Courses, assignments, assessments and certificates ship today with QTI 2.x / 3.0 item-bank import and Open Badges 3.0 credential verification built in; DUO BRON/ROD, OSO transfer and SURFconext federation are data-exchange integrations on the roadmap via OpenConnector, not yet live. EU AI Act governance for AI-assisted features is delegated to Conduction's Hermiq app. Released under EUPL-1.2 and maintained by Conduction since 2019.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://scholiq.conduction.nl/'}}
-  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/scholiq'}}
+  tagline={<>Courses, certificates and attendance on your own <span className="next-blue">Nextcloud</span>. For schools, and for the mandatory training your company or council has to prove.</>}
+  intro={<>Scholiq is an open-source learning environment. Schools use it to run courses, grade work and track attendance. Companies and public bodies use it for mandatory training: enrol everyone, keep the signed proof, and know before an audit which certificates are about to run out. Exchange with the national education systems is on the roadmap. Released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/scholiq'}}
+  illustration={<AppMock app="scholiq" />}
 />
 
 <Section spacing="default">
@@ -27,36 +28,42 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="What it does"
-        title="One learning environment for courses, cohorts and certificates."
+        title="Courses, enrolments, grades, attendance, certificates. One place."
         align="stack"
-        lede="Scholiq handles the whole learning process: set up courses, enrol participants, track attendance and progress, collect and grade assignments, award certificates. Everything on typed registers in OpenRegister, so the grades in LaunchPad and inspection reports stay correct."
+        lede="Scholiq runs the whole learning process. Build the course, enrol a class or a team, grade the work, mark who was there, and issue the certificate. When an inspector or auditor asks, the proof is one export away."
       />
       <FeatureList>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="M4 10h16M9 6v12"/></svg>}
-          title="Courses and enrolments."
-        >
-          Build a course from modules, attach learning materials and data, enrol individual participants or whole cohorts. For ongoing education and one-day training alike.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13l2 2 4-4"/></svg>}
-          title="Assignments and grading."
-        >
-          Issue an assignment, participants submit, you give feedback and a grade. The full history stays available per learner in their record.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>}
-          title="Attendance and progress."
-        >
-          Who was there, who completed the module, where each learner stands in their plan. No loose Excel spreadsheets, no shadow administration.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 .9-4.5 4.2 1.1 6L12 16l-5.6 3.1 1.1-6L3 8.9 9 8z"/></svg>}
-          title="Certificates and compliance training."
-        >
-          Award certificates with validity and recertification dates, verified through an Open Badges 3.0 endpoint. For workplace safety, GDPR, integrity training or your annual cybersecurity course: bulk-enrol everyone, capture signed attestations, and export a signed audit pack per regulation.
-        </FeatureItem>
-      </FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 .9-4.5 4.2 1.1 6L12 16l-5.6 3.1 1.1-6L3 8.9 9 8z"/></svg>}
+      title="The certificate that warns before it expires."
+    >
+      A forklift certificate runs out in ninety days. Today nobody notices until the audit. Instead, Scholiq shows every certificate that expires in the next ninety days, and the holder gets a warning thirty days out. The refresher course is named on the training, so enrolling is a click, not a search. Nobody discovers it at the audit.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="M4 10h16M9 6v12"/></svg>}
+      title="A new hire starts Monday. Their courses are ready Sunday."
+    >
+      Enrol one person, or a whole team through the enrolment wizard, and every mandatory course is on their list in due-date order on day one. Safety, privacy, integrity, the annual security course: they start from their own dashboard. Nobody hands out logins on paper.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13l2 2 4-4"/></svg>}
+      title="Grades and feedback the learner sees the moment you save."
+    >
+      Hand out an assignment, learners hand in their work, you grade it against a rubric. The moment you publish, the learner is told and the feedback is on their record. Set the weighting once and the final grade computes itself.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>}
+      title="Attendance without the loose spreadsheet."
+    >
+      Mark who was there in the session. When a learner crosses the absence limit you set, Scholiq flags it for the mentor and for the report. No shadow administration in someone's private file.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
+      title="The inspector asks who did the safety course. Export the signed list."
+    >
+      Every completed course keeps a signed attestation. Pick the regulation and the period, and Scholiq exports the list with the evidence behind every name. Training done elsewhere counts too, once the certificate is on file.
+    </FeatureItem>
+  </FeatureList>
     </div>
     <AppCrossLinks
       variant="rail"
@@ -68,37 +75,198 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <PartnersForApp slug="scholiq" />
 
+<RotatingCards
+  eyebrow="Three ways Scholiq earns its place"
+  title="It works the way you work. And it works for you."
+  lede="Three things you would normally pay extra for. In Scholiq they are built in."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automate',
+      title: 'A certificate is about to expire. The refresher is already planned.',
+      summary: 'Today: someone keeps a spreadsheet of expiry dates and hopes to check it in time. Instead, set it up once. The day a certificate enters its last ninety days, a task to book the refresher lands on the manager\'s desk. When a learner crosses the absence limit, the follow-up call is on the mentor\'s list. A course that costs more than your limit waits for approval before anyone is enrolled. Nothing forgotten, no chasing from memory, no coding.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'A school, a hospital or a driving school. Same app, your way.',
+      summary: 'A driving school wants the licence category on every learner. A hospital wants the ward on every enrolment. A primary school never uses points and badges and wants them out of sight. Add the field, hide the block, drag the widget you check first to the top. In the running app, in minutes, and your changes stay with every update.',
+      cta: {label: 'How customising works', href: '/apps/openbuild'},
+      panel: <AppMock app="openbuild" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Talk to it',
+      title: 'Ask about a course. Get the answer, not a catalogue.',
+      summary: 'Ask "which courses do we have on working at heights?" and you get the list. Ask "what is in the forklift course?" and the modules are there. Ask which certificates run out this quarter and the assistant reads the same records you are allowed to see. It reads. Enrolling, grading and issuing stay with you.',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: which courses do we have on working at heights?',
+        'assistant: 2 courses: Working at heights (basic), Working at heights (refresher)',
+        'you: what is in the refresher?',
+        'assistant: 3 modules, half a day, valid for 2 years',
+      ]} cursor mode="reads only, never enrols or grades" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="A dashboard that fits your role on sight."
+  lede="Install Scholiq and a learner sees their training, a teacher sees what needs grading, and an administrator sees where attendance slips. Same app, three dashboards."
+  widgets={[
+    {
+      title: 'My mandatory training',
+      desc: 'For the learner. Every course you still have to do, due date first, with a Start button and your progress.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', due: '3 days', val: '60%'},
+            {tone: 'var(--c-lavender-300)', due: '2 weeks', val: '25%'},
+            {tone: 'var(--c-mint-500)', due: '1 month', val: '0%'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 2 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 3}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 4, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                  <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+                </div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.due}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Assignments to grade',
+      desc: 'For the teacher. Work handed in and waiting for you, oldest first. Click one and you are on the submission.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', stage: '5 days'},
+            {tone: 'var(--c-lavender-300)', stage: '2 days'},
+            {tone: 'var(--c-mint-500)', stage: 'today'},
+            {tone: 'var(--c-mint-500)', stage: 'today'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Open attendance flags',
+      desc: 'For the administrator. Learners over the absence limit, next to active enrolments, courses and cohorts. One number you check every morning.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-orange-knvb)'}}>4</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>open flags</div>
+          </div>
+          {[
+            {label: 'enrolments', val: '80%', tone: 'var(--c-cobalt-300)'},
+            {label: 'courses', val: '55%', tone: 'var(--c-lavender-300)'},
+            {label: 'cohorts', val: '35%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="How Scholiq plugs into the workspace"
+  title="Files, Talk and the world outside. Already yours."
+  lede="Course materials, class chat and the proof you hand to an inspector live where your team already works. That is the point of a workspace."
+  layout="side"
+  defaultOpen="files"
+  items={[
+    {
+      id: 'files',
+      title: 'Materials, submissions and evidence in Files',
+      summary: 'Every course, lesson, session and assignment keeps its own folder in Files. The slides on the lesson, the handed-in work on the submission, the signed evidence on the attestation. Learners find the materials where the course is. Teachers open the submission and the file is there. Nothing travels by email.',
+      cta: {label: 'Read the docs', href: 'https://scholiq.conduction.nl'},
+      panel: <AppMock app="scholiq" />,
+    },
+    {
+      id: 'talk',
+      title: 'A class room in Talk that follows the class',
+      summary: 'Every cohort has its own Talk conversation. Enrol a learner and they are in the room. Withdraw them and they are out. Nobody maintains a second member list. From a session, one click joins the call, so a remote lesson starts from the timetable, not from a link in an email.',
+      cta: {label: 'Read the docs', href: 'https://scholiq.conduction.nl'},
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
+            <div style={{height: 4, width: '60%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '85%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '45%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+          </div>
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Join call</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>class 3B, 24 members, follows enrolments</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'verify',
+      title: 'A certificate anyone can check',
+      summary: 'Every certificate Scholiq issues carries a public check link. A new employer, a client or an inspector opens it and sees that it is genuine, who issued it and until when it is valid. No phone call to your office to confirm.',
+      cta: {label: 'Read the docs', href: 'https://scholiq.conduction.nl'},
+      panel: <AppMock app="scholiq" />,
+    },
+    {
+      id: 'audit',
+      title: 'The audit pack, in one export',
+      summary: 'Pick a regulation and a date range. Scholiq exports one package: who completed which course, the signed attestation behind each name, and the certificates that came from outside. Hand it to the inspector as it is.',
+      cta: {label: 'Read the docs', href: 'https://scholiq.conduction.nl'},
+      panel: <AppMock app="scholiq" />,
+    },
+  ]}
+/>
+
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="The apps Scholiq depends on."
+    title="Two apps that carry learning beyond the classroom."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Participants, courses, enrolments, grades and certificates as typed registers."
+      href="/apps/portaliq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 13h8"/></svg>}
+      name="Portaliq"
+      why="Parents and learners see grades, attendance and report cards in their own portal, not in the school's back office."
     />
     <PairCard
       href="/apps/docudesk"
       icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
       name="DocuDesk"
-      why="Generates certificates, course reports and participant lists from templates."
-    />
-    <PairCard
-      href="/apps/launchpad"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
-      name="LaunchPad"
-      why="My courses, work to grade, and recertifications on the dashboard."
+      why="Turn report cards and certificates into documents you can print, sign and archive."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="Learning at your own organisation, not at an external vendor."
-  lede={<>Scholiq keeps the learning process — from course enrolment to certification — on your own Nextcloud. Open-source, on your own data, ready for inspection and compliance.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+  title="Learning on your own Nextcloud."
+  lede={<>Open source. Free to install. Grades and certificates stay on your own server. Scholiq runs on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
 />

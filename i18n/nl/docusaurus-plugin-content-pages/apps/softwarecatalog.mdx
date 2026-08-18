@@ -1,86 +1,249 @@
 ---
 title: SoftwareCatalog, Conduction
-description: Softwareportfoliobeheer op Nextcloud. Applicaties, modules, contracten, standaarden en compliance in één gefedereerd register.
+description: Krijg grip op welke software je draait, en welke je kwijt wilt. Applicaties, koppelingen, contracten en standaarden op één plek, op je eigen Nextcloud.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
+  background="cobalt"
   appId="softwarecatalog"
   crumb={[{label: 'Apps', href: '/apps'}, 'SoftwareCatalog']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
   version="v0.2"
   locales="NL · EN"
   title="SoftwareCatalog"
-  tagline={<>Softwareportfoliobeheer op je <span className="next-blue">Nextcloud</span>. Een register van elke applicatie, module, contract en standaard in je organisatie. Ideaal voor de IT-afdeling die wil weten wat er waar draait.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://softwarecatalog.conduction.nl'}}
-  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/softwarecatalog'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+  tagline={<>Krijg grip op welke software je draait, en welke je kwijt wilt. Elke applicatie, elk contract en elke standaard op één plek, op je eigen <span className="next-blue">Nextcloud</span>.</>}
+  intro={<>SoftwareCatalog is een open-source app voor je softwareportfolio op de Nextcloud-werkplek. Gebouwd voor de IT-afdeling die wil weten wat waar draait, en onder welk contract. Leg elke applicatie vast en de koppelingen ertussen. Volg einddata van contracten en jaarlijkse kosten. Toon met bewijs welk systeem aan welke standaard voldoet. Hoor op tijd voordat een leverancier stopt met ondersteuning. Gemeenten krijgen de landelijke referentiearchitectuur voor gemeenten ingebouwd. Uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/softwarecatalog'}}
+  illustration={<AppMock app="softwarecatalog" />}
 />
 
 <Section spacing="default">
-  <SectionHead
-    eyebrow="Wat het doet"
-    title="Eén register, elke install."
-    align="stack"
-    lede="SoftwareCatalog houdt bij welke applicaties en modules je organisatie gebruikt, onder welk contract, tegen welke standaarden. OpenCatalogi erbovenop maakt de hele catalogus direct doorzoekbaar voor de organisatie."
-  />
-  <FeatureList>
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="Wat waar draait, onder welk contract, tegen welke standaard."
+        align="stack"
+        lede="SoftwareCatalog beantwoordt de vragen waar je vandaag een spreadsheet voor moet doorspitten. Welke systemen met elkaar praten. Welk contract als eerste afloopt. Welk systeem aan welke standaard voldoet, en waar het bewijs staat. Welke software als eerste uit ondersteuning valt."
+      />
+      <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/></svg>}
-      title="Applicaties, modules en koppelingen."
+      title="Welk systeem met welk systeem praat."
     >
-      Registreer applicaties, splits ze op in modules en moduleversies, en breng de koppelingen ertussen in kaart. Eén catalogus per organisatie, gebouwd op OpenRegister.
+      Leg elke applicatie vast, de versies en de koppelingen ertussen. Vervang je het HR-pakket? De vastgelegde koppelingen tonen welke systemen eraan raken. Je weet wat er breekt voordat je tekent, niet erna.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      title="Contractbeheer met goedkeuring."
+      title="Een contract loopt over negentig dagen af. Je hoort het nu."
     >
-      Volg contractperiode, kosten en status (actief, verlopend, in onderhandeling) met een indien-en-goedkeur-workflow voor nieuwe contracten en verlengingen.
+      Elk contract draagt zijn einddatum, jaarlijkse kosten en status. Aflopende contracten staan in één filter en kunnen je een melding sturen. Een verlenging gaat via een vastgelegd besluit voordat hij ingaat. Niet nadat de factuur van de stilzwijgende verlenging binnenkomt.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>}
-      title="GEMMA-standaarden, compliance-matrix, ArchiMate."
+      title="De auditor vraagt welke systemen aan standaard X voldoen. Eén scherm antwoordt."
     >
-      Beheer een standaardenregister, leg compliance-claims met bewijs per module vast en toets modules tegen standaardversies in een compliance-matrix. Importeer en exporteer het onderliggende architectuurmodel als ArchiMate (AMEF) XML.
+      Leg per systeem vast aan welke standaard het voldoet, met het bewijs erbij. De compliancematrix zet je systemen af tegen de standaarden die jij kiest. Geverifieerd met bewijs, geclaimd, of ontbrekend, per cel.
     </FeatureItem>
     <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
-      title="Federatie en open-data-publicatie."
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      title="Je hoort het een jaar voordat de leverancier stopt met ondersteuning."
     >
-      Synchroniseer catalogusdata met andere Software Catalogus-instanties (peer toevoegen, handmatig ophalen). Publiceer geselecteerde items als open data voor transparantie en hergebruik; anonieme organisaties kunnen zichzelf aanmelden via een gemodereerde intake-wachtrij.
+      Elke versie draagt zijn einddatum van ondersteuning. De portfolioroadmap groepeert je systemen per levensfase, meest urgent eerst. Een gemelde kwetsbaarheid toont welke van je systemen hij raakt, en wie je moet waarschuwen.
     </FeatureItem>
   </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['softwarecatalog']}
+      surface="product"
+    />
+  </div>
 </Section>
+
+<PartnersForApp slug="softwarecatalog" />
+
+<RotatingCards
+  eyebrow="Drie manieren waarop SoftwareCatalog zijn plek verdient"
+  title="Het werkt zoals jij werkt. En het werkt voor je."
+  lede="Drie dingen waar je normaal extra voor betaalt. In SoftwareCatalog zitten ze ingebouwd."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automatiseer',
+      title: 'Een contract loopt bijna af. Het besluit staat al op de agenda.',
+      summary: 'Nu: iemand vindt in maart de factuur van de stilzwijgende verlenging en vraagt wie daarmee akkoord ging. Straks stel je het één keer in. Negentig dagen voordat een contract afloopt, hoort de eigenaar het. De verlenging wacht op een vastgelegd besluit voordat hij ingaat. Gaat een versie over de einddatum van ondersteuning, dan markeert de roadmap hem en wordt de eigenaar gewaarschuwd. Een nieuw gemelde kwetsbaarheid waarschuwt de mensen die verantwoordelijk zijn voor de systemen die hij raakt. Niets glipt erdoor, geen spreadsheet om bij te houden, geen programmeerwerk.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Jouw portfolio, jouw termen. Zonder ontwikkelaar.',
+      summary: 'De ene organisatie houdt de dataclassificatie bij op elke applicatie. De andere wil de budgethouder op elk contract. Een shared service center heeft de deelnemende gemeente op elk gebruik nodig. Voeg het veld toe, voeg het filter toe. Sleep de weergave waar je het eerst naar kijkt naar boven. Verberg wat je nooit gebruikt. In de draaiende app, in minuten, en je aanpassingen blijven bij elke update staan.',
+      cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
+      panel: <AppMock app="openbuild" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Praat ermee',
+      title: 'Stel de catalogus een vraag. Krijg de lijst, geen rapport om te bouwen.',
+      summary: 'Vraag "welke contracten lopen dit jaar af?" en je krijgt de lijst met bedragen en eigenaren. Vraag "welke systemen draaien nog op de oude versie?" en het antwoord staat er. Vraag "wie is de contactpersoon voor het belastingpakket?" en je hebt een naam. De assistent leest wat de catalogus publiceert en blijft binnen wat jij toestond. Er verandert niets in de catalogus zonder jouw akkoord.',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'jij: welke contracten lopen dit jaar af?',
+        'assistent: 4 contracten, 212.000 euro per jaar in totaal',
+        'assistent: het HR-pakket loopt af op 30 november, eigenaar is Els',
+        'jij: welke systemen hangen af van het HR-pakket?',
+        'assistent: 4 koppelingen: salaris, identiteit, tijdregistratie, intranet',
+      ]} cursor mode="leest je catalogus, wijzigt nooit" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Op het dashboard"
+  title="De drie vragen die je IT-lead als eerste stelt."
+  lede="Installeer SoftwareCatalog en het dashboard opent met het portfolio in cijfers en de snelkoppelingen die een IT- of portfoliolead het meest gebruikt. Contracten, standaarden, organisaties, elk één klik."
+  widgets={[
+    {
+      title: 'Portfolio in cijfers',
+      desc: 'Hoeveel applicaties je draait, hoeveel contracten ze dragen, hoeveel standaarden je volgt. Klik op een rij en je staat in de lijst.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {label: 'apps', val: '70%', tone: 'var(--c-cobalt-300)'},
+            {label: 'contracten', val: '55%', tone: 'var(--c-mint-500)'},
+            {label: 'standaarden', val: '40%', tone: 'var(--c-lavender-300)'},
+            {label: 'leveranciers', val: '30%', tone: 'var(--c-forest-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 70}}>{row.label}</div>
+              <div style={{flex: 1, height: 5, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Contracten die bijna aflopen',
+      desc: 'Open de contractlijst op het filter aflopend: einddatum, jaarlijkse kosten en status per contract. Het verlengingsbesluit begint hier.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', stage: '41 dagen'},
+            {tone: 'var(--c-lavender-300)', stage: '68 dagen'},
+            {tone: 'var(--c-mint-500)', stage: '85 dagen'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 2 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Portfolioroadmap',
+      desc: 'Je systemen per levensfase, meest urgent eerst. Einde ondersteuning, uitfasering en geplande vervanging op één tijdlijn, per organisatie.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {val: 'EOL', tone: 'var(--c-orange-knvb)'},
+            {val: '2027', tone: 'var(--c-lavender-300)'},
+            {val: '2028', tone: 'var(--c-mint-500)'},
+            {val: 'ok', tone: 'var(--c-cobalt-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 12, height: 14, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '65%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '45%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>{row.val}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="Zo sluit SoftwareCatalog aan op je werkplek"
+  title="Bestanden, besluiten, accounts en andere catalogi. Al van jou."
+  lede="De catalogus woont waar je documenten, je besluiten en je collega's al wonen. Dat is het hele punt van een werkplek."
+  layout="side"
+  defaultOpen="files"
+  items={[
+    {
+      id: 'files',
+      title: 'Het contract en het bewijs, in het dossier',
+      summary: 'Het getekende contract, de documentatie van de leverancier, het auditbewijs achter een complianceclaim: in het dossier, niet in iemands mailbox. Elke applicatie en elk contract bewaart zijn documenten in Bestanden. Vraagt de auditor om bewijs, dan is het één klik weg.',
+      cta: {label: 'Lees de docs', href: 'https://softwarecatalog.conduction.nl'},
+      panel: <AppMock app="softwarecatalog" />,
+    },
+    {
+      id: 'decisions',
+      title: 'Een verlenging is een vastgelegd besluit',
+      summary: 'Een nieuw contract of een verlenging springt niet zomaar op actief. Het gaat als besluit naar DeciDesk en krijgt daar zijn akkoord. De uitkomst landt terug op het contract. Wie wat goedkeurde, en wanneer, staat twee jaar later nog in het dossier.',
+      cta: {label: 'Bekijk DeciDesk', href: '/apps/decidesk'},
+      panel: <AppMock app="decidesk" />,
+    },
+    {
+      id: 'accounts',
+      title: 'Contactpersonen worden collega\'s met de juiste rol',
+      summary: 'Voeg een contactpersoon van een leverancier of een applicatie-eigenaar toe en die krijgt een Nextcloud-account met de juiste rol. De leverancier ziet alleen wat hij levert, nooit het landschap van een andere organisatie. Geen tweede gebruikerslijst om bij te houden.',
+      cta: {label: 'Lees de docs', href: 'https://softwarecatalog.conduction.nl'},
+      panel: <AppMock app="softwarecatalog" />,
+    },
+    {
+      id: 'federation',
+      title: 'Leer van wat andere organisaties draaien',
+      summary: 'Publiceer je softwarekeuzes als open data, zonder vertrouwelijke details. Zie welke systemen je samen met andere organisaties draait. Met OpenCatalogi geïnstalleerd vinden catalogi elkaar en delen ze onderling. Een gemeente ziet wat haar buren kozen voordat ze besluit. Zonder blijft de catalogus gewoon van jou.',
+      cta: {label: 'Bekijk OpenCatalogi', href: '/apps/opencatalogi'},
+      panel: <AppMock app="opencatalogi" />,
+    },
+  ]}
+/>
 
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Werkt goed met"
-    title="Twee apps die de catalogus uitbreiden."
+    eyebrow="Past goed bij"
+    title="Twee apps die de catalogus laten tellen."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/></svg>}
-      name="OpenRegister"
-      why="Het registerfundament waar SoftwareCatalog op draait. Vereiste afhankelijkheid voor elke install."
+      href="/apps/decidesk"
+      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>}
+      name="DeciDesk"
+      why="Contractverlengingen gaan via een vastgelegd besluit. Wie wat goedkeurde staat in het dossier."
     />
     <PairCard
       href="/apps/opencatalogi"
       icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
       name="OpenCatalogi"
-      why="Optioneel: verzorgt gefedereerde synchronisatie tussen catalogus-instanties en open-data-publicatie."
+      why="Publiceer je softwarekeuzes als open data en zie wat andere organisaties draaien."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="Wat draait er waar, onder welk contract, tegen welke standaard."
-  lede={<>SoftwareCatalog houdt applicaties, contracten en GEMMA-compliance in één register, zodat het antwoord een klik verwijderd is in plaats van een zoektocht door spreadsheets.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  title="Weet wat waar draait, op je eigen Nextcloud."
+  lede={<>Open source. Gratis te installeren. Je portfolio blijft op je eigen server. SoftwareCatalog draait op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
 />

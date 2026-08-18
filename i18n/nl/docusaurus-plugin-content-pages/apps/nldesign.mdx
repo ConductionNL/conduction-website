@@ -1,77 +1,227 @@
 ---
 title: NLDesign, Conduction
-description: NL Design System-thema voor Nextcloud. Officiële NLDS-typografie, kleur en componenttokens in één install.
+description: De officiële overheidsuitstraling voor je Nextcloud. Kies je gemeente uit een lijst van 44 huisstijlen en de inlogpagina, de header en elke app volgen. Inwoners herkennen het, medewerkers vertrouwen het.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
+  background="cobalt"
   appId="nldesign"
   crumb={[{label: 'Apps', href: '/apps'}, 'NLDesign']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.1"
+  version="v0.1.3"
   locales="NL · EN"
   title="NLDesign"
-  tagline={<>Het NL Design System (NLDS) als drop-in thema voor je <span className="next-blue">Nextcloud</span>. Eén install en je interface volgt de Nederlandse overheidshuisstijl, met Conduction-componentvarianten erbovenop.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://docs.conduction.nl/nldesign'}}
-  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/nldesign'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><path d="M4 4h16v6H4z"/><path d="M4 14h7v6H4z"/><path d="M14 14h6v6h-6z"/></svg>}
+  tagline={<>Geef je <span className="next-blue">Nextcloud</span> de officiële uitstraling van NL Design System. Kies je organisatie, en elk scherm volgt.</>}
+  intro={<>NLDesign is een Nextcloud-app die één ding doet: hij kleedt je hele Nextcloud in de officiële huisstijl van je organisatie. Kies "Gemeente Utrecht" uit een lijst van 44 en de inlogpagina, de header, het logo en elke app volgen dezelfde minuut. Je Nextcloud ziet eruit als de website van je gemeente. Inwoners herkennen het, en medewerkers vragen zich niet meer af of de inlogpagina echt is. Staat je organisatie niet in de lijst? Upload je eigen huisstijl. Uitgebracht onder EUPL-1.2 en sinds 2019 onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/nldesign'}}
+  illustration={<AppMock app="nldesign" />}
 />
 
 <Section spacing="default">
-  <SectionHead
-    eyebrow="Wat het doet"
-    title="NLDS in je Nextcloud, zonder front-end-traject."
-    align="stack"
-    lede="Het NL Design System legt vast hoe Nederlandse overheidsinterfaces eruit horen te zien: typografie, kleur, focus-states, formuliervelden, knoppen. NLDesign brengt die regels in Nextcloud zonder dat je het thema zelf hoeft te bouwen."
-  />
-  <FeatureList>
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="De officiële kleuren, letters en knoppen. Eén installatie, elk scherm."
+        align="stack"
+        lede="NL Design System is hoe Nederlandse overheidsschermen eruit horen te zien: de kleuren, de letters, de knoppen, de focusrand, de formuliervelden. NLDesign brengt dat in je Nextcloud zonder ontwerptraject."
+      />
+      <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/></svg>}
-      title="Officiële NLDS-tokens."
+      title="Kies je gemeente uit een lijst van 44. Klaar."
     >
-      Type-schaal, kleurpalet, spacing, radii. Allemaal de versie van design.nl, niet een Conduction-interpretatie. Wijzigt het NLDS, dan wijzigt deze app mee.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12h4M18 12h4M12 2v4M12 18v4"/></svg>}
-      title="WCAG-AA uit de doos."
-    >
-      Contrast-ratio's, focus-rings, keyboard-paden. Standaard goed genoeg voor de Tijdelijke wet digitale toegankelijkheid (Twdt).
+      Vandaag ziet een nieuwe Nextcloud eruit als elke andere Nextcloud, en een inwoner die erop belandt vraagt zich af of dit echt de gemeente is. In plaats daarvan kiest een beheerder de organisatie uit de lijst: de Rijksoverheid, Amsterdam, Utrecht, Den Haag, Rotterdam en veertig andere. De inlogpagina, de header, het logo en elke app volgen dezelfde minuut. Je Nextcloud ziet eruit als je website.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>}
-      title="Conduction-componentvarianten."
+      title="Niet in de lijst? Upload je eigen huisstijl."
     >
-      App-cards, hex-tiles, faceted filters, pipeline-flows. Overschreven met de NLDS-tokens en bewezen op opencatalogi.conduction.nl en docudesk.conduction.nl.
+      Een provincie, een waterschap, een gedeeld servicecentrum. Upload je eigen kleuren en letters en NLDesign controleert ze voordat ze live gaan, ook of het contrast leesbaar is. Pas een kleur aan in de browser, zie hem ter plekke veranderen, zet hem terug als je je bedenkt. Exporteer het resultaat en laad het op je test- en productieservers, identiek.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12h4M18 12h4M12 2v4M12 18v4"/></svg>}
+      title="Standaard leesbaar. Toegankelijkheid komt mee met de stijl."
+    >
+      Contrast, focusranden en toetsenbordpaden volgen dezelfde overheidsrichtlijnen waar je website aan moet voldoen. Het lettertype is het open lettertype dat de overheid gebruikt, meegeleverd in de app, dus geen browser haalt het ergens anders vandaan. Een variant met hoog contrast staat op de planning.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M3 12h6l3-7 3 14 3-7h3"/></svg>}
-      title="Werkt voor elke Conduction-app."
+      title="Elke app die je installeert pikt het op. Sluit er een uit als het moet."
     >
-      OpenCatalogi, OpenRegister, DocuDesk en LaunchPad pakken het thema automatisch op. Je krijgt een uniforme overheidsinterface zonder elke app apart te brandmerken.
+      Installeer volgende week een nieuwe app en hij draagt de huisstijl vanaf zijn eerste scherm. Moet één app in de standaard Nextcloud-look blijven terwijl je test? Eén schakelaar per app in de beheerinstellingen, geen configuratiebestanden. Rol de stijl organisatiebreed uit, app voor app, in je eigen tempo.
     </FeatureItem>
     <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>}
-      title="Theming per app uit te sluiten."
+      icon={<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg>}
+      title="Verandert het designsysteem, dan krijg jij de update voorgesteld."
     >
-      Rol NLDesign gemeentebreed uit en sluit vervolgens losse apps uit die de standaard Nextcloud-stijl moeten behouden. Eén beheerdersinstelling, geen config-bestanden.
+      NL Design System blijft in beweging. Elke nacht controleert NLDesign de gepubliceerde stijlen op wijzigingen en stelt ze je voor als update. Jij bepaalt wanneer je hem overneemt. Je Nextcloud blijft in de pas met je website zonder dat iemand een changelog in de gaten houdt.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2L2 7v6c0 5 3 9 10 11 7-2 10-6 10-11V7L12 2z"/></svg>}
-      title="Open source, EUPL-1.2."
+      title="Gratis, voor altijd."
     >
-      Geen licentie-fee per gebruiker, geen jaarlijkse renewal, geen audit. Je hebt het thema voor altijd, ook na een leverancierswissel.
+      Geen licentie per gebruiker, geen jaarlijkse verlenging. Wissel van hostingpartner en het thema reist mee met je gegevens. Open source, dus de huisstijl die je bouwde blijft van jou.
     </FeatureItem>
   </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['nldesign']}
+      surface="product"
+    />
+  </div>
 </Section>
+
+<PartnersForApp slug="nldesign" />
+
+<RotatingCards
+  eyebrow="Drie manieren waarop NLDesign zijn plek verdient"
+  title="Het ziet eruit als jouw organisatie. En dat blijft zo."
+  lede="Drie dingen waar je normaal een ontwerpbureau voor betaalt. In NLDesign zitten ze ingebouwd."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automatiseer',
+      title: 'Er komt een nieuwe app bij. Hij staat al in jouw kleuren.',
+      summary: 'Vandaag: elke nieuwe tool komt met een eigen look, en iemand dient een ticket in om hem in de huisstijl te krijgen. In plaats daarvan installeer je de app en draagt hij de huisstijl vanaf zijn eerste scherm. Niets in te stellen. Publiceert NL Design System een wijziging, dan merkt NLDesign dat \'s nachts en stelt de update voor; jij neemt hem over wanneer het jou uitkomt. Bescheiden, en precies genoeg.',
+      cta: {label: 'Lees de docs', href: 'https://nldesign.conduction.nl'},
+      panel: <AppMock app="nldesign" />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Jouw gemeente, jouw logo, jouw blauw. Daar draait het om.',
+      summary: 'Kies je organisatie uit 44 huisstijlen, of upload je eigen. Verander één kleur in de browser en zie de hele Nextcloud volgen, live. Zet terug waar je spijt van hebt. Houd één app in de standaardlook terwijl je test. Exporteer de afgeronde stijl en laad hem op de volgende server, identiek. Een ontwerptraject van een middag, gedaan door een beheerder, niet door een bureau.',
+      cta: {label: 'Lees de docs', href: 'https://nldesign.conduction.nl'},
+      panel: <AppMock app="nldesign" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Praat ermee',
+      title: 'Aan een thema valt niets te vragen. De assistent draagt het gewoon ook.',
+      summary: 'Een thema heeft geen dossiers om over te vragen, dus er valt eerlijk gezegd weinig mee te praten. Wat NLDesign voor de assistent doet, is wat het voor elke andere app doet: het chatvenster dat je medewerkers openen volgt dezelfde huisstijl als de rest van de werkplek. Eén look, overal, assistent inbegrepen.',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AppMock app="nldesign" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Wat je krijgt"
+  title="Letters, kleur, knoppen. De officiële."
+  lede="Installeer NLDesign en de gepubliceerde stijlen van NL Design System landen in je Nextcloud: de letterschaal, het kleurenpalet en de knoppen, velden en focusranden, zoals gepubliceerd, niet onze interpretatie."
+  widgets={[
+    {
+      title: 'Letters',
+      desc: 'Koppen en lopende tekst in het open overheidslettertype, meegeleverd in de app. Kleine letters na de eerste, leesbaar op elke grootte.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 8}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-headline)', fontSize: 24, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>Aa</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>kop</div>
+          </div>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 8}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-headline)', fontSize: 18, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>Aa</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>subkop</div>
+          </div>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 8}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-body)', fontSize: 13, color: 'var(--c-cobalt-700)'}}>Aa</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>tekst</div>
+          </div>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 8}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-body)', fontSize: 11, color: 'var(--c-cobalt-500)'}}>Aa</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>bijschrift</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: 'Kleur',
+      desc: 'Het officiële palet van je organisatie. Verander de hoofdkleur en de hele Nextcloud volgt.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {name: 'primair', hex: 'var(--c-cobalt-700)'},
+            {name: 'secundair', hex: 'var(--c-cobalt-300)'},
+            {name: 'succes', hex: 'var(--c-mint-500)'},
+            {name: 'waarschuwing', hex: 'var(--c-orange-knvb)'},
+            {name: 'accent', hex: 'var(--c-lavender-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 14, height: 16, clipPath: 'var(--hex-pointy-top)', background: row.hex, flexShrink: 0}}></span>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-body)', fontSize: 11, color: 'var(--c-cobalt-700)', flex: 1}}>{row.name}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Knoppen, velden, focus',
+      desc: 'De knoppen, invoervelden en focusranden die NL Design System voorschrijft. Directe vervangers voor de Nextcloud-standaarden.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', gap: 6}}>
+            <div style={{padding: '6px 12px', background: 'var(--c-cobalt-700)', color: 'white', borderRadius: 4, fontFamily: 'var(--conduction-typography-font-family-body)', fontSize: 10, fontWeight: 600}}>Primair</div>
+            <div style={{padding: '6px 12px', background: 'transparent', color: 'var(--c-cobalt-700)', border: '1px solid var(--c-cobalt-700)', borderRadius: 4, fontFamily: 'var(--conduction-typography-font-family-body)', fontSize: 10, fontWeight: 600}}>Secundair</div>
+          </div>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>label</div>
+            <div style={{height: 22, background: 'white', border: '1px solid var(--c-cobalt-200)', borderRadius: 4, padding: '4px 8px', display: 'flex', alignItems: 'center'}}>
+              <div style={{height: 4, width: '60%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            </div>
+          </div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <div style={{width: 14, height: 14, borderRadius: 3, border: '2px solid var(--c-orange-knvb)', boxShadow: '0 0 0 2px rgba(247,119,21,0.25)'}}></div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>focusrand</div>
+          </div>
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="Waar de huisstijl landt"
+  title="De inlogpagina, elke app, en de iconen daartussen."
+  lede="NLDesign heeft geen eigen schermen buiten de instellingenpagina. Zijn werk zie je overal elders."
+  layout="side"
+  defaultOpen="login"
+  items={[
+    {
+      id: 'login',
+      title: 'De inlogpagina die een inwoner herkent',
+      summary: 'Het eerste wat iemand ziet is de inlogpagina. Met NLDesign draagt hij jouw logo, jouw kleuren en jouw letters, hetzelfde als je website. Een inwoner die een link kreeg weet dat hij op de goede plek is. Een collega die een phishingmail krijgt, ziet meteen dat de nepversie er verkeerd uitziet.',
+      cta: {label: 'Lees de docs', href: 'https://nldesign.conduction.nl'},
+      panel: <AppMock app="nldesign" />,
+    },
+    {
+      id: 'apps',
+      title: 'Elke app, de publieke en de interne',
+      summary: 'De publieke catalogus in OpenCatalogi, de dashboards in LaunchPad die wethouders en directeuren openen, de zaakschermen waar je medewerkers de hele dag in werken. Ze volgen allemaal de huisstijl, en dat geldt ook voor elke app die je later toevoegt. Dezelfde knoppen, dezelfde kleuren, geen aparte huisstijlklus per app.',
+      cta: {label: 'Bekijk OpenCatalogi', href: '/apps/opencatalogi'},
+      panel: <AppMock app="opencatalogi" />,
+    },
+    {
+      id: 'icons',
+      title: 'Overheidsiconen en -logo\'s, klaar voor hergebruik',
+      summary: 'NLDesign levert duizenden iconen uit de landelijke en gemeentelijke iconensets mee, en de logo\'s van 23 overheidsorganisaties, op naam. Elke app in je Nextcloud kan ze gebruiken. Stap over op een ander designsysteem en de bijbehorende iconenset komt mee.',
+      cta: {label: 'Lees de docs', href: 'https://nldesign.conduction.nl'},
+      panel: <AppMock app="launchpad-bi" />,
+    },
+  ]}
+/>
 
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Werkt goed met"
-    title="Twee apps die er meteen mooier uitzien."
+    eyebrow="Past goed bij"
+    title="Twee apps die er beter uitzien zodra je overschakelt."
     align="stack"
   />
   <PairRow>
@@ -79,20 +229,20 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
       href="/apps/opencatalogi"
       icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
       name="OpenCatalogi"
-      why="Publiek-facing catalogus. Met NLDesign volgt het filterpaneel en de detailpagina automatisch het NLDS."
+      why="Je publieke catalogus. Met NLDesign zien het filterpaneel en de detailpagina's eruit als de rest van je website."
     />
     <PairCard
       href="/apps/launchpad"
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
       name="LaunchPad"
-      why="Dashboards voor wethouders en directeuren. NLDesign brengt grafieken, tabellen en KPI-cards in de overheidsstijl."
+      why="Dashboards voor wethouders en directeuren, in dezelfde huisstijl als al het andere dat ze zien."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="Eén thema voor je hele Nextcloud."
-  lede={<>Installeer NLDesign uit de <span className="next-blue">Nextcloud</span>-app-store, schakel hem in voor je organisatie, en je catalogus, registers en dashboards volgen morgen het NLDS.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  title="Eén huisstijl voor je hele Nextcloud."
+  lede={<>Open source. Gratis te installeren. Kies je organisatie en je inlogpagina, je catalogus en je dashboards volgen morgen de officiële stijl. Op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
 />

@@ -1,95 +1,216 @@
 ---
 title: LaunchPad, Conduction
-description: Drag-and-drop dashboards voor Nextcloud met templates, een widget-bibliotheek, rolgebaseerde toegang en dashboards delen.
+description: Bouw dashboards uit je eigen data, zonder dat IT eraan te pas komt. Eén startscherm voor kantoor, de werkvloer en jou, op de Nextcloud die je team al opent.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, RotatingCards, AppMock} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, RotatingCards, AppMock, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
+  background="cobalt"
   appId="launchpad"
   crumb={[{label: 'Apps', href: '/apps'}, 'LaunchPad']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
   version="v1.0.5"
   locales="NL · EN"
   title="LaunchPad"
-  tagline={<>Drag-and-drop dashboards voor je <span className="next-blue">Nextcloud</span>-team, opgebouwd uit templates, tegels en elke widget die je werkruimte al heeft.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://docs.conduction.nl/launchpad'}}
-  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/launchpad'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+  tagline={<>Bouw dashboards uit je eigen data, zonder dat IT eraan te pas komt. Eén startscherm voor kantoor, de werkvloer en jou. Op de <span className="next-blue">Nextcloud</span> die je team al opent.</>}
+  intro={<>LaunchPad is een open-source dashboard-app voor de Nextcloud-werkplek. Sleep de tegels en widgets die je elke dag gebruikt op een raster. Sla het op als je startscherm. Geef elk team een eigen bord, of rol er één uit naar alle veertig medewerkers tegelijk. Toon een kaart alleen aan financiën, of alleen op vrijdagochtend. Zet het orderbord op de tv in het magazijn zonder login. Uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/launchpad'}}
   illustration={<AppMock app="launchpad" />}
 />
 
 <Section spacing="default">
-  <SectionHead
-    eyebrow="Wat het doet"
-    title="Sleep, drop, dashboard."
-    align="stack"
-    lede="Bouw een dashboard uit tegels, tekst, bestanden, personen en agenda's, en elke native Nextcloud-widget. Sla op, deel met het team. Rolgebaseerde toegang gebruikt de Nextcloud-groepen waar je team al in zit."
-  />
-  <FeatureList>
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="Eén bord voor kantoor, de werkvloer en jou."
+        align="stack"
+        lede="Bouw een startscherm uit snelkoppelingen, bestanden, mensen, agenda's en elke widget die je Nextcloud-apps al meeleveren. Sla het op, deel het, rol het uit. Wie wat ziet volgt de groepen waar je team al in zit."
+      />
+      <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/></svg>}
-      title="Een raster, geen formulier."
+      title="Slepen, neerzetten, klaar."
     >
-      Positioneer en schaal widgets vrij op een flexibel drag-and-drop-raster. Maak zoveel persoonlijke dashboards als je wilt en wissel ertussen.
+      Plaats een kaart, maak hem groter, verplaats hem. Bouw een bord per rol en wissel met één klik. Op dinsdag een rommeltje gemaakt? Zet het bord in één stap terug naar vorige week.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>}
-      title="Een widget-bibliotheek, geen leeg canvas."
+      title="Alles wat je werkplek al toont, op één bord."
     >
-      Tekst, afbeeldingen, link-knoppen, bestanden, personen, nieuws, agenda, video, snelkoppelingen, menu's en containers — plus elke native Nextcloud dashboard-widget, naast elkaar op hetzelfde board.
+      Snelkoppelingen naar de tools die mensen tien keer per dag openen. Een map, een team, een agenda, het nieuws, een klok, het weer. Plus elke widget die je Nextcloud-apps al meeleveren: mail, chat, taken, meldingen. Allemaal naast elkaar.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>}
-      title="Rolgebaseerde toegang via Nextcloud-groepen."
+      title="Rol één startscherm uit naar alle veertig medewerkers."
     >
-      Beperk welke widget-types een groep mag toevoegen, en rol beheerdertemplates uit met rechtenniveaus alleen bekijken, toevoegen, of volledige aanpassing. Inlog en autorisatie via Nextcloud, geen tweede gebruikersbeheer.
+      Bouw het bord één keer en zet het klaar voor een groep. De nieuwe collega logt maandag in en vindt alles. Bepaal per groep wat mensen mogen aanpassen en welke kaarten vast blijven staan.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
-      title="Conditionele zichtbaarheid."
+      title="Toon een kaart alleen als het ertoe doet."
     >
-      Toon of verberg individuele widgets op basis van groepslidmaatschap, tijdstip of datum — hetzelfde dashboard past zich aan wie kijkt en wanneer.
+      Financiën ziet de kaskaart, niemand anders. De lunchbestelkaart verschijnt vrijdag om negen uur en is om twaalf uur weg. De banner met de feestdagenopeningstijden draait in december en verdwijnt vanzelf.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
-      title="Dashboards delen."
+      title="Deel een bord, of hang het aan de muur."
     >
-      Deel een dashboard met specifieke gebruikers of groepen met een eigen rechtenniveau, of publiceer een tegen brute-force beveiligde alleen-lezen publieke link — geen Nextcloud-login nodig voor kijkers.
+      Deel met een collega of een team, en bepaal wat ze mogen bewerken. Publiceer een alleen-lezen-link voor het orderbord op de tv in het magazijn. Geen login op het scherm, niemand kan de link raden. Voeg desgewenst een wachtwoord of einddatum toe.
     </FeatureItem>
   </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['launchpad']}
+      surface="product"
+    />
+  </div>
 </Section>
 
+<PartnersForApp slug="launchpad" />
+
 <RotatingCards
-  eyebrow="Drie redenen waarom LaunchPad op je startscherm hoort"
-  title="Tegels, templates, en het widget van elke app."
-  lede="Scroll door de kaarten. Elke kaart pint als je hem bereikt; de volgende schuift omhoog om hem te bedekken."
+  eyebrow="Drie manieren waarop LaunchPad zijn plek verdient"
+  title="Het werkt zoals jij werkt. En het werkt voor je."
+  lede="Drie dingen waar je normaal extra voor betaalt. In LaunchPad zitten ze ingebouwd."
   cards={[
     {
-      tone: 'workspace',
-      eyebrow: 'Tegels en templates',
-      title: 'Custom launchers, beheerdertemplates, één klik naar een heel team.',
-      summary: 'Maak een tegel die een app, document of externe URL opent. Beheerders configureren een templatedashboard vooraf, zetten verplichte widgets vast, en rollen het uit naar een gebruikersgroep met een gekozen rechtenniveau. Het startscherm wordt een launcher die je daadwerkelijk onderhoudt.',
-      cta: {label: 'Lees de beheerdertemplates-gids', href: 'https://docs.conduction.nl/launchpad/admin-templates'},
+      tone: 'forest',
+      eyebrow: 'Automatiseer',
+      title: 'Een nieuwe collega begint. Het startscherm staat al klaar.',
+      summary: 'Nu: iemand loopt met de nieuwe collega acht bladwijzers langs en hoopt dat ze blijven hangen. Straks is het kantoorbord één keer naar het hele team gepusht. Voeg iemand toe aan de groep en het bord staat klaar voor de eerste koffie. De vrijdaglunchkaart laat zich om negen uur zien en verbergt zich om twaalf uur. De decemberbanner draait en verdwijnt vanzelf. Niets om te onthouden, geen mailrondje op donderdag.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
       panel: <AppMock app="launchpad-tiles" />,
     },
     {
-      tone: 'forest',
-      eyebrow: 'Widget-bibliotheek',
-      title: 'Achttien ingebouwde widget-types, plus elke Nextcloud-widget.',
-      summary: 'Tekst, afbeeldingen, link-knoppen, bestanden, personen, nieuws, agenda, video, snelkoppelingen, menu\'s en containers komen standaard mee. Conditionele-zichtbaarheidsregels tonen of verbergen elke widget op groep, tijdstip of datum.',
-      cta: {label: 'Bekijk de widget-catalogus', href: 'https://docs.conduction.nl/launchpad#widgets'},
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Bouw dashboards uit je eigen data. Zonder dat IT eraan te pas komt.',
+      summary: 'Hier is LaunchPad voor. De werkplaats wil de open orders en de leverkalender op één scherm. De receptie wil de bezoekerslijst en de zaalreserveringen. Jij wilt omzet, kas en de drie dingen die vandaag moeten. Sleep de kaarten, geef ze een maat, sla op. Op woensdag van gedachten veranderd? Pas het bord zelf aan. Niemand hoeft een ticket in te dienen om een widget te verplaatsen.',
+      cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
       panel: <AppMock app="launchpad-widgets" />,
     },
     {
-      tone: 'lavender',
-      eyebrow: 'Delen en kiosk-modus',
-      title: 'Deel een dashboard, of zet het op een scherm in de hal.',
-      summary: 'Deel met een gebruiker of groep op een eigen rechtenniveau, publiceer een tegen brute-force beveiligde alleen-lezen publieke link, of draai een chromeloze kiosk-playlist op een gedeeld scherm.',
-      cta: {label: 'Lees de deel-gids', href: 'https://docs.conduction.nl/launchpad/sharing'},
+      tone: 'workspace',
+      eyebrow: 'Praat ermee',
+      title: 'Vraag het over je hele bord, niet app voor app.',
+      summary: 'Je bord haalt mail, agenda, taken en de tegels van je andere Conduction-apps binnen. Een assistent werkt op dezelfde gegevens. Vraag "wat moet er vandaag?" en je krijgt één antwoord, geen vijf tabbladen. Het leest wat je apps publiceren en blijft binnen wat jij toestond. Widgets plaatsen met je stem staat op de planning; vandaag sleep je.',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'jij: wat moet er vandaag?',
+        'assistent: 2 facturen goedkeuren, 1 levering om 14:00',
+        'assistent: het werkplaatsbord toont 3 orders over de datum',
+        'jij: welke?',
+        'assistent: orders 2291, 2294 en 2301, allemaal voor Bakker BV',
+      ]} cursor mode="leest wat je apps publiceren" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets die we hosten"
+  title="Elke app brengt zijn eigen mee. LaunchPad zet ze op één bord."
+  lede="LaunchPad is het bord waarop de widget van elke andere app verschijnt. Zet ze erop, sleep ze op maat, deel ze met het team. De widget zelf komt uit de app die hem meelevert."
+  widgets={[
+    {
+      title: 'Vandaag uit je agenda',
+      desc: 'De Nextcloud-agendawidget op je bord, zodat de dag begint met wat erop staat. Niets te koppelen, het is je eigen agenda.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {date: '14', tone: 'var(--c-mint-500)'},
+            {date: '15', tone: 'var(--c-lavender-300)'},
+            {date: '17', tone: 'var(--c-cobalt-300)'},
+            {date: '21', tone: 'var(--c-forest-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <div style={{width: 22, height: 25, clipPath: 'var(--hex-pointy-top)', background: row.tone, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+                <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>{row.date}</div>
+              </div>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 3}}>
+                <div style={{height: 4, width: '75%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '55%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'De map waar het team in leeft',
+      desc: 'Zet de prijslijst, het rooster of de tekeningenmap vast op het bord, met voorbeelden en een sleepvak voor uploads. Het is je eigen Bestanden, geen tweede opslag.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6, fontFamily: 'var(--conduction-typography-font-family-body)'}}>
+          {[
+            {tone: 'var(--c-lavender-300)', l1: '60%'},
+            {tone: 'var(--c-mint-300)', l1: '70%'},
+            {tone: 'var(--c-cobalt-300)', l1: '50%'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 18, height: 18, borderRadius: 3, background: row.tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, height: 6, width: row.l1, background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Elke widget die je apps al meeleveren',
+      desc: 'Mail, chat, taken, meldingen, en de dealtegel uit PipelinQ. Staat het op het Nextcloud-dashboard, dan staat het hier, op jouw raster, naast je tegels.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6, fontFamily: 'var(--conduction-typography-font-family-body)'}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', l1: '60%', l2: '40%', av: 'var(--c-mint-300)'},
+            {tone: 'var(--c-lavender-300)', l1: '70%', l2: '50%', av: 'var(--c-lavender-300)'},
+            {tone: 'var(--c-red-vermillion)', l1: '55%', l2: '45%', av: 'var(--c-orange-knvb)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 14, height: 16, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 3}}>
+                <div style={{height: 5, width: row.l1, background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: row.l2, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <span style={{width: 18, height: 18, borderRadius: '50%', background: row.av, flexShrink: 0}}></span>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="Zo sluit LaunchPad aan op je werkplek"
+  title="Jouw apps, jouw groepen, jouw schermen. Niets extra's in te stellen."
+  lede="LaunchPad bouwt op wat je Nextcloud al heeft: de apps, de teams en de accounts. Geen tweede login, geen tweede gebruikerslijst."
+  layout="side"
+  defaultOpen="native-widgets"
+  items={[
+    {
+      id: 'native-widgets',
+      title: 'Elke Nextcloud-widget, op jouw bord',
+      summary: 'Mail, agenda, bestanden, chat, taken, meldingen. Wat je Nextcloud-apps op het standaarddashboard tonen, verschijnt in LaunchPad, op een raster dat jij bepaalt. Deals die bijna sluiten uit PipelinQ, je volgende vergadering en open stemmingen uit DeciDesk. Installeer de app, en de widget staat in de kiezer.',
+      cta: {label: 'Lees de docs', href: 'https://launchpad.conduction.nl'},
+      panel: <AppMock app="launchpad-widgets" />,
+    },
+    {
+      id: 'templates',
+      title: 'Eén bord voor het hele team, uit de groepen die je al hebt',
+      summary: 'Bouw het kantoorbord één keer en rol het uit naar een Nextcloud-groep. Kies of mensen alleen mogen kijken, eigen kaarten mogen toevoegen of alles mogen aanpassen. Zet de kaarten vast die moeten blijven. Geef het bordbeheer aan de officemanager zonder de sleutels van de hele server weg te geven.',
+      cta: {label: 'Lees de docs', href: 'https://launchpad.conduction.nl'},
+      panel: <AppMock app="launchpad-tiles" />,
+    },
+    {
+      id: 'sharing',
+      title: 'Het orderbord op de tv in het magazijn',
+      summary: 'Publiceer een alleen-lezen-link en open die op het scherm in de hal. Geen login op de tv, niemand kan de link raden. Voeg desgewenst een wachtwoord of einddatum toe. Laat het rouleren tussen het orderbord, de leverkalender en de veiligheidsmelding, op volledig scherm. Hapert de verbinding even, dan herstelt het zichzelf.',
+      cta: {label: 'Lees de docs', href: 'https://launchpad.conduction.nl'},
       panel: <AppMock app="launchpad-bi" />,
     },
   ]}
@@ -97,29 +218,29 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, Pai
 
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Werkt goed met"
-    title="Gebouwd op Nextcloud-groepen, open naar de register-laag."
+    eyebrow="Past goed bij"
+    title="Twee apps waarvan de cijfers op het startscherm horen."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Volledig optioneel. LaunchPad draait zonder OpenRegister; widgets die registerdata tonen detecteren dit runtime en vallen terug op een lege staat."
+      href="/apps/pipelinq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
+      name="PipelinQ"
+      why="Pipelinewaarde en deals die bijna sluiten, op het bord dat sales als eerste opent."
     />
     <PairCard
-      href="/apps/procest"
-      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
-      name="Procest"
-      why="De widget voor uitgaven-analyse leest live zaak- en leveranciersdata uit Procest via GraphQL, met een nette lege staat als Procest niet is geïnstalleerd."
+      href="/apps/decidesk"
+      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>}
+      name="DeciDesk"
+      why="Je volgende vergadering en de stemmingen die op je wachten, op het bord dat je elke ochtend opent."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
   title="Dashboards op je eigen Nextcloud."
-  lede={<>Drop LaunchPad in je <span className="next-blue">Nextcloud</span>, rol een template uit naar een groep, en je team krijgt een startscherm dat het écht onderhoudt.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://docs.conduction.nl/launchpad'}}
+  lede={<>Open source. Gratis te installeren. Zet LaunchPad in je <span className="next-blue">Nextcloud</span> en rol een bord uit naar een groep. Je team heeft een startscherm dat het zelf bijhoudt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
 />

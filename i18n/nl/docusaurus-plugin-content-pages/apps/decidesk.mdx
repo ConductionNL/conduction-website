@@ -1,131 +1,271 @@
 ---
 title: DeciDesk, Conduction
-description: Besluitvorming en bestuursondersteuning op Nextcloud. Agenda, dossiers, moties, stemmingen, audit.
+description: Vergaderingen, stemmingen en besluiten op je eigen Nextcloud. Notulen klaar als de vergadering sluit, elk besluit jaren later nog terug te vinden. Voor raden, besturen en managementteams.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
+  background="cobalt"
   appId="decidesk"
   crumb={[{label: 'Apps', href: '/apps'}, 'DeciDesk']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.3.9"
+  version="v0.4.7"
   locales="NL · EN"
   title="DeciDesk"
-  tagline={<>Besluitvorming en bestuursondersteuning op je <span className="next-blue">Nextcloud</span>. Agenda's, moties, volmachtstemmen, eIDAS-gekwalificeerde ondertekening, een audit trail die de Wet open overheid begrijpt. Voor gemeenteraden, verenigingen, RvC's en RvB's, managementteams en burgerparticipatie.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://decidesk.conduction.nl'}}
-  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/decidesk'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
+  tagline={<>Vergaderingen, stemmingen en besluiten op je eigen <span className="next-blue">Nextcloud</span>. Notulen klaar als de vergadering sluit. Elk besluit jaren later nog terug te vinden.</>}
+  intro={<>DeciDesk draait vergaderingen voor raden, verenigingsbesturen en managementteams. Stel de agenda op, laat stemmen, notuleer terwijl mensen praten en volg elk actiepunt. Alles blijft op je eigen Nextcloud, met een dossier dat je jaren later nog vertrouwt. Open source, EUPL-1.2, onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/decidesk'}}
   illustration={<AppMock app="decidesk" />}
 />
 
 <Section spacing="default">
-  <SectionHead
-    eyebrow="Wat het doet"
-    title="Van agenda tot besluit, in één install."
-    align="stack"
-    lede="DeciDesk dekt de hele besluitvormingsketen: agendapunten verzamelen, dossiers opbouwen, moties indienen, stemmen registreren, besluiten publiceren. Allemaal op getypeerde registers met een audit trail die het Woo-werk later veel eenvoudiger maakt."
-  />
-  <FeatureList>
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="Agenda, stemming, notulen, opvolging. Eén vergaderapp."
+        align="stack"
+        lede="DeciDesk brengt een vergadering van het eerste agendapunt tot het laatste actiepunt. De secretaris typt terwijl de voorzitter praat. De stemming telt zichzelf. Het besluit houdt zijn geschiedenis. Niemand werkt op vrijdag nog iets uit."
+      />
+      <FeatureList>
     <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>}
-      title="Agenda's met dossiervorming."
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>}
+      title="Notulen klaar voordat de vergadering sluit."
     >
-      Per vergaderpunt een dossier: ambtelijk advies, raadsstuk, presentaties, beantwoorde vragen. Allemaal versievast, allemaal in OpenRegister.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
-      title="Moties en amendementen."
-    >
-      Indienen, koppelen aan een agendapunt, stemmen registreren. Per fractie of per individu, configureerbaar per bestuur.
+      Nu: iemand maakt aantekeningen en zit vrijdag te notuleren. In plaats daarvan typt de secretaris in DeciDesk terwijl de voorzitter praat. Als de vergadering sluit, staan de notulen in concept, zijn de besluiten opgesomd en hebben de actiepunten een naam en een datum. Stuur ze dezelfde middag nog rond ter goedkeuring.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg>}
-      title="Stemmingen, inclusief volmacht, gevolgd in het audit trail."
+      title="Stemmingen die tellen, en dat laten zien."
     >
-      Hoofdelijk, bij handopsteken, elektronisch, of per volmacht voor een afwezig lid. Uitkomst, individuele stemmen, onthoudingen. Allemaal in een tamper-evident log.
+      Handopsteken, hoofdelijk of geheim. Een lid op vakantie geeft een volmacht aan een collega en de stem telt mee. DeciDesk controleert het quorum voordat je begint. Het logboek laat zien wie stemde, wie afwezig was en wie voor wie stemde. Geen "waren we wel voltallig?" achteraf.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      title="Elk besluit houdt zijn geschiedenis."
+    >
+      Drie jaar later vraagt iemand waarom die vergunning is verleend. Het besluit, het agendapunt, de stukken en de stemming staan één klik verderop. Je ziet ook welk besluit een eerder besluit verving of introk, dus je weet altijd wat nu geldt.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
+      title="Moties en amendementen, waar je ook bent."
+    >
+      Een lid dient zondagavond thuis een amendement in. Maandag staat het onder het juiste agendapunt en ziet iedereen precies wat het verandert voordat er gestemd wordt. Per fractie of per persoon, zoals jouw bestuur werkt.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
-      title="eIDAS-gekwalificeerde ondertekening van notulen en besluiten."
+      title="Onderteken de notulen zonder ze te printen."
     >
-      Notulen en schriftelijke besluitvormingsprocedures worden ondertekend met een gekwalificeerde elektronische handtekening (QES) onder eIDAS artikel 25(2), end-to-end geverifieerd voordat het record wordt vastgesteld.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      title="Besluiten als gepubliceerde documenten, met governance-rapportage."
-    >
-      DocuDesk genereert het formele besluit uit de stemresultaten en de bespreking. OpenCatalogi publiceert het op jouwgemeente.nl/besluiten met citation-stable URL; governance-rapportages en toezichthouder-exports dekken het compliance-deel.
+      Koppel een ondertekendienst en de voorzitter en secretaris tekenen de notulen digitaal, met dezelfde rechtsgeldigheid als een natte handtekening. Niemand print, scant of post iets. De getekende versie is de versie die geldt.
     </FeatureItem>
   </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['decidesk']}
+      surface="product"
+    />
+  </div>
 </Section>
 
+<PartnersForApp slug="decidesk" />
+
 <RotatingCards
-  eyebrow="Drie redenen waarom DeciDesk zijn plek verdient"
-  title="Notulen, besluiten, actiepunten, allemaal gekoppeld."
-  lede="Scroll door de kaarten. Elke kaart pint als je hem bereikt; de volgende schuift omhoog om hem te bedekken."
+  eyebrow="Drie manieren waarop DeciDesk zijn plek verdient"
+  title="Het werkt zoals jij werkt. En het werkt voor jou."
+  lede="Drie dingen waar je normaal extra voor betaalt. In DeciDesk zitten ze erin."
   cards={[
     {
-      tone: 'mint',
-      eyebrow: 'Vergader-cyclus',
-      title: 'Agenda, notulen, moties, stemmingen, in één app.',
-      summary: 'DeciDesk beheert de volledige cyclus. Agendapakketten gaan uit, notulen worden live opgesteld, moties en stemmingen worden vastgelegd. De audit trail voldoet uit de doos aan de Wet open overheid.',
-      cta: {label: 'Bekijk DeciDesk', href: '/apps/decidesk'},
-      panel: <AppMock app="decidesk" />,
-    },
-    {
       tone: 'forest',
-      eyebrow: 'Gekoppeld aan de bron',
-      title: 'Elk besluit linkt terug naar zijn registerregel.',
-      summary: 'Een motie om een vergunning te verlenen linkt naar het vergunningsregister. Een begrotingsstemming linkt naar het begrotingsregister. Besluiten zijn geen losse documenten meer.',
-      cta: {label: 'Bekijk OpenRegister', href: '/apps/openregister'},
+      eyebrow: 'Automatiseer',
+      title: 'Een stemming is aangenomen. De opvolging is al onderweg.',
+      summary: 'Nu: de stemming haalt het, en iemand bedenkt donderdag dat de mensen die ermee aan de slag moeten nog niets weten. In plaats daarvan stel je het één keer in. Zodra een stemming is aangenomen, landen de actiepunten op de juiste bureaus en wacht het besluit op vrijgave door de voorzitter. De dag dat een actiepunt over de datum gaat, staat een herinnering op de lijst van de eigenaar. Niets vergeten, geen nabellen uit het hoofd, geen programmeerwerk.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
       panel: <AppMock app="openregister" />,
     },
     {
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Een raad, een club of een managementteam. Zelfde app, jouw manier.',
+      summary: 'Een raad wil de fractie op elk lid. Een sportclub wil het lidnummer op elke deelnemer. Een managementteam gebruikt nooit moties en wil ze uit het menu. Voeg het veld toe, verberg de pagina, sleep de widget waar je het eerst naar kijkt naar boven. In de draaiende app, in minuten, en je aanpassingen blijven bij elke update staan.',
+      cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
+      panel: <AppMock app="openbuild" />,
+    },
+    {
       tone: 'workspace',
-      eyebrow: 'In elke werkvoorraad',
-      title: 'Actiepunten landen in de LaunchPad van de eigenaar.',
-      summary: 'Elk actiepunt uit een vergadering wordt een regel in iemands werkvoorraad. Geen aparte taak-tracker, geen e-mail-overdracht. De volgende vergadering leest de status uit dezelfde registers.',
-      cta: {label: 'Bekijk LaunchPad', href: '/apps/launchpad'},
-      panel: <AppMock app="launchpad-widgets" />,
+      eyebrow: 'Praat ermee',
+      title: 'Vraag wat je beloofd hebt. Krijg de lijst, niet de notulen.',
+      summary: 'Vraag "wat heb ik vorige vergadering beloofd?" en je krijgt je open actiepunten, met datums. Vraag de details van een vergadering en de agenda, besluiten en bestanden staan er. Zeg "voeg een actiepunt toe voor Jansen, conceptcontract sturen, voor 24 mei" en het wordt aangemaakt na jouw akkoord. De voorzitter kan de vergadering per chat openen. Notulen ondertekent hij nooit.',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'jij: wat heb ik vorige vergadering beloofd?',
+        'assistent: 3 open actiepunten uit de vergadering van 14 mei',
+        'assistent: conceptcontract sturen naar Jansen BV, voor 24 mei',
+        'jij: voeg er een toe voor De Vries: zaal boeken, voor 1 juni',
+        'assistent: actiepunt staat klaar, zal ik het toevoegen?',
+      ]} cursor mode="vraagt eerst voordat het iets wijzigt" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets die we meeleveren"
+  title="Wat open staat, besloten is en eraan komt. Op het dashboard."
+  lede="Installeer DeciDesk en elk bestuurslid ziet bij het inloggen zijn eigen actiepunten, de laatste besluiten en de volgende vergaderingen."
+  widgets={[
+    {
+      title: 'Mijn actiepunten',
+      desc: 'Wat je beloofd hebt, gesorteerd op datum. Vink er een af en het vergaderdossier is bijgewerkt.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {check: false, l1: '70%'},
+            {check: false, l1: '60%'},
+            {check: true,  l1: '55%'},
+            {check: false, l1: '65%'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 14, height: 14, borderRadius: 3, border: '2px solid var(--c-cobalt-300)', background: row.check ? 'var(--c-mint-500)' : 'transparent', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box'}}>
+                {row.check && <span style={{width: 6, height: 3, borderLeft: '2px solid white', borderBottom: '2px solid white', transform: 'rotate(-45deg) translateY(-1px)'}}></span>}
+              </span>
+              <div style={{flex: 1, height: 4, width: row.l1, background: row.check ? 'var(--c-cobalt-300)' : 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+              <div style={{height: 3, width: 22, background: 'var(--c-cobalt-100)', borderRadius: 1}}></div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Recente besluiten',
+      desc: 'De laatste besluiten van je raad of bestuur. Aangenomen, verworpen of ingetrokken, met een link naar de motie erachter.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-mint-500)',       label: 'AANGENOMEN'},
+            {tone: 'var(--c-mint-500)',       label: 'AANGENOMEN'},
+            {tone: 'var(--c-red-vermillion)', label: 'VERWORPEN'},
+            {tone: 'var(--c-cobalt-300)',     label: 'INGETROKKEN'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, fontWeight: 700, color: row.tone}}>
+                <span style={{width: 8, height: 9, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+                {row.label}
+              </span>
+              <div style={{flex: 1, height: 4, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Komende vergaderingen',
+      desc: 'Je volgende vergaderingen met hun agenda. Eén klik opent de stukken, en de open actiepunten van vorige keer staan er meteen bij.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2}}>
+            {[0,0,0,1,0,0,0, 0,0,1,2,0,0,0, 0,1,0,0,0,1,0].map((kind, i) => (
+              <div key={i} style={{height: 12, background: kind === 1 ? 'var(--c-cobalt-300)' : kind === 2 ? 'var(--c-orange-knvb)' : 'var(--c-cobalt-50)', borderRadius: 1}}></div>
+            ))}
+          </div>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 5}}>
+            {[
+              {accent: true,  date: '14 mei'},
+              {accent: false, date: '18 mei'},
+              {accent: false, date: '25 mei'},
+            ].map((row, i) => (
+              <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+                <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 600, color: row.accent ? 'var(--c-orange-knvb)' : 'var(--c-cobalt-400)', minWidth: 36}}>{row.date}</div>
+                <div style={{flex: 1, height: 4, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="Zo sluit DeciDesk aan op je werkplek"
+  title="Bestanden, mail, Talk en Deck. Al van jou."
+  lede="De stukken, het overleg en de opvolging staan waar je team al werkt. Dat is het idee van een werkplek."
+  layout="side"
+  defaultOpen="files"
+  items={[
+    {
+      id: 'files',
+      title: 'De stukken bij het agendapunt',
+      summary: 'Elke vergadering, elk agendapunt, elke motie, elk besluit en elk actiepunt heeft een eigen map in Bestanden. Het advies, de presentatie, de getekende notulen: bij het onderdeel waar ze horen, niet in iemands mailbox. Open het agendapunt en de stukken staan er. Open het bestand in Bestanden en je ziet bij welke vergadering het hoort.',
+      cta: {label: 'Lees de docs', href: 'https://decidesk.conduction.nl'},
+      panel: <AppMock app="decidesk" />,
+    },
+    {
+      id: 'mail',
+      title: 'De mailwisseling bij het besluit',
+      summary: 'Een inwoner schrijft over een agendapunt. Koppel het bericht vanuit je Nextcloud Mail aan het punt of het besluit, en het blijft daar staan. Als het punt aan bod komt, ziet iedereen met toegang de correspondentie naast de stukken. Niemand stuurt de avond ervoor nog een mailwisseling door.',
+      cta: {label: 'Lees de docs', href: 'https://decidesk.conduction.nl'},
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
+            <div style={{height: 4, width: '75%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '55%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '85%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+          </div>
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Koppel aan agendapunt</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>gekoppeld aan punt 4, parkeerbeleid</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'talk',
+      title: 'Het overleg in Talk, bij de vergadering',
+      summary: 'Elke vergadering heeft een eigen Talk-gesprek. Vragen vooraf, een snelle check tijdens, het "wie pakt dit op?" erna: alles in één draad, gebonden aan de vergadering, leesbaar voor wie erbij was. Geen zijgesprekken die later niemand terugvindt.',
+      cta: {label: 'Lees de docs', href: 'https://decidesk.conduction.nl'},
+      panel: <AppMock app="decidesk" />,
+    },
+    {
+      id: 'deck',
+      title: 'Actiepunten op het Deck-bord',
+      summary: 'Elk actiepunt uit een vergadering of besluit is een kaart op een Deck-bord. Je team werkt op het bord dat het al gebruikt, en het vergaderdossier toont dezelfde status. Andere Conduction-apps kunnen een besluit ook aan DeciDesk overdragen: een zaak in Procest die een formeel besluit nodig heeft, toont dat besluit, met geschiedenis, op de zaak.',
+      cta: {label: 'Lees de docs', href: 'https://decidesk.conduction.nl'},
+      panel: <AppMock app="decidesk" />,
     },
   ]}
 />
 
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Werkt goed met"
-    title="Drie apps die de besluitvormingsketen dekken."
+    eyebrow="Past goed bij"
+    title="Twee apps die een besluit verder brengen."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Agendapunten, dossiers, moties en stemmen als getypeerde registers."
-    />
-    <PairCard
-      href="/apps/docudesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      name="DocuDesk"
-      why="Besluiten, raadsstukken en beantwoorde vragen uit dossier-velden."
+      href="/apps/procest"
+      icon={<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>}
+      name="Procest"
+      why="Zaakbeheer. Een zaak die een formeel besluit nodig heeft, krijgt dat in DeciDesk, en de zaak toont de uitkomst."
     />
     <PairCard
       href="/apps/opencatalogi"
       icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
       name="OpenCatalogi"
-      why="Publiceert besluiten en raadsstukken op jouwgemeente.nl/besluiten met federatie."
+      why="Publiceer agenda's en besluiten op je publieke website, zodat inwoners ze vinden zonder te vragen."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="Bestuurlijke besluitvorming, audit-ready."
-  lede={<>DeciDesk dekt agenda, dossiervorming, volmachtstemmen, eIDAS-ondertekening en publicatie. Het audit trail en de governance-rapportage die hieruit volgen maken het Woo-werk later veel eenvoudiger.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  title="Vergaderingen en besluiten op je eigen Nextcloud."
+  lede={<>Open source. Gratis te installeren. Je notulen en stemmingen blijven op je eigen server. DeciDesk draait op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
 />

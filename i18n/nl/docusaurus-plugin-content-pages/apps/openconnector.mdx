@@ -1,131 +1,262 @@
 ---
 title: OpenConnector, Conduction
-description: API-gateway voor Nextcloud. REST- en SOAP-bronnen, plus koppelingen met Nederlandse overheidsstandaarden (PDOK, StUF, DSO, Berichtenbox). Trekt data in getypeerde registers zonder lijmcode.
+description: Koppel alles met alles, zonder vendor lock-in of dure integrator. Je webshop, je boekhouding en je klantenbestand spreken elkaar niet meer tegen. Wijzigingen worden vanzelf overgenomen, en wat mislukt staat 's ochtends op één lijst.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, CtaBanner, AppMock, RotatingCards} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+export const app = getApp('openconnector');
 
 <DetailHero
+  background="cobalt"
   appId="openconnector"
-  crumb={[{label: 'Apps', href: '/apps'}, 'OpenConnector']}
+  crumb={[{label: 'Apps', href: '/apps'}, app.name]}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.2.16"
+  version="v0.3"
   locales="NL · EN"
-  title="OpenConnector"
-  tagline={<>De integratielaag voor <span className="next-blue">Nextcloud</span>. REST- en SOAP-bronnen, plus koppelingen met Nederlandse overheidsstandaarden. Trekt data uit je bestaande systemen in getypeerde registers, zonder lijmcode te schrijven.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://openconnector.conduction.nl'}}
-  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/openconnector'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+  title={app.name}
+  tagline={<>Koppel alles met alles, zonder vendor lock-in of dure integrator. Op je eigen <span className="next-blue">Nextcloud</span>.</>}
+  intro={<>{app.name} houdt de systemen die je al hebt gelijk met elkaar. Je webshop, je boekhoudpakket en je oude klantenbestand hebben elk een kopie van dezelfde klant. Het neemt wijzigingen tussen ze over zodra ze gebeuren, of elke nacht, wat jij kiest. Niemand typt een order over. Komt er iets binnen dat niet past, dan wordt het geweigerd en zie je waarom. Mislukt een levering 's nachts, dan probeert het het vanzelf opnieuw. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction sinds 2019.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/openconnector'}}
   illustration={<AppMock app="openconnector" />}
 />
 
 <Section spacing="default">
-  <SectionHead
-    eyebrow="Wat het doet"
-    title="Geen middleware. Geen nachtelijke batch."
-    align="stack"
-    lede="Configureer een bron, koppel velden aan een register-schema, zet de trigger (webhook, schema, handmatig), en OpenConnector houdt het register gevuld. Bidirectioneel: pusht terug naar de bron als het register wijzigt."
-  />
-  <FeatureList>
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="Je systemen spreken elkaar niet meer tegen. Niemand typt iets over."
+        align="stack"
+        lede="Een order in de webshop staat in de boekhouding. Een klant die verhuist, is overal verhuisd. Wat niet past wordt geweigerd, en wat 's nachts mislukt staat 's ochtends op één lijst."
+      />
+      <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-      title="REST en SOAP, één config-UI."
+      title="Eén klant, drie systemen, niets overtypen."
     >
-      Configureer een bron één keer — REST/JSON, XML of SOAP — met gedeelde authenticatie (API-key, OAuth, JWT, gebruikersnaam/wachtwoord) en rate limiting. Dezelfde configuratievorm voor allemaal.
+      Nu: een klant verhuist, en iemand past de webshop, de boekhouding en het klantenbestand met de hand aan. Vrijdag klopt een van de drie niet meer. In plaats daarvan: pas het één keer aan. Het wordt naar de andere twee gekopieerd zodra het gebeurt, of elke nacht, wat jij kiest. In beide richtingen, dus het maakt niet uit waar de wijziging is gedaan.
     </FeatureItem>
     <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
-      title="Schema-aware mapping."
+      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
+      title="Wat niet past wordt geweigerd, en je ziet waarom."
     >
-      Drop het JSON Schema van een register erin, OpenConnector genereert de veld-mapping-UI. Validatie gebeurt bij de connector voordat het register wordt geraakt.
+      Nu: een order zonder postcode glipt erdoor en komt een week later terug van de vervoerder. In plaats daarvan: hij wordt aan de deur geweigerd, en de reden staat op de lijst. Een regel als "weiger een order zonder btw-nummer" schrijf je zelf, in de app, zonder ontwikkelaar. Een order boven de tienduizend euro? Die wacht op jouw goedkeuring voordat hij landt.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
-      title="Triggers: webhook, schema, handmatig."
+      title="Het mislukt om drie uur 's nachts. Om negen uur zie je één regel."
     >
-      Real-time webhooks voor bronsystemen die kunnen pushen, cron-stijl schema's voor systemen die dat niet kunnen, handmatige run voor migratie-cut-overs. Combineer naar wens.
+      Nu: het boekhoudsysteem lag 's nachts een uur plat, en een order ontbreekt gewoon. Je merkt het als de klant belt. In plaats daarvan: een levering die mislukt wordt vanzelf opnieuw geprobeerd. Wat dan nog mislukt staat 's ochtends op één lijst, met de reden. Jij lost de oorzaak op en voert het met één klik opnieuw uit. Geen enkele order raakt zoek.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
-      title="Audit trail per record."
+      title="Elke uitwisseling gelogd, zolang jij het zegt."
     >
-      Elk verwerkt record houdt een audit trail bij — bron, doel, geraakte velden — zichtbaar op het object en opvraagbaar via de audit-trail-route van het endpoint.
+      Wat ging er naar de accountant, wat kwam er uit de shop, en wanneer? Het staat in het logboek, per record. Exporteer het als spreadsheet als de auditor ernaar vraagt. Jij bepaalt hoelang het logboek wordt bewaard.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
-      title="Bidirectionele sync."
+      title="Voor gemeenten: de landelijke standaarden, ingebouwd."
     >
-      OpenConnector pusht register-wijzigingen terug naar de bron als je dat configureert. Je zaaksysteem blijft system of record, het register is de queryable laag.
+      Het spreekt de landelijke adres-, zaak- en poststandaarden die Nederlandse gemeenten gebruiken: PDOK voor adressen, StUF voor zaaksystemen, DSO voor vergunningaanvragen en de Berichtenbox voor officiële post. Richt de koppeling in, en de data stroomt.
     </FeatureItem>
   </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['openconnector']}
+      surface="product"
+    />
+  </div>
 </Section>
 
+<PartnersForApp slug="openconnector" />
+
 <RotatingCards
-  eyebrow="Drie redenen waarom OpenConnector zijn plek verdient"
-  title="Van bron naar register, end-to-end zichtbaar."
-  lede="Scroll door de kaarten. Elke kaart pint als je hem bereikt; de volgende schuift omhoog om hem te bedekken."
+  eyebrow={`Drie manieren waarop ${app.name} zijn plek verdient`}
+  title="Het werkt zoals jij werkt. En het werkt voor jou."
+  lede="Drie dingen waar je normaal extra voor betaalt. Hier zitten ze erin."
   cards={[
     {
-      tone: 'lavender',
-      eyebrow: 'REST, SOAP en NL-overheidsstandaarden',
-      title: 'PDOK, StUF, DSO, Berichtenbox — ingebouwd.',
-      summary: 'OpenConnector haalt data uit REST- en SOAP-bronnen, met koppelingen voor PDOK Locatieserver, StUF-ZKN/BG, DSO/Omgevingsloket en Berichtenbox. Configureer een bron, wijs een doelregister aan en de data stroomt. Geen middleware, geen lijmcode.',
-      cta: {label: 'Bekijk de connector', href: '/apps/openconnector'},
-      panel: <AppMock app="openconnector" />,
-    },
-    {
       tone: 'forest',
-      eyebrow: 'Getypeerd end-to-end',
-      title: 'Landt in OpenRegister, gevalideerd bij binnenkomst.',
-      summary: 'Elk record wordt afgebeeld op een getypeerd registerschema. Foute data wordt aan de poort geweigerd, goede data verschijnt dezelfde minuut in catalogus en dashboard.',
-      cta: {label: 'Bekijk OpenRegister', href: '/apps/openregister'},
+      eyebrow: 'Automatiseer',
+      title: 'Een levering mislukt \'s nachts. \'s Ochtends is het één regel, geen zoekgeraakte order.',
+      summary: 'Nu: een extern systeem ligt een uur plat en niemand merkt het tot een klant belt. In plaats daarvan: een levering die mislukt wordt bewaard, vanzelf opnieuw geprobeerd, en als het dan nog mislukt staat het op één lijst met de reden. Jij lost de oorzaak op en voert het met één klik opnieuw uit, en die klik wordt gelogd met jouw naam. Het geeft je andere automatiseringen ook een stap die ze alleen niet kunnen: een extern systeem aanroepen. Zodra een offerte is geaccepteerd, staat de klant in de boekhouding. Elke nacht komen de voorraadstanden van de leverancier binnen. Je tekent het één keer uit, en het gebeurt.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
       panel: <AppMock app="openregister" />,
     },
     {
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Jouw koppelingen, jouw regels, jouw schermen. Zonder ontwikkelaar.',
+      summary: 'Een groothandel wil de bezorgregio gekopieerd naar de shop. Een installateur wil het locatieadres naar de planningstool. Een gemeente wil dat een vergunningaanvraag op een controle wacht voordat hij landt. Voeg het veld toe, voeg de regel toe, zet de lijst met mislukte leveringen bovenaan je dashboard. In de draaiende app, in minuten, en je aanpassingen blijven bij elke update staan.',
+      cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
+      panel: <AppMock app="openbuild" />,
+    },
+    {
       tone: 'workspace',
-      eyebrow: 'Gemonitord',
-      title: 'Bekijk elke run, herstart de fouten.',
-      summary: 'Elke pipeline-run logt naar een registerregel. Fouten zijn zichtbaar in LaunchPad, replays kosten één klik. Geen black-box scheduler.',
-      cta: {label: 'Bekijk LaunchPad', href: '/apps/launchpad'},
-      panel: <AppMock app="launchpad-bi" />,
+      eyebrow: 'Praat ermee',
+      title: 'Vraag waarom de sync vannacht mislukte. Krijg de reden, niet een logboek om te lezen.',
+      summary: 'Typ "wat is er vannacht mislukt?" en krijg de lijst met mislukte runs, met per run de reden. Vraag "wanneer is de order van Jansen naar de boekhouding gegaan?" en krijg het tijdstip en de uitkomst. De assistent leest hetzelfde logboek dat jij ziet, en leest het alleen. Heeft een assistent iets nodig uit een extern systeem, dan gaat dat via een koppeling die jij hebt ingericht, en elke aanroep wordt gelogd.',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'jij: wat is er vannacht mislukt?',
+        'assistent: 1 van 214 leveringen mislukt: order 4471 naar de boekhouding, verbinding geweigerd om 03:12',
+        'assistent: drie keer opnieuw geprobeerd. Zal ik hem openen om opnieuw uit te voeren?',
+      ]} cursor mode="leest het logboek, wijzigt niets" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets die we meeleveren"
+  title="Op het dashboard dat je team al opent."
+  lede="Installeer het en het startscherm toont wat er draaide, wat mislukte en wat opnieuw moet. Je koppelingen controleren is een blik, geen klus."
+  widgets={[
+    {
+      title: 'Runs vandaag',
+      desc: 'Elke run van elke koppeling, uur voor uur. Je ziet in één oogopslag dat de nacht goed ging.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 26, fontWeight: 700, color: 'var(--c-cobalt-900)'}}>214</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, fontWeight: 600, color: 'var(--c-mint-500)'}}>213 ok</div>
+          </div>
+          <svg viewBox="0 0 200 60" preserveAspectRatio="none" style={{width: '100%', height: 50}}>
+            <path d="M 0 48 L 28 40 L 56 44 L 84 20 L 112 30 L 140 12 L 168 26 L 200 18" stroke="var(--c-blue-cobalt)" strokeWidth="2" fill="none"/>
+            <path d="M 0 48 L 28 40 L 56 44 L 84 20 L 112 30 L 140 12 L 168 26 L 200 18 L 200 60 L 0 60 Z" fill="var(--c-cobalt-100)"/>
+            <circle cx="84" cy="20" r="3" fill="var(--c-orange-knvb)"/>
+          </svg>
+        </div>
+      ),
+    },
+    {
+      title: 'Laatste runs',
+      desc: 'De laatste runs over alle koppelingen: welk systeem, hoelang het duurde, en of het goed ging.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-mint-500)'},
+            {tone: 'var(--c-mint-500)'},
+            {tone: 'var(--c-orange-knvb)'},
+            {tone: 'var(--c-mint-500)'},
+            {tone: 'var(--c-red-vermillion)'},
+            {tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '3px 0', borderBottom: i < 5 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 8, height: 9, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, height: 3, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-400)', minWidth: 32, textAlign: 'right'}}>{`${[12, 8, 24, 14, 38, 6][i]}s`}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Opnieuw uitvoeren',
+      desc: 'Leveringen die mislukten en op jou wachten. Welk systeem, wat er misging, en een knop om het opnieuw uit te voeren. Leeg op een goede dag.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 2}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 26, fontWeight: 700, color: 'var(--c-orange-knvb)'}}>1</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>wachtend</div>
+          </div>
+          {[0].map((i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{display: 'inline-block', padding: '1px 6px', background: 'var(--c-coral-50)', color: 'var(--c-orange-knvb)', borderRadius: 2, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, fontWeight: 700}}>boekhouding</span>
+              <div style={{flex: 1, height: 3, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              <div style={{height: 16, width: 16, borderRadius: 3, background: 'var(--c-blue-cobalt)'}}></div>
+            </div>
+          ))}
+          <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-400)'}}>order 4471, verbinding geweigerd, 03:12</div>
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow={`Zo sluit ${app.name} aan op je werkplek`}
+  title="De systemen die je hebt, de apps die je gebruikt, en de stap ertussen."
+  lede="Het zit tussen de systemen buiten je werkplek en de apps erbinnen. Buiten blijft wat het is. Binnen ziet je team één klant, één order, één waarheid."
+  layout="side"
+  defaultOpen="outside"
+  items={[
+    {
+      id: 'outside',
+      title: 'De systemen die je al hebt',
+      summary: 'Je webshop, je boekhoudpakket, het bestelsysteem van je leverancier, een openbare databron. Richt de koppeling één keer in, met de login die hij nodig heeft, en hij blijft vanzelf ingelogd. Vanaf dan leest en schrijft hij voor je: wat er sinds de vorige keer veranderde, in beide richtingen. Hij houdt zich aan de limieten die het externe systeem stelt. Het externe systeem blijft wat het is.',
+      cta: {label: 'Lees de docs', href: 'https://openconnector.conduction.nl'},
+      panel: <MockScene
+        width={680}
+        height={420}
+        items={[
+          {type: 'sidebar', kind: 'openconnector-run-detail', x: 220, y: 10,  size: 'md', z: 1},
+          {type: 'widget',  kind: 'openconnector-runs',       x: 0,   y: 0,   size: 'sm', z: 2},
+          {type: 'widget',  kind: 'openregister-activity',    x: 0,   y: 230, size: 'sm', z: 2},
+        ]}
+      />,
+    },
+    {
+      id: 'inside',
+      title: 'De apps waar je team in werkt',
+      summary: 'Wat binnenkomt landt in de gegevens die je CRM, je facturatie en je projecten al gebruiken. De order uit de shop staat op de klant in je CRM. De voorraadstand van de leverancier staat op het product. Je team opent nooit het externe systeem om iets op te zoeken, en typt nooit over wat het daar zag.',
+      cta: {label: 'Bekijk het CRM', href: '/apps/pipelinq'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'step',
+      title: 'De externe stap in je automatiseringen',
+      summary: 'Je automatiseringen kunnen je eigen gegevens lezen en schrijven. Dit voegt de stap toe die ze alleen niet kunnen: een extern systeem aanroepen. Zodra een offerte is geaccepteerd, staat de klant in de boekhouding. Elke nacht om twee uur komen de voorraadstanden binnen van de leverancier. Elke aanroep gaat via een koppeling die jij hebt ingericht, en elke aanroep wordt gelogd.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      id: 'government',
+      title: 'Voor gemeenten: adressen, zaken en officiële post',
+      summary: 'Zoek een adres op zoals de landelijke adresvoorziening het spelt. Ontvang een vergunningaanvraag van het landelijke omgevingsloket. Stuur een officiële brief naar de Berichtenbox van een inwoner. Wissel zaken uit met het zaaksysteem dat je al draait. De standaarden zijn ingebouwd, dus je team richt een koppeling in in plaats van er een te laten bouwen.',
+      cta: {label: 'Lees de docs', href: 'https://openconnector.conduction.nl'},
+      panel: <AppMock app="procest" />,
     },
   ]}
 />
 
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Werkt goed met"
-    title="Drie apps die de connector consumeren."
+    eyebrow="Past goed bij"
+    title="Drie apps die hun data ervan krijgen."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>}
-      name="OpenRegister"
-      why="De typed-data bestemming. Elke connector-run landt hier."
+      href="/apps/pipelinq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
+      name="PipelinQ"
+      why="CRM, offertes en deals. De order uit de shop landt op de klantkaart."
+    />
+    <PairCard
+      href="/apps/shillinq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4"/></svg>}
+      name="Shillinq"
+      why="Boekhouding en facturatie. Wat uit de shop binnenkomt, wordt hier geboekt."
     />
     <PairCard
       href="/apps/opencatalogi"
       icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
       name="OpenCatalogi"
-      why="Ontsluit wat de connector inleest als publieke catalogus-entry."
-    />
-    <PairCard
-      href="/apps/launchpad"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
-      name="LaunchPad"
-      why="Rapporteert op de data die de connector vers houdt."
+      why="De openbare catalogus. Wat binnenkomt uit de systemen die je al draait, wordt hier gepubliceerd."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="Koppel Nextcloud aan alles."
-  lede="Installeer OpenConnector, richt hem op je bestaande systeem, configureer de veldmap. Je registers vullen zichzelf."
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://openconnector.conduction.nl'}}
+  title="Je systemen gelijk, op je eigen Nextcloud."
+  lede={<>Open source. Gratis te installeren. Standaard AVG-proof. Je webshop, boekhouding en klantenbestand kloppen met elkaar, vanuit dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
 />

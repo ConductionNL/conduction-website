@@ -1,10 +1,10 @@
 ---
 title: Portaliq, Conduction
-description: One shared external portal for clients and suppliers. White-label, built on OpenRegister, no separate login per app.
+description: One portal for your clients and suppliers, on your own Nextcloud. They log in once and see their quotes, invoices, contracts and open requests from every app you run. Your logo, your colours.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -12,14 +12,15 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   appId="portaliq"
   crumb={[{label: 'Apps', href: '/apps'}, 'Portaliq']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.x"
+  version="v0.1.8"
   locales="NL · EN"
   title="Portaliq"
-  tagline={<>One shared external portal for clients and suppliers, on <span className="next-blue">Nextcloud</span>. No separate login and no separate UI per app — one white-label front door, built on OpenRegister.</>}
-  intro={<>Portaliq is the fleet's shared external portal. Clients (citizens) and suppliers (companies) get one integrated, white-label portal to see and act on their records across every Conduction app — reading and writing through OpenRegister, subject-scoped and re-verified on every row. Employees stay inside Nextcloud; Portaliq is exclusively for the people who aren't. Released under EUPL-1.2 and maintained by Conduction.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://portaliq.conduction.nl'}}
-  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/portaliq'}}
+  tagline={<>One portal for your clients and suppliers, on your own <span className="next-blue">Nextcloud</span>. They log in once and see everything you do for them.</>}
+  intro={<>Your client logs in once and sees their quotes, invoices, contracts and open requests from every app you run. Your supplier sees their own orders and contracts, never another supplier's. Every message from every app lands in one inbox for them. One login for them, one place for you, and it carries your logo and your colours. Your own staff stay inside Nextcloud. Portaliq is only for the people who are not. Open source, released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/portaliq'}}
+  illustration={<AppMock app="portaliq" />}
 />
 
 <Section spacing="default">
@@ -27,42 +28,42 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="What it does"
-        title="One portal, not one portal per app."
+        title="What your client sees. What your supplier sees. One front door."
         align="stack"
-        lede="Every app that wants an external-facing surface used to build its own login, its own UI, its own auth model. Portaliq replaces all of that with one contribution registry: an app declares what a client or supplier may see and do in a small manifest, and Portaliq renders it, reads it through OpenRegister, and enforces the boundary."
+        lede="Every app you run can show a piece of itself to the outside world. Portaliq collects those pieces into one portal per organisation, checks on every line who may see it, and delivers what the visitor sends back to the app it belongs to."
       />
       <FeatureList>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>}
-          title="Fail-closed auth edge."
-        >
-          A bearer-token portal session today, resolved server-side and never trusted from the client. Real DigiD (citizens) and eHerkenning (companies) federation is planned behind the same interface, pending an OpenConnector broker.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>}
-          title="Declarative contribution registry."
-        >
-          Any app plugs in with one dependency-free class — no import of Portaliq, no info.xml dependency, inert if Portaliq isn't installed. procest, PipelinQ, and Scholiq already contribute in the current beta.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-          title="Subject-scoped, re-verified reads."
-        >
-          Portaliq reads each app's data through OpenRegister and re-verifies every row against the authenticated subject — a supplier only ever sees its own tenders, contracts, and invoices.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>}
-          title="Whitelisted create actions."
-        >
-          Apps declare which fields an external subject may submit; the server stamps ownership, so a spoofed identifier in the request never survives.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
-          title="Unified inbox."
-        >
-          Every contributing app's notifications land in one message list per subject, fed by OpenRegister's notification engine.
-        </FeatureItem>
-      </FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 18a5 5 0 0 1 10 0"/></svg>}
+      title="Your client logs in once. Their quotes, invoices and requests are there."
+    >
+      Today a client calls to ask where their invoice is, and someone looks it up. Instead, the client opens the portal and sees the invoice with its status, the quote they accepted, the order it became and the requests still open. From every app you run, on one screen, behind one login. Fewer calls, and the calls you do get start further along.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>}
+      title="Your supplier sees their own contracts. Never another supplier's."
+    >
+      A supplier logs in and finds their tenders, their contracts and their invoices. Portaliq checks on every single line that it belongs to the person who is logged in. Someone guessing at another company's number gets nothing, not even a hint that it exists.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
+      title="Every message from every app in one inbox for them."
+    >
+      A status update from your case handling, a note from sales, a reminder from billing. The visitor sees them in one inbox, newest first, with an unread count on the menu. They mark a message read and you can see that they did. No more "I never got that email".
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>}
+      title="A request from the portal lands where your team already works."
+    >
+      The visitor submits a request or a complaint, with attachments, from the portal. It arrives in the app your team uses, as a record with the visitor's name already on it. The visitor gets a receipt. If delivery to the app fails, the submission is kept and marked so it can be retried. Nothing sent from the portal is ever lost.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>}
+      title="They log in the way they already log in elsewhere."
+    >
+      Residents can log in with DigiD and companies with eHerkenning, through an identity broker your organisation contracts. Business clients can use the login provider you already work with. Portaliq itself never sees a password. Sessions expire, and you can end one from your side at any moment.
+    </FeatureItem>
+  </FeatureList>
     </div>
     <AppCrossLinks
       variant="rail"
@@ -74,37 +75,187 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <PartnersForApp slug="portaliq" />
 
+<RotatingCards
+  eyebrow="Three ways Portaliq earns its place"
+  title="It works the way you work. And it works for you."
+  lede="Three things you would normally pay extra for. In Portaliq they are built in."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automate',
+      title: 'A submission could not be delivered. Someone is already on it.',
+      summary: 'Today: a complaint sent through a web form vanishes into a mailbox nobody checks on Friday. Instead, set it up once. Every submission from the portal is a record. The moment one fails delivery, a task to retry it lands on the right desk. A message a client has not opened after a week puts a follow-up call on the account manager\'s list. Every Monday, a list of requests nobody answered. Nothing forgotten, no chasing, no coding.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'Your logo, your colours, your name on the door.',
+      summary: 'A visitor should see your organisation, not ours. Set the name, the logo and the colours per organisation, and the portal wears them on the login page and every screen after it. Run more than one portal from the same Nextcloud, each with its own look. Add a page of your own explanations and a glossary of the words your visitors ask about. Choose which apps show up in the menu and in which order.',
+      cta: {label: 'Read the docs', href: 'https://portaliq.conduction.nl'},
+      panel: <AppMock app="portaliq" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Talk to it',
+      title: 'Ask your assistant how the portal is doing. Visitors never meet it.',
+      summary: 'Portaliq\'s assistant serves your own staff, never the portal visitor. Ask "which submissions failed delivery today?" and you get the list, not a report to build. Ask how many clients logged in this month, or which messages are still unread. It reads the same records you are allowed to see and asks before it changes anything. On the visitor side there is no assistant at all, by design.',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: which submissions failed delivery today?',
+        'assistant: 2 submissions marked failed, both complaints from this morning',
+        'you: retry them',
+        'assistant: this changes records, shall I go ahead?',
+      ]} cursor mode="asks before it changes anything" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="How busy is the front door. On your dashboard."
+  lede="Install Portaliq and its dashboard shows how many clients and suppliers use the portal, how many are logged in right now, and how many messages are still waiting to be read."
+  widgets={[
+    {
+      title: 'Active accounts',
+      desc: 'Clients and suppliers with a working portal account. Click through to the account list.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>312</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>accounts</div>
+          </div>
+          {[
+            {label: 'clients', val: '75%', tone: 'var(--c-cobalt-300)'},
+            {label: 'suppliers', val: '40%', tone: 'var(--c-lavender-300)'},
+            {label: 'new', val: '15%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Unread messages',
+      desc: 'Messages sent to visitors that nobody has opened yet. High for a week? Time to call.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', stage: '9 days'},
+            {tone: 'var(--c-lavender-300)', stage: '3 days'},
+            {tone: 'var(--c-mint-500)', stage: 'today'},
+            {tone: 'var(--c-mint-500)', stage: 'today'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Traffic',
+      desc: 'Sessions this period, sessions you ended from your side, messages delivered. The health of the front door at a glance.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {label: 'sessions', val: '85%', tone: 'var(--c-cobalt-300)'},
+            {label: 'ended', val: '10%', tone: 'var(--c-orange-knvb)'},
+            {label: 'messages', val: '60%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="How Portaliq plugs into the workspace"
+  title="The apps you already run, seen from the outside."
+  lede="Portaliq shows nothing of its own. Every screen a visitor sees comes from an app your team already works in. Here is what each one shows."
+  layout="side"
+  defaultOpen="files"
+  items={[
+    {
+      id: 'files',
+      title: 'Documents on the record, for the visitor too',
+      summary: 'A signed contract, an invoice as PDF, a letter about a case. If your team attached it to the record in Files, the visitor can download it from the portal, after Portaliq has checked that the record is theirs. Where you allow it, they upload a document back onto their own record. Nothing travels as an email attachment.',
+      cta: {label: 'Read the docs', href: 'https://portaliq.conduction.nl'},
+      panel: <AppMock app="portaliq" />,
+    },
+    {
+      id: 'business',
+      title: 'PipelinQ and Shillinq: the client side of your business',
+      summary: 'From PipelinQ the client sees their requests, complaints, contracts, appointments and the history of every call and mail with you, and can submit a new request. From Shillinq they see their quotes, orders and invoices with due date and status, and pay an open invoice from the portal. A supplier sees your purchase orders and their own invoices.',
+      cta: {label: 'See PipelinQ', href: '/apps/pipelinq'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'public',
+      title: 'Procest and ZaakAfhandelApp: cases, tenders and complaints',
+      summary: 'A supplier sees their tenders, contracts and invoices, and the messages about them. A resident sees their own cases and requests, files a complaint with attachments, and follows what happens next. Every line checked against the person who is logged in.',
+      cta: {label: 'See Procest', href: '/apps/procest'},
+      panel: <AppMock app="procest" />,
+    },
+    {
+      id: 'school',
+      title: 'Scholiq: what a learner or parent sees',
+      summary: 'Grades, final grades, attendance and enrolments. A learner hands in an assignment from the portal and reports an absence. A parent follows the report card without asking the school office. Same portal, same login, a different set of screens.',
+      cta: {label: 'See Scholiq', href: '/apps/scholiq'},
+      panel: <AppMock app="scholiq" />,
+    },
+  ]}
+/>
+
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="The apps Portaliq depends on and renders."
+    title="Three apps that give the portal something to show."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Every contribution's data — read subject-scoped, written with server-stamped ownership."
+      href="/apps/pipelinq"
+      icon={<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="19" cy="18" r="2"/></svg>}
+      name="PipelinQ"
+      why="Your clients see their requests, contracts and contact history, and submit a new request from the portal."
+    />
+    <PairCard
+      href="/apps/shillinq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4"/></svg>}
+      name="Shillinq"
+      why="Quotes, orders and invoices with a Pay now button. Suppliers see your purchase orders and their invoices."
     />
     <PairCard
       href="/apps/procest"
       icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
       name="Procest"
-      why="First live contribution: suppliers see their own tenders, contracts, and invoices."
-    />
-    <PairCard
-      href="/apps/pipelinq"
-      icon={<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="19" cy="18" r="2"/></svg>}
-      name="PipelinQ"
-      why="Client and customer contributions — contactmomenten, bookings, and requests."
+      why="Suppliers see their own tenders, contracts and invoices. Residents follow their cases and file a complaint."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="One front door for everyone outside Nextcloud."
-  lede={<>Portaliq replaces a per-app external login and a per-app external UI with one white-label portal, built on the same registers your team already works in. Open-source, on your own data.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+  title="One front door for everyone outside your Nextcloud."
+  lede={<>Open source. Free to install. Your logo on the door and your data on your own server. Portaliq runs on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
 />

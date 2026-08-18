@@ -1,10 +1,10 @@
 ---
 title: DeciDesk, Conduction
-description: Decision-support and board management on Nextcloud. Agenda, dossiers, motions, voting, audit.
+description: Meetings, votes and decisions on your own Nextcloud. Minutes ready when the meeting closes, every decision traceable years later. For councils, boards and management teams.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, McpToolShelf, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -12,14 +12,14 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   appId="decidesk"
   crumb={[{label: 'Apps', href: '/apps'}, 'DeciDesk']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.3.9"
+  version="v0.4.7"
   locales="NL · EN"
   title="DeciDesk"
-  tagline={<>Decision-making and board management on your <span className="next-blue">Nextcloud</span>. Agendas, motions, proxy voting, eIDAS-qualified signatures, an audit trail that understands the Wet open overheid. For municipal councils, associations, supervisory and executive boards, management teams, and citizen-participation panels.</>}
-  intro={<>Decidesk is an open-source decision-making app for the Nextcloud workspace. It runs the full governance cycle in one place: scheduling meetings, building agendas, submitting motions and amendments, running votes (in person, by proxy, or electronic), signing minutes and resolutions with an eIDAS-qualified electronic signature (QES), publishing decisions, and tracking action items to completion. Workflows are configurable for five governance domains — legislative/democratic bodies, associations and NGOs, corporate governance boards, corporate operations, and citizen participation. All meetings, motions, and decisions live as typed OpenRegister objects with a tamper-evident audit trail and governance/regulator-export reporting, and a built-in AI chat companion exposes those records over MCP. Released under EUPL-1.2 and maintained by Conduction since 2019.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://decidesk.conduction.nl'}}
-  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/decidesk'}}
+  tagline={<>Meetings, votes and decisions on your own <span className="next-blue">Nextcloud</span>. Minutes ready when the meeting closes. Every decision traceable years later.</>}
+  intro={<>DeciDesk runs meetings for councils, association boards and management teams. Build the agenda, run the vote, write the minutes while people talk, and track every action item. Everything stays on your own Nextcloud, with a record you can trust years later. Open source, EUPL-1.2, maintained by Conduction.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/decidesk'}}
   illustration={<AppMock app="decidesk" />}
 />
 
@@ -28,40 +28,40 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="What it does"
-        title="From agenda to decision, in one install."
+        title="Agenda, vote, minutes, follow-up. One meeting app."
         align="stack"
-        lede="DeciDesk covers the full decision-making chain: collect agenda items, build dossiers, submit motions, record votes, publish decisions. All on typed registers with an audit trail that makes Woo compliance much simpler later."
+        lede="DeciDesk takes a meeting from the first agenda item to the last action item. The secretary types while the chair talks. The vote counts itself. The decision keeps its history. Nobody writes anything up on Friday."
       />
       <FeatureList>
     <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>}
-      title="Agendas with dossier creation."
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>}
+      title="Minutes ready before the meeting ends."
     >
-      One dossier per agenda item: official advice, council documents, presentations, answered questions. All versioned, all in OpenRegister.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
-      title="Motions and amendments."
-    >
-      Submit, link to an agenda item, record votes. Per faction or per individual, configurable per board.
+      Today: someone takes notes, then spends Friday turning them into minutes. Instead, the secretary types in DeciDesk while the chair talks. When the meeting closes, the minutes are drafted, the decisions are listed and the action items have a name and a date. Send them round for approval the same afternoon.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg>}
-      title="Voting, including proxy voting, tracked in the audit trail."
+      title="Votes that count, and show it."
     >
-      In person, by show of hands, electronically, or by proxy for an absent member. Outcome, individual votes, abstentions. All in a tamper-evident log.
+      Show of hands, roll call or secret ballot. A member on holiday gives their proxy to a colleague and the vote counts. DeciDesk checks the quorum before you start. The log shows who voted, who was absent and who voted for whom. No "were we quorate?" afterwards.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      title="Every decision keeps its history."
+    >
+      Three years later someone asks why the permit was granted. The decision, the agenda item, the documents and the vote are one click away. You also see which decision replaced or repealed an earlier one, so you always know what is in force right now.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
+      title="Motions and amendments from wherever you are."
+    >
+      A member files an amendment from home on Sunday evening. On Monday it sits under the right agenda item, and everyone sees exactly what it changes before they vote. Per faction or per person, the way your board works.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
-      title="eIDAS-qualified signatures on minutes and resolutions."
+      title="Sign the minutes without printing them."
     >
-      Minutes and written-procedure resolutions are signed with a qualified electronic signature (QES) under eIDAS Article 25(2), verified end to end before the record is finalised.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      title="Decisions as published documents, with governance reports."
-    >
-      DocuDesk generates the formal decision from vote results and discussion. OpenCatalogi publishes it on yourmunicipality.nl/decisions with citation-stable URLs; governance reports and regulator exports cover the compliance side.
+      Connect a signing service and the chair and secretary sign the minutes digitally, with the same legal weight as a wet signature. Nobody prints, scans or posts anything. The signed version is the version of record.
     </FeatureItem>
   </FeatureList>
     </div>
@@ -77,44 +77,50 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <RotatingCards
   eyebrow="Three ways DeciDesk earns its place"
-  title="Minutes, decisions, action items, all linked."
-  lede="Scroll the cards. Each pins as you reach it; the next slides up to cover."
+  title="It works the way you work. And it works for you."
+  lede="Three things you would normally pay extra for. In DeciDesk they are built in."
   cards={[
     {
-      tone: 'mint',
-      eyebrow: 'Run the meeting',
-      title: 'Agenda, minutes, motions, votes, in one app.',
-      summary: 'DeciDesk owns the full board-meeting cycle. Agenda packs go out, minutes get drafted live, motions and votes are recorded. The audit trail satisfies the Wet open overheid out of the box.',
-      cta: {label: 'See DeciDesk', href: '/apps/decidesk'},
-      panel: <AppMock app="decidesk" />,
-    },
-    {
       tone: 'forest',
-      eyebrow: 'Linked to its source',
-      title: 'Every decision points back to its register row.',
-      summary: 'A motion to award a permit links to the permit-application register. A budget vote links to the budget-line register. Decisions stop being free-floating documents.',
-      cta: {label: 'See OpenRegister', href: '/apps/openregister'},
+      eyebrow: 'Automate',
+      title: 'A vote is adopted. The follow-up is already on its way.',
+      summary: 'Today: the vote passes, and someone remembers on Thursday to tell the people who have to act on it. Instead, set it up once. The moment a vote is adopted, the action items land on the right desks and the decision waits for the chair to release it. The day an action item passes its due date, a follow-up is on the assignee\'s list. Nothing forgotten, no chasing from memory, no coding.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
       panel: <AppMock app="openregister" />,
     },
     {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'A council, a club or a management team. Same app, your way.',
+      summary: 'A council wants the faction on every member. A sports club wants the membership number on every participant. A management team never uses motions and wants them out of the menu. Add the field, hide the page, drag the widget you look at first to the top. In the running app, in minutes, and your changes stay with every update.',
+      cta: {label: 'How customising works', href: '/apps/openbuild'},
+      panel: <AppMock app="openbuild" />,
+    },
+    {
       tone: 'workspace',
-      eyebrow: 'In every queue',
-      title: 'Action items land in the assignee\'s LaunchPad.',
-      summary: 'Every action item from a meeting becomes a row in someone\'s work queue. No separate task tracker, no email handoff. The next meeting reads its predecessor\'s status from the same registers.',
-      cta: {label: 'See LaunchPad', href: '/apps/launchpad'},
-      panel: <AppMock app="launchpad-widgets" />,
+      eyebrow: 'Talk to it',
+      title: 'Ask what you promised. Get the list, not the minutes.',
+      summary: 'Ask "what did I promise last meeting?" and you get your open action items, with due dates. Ask for the details of a meeting and the agenda, decisions and files are there. Say "add an action item for Jansen, send the draft contract, due 24 May" and it is created with your approval. The chair can open the meeting by chat. It never signs minutes.',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: what did I promise last meeting?',
+        'assistant: 3 open action items from the 14 May meeting',
+        'assistant: send draft contract to Jansen BV, due 24 May',
+        'you: add one for De Vries: book the venue, due 1 June',
+        'assistant: action item ready, shall I add it?',
+      ]} cursor mode="asks before it changes anything" />,
     },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets we ship"
-  title="On every Nextcloud dashboard."
-  lede="Install DeciDesk and the home screen tells every board member what's open, what's decided, and what's next."
+  title="What is open, decided and next. On the dashboard."
+  lede="Install DeciDesk and every board member sees their own action items, the latest decisions and the next meetings the moment they log in."
   widgets={[
     {
-      title: 'Action items for me',
-      desc: 'Action items assigned to the logged-in user, sorted by due date. One click marks done and updates the meeting record.',
+      title: 'My action items',
+      desc: 'What you promised, sorted by due date. Tick one off and the meeting record is updated.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {[
@@ -127,7 +133,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
               <span style={{width: 14, height: 14, borderRadius: 3, border: '2px solid var(--c-cobalt-300)', background: row.check ? 'var(--c-mint-500)' : 'transparent', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box'}}>
                 {row.check && <span style={{width: 6, height: 3, borderLeft: '2px solid white', borderBottom: '2px solid white', transform: 'rotate(-45deg) translateY(-1px)'}}></span>}
               </span>
-              <div style={{flex: 1, height: 4, width: row.l1, background: row.check ? 'var(--c-cobalt-300)' : 'var(--c-cobalt-700)', borderRadius: 1, textDecoration: row.check ? 'line-through' : 'none'}}></div>
+              <div style={{flex: 1, height: 4, width: row.l1, background: row.check ? 'var(--c-cobalt-300)' : 'var(--c-cobalt-700)', borderRadius: 1}}></div>
               <div style={{height: 3, width: 22, background: 'var(--c-cobalt-100)', borderRadius: 1}}></div>
             </div>
           ))}
@@ -136,12 +142,12 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     },
     {
       title: 'Recent decisions',
-      desc: 'Last decisions taken by the council or board. Outcome status (passed / rejected / withdrawn) and link to the source motion.',
+      desc: 'The last decisions your council or board took. Adopted, rejected or withdrawn, with a link to the motion behind it.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {[
-            {tone: 'var(--c-mint-500)',       label: 'PASSED'},
-            {tone: 'var(--c-mint-500)',       label: 'PASSED'},
+            {tone: 'var(--c-mint-500)',       label: 'ADOPTED'},
+            {tone: 'var(--c-mint-500)',       label: 'ADOPTED'},
             {tone: 'var(--c-red-vermillion)', label: 'REJECTED'},
             {tone: 'var(--c-cobalt-300)',     label: 'WITHDRAWN'},
           ].map((row, i) => (
@@ -158,7 +164,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     },
     {
       title: 'Upcoming meetings',
-      desc: 'Next meetings on your calendar with agenda packs. One click opens the dossier; another joins the call.',
+      desc: 'Your next meetings with their agenda. One click opens the papers, and the open action items from last time are right there.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2}}>
@@ -186,122 +192,80 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <Showcase
   eyebrow="How DeciDesk plugs into the workspace"
-  title="The meeting cycle, end to end, in Nextcloud."
-  lede="Three integration paths that put the meeting, the motions, and the published minutes inside the apps your council and board members already use."
+  title="Files, mail, Talk and Deck. Already yours."
+  lede="The papers, the discussion and the follow-up live where your team already works. That is the point of a workspace."
   layout="side"
-  defaultOpen="calendar-contacts-notes"
+  defaultOpen="files"
   items={[
     {
-      id: 'calendar-contacts-notes',
-      title: 'Calendar, Contacts, Notes',
-      summary: 'Schedule the meeting in Calendar, attendees pulled from Contacts. The dossier opens straight from the calendar event; minutes sync back into a Note that everyone with access can read.',
-      cta: {label: 'See the integration guide', href: 'https://decidesk.conduction.nl/calendar-contacts-notes'},
+      id: 'files',
+      title: 'The papers on the agenda item',
+      summary: 'Every meeting, agenda item, motion, decision and action item keeps its own folder in Files. The advice, the presentation, the signed minutes: on the item they belong to, not in someone\'s mailbox. Open the agenda item and the papers are there. Open the file in Files and it tells you which meeting it belongs to.',
+      cta: {label: 'Read the docs', href: 'https://decidesk.conduction.nl'},
+      panel: <AppMock app="decidesk" />,
+    },
+    {
+      id: 'mail',
+      title: 'The email trail on the decision',
+      summary: 'A resident writes in about an agenda item. Link the message to the item or the decision from your Nextcloud Mail, and it stays there. When the item comes up, everyone with access sees the correspondence next to the papers. Nobody forwards a thread the night before.',
+      cta: {label: 'Read the docs', href: 'https://decidesk.conduction.nl'},
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
+            <div style={{height: 4, width: '75%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '55%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '85%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+          </div>
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Link to agenda item</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>linked to item 4, parking policy</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'talk',
+      title: 'The discussion in Talk, on the meeting',
+      summary: 'Every meeting has its own Talk conversation. Questions before the meeting, a quick check during it, the "who takes this?" afterwards: all in one thread, bound to the meeting, readable by the people who were there. No side chats that nobody can find later.',
+      cta: {label: 'Read the docs', href: 'https://decidesk.conduction.nl'},
       panel: <AppMock app="decidesk" />,
     },
     {
       id: 'deck',
-      title: 'Deck',
-      summary: 'Motions live as Deck cards while they\'re still being shaped. When the motion goes to a vote, the card upgrades to a DeciDesk decision record; the audit trail starts there and follows the motion through publication.',
-      cta: {label: 'See the Deck integration', href: 'https://decidesk.conduction.nl/deck'},
+      title: 'Action items on the Deck board',
+      summary: 'Every action item from a meeting or decision is a card on a Deck board. Your team works the board they already use, and the meeting record shows the same status. Other Conduction apps can hand a decision to DeciDesk too: a case in Procest that needs a formal decision shows that decision, and its history, on the case.',
+      cta: {label: 'Read the docs', href: 'https://decidesk.conduction.nl'},
       panel: <AppMock app="decidesk" />,
     },
-    {
-      id: 'mail-files',
-      title: 'Mail and Files',
-      summary: 'Agenda packs go out as Mail; signed minutes archive into Files under the year/meeting folder. Both flows are templated and signed with the instance certificate, so the version everyone has is the version of record.',
-      cta: {label: 'See the document flow', href: 'https://decidesk.conduction.nl/mail-files'},
-      panel: <AppMock app="docudesk" />,
-    },
   ]}
-/>
-
-<McpToolShelf
-  eyebrow="AI chat tools"
-  title="What DeciDesk adds to the workspace AI."
-  lede="Install DeciDesk and the workspace chat gets five governance tools. The AI can list your open action items, browse meetings, open a dossier, start a meeting from a calendar event, or capture a follow-up, all under the caller's own role and auth."
-  tools={[
-    {
-      icon: <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="20" cy="18" r="2"/></svg>,
-      name: 'List open action items',
-      id: 'decidesk.listOpenActionItems',
-      description: 'Incomplete action items assigned to the caller, or all visible items. Scope mine / all, capped at 50.',
-      status: 'stable',
-    },
-    {
-      icon: <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg>,
-      name: 'List recent meetings',
-      id: 'decidesk.listRecentMeetings',
-      description: "Recent meetings for the caller, newest first. Optional status filter: scheduled, in-progress, or closed.",
-      status: 'stable',
-    },
-    {
-      icon: <svg viewBox="0 0 24 24"><path d="M5 4h14v6H5zM5 14h14v6H5zM9 4v16"/></svg>,
-      name: 'Get meeting details',
-      id: 'decidesk.getMeetingDetails',
-      description: 'Full dossier for one meeting: agenda, participants, action items, decisions, attached files.',
-      status: 'stable',
-    },
-    {
-      icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4z"/></svg>,
-      name: 'Start meeting',
-      id: 'decidesk.startMeeting',
-      description: 'Move a scheduled meeting into in-progress. Requires chair or admin role; logged in the audit trail.',
-      status: 'stable',
-    },
-    {
-      icon: <svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>,
-      name: 'Add action item',
-      id: 'decidesk.addActionItem',
-      description: 'Create a new action item under a meeting, assigned to a participant, with optional due date.',
-      status: 'stable',
-    },
-  ]}
-  showIds={false}
-  trace={<AgentTrace
-    lines={[
-      {kind: 'tool', text: 'decidesk - listOpenActionItems (MCP)(scope: "mine", limit: 20)'},
-      {kind: 'note', bullet: 'done', text: 'Returned 7 open action items across 4 meetings'},
-      {kind: 'tool', text: 'decidesk - addActionItem (MCP)(meetingId: "m-2026-118",'},
-      {kind: 'continuation', text: 'assignee: "j.devries", title: "Send draft contract", dueDate: "2026-05-24")'},
-      {kind: 'note', bullet: 'done', text: 'Action item created, participant notified'},
-      {kind: 'status', text: 'Synthesising follow-up'},
-    ]}
-    cursor
-    mode="audit log on (every call recorded)"
-  />}
 />
 
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="Three apps that complete the decision chain."
+    title="Two apps that carry a decision further."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Agenda items, dossiers, motions, votes as typed registers."
-    />
-    <PairCard
-      href="/apps/docudesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      name="DocuDesk"
-      why="Decisions, council documents, answered questions from dossier fields."
+      href="/apps/procest"
+      icon={<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>}
+      name="Procest"
+      why="Case management. A case that needs a formal decision gets it in DeciDesk, and the case shows the outcome."
     />
     <PairCard
       href="/apps/opencatalogi"
       icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
       name="OpenCatalogi"
-      why="Publishes decisions and council documents on yourmunicipality.nl/decisions with federation."
+      why="Publish agendas and decisions on your public website, so residents find them without asking."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="Board and council decision-making, audit-ready."
-  lede={<>DeciDesk covers agenda, dossier creation, proxy voting, eIDAS-qualified signing, and publication. The audit trail and governance reporting that follow make the Woo work later much simpler.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+  title="Meetings and decisions on your own Nextcloud."
+  lede={<>Open source. Free to install. Your minutes and votes stay on your own server. DeciDesk runs on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
 />

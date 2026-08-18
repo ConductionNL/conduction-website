@@ -1,100 +1,268 @@
 ---
 title: LarpingApp, Conduction
-description: Karakter-, event- en regelbeheer voor live-action roleplay (LARP)-groepen. Getypeerde registers, audit trail, PDF-karakterbladen en GM-castlijsten.
+description: Personages, regels en evenementen voor live-action role-playing groepen. Een speler leert een vaardigheid en zijn blad werkt zichzelf bij. XP één keer toegekend, met een reden. Printbare personagebladen en een castlijst per evenement.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
+  background="cobalt"
   appId="larpingapp"
   crumb={[{label: 'Apps', href: '/apps'}, 'LarpingApp']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.1"
+  version="v0.1.39"
   locales="NL · EN"
   title="LarpingApp"
-  tagline={<>Karakters, regels en events voor live-action roleplay (LARP). Bouw een setting in <span className="next-blue">Nextcloud</span>, deel hem met je groep, en speel zonder spreadsheets-met-zes-tabbladen.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://larpingapp.conduction.nl'}}
-  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/larpingapp'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><path d="M3 12h6l3-7 3 14 3-7h3"/></svg>}
+  tagline={<>Bouw werelden, beheer campagnes, voor live-action role-playing. Op je eigen <span className="next-blue">Nextcloud</span>. Ja, echt.</>}
+  intro={<>LarpingApp is een open-source campagnebeheerder voor live-action role-playing groepen. Je ontwerpt de regels van je wereld één keer: vermogens, vaardigheden, voorwerpen, condities en wat ze met een personage doen. Spelers houden hun eigen blad bij, en het blad rekent zichzelf opnieuw uit als ze een vaardigheid leren of een voorwerp oppakken. Jij keurt achtergronden goed, deelt na elk evenement ervaringspunten uit met een reden, en print nette personagebladen en een castlijst voor het weekend. Gemaakt door mensen die zelf spellen draaien. Uitgebracht onder EUPL-1.2 en sinds 2019 onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/larpingapp'}}
+  illustration={<AppMock app="larpingapp" />}
 />
 
-LarpingApp is een open-source beheertool voor live-action roleplay (LARP) in de Nextcloud-workspace. Spelleiders ontwerpen karakters, abilities, skills, items, conditions en effects als getypeerde records, en de app herberekent elke stat automatisch zodra spelers ervaring opdoen of effecten wijzigen. De app regelt ook event-rosters, een goedkeuringsworkflow voor achtergrondverhalen, gecontroleerde XP-toekenningen na afloop, en afdrukbare PDF-karakterbladen en GM-castlijsten — één plek voor de spelleider om een campagne te draaien. Uitgegeven onder EUPL-1.2, onderhouden door Conduction sinds 2019.
-
 <Section spacing="default">
-  <SectionHead
-    eyebrow="Wat het doet"
-    title="Een LARP-setting die meegroeit met je campagne."
-    align="stack"
-    lede="Karakters, abilities, skills, items, conditions en effects, allemaal als getypeerde OpenRegister-records, gekoppeld aan elkaar, versievast. Spelers werken aan hun eigen karakter in dezelfde Nextcloud waar je de campagne draait."
-  />
-  <FeatureList>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>}
-      title="Karakterbladen met goedkeuringsworkflow."
-    >
-      Een karakter is een getypeerd record: stats, achtergrondverhaal, skills, items en een portret. Spelers dienen een achtergrondverhaal in voor spelleider-review voordat het karakter meespeelt.
-    </FeatureItem>
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="Personages, regels, evenementen en spelers. Eén plek, geen spreadsheet met zes tabbladen."
+        align="stack"
+        lede="Je regels staan in de app, niet in je hoofd. Spelers bewerken hun eigen personage in dezelfde Nextcloud waar jij de campagne vanuit draait. Jij stopt met bladen narekenen en begint met spellen draaien."
+      />
+      <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5 1 6-5.5-3-5.5 3 1-6L3 9l6-1z"/></svg>}
-      title="Een stat-engine die je zelf inricht."
+      title="Een speler leert een vaardigheid. Zijn blad werkt zichzelf bij."
     >
-      Abilities, skills, items, conditions en effects zijn allemaal getypeerde registers. De stat-engine herberekent elke ability deterministisch zodra skills geleerd, items uitgerust of conditions toegepast worden — met server-side gecontroleerde vereisten.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
-      title="Settings bakenen je campagnes af."
-    >
-      Groepeer karakters, events en spelmechanica onder een setting (wereld/campagne). Afgeronde campagnes archiveer je in plaats van verwijderen, zodat oude rosters leesbaar blijven.
+      Vandaag reken je de avond voor het evenement twintig bladen na. In plaats daarvan voegt een speler de vaardigheid toe en verandert elke waarde die hij raakt ter plekke. Elk vermogen laat precies zien welke vaardigheid, welk voorwerp of welke conditie wat toevoegde, dus een discussie aan tafel is beslecht door te kijken. Ongeldige builds en te veel uitgegeven punten worden geweigerd als de speler opslaat. Jij kunt het overrulen, één keer, met opzet.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/></svg>}
-      title="Gecontroleerde XP-toekenningen."
+      title="Ken XP één keer toe, met een reden. Zes maanden later discussieert niemand."
     >
-      Spelleiders kennen ervaring toe per event, per karakter, met een reden en een tijdstempel. Elke toekenning is een vastgelegde, controleerbare grootboekregel — geen spreadsheetcel.
+      Na het evenement deel je ervaringspunten uit per personage, met waarom en wanneer. Het personage gaat vanzelf een niveau omhoog. Zes maanden later vraagt een speler waarom hij minder punten heeft dan zijn vriend, en het antwoord staat op zijn blad, regel voor regel. Geen spreadsheetcel die iemand ooit overschreef.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>}
+      title="Een speler schrijft thuis zijn achtergrond. Jij keurt hem goed voor zaterdag."
+    >
+      De speler schrijft het verhaal en dient het in. Jij krijgt een melding, leest het als je even tijd hebt en keurt goed. Het personage loopt zaterdag binnen met de juiste punten en een goedgekeurde achtergrond. Geen geprinte concepten, geen last-minute mail met een bijlage.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg>}
-      title="PDF-bladen en GM-castlijsten."
+      title="Print de bladen en de castlijst op vrijdagavond."
     >
-      Exporteer een afdrukbaar karakterblad, of een castlijst per event met de stats, conditions en goedkeuringsstatus van elke deelnemer, gerenderd via DocuDesk.
+      Elke speler neemt een net personageblad als pdf mee het veld op. Jij neemt per evenement één castlijst mee met namen, waarden, condities en notities. Allebei komen ze rechtstreeks uit de dossiers, dus wat op papier staat is wat in de app staat. Printen vraagt de app DocuDesk ernaast.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+      title="Je eigen regels, je eigen werelden."
+    >
+      Bouw je eigen spelsysteem na: vermogens, vaardigheden, voorwerpen, condities, effecten, en wat elk daarvan met een waarde doet. Draai meer dan één wereld vanuit dezelfde installatie en houd personages en evenementen per campagne gescheiden. Een afgeronde campagne wordt gearchiveerd, niet verwijderd, dus oude deelnemerslijsten blijven leesbaar. Een startwizard zet alles op en leidt je rond.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2L2 7v6c0 5 3 9 10 11 7-2 10-6 10-11V7L12 2z"/></svg>}
-      title="Open source, EUPL-1.2."
+      title="Gratis voor de kleine organisator."
     >
-      Geen jaarlijkse SaaS-licentie voor de kleine organisator. Self-host op een Nextcloud die je toch al hebt, of via een Conduction-partner.
+      Geen jaarlijkse licentie per speler. Installeer het op een Nextcloud die je al hebt, of vraag een partner om het te hosten. Open source, dus de regels die je bouwt blijven van jou.
     </FeatureItem>
   </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['larpingapp']}
+      surface="product"
+    />
+  </div>
 </Section>
+
+<PartnersForApp slug="larpingapp" />
+
+<RotatingCards
+  eyebrow="Drie manieren waarop LarpingApp zijn plek verdient"
+  title="Het werkt zoals jij speelt. En het werkt voor jou."
+  lede="Drie dingen waar je normaal extra voor betaalt. In LarpingApp zitten ze ingebouwd."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automatiseer',
+      title: 'Een achtergrond is ingediend. De goedkeuring staat al op je lijst.',
+      summary: 'Vandaag: een speler mailt je een verhaal, jij vergeet het, hij vraagt ernaar op zaterdag. In plaats daarvan stel je het één keer in. Zodra een achtergrond is ingediend, landt er een taak op het bureau van de spelleider. Zodra hij is goedgekeurd, hoort de speler dat. Na elk evenement een lijst met personages die nog geen XP kregen. Niets vergeten, geen nabellen, geen programmeerwerk.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Jouw systeem, jouw velden, jouw blad.',
+      summary: 'Een fantasygroep wil mana op elk blad. Een post-apocalyptische groep wil straling en een factie. Een vampierkroniek wil generatie en clan. Voeg het veld toe, verberg het blok dat jouw systeem niet gebruikt, sleep de widget die je als eerste bekijkt naar boven. In de draaiende app, in minuten, en je wijzigingen blijven bij elke update bewaard.',
+      cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
+      panel: <AppMock app="openbuild" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Praat ermee',
+      title: 'Vraag wie er komt. Krijg de lijst, geen spreadsheet.',
+      summary: 'Vraag "wie heeft zich aangemeld voor het evenement in juni?" en je krijgt de namen. Vraag "welke personages hebben de vaardigheid genezen?" en de lijst staat er. De assistent leest dezelfde personages en evenementen die jij mag zien, en vraagt het voordat hij iets wijzigt. Goedkeuren en XP toekennen blijft bij jou.',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'jij: wie heeft zich aangemeld voor het evenement in juni?',
+        'assistent: 23 spelers, 3 personages nog niet goedgekeurd',
+        'jij: welke?',
+        'assistent: Elenna Sway, Baldor Ash, Vey Marrow',
+      ]} cursor mode="leest alleen, vraagt het voordat hij iets wijzigt" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets die we meeleveren"
+  title="Je campagne op het dashboard dat de groep al opent."
+  lede="Installeer LarpingApp en het campagnedashboard toont de nieuwste personages, de volgende evenementen, en welke vaardigheden je spelers het vaakst kiezen."
+  widgets={[
+    {
+      title: 'Recente personages',
+      desc: 'De nieuwste bladen op naam en type. Klik er een aan om de achtergrond te lezen en goed te keuren, of om te zien wat de speler veranderde.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', stage: 'krijger'},
+            {tone: 'var(--c-mint-500)', stage: 'verkenner'},
+            {tone: 'var(--c-mint-500)', stage: 'priester'},
+            {tone: 'var(--c-lavender-300)', stage: 'schurk'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Recente evenementen',
+      desc: 'De volgende evenementen op startdatum, met een link naar de deelnemerslijst van elk evenement. Wie er komt, in één oogopslag.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {date: '14', tone: 'var(--c-mint-500)'},
+            {date: '21', tone: 'var(--c-lavender-300)'},
+            {date: '28', tone: 'var(--c-forest-300)'},
+            {date: '04', tone: 'var(--c-cobalt-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <div style={{width: 22, height: 25, clipPath: 'var(--hex-pointy-top)', background: row.tone, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+                <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>{row.date}</div>
+              </div>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 3}}>
+                <div style={{height: 4, width: '75%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '55%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Gebruik van vaardigheden',
+      desc: 'Welke vaardigheden je spelers in de hele campagne het vaakst kiezen. De vaardigheid die niemand neemt, is degene die je voor het volgende seizoen bijstelt.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {label: 'genezen', val: '80%', tone: 'var(--c-mint-500)'},
+            {label: 'sluipen', val: '55%', tone: 'var(--c-lavender-300)'},
+            {label: 'smeden', val: '35%', tone: 'var(--c-cobalt-300)'},
+            {label: 'kennis', val: '10%', tone: 'var(--c-orange-knvb)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="Zo sluit LarpingApp aan op je werkplek"
+  title="Agenda, contacten en foto's. Al van jou."
+  lede="Geen apart spelersportaal. De campagne gebruikt de agenda, het adresboek en het fotoalbum die je groep al in Nextcloud heeft."
+  layout="side"
+  defaultOpen="calendar"
+  items={[
+    {
+      id: 'calendar',
+      title: 'Het evenement staat in de agenda, de aanmelding is een formulier',
+      summary: 'Geef een evenement een begin- en einddatum en het staat in de Nextcloud Agenda. Prik de locatie op de kaart vanaf de evenementpagina. Spelers melden zich aan via een formulier en jij ziet op de deelnemerslijst wie er komt, voordat je de castlijst print. Niemand houdt een tweede lijst bij in een appgroep.',
+      cta: {label: 'Lees de docs', href: 'https://larpingapp.conduction.nl'},
+      panel: <AppMock app="larpingapp" />,
+    },
+    {
+      id: 'contacts',
+      title: 'Elke speler op een contactkaart, dus de bellijst maakt zichzelf',
+      summary: 'Elke speler is gekoppeld aan zijn Nextcloud-contactkaart voor telefoon, e-mail en adres. Op de dag zelf staat het nummer dat je nodig hebt bij de speler, naast zijn personages. Wijzig een telefoonnummer één keer en het klopt overal, ook op je telefoon.',
+      cta: {label: 'Lees de docs', href: 'https://larpingapp.conduction.nl'},
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
+            <div style={{height: 4, width: '60%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '45%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '70%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+          </div>
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Bel speler</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>speelt Elenna Sway en Vey Marrow</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'photos',
+      title: 'Het portret hoort bij het personage',
+      summary: 'Voeg vanuit je Nextcloud-foto\'s een portret toe aan een personage en het staat op het blad, in de lijst en op de geprinte pdf. Spelers herkennen elkaar bij de briefing, en de nieuwe spelleider weet wie wie is.',
+      cta: {label: 'Lees de docs', href: 'https://larpingapp.conduction.nl'},
+      panel: <AppMock app="larpingapp" />,
+    },
+  ]}
+/>
 
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Werkt goed met"
+    eyebrow="Past goed bij"
     title="Twee apps die de campagne dragen."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Karakters, abilities, skills, items en events als getypeerde registers, elk met een volledige audit trail en versiebeheer."
+      href="/apps/docudesk"
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      name="DocuDesk"
+      why="Print de personagebladen en de castlijst. Pas de opmaak van het blad één keer aan en elke speler krijgt de nieuwe."
     />
     <PairCard
       href="/apps/launchpad"
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
       name="LaunchPad"
-      why="Per-speler dashboard met je karakter-stats, recente events en aankomende sessies."
+      why="Een persoonlijk dashboard per speler: zijn personages, het volgende evenement, wat er veranderde sinds hij voor het laatst keek."
     />
   </PairRow>
 </Section>
 
 <CtaBanner
-  title="Een LARP zonder spreadsheets."
-  lede={<>Installeer LarpingApp uit de <span className="next-blue">Nextcloud</span>-app-store, importeer je bestaande karakters in een schema, en speel volgende sessie zonder tab-shuffle.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/larpingapp'}}
+  title="Een campagne zonder spreadsheets."
+  lede={<>Open source. Gratis te installeren. Je wereld blijft op je eigen server. LarpingApp draait op dezelfde <span className="next-blue">Nextcloud</span> die je groep al gebruikt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
 />
