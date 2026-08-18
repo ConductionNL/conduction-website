@@ -4,7 +4,7 @@ description: One portal for your clients and suppliers, on your own Nextcloud. T
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -18,7 +18,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   tagline={<>One portal for your clients and suppliers, on your own <span className="next-blue">Nextcloud</span>. They log in once and see everything you do for them.</>}
   intro={<>Your client logs in once and sees their quotes, invoices, contracts and open requests from every app you run. Your supplier sees their own orders and contracts, never another supplier's. Every message from every app lands in one inbox for them. One login for them, one place for you, and it carries your logo and your colours. Your own staff stay inside Nextcloud. Portaliq is only for the people who are not. Open source, released under EUPL-1.2 and maintained by Conduction.</>}
   primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=portaliq'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/portaliq'}}
   illustration={<AppMock app="portaliq" />}
 />
@@ -37,7 +37,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       icon={<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 18a5 5 0 0 1 10 0"/></svg>}
       title="Your client logs in once. Their quotes, invoices and requests are there."
     >
-      Today a client calls to ask where their invoice is, and someone looks it up. Instead, the client opens the portal and sees the invoice with its status, the quote they accepted, the order it became and the requests still open. From every app you run, on one screen, behind one login. Fewer calls, and the calls you do get start further along.
+      Today a client calls to ask where their invoice is, and someone looks it up. Instead, the client opens the portal and sees the invoice with its status, the quotation waiting for their signature, the order it became and the tickets still open. They accept and sign the quotation right there, pay an open invoice, and check their contracts and running projects. From every app you run, on one screen, behind one login. Fewer calls, and the calls you do get start further along.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>}
@@ -73,8 +73,6 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   </div>
 </Section>
 
-<PartnersForApp slug="portaliq" />
-
 <RotatingCards
   eyebrow="Three ways Portaliq earns its place"
   title="It works the way you work. And it works for you."
@@ -86,7 +84,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'A submission could not be delivered. Someone is already on it.',
       summary: 'Today: a complaint sent through a web form vanishes into a mailbox nobody checks on Friday. Instead, set it up once. Every submission from the portal is a record. The moment one fails delivery, a task to retry it lands on the right desk. A message a client has not opened after a week puts a follow-up call on the account manager\'s list. Every Monday, a list of requests nobody answered. Nothing forgotten, no chasing, no coding.',
       cta: {label: 'How automation works', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -94,7 +92,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Your logo, your colours, your name on the door.',
       summary: 'A visitor should see your organisation, not ours. Set the name, the logo and the colours per organisation, and the portal wears them on the login page and every screen after it. Run more than one portal from the same Nextcloud, each with its own look. Add a page of your own explanations and a glossary of the words your visitors ask about. Choose which apps show up in the menu and in which order.',
       cta: {label: 'Read the docs', href: 'https://portaliq.conduction.nl'},
-      panel: <AppMock app="portaliq" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -114,8 +112,8 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <WidgetShelf
   eyebrow="Widgets we ship"
-  title="How busy is the front door. On your dashboard."
-  lede="Install Portaliq and its dashboard shows how many clients and suppliers use the portal, how many are logged in right now, and how many messages are still waiting to be read."
+  title="We ship the widgets you need"
+  lede={<>Install Portaliq and its dashboard shows how many clients and suppliers use the portal, how many are logged in right now, and how many messages are still waiting to be read. Design your own widgets with <a href="/apps/openbuild">OpenBuild</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
       title: 'Active accounts',
@@ -184,6 +182,26 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         </div>
       ),
     },
+    {
+      title: 'Active sessions',
+      desc: 'Who is in the portal right now. The live pulse of the front door.',
+    },
+    {
+      title: 'Revoked sessions',
+      desc: 'Sessions you ended from your side, so you can show exactly when access stopped.',
+    },
+    {
+      title: 'Sessions per account',
+      desc: 'Which accounts sign in every week and which never do. Your cue for a call.',
+    },
+    {
+      title: 'Portals and themes',
+      desc: 'Every portal you run and the look it wears, from one overview.',
+    },
+    {
+      title: 'Pages, menus and glossary',
+      desc: 'The content of each portal: your own pages, the menu order, and the words you explain.',
+    },
   ]}
 />
 
@@ -199,26 +217,26 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Documents on the record, for the visitor too',
       summary: 'A signed contract, an invoice as PDF, a letter about a case. If your team attached it to the record in Files, the visitor can download it from the portal, after Portaliq has checked that the record is theirs. Where you allow it, they upload a document back onto their own record. Nothing travels as an email attachment.',
       cta: {label: 'Read the docs', href: 'https://portaliq.conduction.nl'},
-      panel: <AppMock app="portaliq" />,
+      panel: <LeafMock leaf="files" />,
     },
     {
       id: 'business',
-      title: 'PipelinQ and Shillinq: the client side of your business',
-      summary: 'From PipelinQ the client sees their requests, complaints, contracts, appointments and the history of every call and mail with you, and can submit a new request. From Shillinq they see their quotes, orders and invoices with due date and status, and pay an open invoice from the portal. A supplier sees your purchase orders and their own invoices.',
+      title: 'The client side of your business',
+      summary: <>From <a href="/apps/pipelinq">PipelinQ</a> the client sees their requests, complaints, contracts, appointments and the history of every call and mail with you, and can submit a new request. From <a href="/apps/shillinq">Shillinq</a> they see their quotes, orders and invoices with due date and status, sign a quotation and pay an open invoice from the portal. A supplier sees your purchase orders and their own invoices.</>,
       cta: {label: 'See PipelinQ', href: '/apps/pipelinq'},
       panel: <AppMock app="pipelinq" />,
     },
     {
       id: 'public',
-      title: 'Procest and ZaakAfhandelApp: cases, tenders and complaints',
-      summary: 'A supplier sees their tenders, contracts and invoices, and the messages about them. A resident sees their own cases and requests, files a complaint with attachments, and follows what happens next. Every line checked against the person who is logged in.',
+      title: 'Cases, tenders and complaints',
+      summary: <>From <a href="/apps/procest">Procest</a> and <a href="/apps/zaakafhandelapp">ZaakAfhandelApp</a>, a supplier sees their tenders, contracts and invoices, and the messages about them. A resident sees their own cases and requests, files a complaint with attachments, and follows what happens next. Every line checked against the person who is logged in.</>,
       cta: {label: 'See Procest', href: '/apps/procest'},
       panel: <AppMock app="procest" />,
     },
     {
       id: 'school',
-      title: 'Scholiq: what a learner or parent sees',
-      summary: 'Grades, final grades, attendance and enrolments. A learner hands in an assignment from the portal and reports an absence. A parent follows the report card without asking the school office. Same portal, same login, a different set of screens.',
+      title: 'What a learner or parent sees',
+      summary: <>From <a href="/apps/scholiq">Scholiq</a>: grades, final grades, attendance and enrolments. A learner hands in an assignment from the portal and reports an absence. A parent follows the report card without asking the school office. Same portal, same login, a different set of screens.</>,
       cta: {label: 'See Scholiq', href: '/apps/scholiq'},
       panel: <AppMock app="scholiq" />,
     },
@@ -228,34 +246,36 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="Three apps that give the portal something to show."
+    title="Build with it, ask about it, keep your own overview."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/pipelinq"
-      icon={<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="19" cy="18" r="2"/></svg>}
-      name="PipelinQ"
-      why="Your clients see their requests, contracts and contact history, and submit a new request from the portal."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Build your own screens and portal pages without a developer. What you build shows up for your visitors too."
     />
     <PairCard
-      href="/apps/shillinq"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4"/></svg>}
-      name="Shillinq"
-      why="Quotes, orders and invoices with a Pay now button. Suppliers see your purchase orders and their invoices."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7v3a7 7 0 0 1-14 0V9a7 7 0 0 1 7-7Z"/><path d="M9 22h6"/><circle cx="9.5" cy="10" r="1"/><circle cx="14.5" cy="10" r="1"/></svg>}
+      name="Hermiq"
+      why="The assistant for your own staff. Ask which submissions failed or which messages sit unread. Visitors never meet it."
     />
     <PairCard
-      href="/apps/procest"
-      icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
-      name="Procest"
-      why="Suppliers see their own tenders, contracts and invoices. Residents follow their cases and file a complaint."
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Your own dashboard across all your apps. Put the portal's traffic and unread counts next to the rest of your day."
     />
   </PairRow>
 </Section>
+
+<PartnersForApp slug="portaliq" />
 
 <CtaBanner
   title="One front door for everyone outside your Nextcloud."
   lede={<>Open source. Free to install. Your logo on the door and your data on your own server. Portaliq runs on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
   primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=portaliq'}}
 />

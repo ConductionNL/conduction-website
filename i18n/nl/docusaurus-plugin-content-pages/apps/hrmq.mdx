@@ -4,7 +4,7 @@ description: HR en salarisadministratie op je eigen Nextcloud. Iemand meldt zich
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -18,7 +18,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   tagline={<>HR en salarisadministratie op je eigen <span className="next-blue">Nextcloud</span>. De termijnen die de wet stelt staan in je agenda op de dag dat ze gaan tellen.</>}
   intro={<>HRMQ doet de HR-administratie van een Nederlandse werkgever. Uren, declaraties en verlof met een goedkeuringsstap. Ziektedossiers met de wettelijke datums al ingevuld. Contracten die je waarschuwen voordat ze aflopen. Een loonberekening die uren en salaris omzet in een loonstrook, een loonaangiftecijfer en een journaalpost uit dezelfde getallen. Werving, onboarding, offboarding en de laptops daartussen. Gebouwd voor de Nederlandse regels, eerlijk over wat nog niet gecertificeerd is. Uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
   primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=hrmq'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/hrmq'}}
   illustration={<AppMock app="hrmq" />}
 />
@@ -49,7 +49,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h2M14 14h4M8 17h6"/></svg>}
       title="Voer uren en salaris één keer in. Loonstrook, loonaangiftecijfer en journaalpost komen eruit."
     >
-      Keur de uren goed, draai de salarisrun, en de loonstrook, de cijfers voor de loonaangifte, de pensioenaanlevering en de journaalpost komen allemaal uit dezelfde berekening. Niets overtypen in een tweede systeem, geen getallen die van elkaar afwijken. De journaalpost en de betaalbatch landen in Shillinq om te boeken en te betalen. Eerlijk gezegd: de loonberekening volgt de officiële Nederlandse regels van 2026, maar is nog niet gecertificeerd, en dat staat op elke loonstrook.
+      Keur de uren goed, draai de salarisrun, en de loonstrook, de cijfers voor de loonaangifte, de pensioenaanlevering en de journaalpost komen allemaal uit dezelfde berekening. Niets overtypen in een tweede systeem, geen getallen die van elkaar afwijken. De journaalpost en de betaalbatch landen in [Shillinq](/apps/shillinq) om te boeken en te betalen. Eerlijk gezegd: de loonberekening volgt de officiële Nederlandse regels van 2026, maar is nog niet gecertificeerd, en dat staat op elke loonstrook.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/></svg>}
@@ -79,12 +79,10 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   </div>
 </Section>
 
-<PartnersForApp slug="hrmq" />
-
 <RotatingCards
-  eyebrow="Drie manieren waarop HRMQ zijn plek verdient"
+  eyebrow="Vier manieren waarop HRMQ zijn plek verdient"
   title="Het werkt zoals jij werkt. En het werkt voor jou."
-  lede="Drie dingen waar je normaal extra voor betaalt. In HRMQ zitten ze ingebouwd."
+  lede="Vier dingen waar je normaal extra voor betaalt. In HRMQ zitten ze ingebouwd."
   cards={[
     {
       tone: 'forest',
@@ -92,7 +90,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Een ziektedossier bereikt week vijf. Het plan ligt al op iemands bureau.',
       summary: 'Vandaag: HR houdt een spreadsheet met ziektedossiers bij en kijkt erin als iemand eraan denkt. In plaats daarvan stel je het één keer in. Een week voordat de probleemanalyse moet zijn gedaan, landt er een taak op het bureau van de manager. Een contract dat zijn laatste zestig dagen ingaat, zet "beslissen over verlenging" op de lijst van de eigenaar. Een declaratie boven jouw grens wacht op een tweede goedkeuring voordat er iets wordt betaald. Elke maandag een lijst met verlofaanvragen die niemand beantwoordde. Niets vergeten, geen nabellen, geen programmeerwerk.',
       cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -100,7 +98,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Een bakkerij, een zorginstelling of een bureau. Dezelfde app, jouw velden.',
       summary: 'Een zorginstelling wil het BHV-certificaat bij elke medewerker. Een bouwbedrijf wil het kenteken op het bedrijfsmiddel. Een bureau wil de klant op elke urenregel. Voeg het veld toe, verberg het blok dat je nooit gebruikt, sleep de widget die je als eerste bekijkt naar boven. In de draaiende app, in minuten, en je wijzigingen blijven bij elke update bewaard. Een HR-administratie die past bij jouw bedrijf, niet een waar jij in moet passen.',
       cta: {label: 'Zo werkt aanpassen', href: '/apps/openbuild'},
-      panel: <AppMock app="openbuild" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -115,13 +113,21 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         'assistent: één wel, op 3 mei. Één nog niet, moet vóór 15 juni',
       ]} cursor mode="leest alleen, vraagt het voordat hij iets wijzigt" />,
     },
+    {
+      tone: 'mint',
+      eyebrow: 'Laat klanten zichzelf helpen',
+      title: 'Niet iedereen op je loonlijst heeft een plek in je Nextcloud.',
+      summary: <>Via <a href="/apps/portaliq">Portaliq</a> loggen de mensen buiten in en helpen ze zichzelf. De freelancer ziet zijn eigen contract en wat erop is betaald. Een oud-medewerker downloadt in januari de jaaropgave zonder HR te bellen. Een sollicitant volgt zijn eigen sollicitatie in plaats van te vragen hoe het ervoor staat. Elke regel gecontroleerd tegen wie is ingelogd, en niets van andermans dossier in beeld.</>,
+      cta: {label: 'Bekijk het selfserviceportaal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets die we meeleveren"
-  title="Wat jou vandaag nodig heeft, op het dashboard dat je al opent."
-  lede="Installeer HRMQ en het dashboard past zich aan je rol aan. Een medewerker ziet zijn eigen uren en aanvragen. Een manager ziet wat op goedkeuring wacht. HR ziet de ziektedossiers die de langdurige grens naderen en de contracten die bijna aflopen."
+  title="We leveren de widgets die je nodig hebt"
+  lede={<>Installeer HRMQ en het dashboard past zich aan je rol aan. Een medewerker ziet zijn eigen uren en aanvragen. Een manager ziet wat op goedkeuring wacht. HR ziet de ziektedossiers die de langdurige grens naderen en de contracten die bijna aflopen. Ontwerp je eigen widgets met <a href="/apps/openbuild">OpenBuild</a>, of bouw je eigen dashboard van al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
       title: 'Wacht op jouw goedkeuring',
@@ -194,6 +200,34 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         </div>
       ),
     },
+    {
+      title: 'Mijn uren, declaraties en verlof',
+      desc: 'Voor de medewerker. Je ingediende uren, je declaraties en je verlofaanvragen, elk met hun status.',
+    },
+    {
+      title: 'Verlopende BHV-certificaten',
+      desc: 'BHV-certificaten die bijna verlopen, zodat de herhalingscursus geboekt is voordat het certificaat vervalt.',
+    },
+    {
+      title: 'Vrije ruimte',
+      desc: 'De fiscale loonsom, de vrije ruimte voor onbelaste vergoedingen, wat is gebruikt, en de heffing als je eroverheen gaat.',
+    },
+    {
+      title: 'Totalen van de salarisrun',
+      desc: 'Totaal bruto, totaal netto, en een inhoudingensaldo dat op nul uitkomt als alles is geboekt.',
+    },
+    {
+      title: 'Mutatierapport',
+      desc: 'Het verschil in loonkosten met de vorige run, en wie erbij kwam, vertrok of veranderde. Je salarisantwoord in één beeld.',
+    },
+    {
+      title: 'Medewerkeroverzicht',
+      desc: 'Eén pagina per persoon: contracten, loonstroken, openstaande declaraties en uren, met de hele geschiedenis eronder.',
+    },
+    {
+      title: 'Loonbeslagen',
+      desc: 'Wat is opgelegd, de beslagvrije voet die gerespecteerd moet blijven, en de totale vordering terwijl die afloopt.',
+    },
   ]}
 />
 
@@ -209,31 +243,19 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Wie er weg is, in de agenda die iedereen al deelt',
       summary: 'Keur een verlofaanvraag goed en hij staat dezelfde minuut in een gedeelde Nextcloud Agenda. Een ziektedossier verschijnt als "afwezig" met een naam. Verder niets, geen reden, geen diagnose, nooit. Het team plant eromheen vanuit de agenda die het al opent, en HR beantwoordt nooit meer "is Sanne er donderdag?".',
       cta: {label: 'Lees de docs', href: 'https://hrmq.conduction.nl'},
-      panel: (
-        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
-          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
-            <div style={{height: 4, width: '55%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
-            <div style={{height: 3, width: '80%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
-          </div>
-          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Verlof, Sanne de Vries</div>
-          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
-            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
-            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>gedeelde agenda Team, geen reden zichtbaar</div>
-          </div>
-        </div>
-      ),
+      panel: <LeafMock leaf="calendar" />,
     },
     {
       id: 'shillinq',
       title: 'De salarisrun landt vanzelf in de boekhouding',
-      summary: 'Elke goedgekeurde salarisrun levert een sluitende journaalpost en een conceptbetaalbatch met het rekeningnummer en nettoloon van elke medewerker. Allebei landen ze in Shillinq. Je boekhouder ziet de loonkosten waar de rest van de kosten staat, en betaalt de batch van daaruit. Niemand typt de totalen over.',
+      summary: <>Elke goedgekeurde salarisrun levert een sluitende journaalpost en een conceptbetaalbatch met het rekeningnummer en nettoloon van elke medewerker. Allebei landen ze in <a href="/apps/shillinq">Shillinq</a>. Je boekhouder ziet de loonkosten waar de rest van de kosten staat, en betaalt de batch van daaruit. Niemand typt de totalen over.</>,
       cta: {label: 'Bekijk Shillinq', href: '/apps/shillinq'},
       panel: <AppMock app="shillinq" />,
     },
     {
       id: 'docudesk',
       title: 'Het contract, de loonstrook en de jaaropgave, als documenten',
-      summary: 'Arbeidscontract, aanbiedingsbrief, werkgeversverklaring, getuigschrift, loonstrook en jaaropgave worden via DocuDesk uit het dossier gegenereerd en er weer op opgeslagen. De medewerker downloadt zijn loonstrook vanaf zijn eigen pagina. Pas het briefpapier één keer aan en elk nieuw document draagt het.',
+      summary: <>Arbeidscontract, aanbiedingsbrief, werkgeversverklaring, getuigschrift, loonstrook en jaaropgave worden via <a href="/apps/docudesk">DocuDesk</a> uit het dossier gegenereerd en er weer op opgeslagen. De medewerker downloadt zijn loonstrook vanaf zijn eigen pagina. Pas het briefpapier één keer aan en elk nieuw document draagt het.</>,
       cta: {label: 'Bekijk DocuDesk', href: '/apps/docudesk'},
       panel: <AppMock app="docudesk" />,
     },
@@ -243,28 +265,36 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Past goed bij"
-    title="Twee apps die HR en salaris compleet maken."
+    title="Bouw ermee, vraag ernaar, zie het op je dashboard."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/shillinq"
-      icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>}
-      name="Shillinq"
-      why="Boekhouding en betalingen. Elke goedgekeurde salarisrun boekt zijn journaalpost en betaalbatch rechtstreeks in de boekhouding."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Voeg het veld toe dat jouw bedrijf nodig heeft en verberg het blok dat je nooit gebruikt, zonder ontwikkelaar. Je wijzigingen overleven elke update."
     />
     <PairCard
-      href="/apps/docudesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      name="DocuDesk"
-      why="Contracten, verklaringen, loonstroken en jaaropgaven als documenten, gegenereerd uit het dossier en er weer op opgeslagen."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7v3a7 7 0 0 1-14 0V9a7 7 0 0 1 7-7Z"/><path d="M9 22h6"/><circle cx="9.5" cy="10" r="1"/><circle cx="14.5" cy="10" r="1"/></svg>}
+      name="Hermiq"
+      why="De assistent voor je werkplek. Vraag welke contracten dit kwartaal aflopen en krijg de namen, nooit een diagnose."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Je eigen dashboard over al je apps. Goedkeuringen, aflopende contracten en ziektedossiers, naast de rest van je dag."
     />
   </PairRow>
 </Section>
+
+<PartnersForApp slug="hrmq" />
 
 <CtaBanner
   title="HR en salarisadministratie op je eigen Nextcloud."
   lede={<>Open source. Gratis te installeren. Personeelsgegevens blijven op je eigen server. HRMQ draait op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
   primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=hrmq'}}
 />

@@ -4,7 +4,7 @@ description: Make your data discoverable and reusable, beyond your organisation 
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 export const app = getApp('opencatalogi');
@@ -19,8 +19,8 @@ export const app = getApp('opencatalogi');
   title={app.name}
   tagline={<>Make your data discoverable and reusable, beyond your organisation too. Publish once from your own <span className="next-blue">Nextcloud</span>, be found everywhere.</>}
   intro={<>{app.name} is the public catalogue for public bodies. Decisions, datasets, reports and services go public from the same Nextcloud where the team already works. A resident searches once and finds your document and the neighbouring municipality's. The national open data index is fed for you. Every item carries its own retention date, and it comes down again on time. Open source, released under EUPL-1.2 and maintained by Conduction since 2019.</>}
-  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/opencatalogi'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=opencatalogi'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/opencatalogi'}}
   illustration={<AppMock app="opencatalogi" />}
 />
@@ -75,12 +75,10 @@ export const app = getApp('opencatalogi');
   </div>
 </Section>
 
-<PartnersForApp slug="opencatalogi" />
-
 <RotatingCards
-  eyebrow={`Three ways ${app.name} earns its place`}
+  eyebrow={`Four ways ${app.name} earns its place`}
   title="It works the way you work. And it works for you."
-  lede="Three things you would normally pay extra for. Here they are built in."
+  lede="Four things you would normally pay extra for. Here they are built in."
   cards={[
     {
       tone: 'forest',
@@ -88,7 +86,7 @@ export const app = getApp('opencatalogi');
       title: 'The council decides on Tuesday. It is public on Wednesday, by itself.',
       summary: 'Today: someone keeps a list of what has to go public when, and what has to come down when. Instead: you draw it once. Set the publication date, and the item goes public on the day. Set the retention term, and it comes down on the day, with a note of why. A publication whose term is about to end lands on the records officer\'s list before the date. A batch of two hundred documents cleared for publication? Published in one go, and every one of them logged. Nothing forgotten, no chasing, no coding.',
       cta: {label: 'How automation works', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -96,7 +94,7 @@ export const app = getApp('opencatalogi');
       title: 'Your reading room, your fields, your look. Without a developer.',
       summary: 'A province wants the water board on every dataset. A municipality wants a decision number on every decision. A ministry wants a page per theme, in its own house style. Add the field, add the page, build the menu, pick the theme. In the running app, in minutes, and your changes stay with every update.',
       cta: {label: 'How customising works', href: '/apps/openbuild'},
-      panel: <AppMock app="openbuild" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -110,13 +108,21 @@ export const app = getApp('opencatalogi');
         'assistant: want the links, or a summary of each?',
       ]} cursor mode="reads the catalogue, changes nothing" />,
     },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'The people you serve look it up themselves. Without a request form.',
+      summary: <>The catalogue is the public front door, and <a href="/apps/portaliq">Portaliq</a> is the personal one. Behind a login, residents and businesses see what applies to them: the requests they filed, the contracts they hold, the invoices they owe or paid. A quotation is asked for and signed in the same place. The counter is open in the evening too, and your inbox stays quiet.</>,
+      cta: {label: 'See the client portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets we ship"
-  title="On the dashboard your team already opens."
-  lede="Install it and the home screen shows what the public reads, what still waits to go out, and which items are about to reach their retention date."
+  title="We ship the widgets you need"
+  lede={<>Install it and the home screen shows what the public reads, what still waits to go out, and which items are about to reach their retention date. Want more? Design your own widgets with <a href="/apps/openbuild">OpenBuild</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
       title: 'Most-read publications',
@@ -170,6 +176,26 @@ export const app = getApp('opencatalogi');
         </div>
       ),
     },
+    {title: 'Popular search terms', desc: 'What the public searches for, so you publish what they actually look for.'},
+    {title: 'Traffic', desc: 'Visits to your reading room over time, counted without tracking anyone.'},
+    {title: 'Activity', desc: 'What was published, changed and taken down, day by day.'},
+    {title: 'Publications', desc: 'Everything you have published, in one running count.'},
+    {title: 'Concept', desc: 'Items drafted but not yet public, waiting for a decision.'},
+    {title: 'Published', desc: 'What is live right now, across all your catalogues.'},
+    {title: 'Depublished', desc: 'What came down, when, and why it did.'},
+    {title: 'By category', desc: 'Publications per category, so gaps show up on sight.'},
+    {title: 'Working lists', desc: 'Three lists of items that need a hand: to check, to enrich, to decide.'},
+    {title: 'Publication views', desc: 'How often one publication was read, on the publication itself.'},
+    {title: 'Publication downloads', desc: 'How often the document behind it was downloaded.'},
+    {title: 'Organisation publications', desc: 'What one organisation has published, in one list.'},
+    {title: 'Organisation catalogues', desc: 'The catalogues one organisation runs.'},
+    {title: 'Theme usage', desc: 'Which themes are used where, before you change one.'},
+    {title: 'Theme preview', desc: 'How a theme looks before you put it on a live page.'},
+    {title: 'Glossary graph', desc: 'How your public terms relate, drawn as a map.'},
+    {title: 'Page tree', desc: 'The pages of your reading room, in their hierarchy.'},
+    {title: 'Menu tree', desc: 'The menus of your reading room, ready to rearrange.'},
+    {title: 'Concept attachments', desc: 'Draft attachments waiting to go out, on your Nextcloud home screen.'},
+    {title: 'Concept publications', desc: 'Draft publications waiting for a decision, on your Nextcloud home screen.'},
   ]}
 />
 
@@ -185,15 +211,7 @@ export const app = getApp('opencatalogi');
       title: 'The document, the photos and the links, on the publication',
       summary: 'A publication is not a form. It is the report itself, the map that goes with it, the photos of the site and the links to the underlying decisions. Drop them on the publication from Files, and they are the public download. Everyone downloads the same version you see. Update the file, and the public download is the new file.',
       cta: {label: 'Read the docs', href: 'https://opencatalogi.conduction.nl'},
-      panel: <MockScene
-        width={680}
-        height={420}
-        items={[
-          {type: 'sidebar', kind: 'opencatalogi-publication-history', x: 200, y: 10,  size: 'md', z: 1},
-          {type: 'widget',  kind: 'nextcloud-files',                  x: 0,   y: 0,   size: 'sm', z: 2},
-          {type: 'widget',  kind: 'opencatalogi-publications',        x: 0,   y: 230, size: 'sm', z: 2},
-        ]}
-      />,
+      panel: <LeafMock leaf="files" />,
     },
     {
       id: 'schedule',
@@ -222,35 +240,37 @@ export const app = getApp('opencatalogi');
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="Three apps that fill the catalogue."
+    title="Three apps that make the catalogue more yours."
     align="stack"
-    lede="The catalogue publishes what the rest of the workspace produces. These three produce it, clean it, and bring it in."
+    lede="Shape the reading room, ask it questions, and put its numbers on your own dashboard."
   />
   <PairRow>
     <PairCard
-      href="/apps/procest"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4"/></svg>}
-      name="Procest"
-      why="Case handling for public bodies. The decision on a case is the publication in the catalogue."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Change pages, fields and menus of your reading room in the running app. A province and a ministry run the same app, each their own way."
     />
     <PairCard
-      href="/apps/docudesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      name="DocuDesk"
-      why="Blacks out names and personal numbers before a document goes public."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 1 1-4-6.9"/><path d="M12 8v4l3 2"/></svg>}
+      name="Hermiq"
+      why="The assistant that finds publications and answers retention questions lives here. You decide who may ask it."
     />
     <PairCard
-      href="/apps/openconnector"
-      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-      name="OpenConnector"
-      why="Brings publications in from the systems you already have, so nobody re-types them."
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Compose your own dashboard from the catalogue widgets above, next to everything else your organisation runs."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="opencatalogi" />
+
 <CtaBanner
   title="Your public catalogue, on your own Nextcloud."
   lede={<>Open source. Free to install. GDPR-compliant by default. Publish from the same <span className="next-blue">Nextcloud</span> where your team already works, and be found everywhere.</>}
-  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/opencatalogi'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=opencatalogi'}}
 />

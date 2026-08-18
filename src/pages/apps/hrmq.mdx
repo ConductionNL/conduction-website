@@ -4,7 +4,7 @@ description: HR and payroll on your own Nextcloud. Someone reports sick and the 
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -18,7 +18,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   tagline={<>HR and payroll on your own <span className="next-blue">Nextcloud</span>. The deadlines the law sets are on your calendar the day they start counting.</>}
   intro={<>HRMQ runs the HR administration of a Dutch employer. Hours, expenses and leave with an approval step. Sickness cases with the statutory dates already filled in. Contracts that warn you before they end. A payroll calculation that turns hours and salary into a payslip, a wage tax figure and a journal entry from the same numbers. Recruiting, onboarding, offboarding and the laptops in between. Built for the Dutch rules, honest about what is not certified yet. Released under EUPL-1.2 and maintained by Conduction.</>}
   primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=hrmq'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/hrmq'}}
   illustration={<AppMock app="hrmq" />}
 />
@@ -49,7 +49,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h2M14 14h4M8 17h6"/></svg>}
       title="Enter hours and salary once. Payslip, wage tax figure and journal entry come out."
     >
-      Approve the hours, run payroll, and the payslip, the wage tax return figures, the pension filing and the journal entry all come from the same calculation. No re-keying into a second system, no numbers that disagree. The journal entry and the payment batch land in Shillinq for booking and paying. Honest line: the payroll calculation follows the official Dutch 2026 rules but is not certified yet, and it says so on every payslip.
+      Approve the hours, run payroll, and the payslip, the wage tax return figures, the pension filing and the journal entry all come from the same calculation. No re-keying into a second system, no numbers that disagree. The journal entry and the payment batch land in [Shillinq](/apps/shillinq) for booking and paying. Honest line: the payroll calculation follows the official Dutch 2026 rules but is not certified yet, and it says so on every payslip.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/></svg>}
@@ -79,12 +79,10 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   </div>
 </Section>
 
-<PartnersForApp slug="hrmq" />
-
 <RotatingCards
-  eyebrow="Three ways HRMQ earns its place"
+  eyebrow="Four ways HRMQ earns its place"
   title="It works the way you work. And it works for you."
-  lede="Three things you would normally pay extra for. In HRMQ they are built in."
+  lede="Four things you would normally pay extra for. In HRMQ they are built in."
   cards={[
     {
       tone: 'forest',
@@ -92,7 +90,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'A sick case reaches week five. The plan is already on someone\'s desk.',
       summary: 'Today: HR keeps a spreadsheet of sick cases and checks it when they remember. Instead, set it up once. A week before the problem analysis is due, a task lands on the manager\'s desk. A contract that enters its last sixty days puts "decide on renewal" on the owner\'s list. An expense claim over your limit waits for a second approval before anything is paid. Every Monday, a list of leave requests nobody answered. Nothing forgotten, no chasing, no coding.',
       cta: {label: 'How automation works', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -100,7 +98,7 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'A bakery, a care home or an agency. Same app, your fields.',
       summary: 'A care home wants the emergency-response certificate on every employee. A construction firm wants the vehicle plate on the asset. An agency wants the client on every timesheet line. Add the field, hide the block you never use, drag the widget you check first to the top. In the running app, in minutes, and your changes stay with every update. HR administration that fits your business, not one you fit into.',
       cta: {label: 'How customising works', href: '/apps/openbuild'},
-      panel: <AppMock app="openbuild" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -115,13 +113,21 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         'assistant: one yes, on 3 May. One not yet, due before 15 June',
       ]} cursor mode="reads only, asks before it changes anything" />,
     },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'Not everyone on your payroll has a desk in your Nextcloud.',
+      summary: <>Through <a href="/apps/portaliq">Portaliq</a> the people outside log in and help themselves. The freelancer sees their own contract and what was paid on it. A former employee downloads the annual statement in January without calling HR. An applicant follows their own application instead of asking how it went. Every line checked against the person who is logged in, and nothing of anyone else's file in sight.</>,
+      cta: {label: 'See the self-service portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets we ship"
-  title="What needs you today, on the dashboard you already open."
-  lede="Install HRMQ and the dashboard fits your role. An employee sees their own hours and requests. A manager sees what waits for approval. HR sees the sick cases nearing the long-term limit and the contracts about to end."
+  title="We ship the widgets you need"
+  lede={<>Install HRMQ and the dashboard fits your role. An employee sees their own hours and requests. A manager sees what waits for approval. HR sees the sick cases nearing the long-term limit and the contracts about to end. Design your own widgets with <a href="/apps/openbuild">OpenBuild</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
       title: 'Waiting for your approval',
@@ -194,6 +200,34 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         </div>
       ),
     },
+    {
+      title: 'My hours, expenses and leave',
+      desc: 'For the employee. Your submitted hours, your expense claims and your leave requests, each with its status.',
+    },
+    {
+      title: 'Expiring first-aid certificates',
+      desc: 'Emergency-response certificates about to run out, so the refresher course is booked before the certificate lapses.',
+    },
+    {
+      title: 'Free-space budget',
+      desc: 'The fiscal wage bill, the free space for untaxed allowances, what is used, and the levy if you go over.',
+    },
+    {
+      title: 'Payroll run totals',
+      desc: 'Total gross, total net, and a withholding balance that clears to zero when everything is booked.',
+    },
+    {
+      title: 'Mutation report',
+      desc: 'Wage-cost change against last run, and who entered, left or changed. Your payroll answer in one view.',
+    },
+    {
+      title: 'Employee overview',
+      desc: 'One page per person: contracts, payslips, pending expenses and hours, with the full history underneath.',
+    },
+    {
+      title: 'Garnishments',
+      desc: 'What was ordered, the protected minimum that must be respected, and the total claim as it runs down.',
+    },
   ]}
 />
 
@@ -209,31 +243,19 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       title: 'Who is away, in the calendar everyone already shares',
       summary: 'Approve a leave request and it is in a shared Nextcloud Calendar the same minute. A sick case appears as "absent" with a name. Nothing else, no reason, no diagnosis, ever. The team plans around it from the calendar they already open, and HR never answers "is Sanne in on Thursday?" again.',
       cta: {label: 'Read the docs', href: 'https://hrmq.conduction.nl'},
-      panel: (
-        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
-          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
-            <div style={{height: 4, width: '55%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
-            <div style={{height: 3, width: '80%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
-          </div>
-          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Leave, Sanne de Vries</div>
-          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
-            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
-            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>shared calendar Team, no reason shown</div>
-          </div>
-        </div>
-      ),
+      panel: <LeafMock leaf="calendar" />,
     },
     {
       id: 'shillinq',
       title: 'Payroll lands in the books by itself',
-      summary: 'Every approved payroll run produces a balanced journal entry and a draft payment batch with every employee\'s account number and net pay. Both land in Shillinq. Your bookkeeper sees the salary costs where the rest of the costs are, and pays the batch from there. Nobody types the totals over.',
+      summary: <>Every approved payroll run produces a balanced journal entry and a draft payment batch with every employee's account number and net pay. Both land in <a href="/apps/shillinq">Shillinq</a>. Your bookkeeper sees the salary costs where the rest of the costs are, and pays the batch from there. Nobody types the totals over.</>,
       cta: {label: 'See Shillinq', href: '/apps/shillinq'},
       panel: <AppMock app="shillinq" />,
     },
     {
       id: 'docudesk',
       title: 'The contract, the payslip and the annual statement, as documents',
-      summary: 'Employment contract, offer letter, employer statement, reference, payslip and annual statement are generated from the record through DocuDesk and stored back on it. The employee downloads their payslip from their own page. Change the letterhead once and every new document carries it.',
+      summary: <>Employment contract, offer letter, employer statement, reference, payslip and annual statement are generated from the record through <a href="/apps/docudesk">DocuDesk</a> and stored back on it. The employee downloads their payslip from their own page. Change the letterhead once and every new document carries it.</>,
       cta: {label: 'See DocuDesk', href: '/apps/docudesk'},
       panel: <AppMock app="docudesk" />,
     },
@@ -243,28 +265,36 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="Two apps that complete HR and payroll."
+    title="Build with it, ask about it, see it on your dashboard."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/shillinq"
-      icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>}
-      name="Shillinq"
-      why="Bookkeeping and payments. Every approved payroll run posts its journal entry and payment batch straight into the books."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Add the field your business needs and hide the block you never use, without a developer. Your changes survive every update."
     />
     <PairCard
-      href="/apps/docudesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      name="DocuDesk"
-      why="Contracts, statements, payslips and annual statements as documents, generated from the record and stored back on it."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7v3a7 7 0 0 1-14 0V9a7 7 0 0 1 7-7Z"/><path d="M9 22h6"/><circle cx="9.5" cy="10" r="1"/><circle cx="14.5" cy="10" r="1"/></svg>}
+      name="Hermiq"
+      why="The assistant for your workspace. Ask which contracts end this quarter and get the names, never a diagnosis."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Your own dashboard across all your apps. Approvals, ending contracts and sick cases, next to the rest of your day."
     />
   </PairRow>
 </Section>
+
+<PartnersForApp slug="hrmq" />
 
 <CtaBanner
   title="HR and payroll on your own Nextcloud."
   lede={<>Open source. Free to install. Employee data stays on your own server. HRMQ runs on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
   primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=hrmq'}}
 />

@@ -4,7 +4,7 @@ description: One place for every record, object and document, fully under your c
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock, getApp} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 export const app = getApp('openregister');
@@ -19,8 +19,8 @@ export const app = getApp('openregister');
   title={app.name}
   tagline={<>One place for every record, object and document, fully under your control. On your own <span className="next-blue">Nextcloud</span>.</>}
   intro={<>{app.name} is the shared data store under every Conduction app. Your clients, quotes, invoices, projects and cases live in it once, on your own server. Every app reads and writes the same records, so a change in one place is a change everywhere. It also runs your automation: draw what should happen, and it happens. Every change is logged with who, what and when. Open source, released under EUPL-1.2 and maintained by Conduction since 2019.</>}
-  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/openregister'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=openregister'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/openregister'}}
   illustration={<AppMock app="openregister" />}
 />
@@ -69,12 +69,10 @@ export const app = getApp('openregister');
   </div>
 </Section>
 
-<PartnersForApp slug="openregister" />
-
 <RotatingCards
-  eyebrow={`Three ways ${app.name} earns its place`}
+  eyebrow={`Four ways ${app.name} earns its place`}
   title="It works the way you work. And it works for you."
-  lede="Three things you would normally pay extra for. Here they are built in, for every app on your workspace."
+  lede="Four things you would normally pay extra for. Here they are built in, for every app on your workspace."
   cards={[
     {
       tone: 'forest',
@@ -82,7 +80,7 @@ export const app = getApp('openregister');
       title: 'An invoice goes unpaid. The reminder is already on someone\'s desk.',
       summary: 'Today: someone checks the open invoices every week and chases by hand. Instead: you draw it once. Every morning it checks the open invoices. Fourteen days past due, a follow-up task lands with the right colleague, and the client record shows it. A write-off over five hundred euros waits for your approval before anything changes. Every first of the month, the list of overdue invoices per client. Every step is logged, and each run only does what the person who set it up may do. Nothing forgotten, no chasing, no coding.',
       cta: {label: 'Read the docs', href: 'https://openregister.conduction.nl'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -90,7 +88,7 @@ export const app = getApp('openregister');
       title: 'Add the field your business needs. Without a developer.',
       summary: 'A wholesaler wants a delivery region on every client. An installer wants a site-visit step before the quote. Add the field, add the step, move the widget you look at first to the top. In the running app, in minutes, and your changes stay with every update. Need a small app of your own, like a vehicle list with inspection dates? Name it, add the fields, say who sees it, and it is in the top bar.',
       cta: {label: 'How customising works', href: '/apps/openbuild'},
-      panel: <AppMock app="openbuild" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -104,17 +102,25 @@ export const app = getApp('openregister');
         'assistant: want me to plan a follow-up call for each?',
       ]} cursor mode="asks before it changes anything" />,
     },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'Clients see their own records. In their own portal.',
+      summary: <>The records already live here: contracts, orders, requests, invoices. Give clients their own door to them with <a href="/apps/portaliq">Portaliq</a>: a portal in your house style where they see their contracts and products, ask and sign quotations, and follow their tickets. No copy of the data, no separate portal database. Your team and your clients look at the same record, and the where-is-it calls stop.</>,
+      cta: {label: 'Give clients their own portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets we ship"
-  title="On the dashboard your team already opens."
-  lede="Install it and the home screen shows what changed in your data, what people search for, and where the data needs a clean-up."
+  title="We ship the widgets you need"
+  lede={<>Install it and the dashboard shows how much data you hold, what changed, and what people search for. Design your own widgets with <a href="/apps/openbuild">OpenBuild</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
-      title: 'Recent changes',
-      desc: 'The latest records your team created or changed, across every app. Who did it, and when.',
+      title: 'Events',
+      desc: 'The latest changes across every app. Who did what, and when.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {['var(--c-forest-300)', 'var(--c-lavender-300)', 'var(--c-mint-300)', 'var(--c-terracotta-300)', 'var(--c-forest-300)'].map((tone, i) => (
@@ -131,8 +137,8 @@ export const app = getApp('openregister');
       ),
     },
     {
-      title: 'Activity this week',
-      desc: 'How many records were added this week, per app. Click through for the detail.',
+      title: 'Objects',
+      desc: 'How many records live in your workspace, and how fast that grows.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
           <div style={{display: 'flex', alignItems: 'baseline', gap: 6}}>
@@ -148,7 +154,7 @@ export const app = getApp('openregister');
       ),
     },
     {
-      title: 'Top searches',
+      title: 'Popular search terms',
       desc: 'What your team looks for most. Shows what is hard to find, so you can fix it.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
@@ -163,6 +169,13 @@ export const app = getApp('openregister');
         </div>
       ),
     },
+    {title: 'Registers', desc: 'Your data collections at a glance, with counts per collection.'},
+    {title: 'Object types', desc: 'The kinds of records you keep, and how many of each.'},
+    {title: 'Searches', desc: 'How often your team searches, day by day.'},
+    {title: 'Objects by register', desc: 'Which collections hold the most records.'},
+    {title: 'Objects by type', desc: 'Your records broken down by kind.'},
+    {title: 'Data distribution', desc: 'One chart of where your data sits.'},
+    {title: 'Integrations status', desc: 'On the Nextcloud home dashboard: whether your connections ran, at a glance.'},
   ]}
 />
 
@@ -195,7 +208,7 @@ export const app = getApp('openregister');
       title: 'Your CRM uses your real contacts and calendar.',
       summary: "When your CRM needs a contact, it uses your Nextcloud address book. When it needs a meeting, it writes to your Nextcloud calendar. Open a lead and see the meetings about it. Click a contact and start a Talk conversation. One login covers all of it, and nobody keeps a second address book.",
       cta: {label: 'Read the docs', href: 'https://openregister.conduction.nl/docs/Integrations/calendar'},
-      panel: <AppMock app="pipelinq" />
+      panel: <LeafMock leaf="contacts" />
     },
     {
       id: 'project-knowledge',
@@ -214,7 +227,7 @@ export const app = getApp('openregister');
     {
       id: 'beyond-the-workspace',
       title: 'Outside systems, in the same picture.',
-      summary: "Your bookkeeping package, your supplier's ordering system, a public data source: through OpenConnector they feed the same records, on a schedule you set. The outside system stays what it is. Your workspace treats its data as part of the client record, with the same log and the same permissions.",
+      summary: <>Your bookkeeping package, your supplier's ordering system, a public data source: through <a href="/apps/openconnector">OpenConnector</a> they feed the same records, on a schedule you set. The outside system stays what it is. Your workspace treats its data as part of the client record, with the same log and the same permissions.</>,
       cta: {label: 'See OpenConnector', href: '/apps/openconnector'},
       panel: <MockScene
         width={680}
@@ -233,22 +246,22 @@ export const app = getApp('openregister');
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="Three apps that build on the same records."
+    title="Three apps that put the same records to work."
     align="stack"
-    lede="This is the data under every Conduction app. These three fill it, show it, and put it to work."
+    lede="Shape the records, talk to them, and see them on one start screen."
   />
   <PairRow>
     <PairCard
-      href="/apps/pipelinq"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
-      name="PipelinQ"
-      why="CRM, quotes and deals. Every client is a record here and a contact in your address book."
+      href="/apps/openbuild"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="OpenBuild"
+      why="Add fields, screens and small apps of your own on top of these records. No developer needed."
     />
     <PairCard
-      href="/apps/openconnector"
-      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-      name="OpenConnector"
-      why="Brings data in from the systems you already have. Bookkeeping, suppliers, public sources."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>}
+      name="Hermiq"
+      why="Ask your records a question, or hand them a task. You decide what each assistant may do."
     />
     <PairCard
       href="/apps/launchpad"
@@ -268,9 +281,11 @@ export const app = getApp('openregister');
   />
 </Section>
 
+<PartnersForApp slug="openregister" />
+
 <CtaBanner
   title="Your data, on your own Nextcloud."
   lede={<>Open source. Free to install. GDPR-compliant by default. Every Conduction app runs on the same records, on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
-  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/openregister'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=openregister'}}
 />
