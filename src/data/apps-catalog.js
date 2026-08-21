@@ -84,7 +84,7 @@ const PRESENTATION = {
     icon: <AppGlyph app="zaakafhandelapp" />,
   },
   pipelinq: {
-    name: 'PipelinQ',
+    name: 'Pipelinq',
     tagline: 'CRM with quotes, contacts, and deal-flow. Built on registers, no separate sales database.',
     href: '/apps/pipelinq',
     categories: ['Processes'],
@@ -98,7 +98,7 @@ const PRESENTATION = {
     icon: <AppGlyph app="procest" />,
   },
   planix: {
-    name: 'Planiq',
+    name: 'Planninq',
     tagline: 'Flow-based kanban project and task management. Boards, backlog, and time tracking for dev and IT teams.',
     href: '/apps/planix',
     categories: ['Processes'],

@@ -56,7 +56,7 @@ const RENAMED = {
   Scholiq: 'Learniq', DeciDesk: 'Decidiq', SoftwareCatalog: 'Stackiq',
   NLDesign: 'Thematiq', OpenBuild: 'Buildiq', OpenConnector: 'Integriq',
   LarpingApp: 'Larpinq', 'App Versions': 'Versioniq',
-  OpenAnonymiser: 'Anonymiq', Planix: 'Planiq',
+  OpenAnonymiser: 'Anonymiq', Planix: 'Planninq',
 };
 
 export function PartnersForApp({slug, name, ...rest}) {
