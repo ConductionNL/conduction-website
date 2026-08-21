@@ -1,5 +1,5 @@
 ---
-title: OpenConnector, Conduction
+title: Integriq, Conduction
 description: Koppel alles met alles, zonder vendor lock-in of dure integrator. Je webshop, je boekhouding en je klantenbestand spreken elkaar niet meer tegen. Wijzigingen worden vanzelf overgenomen, en wat mislukt staat 's ochtends op één lijst.
 hide_table_of_contents: true
 ---
@@ -7,7 +7,10 @@ hide_table_of_contents: true
 import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
-export const app = getApp('openconnector');
+{/* Display-name rebrand 2026-08: OpenConnector → Integriq. De apps-registry
+    van de preset kan de oude naam nog dragen; pin de weergavenaam hier.
+    Slug, URLs en repo blijven `openconnector`. */}
+export const app = {...getApp('openconnector'), name: 'Integriq'};
 
 <DetailHero
   background="cobalt"
@@ -18,7 +21,7 @@ export const app = getApp('openconnector');
   locales="NL · EN"
   title={app.name}
   tagline={<>Koppel alles met alles, zonder vendor lock-in of dure integrator. Op je eigen <span className="next-blue">Nextcloud</span>.</>}
-  intro={<>{app.name} houdt de systemen die je al hebt gelijk met elkaar. Je webshop, je boekhoudpakket en je oude klantenbestand hebben elk een kopie van dezelfde klant. Het neemt wijzigingen tussen ze over zodra ze gebeuren, of elke nacht, wat jij kiest. Niemand typt een order over. Komt er iets binnen dat niet past, dan wordt het geweigerd en zie je waarom. Mislukt een levering 's nachts, dan probeert het het vanzelf opnieuw. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction sinds 2019.</>}
+  intro={<>{app.name} (voorheen OpenConnector) houdt de systemen die je al hebt gelijk met elkaar. Je webshop, je boekhoudpakket en je oude klantenbestand hebben elk een kopie van dezelfde klant. Het neemt wijzigingen tussen ze over zodra ze gebeuren, of elke nacht, wat jij kiest. Niemand typt een order over. Komt er iets binnen dat niet past, dan wordt het geweigerd en zie je waarom. Mislukt een levering 's nachts, dan probeert het het vanzelf opnieuw. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction sinds 2019.</>}
   primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/openconnector'}}
   secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=openconnector'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/openconnector'}}
@@ -122,7 +125,7 @@ export const app = getApp('openconnector');
 <WidgetShelf
   eyebrow="Widgets die we meeleveren"
   title="We leveren de widgets die je nodig hebt"
-  lede={<>Installeer het en het startscherm toont wat er draaide, wat mislukte en wat opnieuw moet. Je koppelingen controleren is een blik, geen klus. Meer nodig? Ontwerp je eigen widgets met <a href="/apps/openbuild">OpenBuild</a>, of bouw je eigen dashboard uit al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
+  lede={<>Installeer het en het startscherm toont wat er draaide, wat mislukte en wat opnieuw moet. Je koppelingen controleren is een blik, geen klus. Meer nodig? Ontwerp je eigen widgets met <a href="/apps/openbuild">Buildiq</a>, of bouw je eigen dashboard uit al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
       title: 'Runs vandaag',
@@ -263,7 +266,7 @@ export const app = getApp('openconnector');
     <PairCard
       href="/apps/openbuild"
       icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
-      name="OpenBuild"
+      name="Buildiq"
       why="Pas regels, velden en schermen aan in de draaiende app. Een groothandel en een gemeente draaien dezelfde app, elk op hun eigen manier."
     />
     <PairCard

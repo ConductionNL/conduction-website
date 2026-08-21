@@ -22,7 +22,19 @@ export function PartnerDirectoryBlock() {
   // Only a slug the registry knows gets acknowledged; anything else is
   // ignored so a stale link never shows a made-up name or an empty page.
   const app = params.get('app') ? getApp(params.get('app')) : null;
-  const appName = app?.name || null;
+  // Display-name rebrand 2026-08: the preset's apps-registry may still
+  // carry the former product names. Map them to the current display
+  // names so the partner filter keeps matching partners-catalog (which
+  // uses the new names) and the banner shows the new brand. Remove once
+  // @conduction/docusaurus-preset ships the renamed registry.
+  const RENAMED = {
+    Procest: 'Dossiq', DocuDesk: 'Filinq', Doriath: 'Keepiq', HRMQ: 'Humaniq',
+    Scholiq: 'Learniq', DeciDesk: 'Decidiq', SoftwareCatalog: 'Stackiq',
+    NLDesign: 'Thematiq', OpenBuild: 'Buildiq', OpenConnector: 'Integriq',
+    LarpingApp: 'Larpinq', 'App Versions': 'Versioniq',
+    OpenAnonymiser: 'Anonymiq', Planix: 'Planiq',
+  };
+  const appName = app ? (RENAMED[app.name] || app.name) : null;
   const solutionSlug = params.get('solution');
   const shown = appName
     ? partners.filter(p => (p.apps || []).some(a => a.toLowerCase() === appName.toLowerCase()))

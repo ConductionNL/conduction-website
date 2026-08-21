@@ -5,8 +5,8 @@ contentType: tutorial
 heroIcon: connector
 authors: [conduction]
 date: 2026-06-15
-summary: Tie the OpenRegister → OpenConnector → OpenCatalogi pipeline into one compliant Woo open-data chain. The three deep tutorials teach each app on a Pet Store; this capstone overlays the Dutch open-government layer on top — the canonical Woo and DCAT registers, an external open-data source mapped to a Dataset, the publicatiedatum publish rule, and a DCAT-AP-NL feed that data.overheid.nl harvests. Grab data from a source, and publish it on a catalog.
-tags: [Woo, DCAT, OpenRegister, OpenConnector, OpenCatalogi, Publications, Open data, Tutorial series]
+summary: Tie the OpenRegister → Integriq → OpenCatalogi pipeline into one compliant Woo open-data chain. The three deep tutorials teach each app on a Pet Store; this capstone overlays the Dutch open-government layer on top — the canonical Woo and DCAT registers, an external open-data source mapped to a Dataset, the publicatiedatum publish rule, and a DCAT-AP-NL feed that data.overheid.nl harvests. Grab data from a source, and publish it on a catalog.
+tags: [Woo, DCAT, OpenRegister, Integriq, OpenCatalogi, Publications, Open data, Tutorial series]
 apps: [openregister, openconnector, opencatalogi, openwoo]
 durationMinutes: 18
 series: woo-tutorial
@@ -31,7 +31,7 @@ import TabItem from '@theme/TabItem';
 The first three parts of this series set up the registers, the files, and a public catalog for Dutch open-government data. Conduction also has a **three-tutorial pipeline** that teaches the same three apps from the ground up, end to end, on the canonical Pet Store sample:
 
 1. [Model and manage your data with OpenRegister](/academy/model-data-with-openregister) — registers, schemas, relations, objects, search, versioning, permissions.
-2. [Pull external data into your register with OpenConnector](/academy/pull-data-with-openconnector) — a source, a mapping, and a scheduled synchronisation.
+2. [Pull external data into your register with Integriq](/academy/pull-data-with-openconnector) — a source, a mapping, and a scheduled synchronisation.
 3. [Publish a public catalog with OpenCatalogi](/academy/publish-catalog-with-opencatalogi) — scope a catalog, publish with a date rule, expose a DCAT-AP-NL feed.
 
 This capstone is the **Woo & DCAT overlay** on that pipeline. Rather than repeat the mechanics, it points you at each deep tutorial and then layers the open-government specifics on top: the canonical registers you import instead of hand-building, the open-data source you map to a `Dataset`, and the DCAT-AP-NL feed that national portals harvest. The shape is identical to the Pet Store chain — *grab data from a source, and publish it on a catalog* — only the domain changes.
@@ -50,7 +50,7 @@ Each deep tutorial below stands alone and uses the Pet Store. This page is the b
 </Outcomes>
 
 <Prerequisites title="What you need">
-  <PrerequisiteItem>A running Nextcloud with <strong>OpenRegister</strong>, <strong>OpenConnector</strong> and <strong>OpenCatalogi</strong> installed.</PrerequisiteItem>
+  <PrerequisiteItem>A running Nextcloud with <strong>OpenRegister</strong>, <strong>Integriq</strong> and <strong>OpenCatalogi</strong> installed.</PrerequisiteItem>
   <PrerequisiteItem>The DCAT register and catalog from <a href="/academy/woo-publish-and-harvest-catalog">Part 3</a> (or import them as the overlay below describes).</PrerequisiteItem>
   <PrerequisiteItem>A user with admin rights. Comfort with the three deep tutorials helps, but is not required.</PrerequisiteItem>
 </Prerequisites>
@@ -62,7 +62,7 @@ The whole pipeline is three apps in a row. Each generic tutorial teaches one sta
 | Stage | What runs | Learn the mechanics | The Woo / DCAT overlay |
 | --- | --- | --- | --- |
 | **1. Model** | OpenRegister | [Model your data with OpenRegister](/academy/model-data-with-openregister) | Import the canonical **Woo** and **DCAT** registers instead of hand-building a `pet` schema. |
-| **2. Pull** | OpenConnector | [Pull data with OpenConnector](/academy/pull-data-with-openconnector) | Point the source at an **open-data API** and map records onto the `Dataset` schema, publishing on arrival. |
+| **2. Pull** | Integriq | [Pull data with Integriq](/academy/pull-data-with-openconnector) | Point the source at an **open-data API** and map records onto the `Dataset` schema, publishing on arrival. |
 | **3. Publish** | OpenCatalogi | [Publish a catalog with OpenCatalogi](/academy/publish-catalog-with-opencatalogi) | Scope the catalog to the **DCAT register** and expose a **DCAT-AP-NL** feed for national harvesters. |
 
 <HexCard title="One pipeline, two domains">
@@ -83,21 +83,21 @@ This is [Part 1 of the Woo series](/academy/woo-set-up-register): open **OpenReg
 
 ## Overlay 2: the source — map an open-data API onto a Dataset
 
-The deep [OpenConnector tutorial](/academy/pull-data-with-openconnector) pulls pets from the Swagger Pet Store into a `pet` schema. The Woo overlay changes only two things: the source is an open-data API, and the mapping targets the `Dataset` schema with one extra field that publishes the record the moment it arrives.
+The deep [Integriq tutorial](/academy/pull-data-with-openconnector) pulls pets from the Swagger Pet Store into a `pet` schema. The Woo overlay changes only two things: the source is an open-data API, and the mapping targets the `Dataset` schema with one extra field that publishes the record the moment it arrives.
 
-OpenConnector splits every integration into three objects, built in order — exactly as the deep tutorial details:
+Integriq splits every integration into three objects, built in order — exactly as the deep tutorial details:
 
 1. **Source**: *where* the data comes from (a base URL and how to authenticate).
 2. **Mapping**: *how* a record is reshaped (each `Dataset` field is a [Twig](https://twig.symfony.com/) expression over the source record).
 3. **Synchronisation**: *what* runs (it pulls an endpoint, applies the mapping, and writes into the DCAT register on a schedule).
 
-![The OpenConnector dashboard with Sources, Mappings, and Synchronisations](./01-oc-overview.png)
+![The Integriq dashboard with Sources, Mappings, and Synchronisations](./01-oc-overview.png)
 
 ### Register the open-data API as a source
 
-Follow Step 1 of the [deep tutorial](/academy/pull-data-with-openconnector) — **OpenConnector → Sources → Add Source**, set the type to `api` and the location to your open-data API's base URL — then test the connection. For a secured government API you set the authentication on the source; OpenConnector stores the credentials encrypted.
+Follow Step 1 of the [deep tutorial](/academy/pull-data-with-openconnector) — **Integriq → Sources → Add Source**, set the type to `api` and the location to your open-data API's base URL — then test the connection. For a secured government API you set the authentication on the source; Integriq stores the credentials encrypted.
 
-![The Create Source form in OpenConnector](./02-oc-source-create.png)
+![The Create Source form in Integriq](./02-oc-source-create.png)
 
 ### Map records onto the Dataset schema
 
@@ -117,12 +117,12 @@ Use the mapping's **Test mapping** action against a sample record before wiring 
 
 Create the synchronisation (source + endpoint + results position + id position + mapping + the DCAT register and `Dataset` schema as the target), then **Run** it. The run reports how many records it found, created, updated and skipped; on a re-run the **id position** deduplicates so the register tracks the source without duplicates.
 
-![The Create Synchronization form in OpenConnector](./03-oc-synchronisation-create.png)
+![The Create Synchronization form in Integriq](./03-oc-synchronisation-create.png)
 
 <Tabs groupId="woo-how">
 <TabItem value="ui" label="UI">
 
-Do the click-path in the [deep OpenConnector tutorial](/academy/pull-data-with-openconnector): create the source, write the mapping with the `Dataset` fields above, create the synchronisation pointing at your DCAT register and `Dataset` schema, and run it. The only differences from the pet chain are the source URL, the five mapping rows above, and the target schema.
+Do the click-path in the [deep Integriq tutorial](/academy/pull-data-with-openconnector): create the source, write the mapping with the `Dataset` fields above, create the synchronisation pointing at your DCAT register and `Dataset` schema, and run it. The only differences from the pet chain are the source URL, the five mapping rows above, and the target schema.
 
 </TabItem>
 <TabItem value="api" label="API">
@@ -171,7 +171,7 @@ $mapping = $objects->saveObject(
     register: 'openconnector', schema: 'mapping',
 );
 // Build the synchronisation against the DCAT register/schema and run it via SynchronizationService,
-// exactly as the deep OpenConnector tutorial shows.
+// exactly as the deep Integriq tutorial shows.
 ```
 
 </TabItem>
@@ -254,7 +254,7 @@ The per-catalog `/dcat` endpoint and the dataset nodes are gated behind a DCAT-h
 
 <Details summary="The synchronisation runs but creates zero datasets. Where do you look first?">
 
-The results position. If it does not point at the list of records in the source response, OpenConnector finds nothing to process. Open the source endpoint in a browser and check where the array sits — a bare top-level array is `_root`. The deep OpenConnector tutorial has the full troubleshooting list.
+The results position. If it does not point at the list of records in the source response, Integriq finds nothing to process. Open the source endpoint in a browser and check where the array sits — a bare top-level array is `_root`. The deep Integriq tutorial has the full troubleshooting list.
 </Details>
 
 <Details summary="Datasets import but never show in public search. What did the mapping miss?">
@@ -278,7 +278,7 @@ You have the whole chain: an external API feeds your register, a catalog publish
 
 <NextSteps>
   <NextStep title="Deep dive: OpenRegister" href="/academy/model-data-with-openregister" summary="Registers, schemas, relations, objects, search, versioning and permissions, end to end." />
-  <NextStep title="Deep dive: OpenConnector" href="/academy/pull-data-with-openconnector" summary="Sources, Twig mappings, synchronisations and scheduling, with id-based deduplication." />
+  <NextStep title="Deep dive: Integriq" href="/academy/pull-data-with-openconnector" summary="Sources, Twig mappings, synchronisations and scheduling, with id-based deduplication." />
   <NextStep title="Deep dive: OpenCatalogi" href="/academy/publish-catalog-with-opencatalogi" summary="Catalog scope, the RBAC publish rule, anonymous verification and the DCAT-AP-NL feed." />
   <NextStep title="Part 3: Publish and harvest a catalog with DCAT-AP" href="/academy/woo-publish-and-harvest-catalog" summary="The catalog, publish rule, and DCAT feed in the Woo domain." />
 </NextSteps>

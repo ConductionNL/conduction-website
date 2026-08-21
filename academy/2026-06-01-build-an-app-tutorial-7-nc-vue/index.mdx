@@ -343,12 +343,12 @@ When OpenRegister's object-lock feature is on and another user holds the lock on
 
 ### `CnDependencyMissing`: required app not installed
 
-The Conduction stack has app dependencies (PetStore requires OpenRegister; the integrations from Part 6 require OpenConnector). When a dependency is missing, the page renders a friendly banner that says what's missing and how to install it, instead of a stack trace.
+The Conduction stack has app dependencies (PetStore requires OpenRegister; the integrations from Part 6 require Integriq). When a dependency is missing, the page renders a friendly banner that says what's missing and how to install it, instead of a stack trace.
 
 ```vue
 <template>
   <CnDependencyMissing
-    v-if="!hasOpenConnector"
+    v-if="!hasIntegriq"
     app="openconnector"
     :reason="$t('petstore.integrations.openconnectorRequired')"
     install-url="https://apps.nextcloud.com/apps/openconnector" />

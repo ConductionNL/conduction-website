@@ -1,5 +1,5 @@
 ---
-title: DocuDesk, Conduction
+title: Filinq, Conduction
 description: Documenten genereren, ondertekenen en anonimiseren, zonder ze aan een derde partij te geven. Contracten en brieven vullen zichzelf uit je gegevens, klanten tekenen op hun telefoon, persoonsgegevens worden voor je zwartgemaakt.
 hide_table_of_contents: true
 ---
@@ -7,7 +7,10 @@ hide_table_of_contents: true
 import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
-export const app = getApp('docudesk');
+{/* Display-name rebrand 2026-08: DocuDesk → Filinq. De apps-registry
+    van de preset kan de oude naam nog dragen; pin de weergavenaam hier.
+    Slug, URLs en repo blijven `docudesk`. */}
+export const app = {...getApp('docudesk'), name: 'Filinq'};
 
 <DetailHero
   background="cobalt"
@@ -18,7 +21,7 @@ export const app = getApp('docudesk');
   locales="NL · EN"
   title={app.name}
   tagline={<>Brieven, contracten en exporten genereren zonder je documenten uit handen te geven. Op je eigen <span className="next-blue">Nextcloud</span>.</>}
-  intro={<>{app.name} laat het papierwerk van je bedrijf zichzelf schrijven. Contracten, brieven en besluiten vullen zichzelf uit de gegevens die je al bijhoudt. Klanten tekenen via een link, op elk apparaat, en de getekende versie landt waar hij hoort. Persoonsgegevens in een bestand worden voor je zwartgemaakt voordat het de deur uitgaat. Niets verlaat je eigen server. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
+  intro={<>{app.name} (voorheen DocuDesk) laat het papierwerk van je bedrijf zichzelf schrijven. Contracten, brieven en besluiten vullen zichzelf uit de gegevens die je al bijhoudt. Klanten tekenen via een link, op elk apparaat, en de getekende versie landt waar hij hoort. Persoonsgegevens in een bestand worden voor je zwartgemaakt voordat het de deur uitgaat. Niets verlaat je eigen server. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
   primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/docudesk'}}
   secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=docudesk'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/docudesk'}}
@@ -125,7 +128,7 @@ export const app = getApp('docudesk');
 <WidgetShelf
   eyebrow="Widgets die we meeleveren"
   title="We leveren de widgets die je nodig hebt"
-  lede={<>Installeer het en het startscherm toont wat er wacht op een handtekening, welke bestanden nog persoonsgegevens bevatten, en waar een bezwaartermijn bijna sluit. Meer nodig? Ontwerp je eigen widgets met <a href="/apps/openbuild">OpenBuild</a>, of bouw je eigen dashboard uit al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
+  lede={<>Installeer het en het startscherm toont wat er wacht op een handtekening, welke bestanden nog persoonsgegevens bevatten, en waar een bezwaartermijn bijna sluit. Meer nodig? Ontwerp je eigen widgets met <a href="/apps/openbuild">Buildiq</a>, of bouw je eigen dashboard uit al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
       title: 'Hier anonimiseren',
@@ -236,14 +239,14 @@ export const app = getApp('docudesk');
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Past goed bij"
-    title="Drie apps die DocuDesk nog meer van jou maken."
+    title="Drie apps die Filinq nog meer van jou maken."
     align="stack"
   />
   <PairRow>
     <PairCard
       href="/apps/openbuild"
       icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
-      name="OpenBuild"
+      name="Buildiq"
       why="Pas schermen, velden en stappen aan in de draaiende app. Een notaris en een gemeente draaien dezelfde app, elk op hun eigen manier."
     />
     <PairCard

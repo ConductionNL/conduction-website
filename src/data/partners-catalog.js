@@ -47,9 +47,9 @@ const PARTNERS_DATA = [
     tier: 'certified',
     name: 'Acato',
     logo: '/img/partners/acato.svg',
-    summaryEn: <>Digital agency from Den Haag. Builds accessible websites and web apps for municipalities and government organisations, focused on WCAG 2.2 AA and NLDS. Delivers the Conduction OpenWoo solution on OpenCatalogi, OpenRegister, and OpenConnector.</>,
-    summaryNl: <>Digital agency uit Den Haag. Bouwt toegankelijke websites en webapplicaties voor gemeenten en overheidsorganisaties, met focus op WCAG 2.2 AA en NLDS. Levert de Conduction Woo-solution op OpenCatalogi, OpenRegister en OpenConnector.</>,
-    apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
+    summaryEn: <>Digital agency from Den Haag. Builds accessible websites and web apps for municipalities and government organisations, focused on WCAG 2.2 AA and NLDS. Delivers the Conduction OpenWoo solution on OpenCatalogi, OpenRegister, and Integriq.</>,
+    summaryNl: <>Digital agency uit Den Haag. Bouwt toegankelijke websites en webapplicaties voor gemeenten en overheidsorganisaties, met focus op WCAG 2.2 AA en NLDS. Levert de Conduction Woo-solution op OpenCatalogi, OpenRegister en Integriq.</>,
+    apps: ['OpenCatalogi', 'OpenRegister', 'Integriq'],
     solutions: ['openwoo'],
   },
 
@@ -60,9 +60,9 @@ const PARTNERS_DATA = [
     tier: 'service',
     name: 'Shift2',
     logo: '/img/partners/shift2.png',
-    summaryEn: <>Dutch software builder for municipalities, water boards, and provinces, part of the Conxillium group. Ships CMS, civil affairs, and forms, plus the Conduction OpenWoo solution on OpenCatalogi, OpenRegister, and OpenConnector.</>,
-    summaryNl: <>Nederlandse softwarebouwer voor gemeenten, waterschappen en provincies, onderdeel van de Conxillium-groep. Levert CMS, burgerzaken en formulieren, en daarnaast de Conduction Woo-solution op OpenCatalogi, OpenRegister en OpenConnector.</>,
-    apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
+    summaryEn: <>Dutch software builder for municipalities, water boards, and provinces, part of the Conxillium group. Ships CMS, civil affairs, and forms, plus the Conduction OpenWoo solution on OpenCatalogi, OpenRegister, and Integriq.</>,
+    summaryNl: <>Nederlandse softwarebouwer voor gemeenten, waterschappen en provincies, onderdeel van de Conxillium-groep. Levert CMS, burgerzaken en formulieren, en daarnaast de Conduction Woo-solution op OpenCatalogi, OpenRegister en Integriq.</>,
+    apps: ['OpenCatalogi', 'OpenRegister', 'Integriq'],
     solutions: ['openwoo'],
   },
 
@@ -73,9 +73,9 @@ const PARTNERS_DATA = [
     tier: 'host',
     name: 'Centric',
     logo: '/img/partners/centric.png',
-    summaryEn: <>One of the Netherlands' largest IT suppliers for municipalities and the public sector. Partners with <span className="next-blue">Nextcloud</span> on sovereign workspaces and hosts DocuDesk inside that programme.</>,
-    summaryNl: <>Een van Nederlands grootste IT-leveranciers voor gemeenten en de publieke sector. Werkt samen met <span className="next-blue">Nextcloud</span> aan soevereine werkplekken en host DocuDesk binnen dat traject.</>,
-    apps: ['Nextcloud', 'DocuDesk'],
+    summaryEn: <>One of the Netherlands' largest IT suppliers for municipalities and the public sector. Partners with <span className="next-blue">Nextcloud</span> on sovereign workspaces and hosts Filinq inside that programme.</>,
+    summaryNl: <>Een van Nederlands grootste IT-leveranciers voor gemeenten en de publieke sector. Werkt samen met <span className="next-blue">Nextcloud</span> aan soevereine werkplekken en host Filinq binnen dat traject.</>,
+    apps: ['Nextcloud', 'Filinq'],
     solutions: [],
   },
   {
@@ -103,7 +103,7 @@ const PARTNERS_DATA = [
     logo: '/img/partners/bct.png',
     summaryEn: <>Dutch supplier of information- and document-management software (Corsa, Verix). Delivers the Conduction OpenWoo solution to organisations that want their information governance in order.</>,
     summaryNl: <>Nederlandse leverancier van informatie- en documentmanagement-software (Corsa, Verix). Levert de Conduction Woo-solution aan organisaties die hun informatie-governance op orde willen krijgen.</>,
-    apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
+    apps: ['OpenCatalogi', 'OpenRegister', 'Integriq'],
     solutions: ['openwoo'],
   },
   {
@@ -112,7 +112,7 @@ const PARTNERS_DATA = [
     logo: '/img/partners/open-gemeenten.png',
     summaryEn: <>Open-source platform for municipal websites. Serves more than 30 municipalities with accessible sites (WCAG, internet.nl). Also delivers the Conduction OpenWoo solution.</>,
     summaryNl: <>Open-source platform voor gemeentelijke websites. Bedient ruim 30 gemeenten met toegankelijke sites (WCAG, internet.nl). Levert daarnaast de Conduction Woo-solution.</>,
-    apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
+    apps: ['OpenCatalogi', 'OpenRegister', 'Integriq'],
     solutions: ['openwoo'],
   },
   {
@@ -121,7 +121,7 @@ const PARTNERS_DATA = [
     logo: '/img/partners/exxellence.png',
     summaryEn: <>Dutch supplier of case-management software for municipalities (xxllnc Zaken, plus apps for taxes and the social domain). Also delivers the Conduction OpenWoo solution.</>,
     summaryNl: <>Nederlandse leverancier van zaakgericht-werken-software voor gemeenten (xxllnc Zaken, plus apps voor belastingen en het sociaal domein). Levert daarnaast de Conduction Woo-solution.</>,
-    apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
+    apps: ['OpenCatalogi', 'OpenRegister', 'Integriq'],
     solutions: ['openwoo'],
   },
   {
@@ -131,7 +131,7 @@ const PARTNERS_DATA = [
     logo: '/img/partners/yard.png',
     summaryEn: <>Digital agency from Utrecht for municipalities, healthcare, and knowledge organisations. Open-source-oriented, more than 80 projects. Delivers the Conduction OpenWoo solution.</>,
     summaryNl: <>Digital agency uit Utrecht voor gemeenten, zorg en kennisorganisaties. Open-source-georiënteerd, ruim 80 projecten. Levert de Conduction Woo-solution.</>,
-    apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
+    apps: ['OpenCatalogi', 'OpenRegister', 'Integriq'],
     solutions: ['openwoo'],
   },
   {
@@ -140,7 +140,7 @@ const PARTNERS_DATA = [
     logo: '/img/partners/io.webp',
     summaryEn: <>Belgian-Dutch digital agency with offices in Amsterdam and Rotterdam. Builds customer-facing digital platforms and delivers the Conduction OpenWoo solution to public and semi-public organisations.</>,
     summaryNl: <>Belgisch-Nederlands digital agency met kantoren in Amsterdam en Rotterdam. Bouwt klantgerichte digitale platforms en levert de Conduction Woo-solution aan publieke en semi-publieke organisaties.</>,
-    apps: ['OpenCatalogi', 'OpenRegister', 'OpenConnector'],
+    apps: ['OpenCatalogi', 'OpenRegister', 'Integriq'],
     solutions: ['openwoo'],
   },
   {
