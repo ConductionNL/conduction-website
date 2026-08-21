@@ -29,7 +29,7 @@ export const SOLUTIONS = [
     title: <>ZaakAfhandelApp on <span className="next-blue">Nextcloud</span>.</>,
     shortTitle: 'Zaakafhandeling',
     outcome: <>Four apps, one case management system. Citizen CRM, case workflow, and automation on the <span className="next-blue">Nextcloud</span> your team already logs into.</>,
-    builtOn: ['OpenRegister', 'PipelinQ', 'Dossiq', 'Windmill'], goals: ['workflow'], status: 'production',
+    builtOn: ['OpenRegister', 'Pipelinq', 'Dossiq', 'Windmill'], goals: ['workflow'], status: 'production',
     icon: <svg viewBox="0 0 24 24"><path d="M9 11V7a3 3 0 0 1 6 0v4"/><rect x="5" y="11" width="14" height="10" rx="2"/></svg>,
   },
   {
