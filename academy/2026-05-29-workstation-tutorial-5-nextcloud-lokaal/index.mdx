@@ -22,7 +22,7 @@ A workstation without a Nextcloud is half a workstation. Nearly every other tuto
 
 <Outcomes title="What you'll deliver">
   <Outcome>A Nextcloud running on <code>http://localhost:8080</code> with an admin account you control.</Outcome>
-  <Outcome>The Conduction apps you need — OpenRegister and OpenConnector at minimum — cloned into <code>nextcloud-docker-dev/apps-extra/</code> and enabled in the running Nextcloud.</Outcome>
+  <Outcome>The Conduction apps you need — OpenRegister and Integriq at minimum — cloned into <code>nextcloud-docker-dev/apps-extra/</code> and enabled in the running Nextcloud.</Outcome>
   <Outcome>A clear idea of when to use a fresh install (the next OpenSpec change) and when to keep the existing one (continuing yesterday's work).</Outcome>
 </Outcomes>
 
@@ -62,7 +62,7 @@ git clone git@codeberg.org:Conduction/openconnector.git
 ```
 
 - **OpenRegister** — the schema-backed object store every Conduction app reads and writes through. Without it, nothing else works.
-- **OpenConnector** — the integration layer for inbound and outbound flows (forms, webhooks, sync, periodic jobs).
+- **Integriq** — the integration layer for inbound and outbound flows (forms, webhooks, sync, periodic jobs).
 
 A third app shows up in many tutorials — clone when you need it:
 
@@ -78,7 +78,7 @@ A note on naming: **OpenWoo** is a *solution* built on OpenRegister and OpenCata
 
 You don't need to clone every Conduction app. Clone what the tutorial you're following asks for and ignore the rest until you need it.
 
-> **Did the canonical tutorial first?** The [Run Nextcloud locally with Docker](/academy/run-nextcloud-locally) tutorial installs OpenRegister, OpenCatalogi, and OpenConnector from the Nextcloud **app store**. That works for reading and demos, but the installed apps are immutable production builds — not your local code. Switch to the `apps-extra/` flow before you start writing app code.
+> **Did the canonical tutorial first?** The [Run Nextcloud locally with Docker](/academy/run-nextcloud-locally) tutorial installs OpenRegister, OpenCatalogi, and Integriq from the Nextcloud **app store**. That works for reading and demos, but the installed apps are immutable production builds — not your local code. Switch to the `apps-extra/` flow before you start writing app code.
 
 ## Fresh install or keep the existing one?
 
@@ -139,11 +139,11 @@ By the time you reach Part 5, every other tool is in place. Bringing up Nextclou
 
 <div className="tutorial-quiz">
 
-**2. OpenRegister and OpenConnector are the two apps you start with. What kind of Conduction work could you do with *only* OpenRegister — and what would you suddenly be unable to do without OpenConnector?**
+**2. OpenRegister and Integriq are the two apps you start with. What kind of Conduction work could you do with *only* OpenRegister — and what would you suddenly be unable to do without Integriq?**
 
 <Details summary="Hint">
 
-OpenRegister is the schema-backed object store. OpenConnector is the integration layer. Think about which of those a typical Conduction tutorial actually touches.
+OpenRegister is the schema-backed object store. Integriq is the integration layer. Think about which of those a typical Conduction tutorial actually touches.
 
 </Details>
 
@@ -155,13 +155,13 @@ With **only OpenRegister**, you can:
 - Create, update, and query objects via OpenRegister's API.
 - Attach files to objects (the [Upload files to a Woo publication](/academy/woo-upload-files) tutorial only needs OpenRegister).
 
-Without **OpenConnector**, you can't:
+Without **Integriq**, you can't:
 
 - Receive data from an external source (forms, webhooks, scheduled imports).
 - Push data out to PLOOI, an open-overheid.nl endpoint, or any external system.
-- Build any tutorial that uses a public form → Conduction app flow ([Build an App tutorial](/academy/build-an-app-tutorial-0-three-paths) needs OpenConnector for the public-form step).
+- Build any tutorial that uses a public form → Conduction app flow ([Build an App tutorial](/academy/build-an-app-tutorial-0-three-paths) needs Integriq for the public-form step).
 
-The shorter version: **OpenRegister stores; OpenConnector moves**. If the tutorial only reads/writes data inside Nextcloud, OpenRegister alone is enough. As soon as data crosses the boundary, you need OpenConnector.
+The shorter version: **OpenRegister stores; Integriq moves**. If the tutorial only reads/writes data inside Nextcloud, OpenRegister alone is enough. As soon as data crosses the boundary, you need Integriq.
 
 </Details>
 

@@ -1,5 +1,5 @@
 ---
-title: OpenBuild, Conduction
+title: Buildiq, Conduction
 description: Laat elke Conduction-app passen bij je bedrijf, zonder ontwikkelaar. Voeg een veld toe, voeg een stap toe, verplaats een widget, in de draaiende app. Of bouw in tien minuten een kleine app van jezelf.
 hide_table_of_contents: true
 ---
@@ -7,7 +7,10 @@ hide_table_of_contents: true
 import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, getApp} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
-export const app = getApp('openbuild');
+{/* Display-name rebrand 2026-08: OpenBuild → Buildiq. De apps-registry
+    van de preset kan de oude naam nog dragen; pin de weergavenaam hier.
+    Slug, URLs en repo blijven `openbuild`. */}
+export const app = {...getApp('openbuild'), name: 'Buildiq'};
 
 <DetailHero
   background="cobalt"
@@ -18,7 +21,7 @@ export const app = getApp('openbuild');
   locales="NL · EN"
   title={app.name}
   tagline={<>Laat elke app passen bij je bedrijf, zonder ontwikkelaar. Voeg een veld toe, voeg een stap toe, verplaats een widget, in de draaiende app op je eigen <span className="next-blue">Nextcloud</span>.</>}
-  intro={<>{app.name} is de appbouwer voor de Nextcloud-werkplek. Open een Conduction-app, klik op bewerken en verander wat er op de pagina staat: een veld, een stap, een widget, een menu-item. Je aanpassingen blijven staan bij elke update. Iets nodig wat de apps niet doen? Bouw een kleine app van jezelf: geef hem een naam, voeg de velden toe, zeg wie hem ziet, en hij staat in de bovenbalk. Probeer aanpassingen eerst op een testkopie, publiceer als je tevreden bent, één klik terug als dat niet zo is. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
+  intro={<>{app.name} (voorheen OpenBuild) is de appbouwer voor de Nextcloud-werkplek. Open een Conduction-app, klik op bewerken en verander wat er op de pagina staat: een veld, een stap, een widget, een menu-item. Je aanpassingen blijven staan bij elke update. Iets nodig wat de apps niet doen? Bouw een kleine app van jezelf: geef hem een naam, voeg de velden toe, zeg wie hem ziet, en hij staat in de bovenbalk. Probeer aanpassingen eerst op een testkopie, publiceer als je tevreden bent, één klik terug als dat niet zo is. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
   primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/openbuild'}}
   secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=openbuild'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/openbuild'}}

@@ -21,7 +21,7 @@ Een workstation zonder Nextcloud is een halve workstation. Bijna elke andere tut
 
 <Outcomes title="Wat je oplevert">
   <Outcome>Een Nextcloud die draait op <code>http://localhost:8080</code> met een admin-account dat jij beheert.</Outcome>
-  <Outcome>De Conduction-apps die je nodig hebt — minimaal OpenRegister en OpenConnector — gecloned in <code>nextcloud-docker-dev/apps-extra/</code> en geactiveerd in de draaiende Nextcloud.</Outcome>
+  <Outcome>De Conduction-apps die je nodig hebt — minimaal OpenRegister en Integriq — gecloned in <code>nextcloud-docker-dev/apps-extra/</code> en geactiveerd in de draaiende Nextcloud.</Outcome>
   <Outcome>Een helder beeld van wanneer je een verse installatie gebruikt (de volgende OpenSpec-wijziging) en wanneer je de bestaande aanhoudt (verdergaan met gisteren).</Outcome>
 </Outcomes>
 
@@ -61,7 +61,7 @@ git clone git@codeberg.org:Conduction/openconnector.git
 ```
 
 - **OpenRegister** — de schema-gedreven object store waar elke Conduction-app van leest en naar schrijft. Zonder OpenRegister werkt verder niets.
-- **OpenConnector** — de integratielaag voor inkomende en uitgaande flows (formulieren, webhooks, sync, periodieke jobs).
+- **Integriq** — de integratielaag voor inkomende en uitgaande flows (formulieren, webhooks, sync, periodieke jobs).
 
 Een derde app komt in veel tutorials terug — clone hem als je hem nodig hebt:
 
@@ -77,7 +77,7 @@ Een opmerking over namen: **OpenWoo** is een *oplossing* gebouwd op OpenRegister
 
 Je hoeft niet elke Conduction-app te clonen. Clone wat de tutorial die je volgt vraagt en negeer de rest tot je hem nodig hebt.
 
-> **Heb je eerst de canonical tutorial gedaan?** De [Nextcloud lokaal draaien met Docker](/nl/academy/run-nextcloud-locally)-tutorial installeert OpenRegister, OpenCatalogi en OpenConnector vanuit de Nextcloud **app store**. Dat werkt prima om te lezen en demo's te doen, maar de geïnstalleerde apps zijn immutable production builds — niet jouw lokale code. Schakel over naar de `apps-extra/`-flow zodra je app-code begint te schrijven.
+> **Heb je eerst de canonical tutorial gedaan?** De [Nextcloud lokaal draaien met Docker](/nl/academy/run-nextcloud-locally)-tutorial installeert OpenRegister, OpenCatalogi en Integriq vanuit de Nextcloud **app store**. Dat werkt prima om te lezen en demo's te doen, maar de geïnstalleerde apps zijn immutable production builds — niet jouw lokale code. Schakel over naar de `apps-extra/`-flow zodra je app-code begint te schrijven.
 
 ## Verse installatie of de bestaande aanhouden?
 
@@ -138,11 +138,11 @@ Tegen de tijd dat je bij Deel 5 bent, staat al het andere gereedschap klaar. Nex
 
 <div className="tutorial-quiz">
 
-**2. OpenRegister en OpenConnector zijn de twee apps waar je mee begint. Wat voor Conduction-werk zou je kunnen doen met *alleen* OpenRegister — en wat zou je opeens niet meer kunnen zonder OpenConnector?**
+**2. OpenRegister en Integriq zijn de twee apps waar je mee begint. Wat voor Conduction-werk zou je kunnen doen met *alleen* OpenRegister — en wat zou je opeens niet meer kunnen zonder Integriq?**
 
 <Details summary="Hint">
 
-OpenRegister is de schema-gedreven object store. OpenConnector is de integratielaag. Denk na over welke van die twee een typische Conduction-tutorial daadwerkelijk raakt.
+OpenRegister is de schema-gedreven object store. Integriq is de integratielaag. Denk na over welke van die twee een typische Conduction-tutorial daadwerkelijk raakt.
 
 </Details>
 
@@ -154,13 +154,13 @@ Met **alleen OpenRegister** kun je:
 - Objecten aanmaken, bijwerken en bevragen via de API van OpenRegister.
 - Bestanden koppelen aan objecten (de tutorial [Bestanden uploaden bij een Woo-publicatie](/nl/academy/woo-upload-files) heeft alleen OpenRegister nodig).
 
-Zonder **OpenConnector** kun je niet:
+Zonder **Integriq** kun je niet:
 
 - Data ontvangen van een externe bron (formulieren, webhooks, geplande imports).
 - Data naar buiten pushen — naar PLOOI, een open-overheid.nl-endpoint of een ander extern systeem.
-- Een tutorial bouwen die een publiek formulier → Conduction-app-flow gebruikt ([Build an App tutorial](/nl/academy/build-an-app-tutorial-0-three-paths) heeft OpenConnector nodig voor de publieke-formulier-stap).
+- Een tutorial bouwen die een publiek formulier → Conduction-app-flow gebruikt ([Build an App tutorial](/nl/academy/build-an-app-tutorial-0-three-paths) heeft Integriq nodig voor de publieke-formulier-stap).
 
-De kortere versie: **OpenRegister bewaart; OpenConnector verplaatst**. Als de tutorial alleen data leest/schrijft binnen Nextcloud, is OpenRegister alleen genoeg. Zodra data de grens oversteekt, heb je OpenConnector nodig.
+De kortere versie: **OpenRegister bewaart; Integriq verplaatst**. Als de tutorial alleen data leest/schrijft binnen Nextcloud, is OpenRegister alleen genoeg. Zodra data de grens oversteekt, heb je Integriq nodig.
 
 </Details>
 

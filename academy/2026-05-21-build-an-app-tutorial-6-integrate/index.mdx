@@ -5,8 +5,8 @@ contentType: tutorial
 heroIcon: blocks
 authors: [conduction]
 date: 2026-05-21
-summary: Connect your shipped PetStore app to the rest of the workspace. Read suppliers from a second OpenRegister register, deepen the xWiki source from Part 4 into a per-order care-guide tab, then close the loop with a two-way order ↔ xWiki maintenance sync over an OpenConnector webhook.
-tags: [App development, OpenConnector, OpenRegister, Integration, xWiki, Webhook, Tutorial series]
+summary: Connect your shipped PetStore app to the rest of the workspace. Read suppliers from a second OpenRegister register, deepen the xWiki source from Part 4 into a per-order care-guide tab, then close the loop with a two-way order ↔ xWiki maintenance sync over an Integriq webhook.
+tags: [App development, Integriq, OpenRegister, Integration, xWiki, Webhook, Tutorial series]
 apps: [openconnector, openregister]
 durationMinutes: 45
 series: build-an-app-tutorial
@@ -32,22 +32,22 @@ This is **Part 6 of the nine-part app-building tutorial series**. Part 4 package
 Both build directly on the shipped app from Part 4. [Part 5: Advanced manifest features](/academy/build-an-app-tutorial-5-advanced-manifest) deepens the *manifest* surface (actionToggles, fieldWidgets, public-mode pages). Part 6 widens to *other systems*. Take them in either order, or pick whichever your next app actually needs first. Neither references the other for content.
 :::
 
-The point isn't the specific integrations, it's the pattern. Cross-register reads are how Conduction apps share data without coupling. The OpenConnector source-and-synchronisation pattern is how you absorb data from anywhere into your own register. The webhook endpoint pattern is how external systems push state back. Once you've wired all three, you've covered the integration vocabulary the rest of the catalogue uses.
+The point isn't the specific integrations, it's the pattern. Cross-register reads are how Conduction apps share data without coupling. The Integriq source-and-synchronisation pattern is how you absorb data from anywhere into your own register. The webhook endpoint pattern is how external systems push state back. Once you've wired all three, you've covered the integration vocabulary the rest of the catalogue uses.
 
 {/* truncate */}
 
 <Outcomes title="What you'll have at the end of Part 6">
   <Outcome>A second OpenRegister register called <code>suppliers</code>, with a <code>supplier</code> schema, queried from inside PetStore without PetStore ever depending on a CRM app.</Outcome>
   <Outcome>Each order carries a <code>supplierId</code>, and the order detail page resolves it into name, email, and phone via a cross-register read.</Outcome>
-  <Outcome>The xWiki OpenConnector source from Part 4 extended with a <code>species</code> tag, so each order surfaces the care guides that match the pet's species.</Outcome>
-  <Outcome>An OR event listener that fires an outbound OpenConnector synchronisation whenever an order flips to <code>status: needs_followup</code>, posting a maintenance page into xWiki under <code>PetStoreMaintenance.&lt;orderId&gt;</code>.</Outcome>
-  <Outcome>A declarative OpenConnector inbound endpoint that takes an xWiki webhook payload, reads <code>resolved: true</code>, and walks the order back to <code>delivered</code>, closing the loop without leaving the workspace.</Outcome>
+  <Outcome>The xWiki Integriq source from Part 4 extended with a <code>species</code> tag, so each order surfaces the care guides that match the pet's species.</Outcome>
+  <Outcome>An OR event listener that fires an outbound Integriq synchronisation whenever an order flips to <code>status: needs_followup</code>, posting a maintenance page into xWiki under <code>PetStoreMaintenance.&lt;orderId&gt;</code>.</Outcome>
+  <Outcome>A declarative Integriq inbound endpoint that takes an xWiki webhook payload, reads <code>resolved: true</code>, and walks the order back to <code>delivered</code>, closing the loop without leaving the workspace.</Outcome>
 </Outcomes>
 
 <Prerequisites title="Where you should be">
   <PrerequisiteItem>Parts 1–4 done: a shipped PetStore app with category / pet / order / care_guide schemas, the calendar integration, and the xWiki care-guide source from Part 4 already syncing.</PrerequisiteItem>
   <PrerequisiteItem>The reference stack from <a href="/academy/run-nextcloud-locally">Nextcloud lokaal draaien met Docker</a>, including the xWiki service started in Part 4. We reuse the same container, the same admin user, the same Postgres.</PrerequisiteItem>
-  <PrerequisiteItem><strong>OpenConnector</strong> already installed and enabled (you set this up in Part 4 for the care-guide sync).</PrerequisiteItem>
+  <PrerequisiteItem><strong>Integriq</strong> already installed and enabled (you set this up in Part 4 for the care-guide sync).</PrerequisiteItem>
 </Prerequisites>
 
 <Eyebrow>Read</Eyebrow>
@@ -222,7 +222,7 @@ put Fish    Tank-cycling         "Tank cycling primer" \
     "Cycle a freshwater tank for two weeks before introducing fish. Provide the starter ammonia kit with every Fish order over EUR 50."
 ```
 
-### Widen the OpenConnector synchronisation
+### Widen the Integriq synchronisation
 
 In Part 4 the source iterated over `['Dogs', 'Cats', 'Fish']`. We add a second pass for species. From `/apps/openconnector/synchronisations` open your **xWiki guides → OpenRegister** sync and add a second source endpoint and a second mapping:
 
@@ -265,7 +265,7 @@ this.guides = this.objectStore.collections.care_guide || []
 
 Register the component the same way Part 4 registered `care-tab` (the `customComponents` map in `App.vue`). Build, reload, open an order whose pet is a dog. The Care tab shows the "First week at home" guide. Change the pet's species to `fish` from the OR admin UI; the same tab on the same order now shows "Tank cycling primer".
 
-Two integrations, one source. That's the OpenConnector return on investment: the cost of adding the second one was an extra mapping row, not a new pipeline.
+Two integrations, one source. That's the Integriq return on investment: the cost of adding the second one was an extra mapping row, not a new pipeline.
 
 <Eyebrow>Push and pull</Eyebrow>
 
@@ -273,11 +273,11 @@ Two integrations, one source. That's the OpenConnector return on investment: the
 
 The integrations so far are read-only from PetStore's side. Step 3 closes the loop. When an order flips to `status: needs_followup`, PetStore creates a maintenance page in xWiki at `PetStoreMaintenance.<orderId>` with the order details. The fulfilment team works the page in xWiki, adds notes, photos, vendor receipts, and when they tick a `resolved` property, an xWiki webhook fires that lands back in PetStore and flips the order to `status: delivered`.
 
-Two halves: outbound (PetStore → xWiki) and inbound (xWiki → PetStore). Outbound needs ~25 lines of PHP in PetStore to bridge `ObjectUpdatedEvent` to an OpenConnector synchronisation call. Inbound is pure configuration: an OpenConnector endpoint with a mapping.
+Two halves: outbound (PetStore → xWiki) and inbound (xWiki → PetStore). Outbound needs ~25 lines of PHP in PetStore to bridge `ObjectUpdatedEvent` to an Integriq synchronisation call. Inbound is pure configuration: an Integriq endpoint with a mapping.
 
-### 3a: An OpenConnector synchronisation that *writes* to xWiki
+### 3a: An Integriq synchronisation that *writes* to xWiki
 
-So far OpenConnector synchronisations have read from xWiki and written into OR. Synchronisations are bidirectional: the same surface can also POST to a source. Create a second sync:
+So far Integriq synchronisations have read from xWiki and written into OR. Synchronisations are bidirectional: the same surface can also POST to a source. Create a second sync:
 
 ```
 Name:             Order maintenance → xWiki
@@ -349,9 +349,9 @@ public function register(IRegistrationContext $context): void {
 
 `composer install` to refresh the autoloader, then graceful-reload Nextcloud (`apache2ctl graceful`). Flip an order's status to `needs_followup` from the OR admin UI. Reload xWiki and navigate to `PetStoreMaintenance`: there's a page named after the order id, with the body template filled in. The outbound half is done.
 
-### 3c: An OpenConnector inbound endpoint that catches xWiki's webhook
+### 3c: An Integriq inbound endpoint that catches xWiki's webhook
 
-For the return path you don't write PHP. OpenConnector has a built-in endpoint receiver at `POST /apps/openconnector/api/endpoint/{path}` that maps an incoming payload onto an OR object.
+For the return path you don't write PHP. Integriq has a built-in endpoint receiver at `POST /apps/openconnector/api/endpoint/{path}` that maps an incoming payload onto an OR object.
 
 From `/apps/openconnector/endpoints` create:
 
@@ -380,7 +380,7 @@ URL:     http://nextcloud:80/apps/openconnector/api/endpoint/xwiki-maintenance-r
          (container-to-container; from xWiki's container, nextcloud:80 reaches Nextcloud)
 Trigger: Page updated
 Filter:  Only pages in PetStoreMaintenance
-Auth:    Bearer <the secret you set on the OpenConnector endpoint>
+Auth:    Bearer <the secret you set on the Integriq endpoint>
 Payload: {
   "page":       "$!{doc.documentReference.name}",
   "properties": $!{object.properties.json}
@@ -390,7 +390,7 @@ Payload: {
 Save. Walk through the loop end to end:
 
 1. Flip an order to `status: needs_followup` in OR. → A page appears in xWiki under `PetStoreMaintenance.<orderId>`.
-2. Edit the page in xWiki, set its `resolved` property to `true`, save. → The webhook fires, OpenConnector matches the path, the mapping pulls the order id and `resolved`, the action flips the order back to `delivered`.
+2. Edit the page in xWiki, set its `resolved` property to `true`, save. → The webhook fires, Integriq matches the path, the mapping pulls the order id and `resolved`, the action flips the order back to `delivered`.
 
 Reload the order detail in PetStore. Status: delivered. The platform did the round-trip, and PetStore has one twenty-five-line PHP file to show for it. The other half of the integration is JSON and a webhook config.
 
@@ -399,7 +399,7 @@ Reload the order detail in PetStore. Status: delivered. The platform did the rou
 In every prior part the only PHP in the app was infrastructure: settings, routes, a path-resolution fix. Part 6 introduces the first PHP file that actually does business logic: one event listener, twenty-five lines, gated on a status transition. Everything else is configuration:
 
 - A second register, queried cross-register from a one-line `register: 'suppliers'` hint on `fetchObject`.
-- Two integrations on a single OpenConnector source, separated by a `species` mapping.
+- Two integrations on a single Integriq source, separated by a `species` mapping.
 - An outbound synchronisation triggered by an OR event listener.
 - An inbound endpoint that maps an xWiki webhook payload onto an OR update, declaratively, with no PHP.
 
@@ -413,13 +413,13 @@ PetStore's integration story ends here. The app is shipped, in the store, integr
   <TroubleshootingItem title="Cross-register read returns 404">
     The <code>register</code> parameter is case-sensitive and must match the slug exactly. <code>suppliers</code> not <code>Suppliers</code>. Inspect the network panel: the URL should be <code>/apps/openregister/api/objects/suppliers/supplier/&lt;id&gt;</code>. If it's <code>/api/objects/petstore/supplier/...</code> you forgot the <code>register</code> hint and the store defaulted to PetStore's own register.
   </TroubleshootingItem>
-  <TroubleshootingItem title="OpenConnector sync writes nothing on PUT">
-    Push-direction syncs need the target endpoint to be reachable from the OpenConnector container, not from your host. <code>http://localhost:8086</code> works from the host, <code>http://openregister-xwiki:8080</code> works from inside the Nextcloud container. Use the container hostname.
+  <TroubleshootingItem title="Integriq sync writes nothing on PUT">
+    Push-direction syncs need the target endpoint to be reachable from the Integriq container, not from your host. <code>http://localhost:8086</code> works from the host, <code>http://openregister-xwiki:8080</code> works from inside the Nextcloud container. Use the container hostname.
   </TroubleshootingItem>
   <TroubleshootingItem title="Event listener fires but the sync doesn't run">
     Check that <code>SynchronizationService</code> is properly autowired and the sync id constant matches what the URL shows. A wrong id silently logs and returns. Tail <code>data/nextcloud.log</code> while you flip an order.
   </TroubleshootingItem>
-  <TroubleshootingItem title="xWiki webhook reaches OpenConnector but the payload is empty">
+  <TroubleshootingItem title="xWiki webhook reaches Integriq but the payload is empty">
     xWiki's <code>{'${object.properties.json}'}</code> template is only filled when the page has an XClass attached. Add a small <code>MaintenanceClass</code> with a <code>resolved</code> boolean to the <code>PetStoreMaintenance</code> space and reference it from the body template Step 3a generates. The webhook starts including the properties block on the next save.
   </TroubleshootingItem>
 </Troubleshooting>

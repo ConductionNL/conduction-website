@@ -167,8 +167,8 @@ module.exports = createConfig({
         items: [
           {label: 'OpenCatalogi',  href: 'https://opencatalogi.conduction.nl/'},
           {label: 'OpenRegister',  href: 'https://openregister.conduction.nl/'},
-          {label: 'OpenConnector', href: 'https://openconnector.conduction.nl/'},
-          {label: 'DocuDesk',      href: 'https://docudesk.conduction.nl/'},
+          {label: 'Integriq',      href: 'https://openconnector.conduction.nl/'},
+          {label: 'Filinq',        href: 'https://docudesk.conduction.nl/'},
           {label: 'LaunchPad',        href: 'https://launchpad.conduction.nl/'},
         ],
       },
