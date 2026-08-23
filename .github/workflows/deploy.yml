@@ -113,8 +113,34 @@ jobs:
       # from `development` under its own name would create a *preview*
       # deployment on a random *.pages.dev URL, succeed, and never reach
       # www.conduction.nl. Push events on development are production.
-      - name: Deploy to Cloudflare Pages
+      # DIAGNOSTIC, and deliberately non-fatal. This workflow has never once
+      # deployed successfully: `--project-name=conduction-website` is the only
+      # name it has ever used, and Cloudflare answers
+      # `Authentication error [code: 10000]` on
+      # /accounts/*/pages/projects/conduction-website — while the SAME
+      # CF_API_TOKEN deploys the `conduction-docs` project from
+      # ConductionNL/.github without complaint. So the token is valid and the
+      # name or its scope is wrong. Listing the projects the token can actually
+      # reach turns that guess into a measurement, in the log, without anyone
+      # opening the dashboard.
+      #
+      # `continue-on-error` on purpose: a diagnostic that can fail the build is
+      # a second failure mode, not a diagnosis.
+      - name: List the Pages projects this token can reach
         if: github.event_name != 'pull_request'
+        continue-on-error: true
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID || secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project list
+
+      # Production publishing happens from `development` only. A
+      # workflow_dispatch on any other ref would otherwise push that branch
+      # straight to the production `main` alias below and replace
+      # www.conduction.nl with it.
+      - name: Deploy to Cloudflare Pages
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/development'
         uses: cloudflare/wrangler-action@v3
         with:
           # The org secrets are CF_API_TOKEN / CF_ACCOUNT_ID. This step asked
