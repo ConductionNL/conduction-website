@@ -146,6 +146,17 @@ jobs:
           curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
             "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/workers/scripts" \
             | python3 -c 'import json,sys; d=json.load(sys.stdin); print("ok" if d.get("success") else d.get("errors")); print([w.get("id") for w in (d.get("result") or [])])'
+          echo "--- Zones ---"
+          curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/zones?per_page=50" \
+            | python3 -c 'import json,sys; d=json.load(sys.stdin); print("ok" if d.get("success") else d.get("errors")); print([(z.get("name"), z.get("id")) for z in (d.get("result") or [])])'
+          echo "--- Who serves www.conduction.nl (custom domains per worker) ---"
+          for w in conduction-website-docs conduction-docs conduction-academy-preview; do
+            printf '%s: ' "$w"
+            curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
+              "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/workers/domains?service=$w" \
+              | python3 -c 'import json,sys; d=json.load(sys.stdin); print([r.get("hostname") for r in (d.get("result") or [])] if d.get("success") else d.get("errors"))'
+          done
 
       # Production publishing happens from `development` only. A
       # workflow_dispatch on any other ref would otherwise push that branch
