@@ -126,7 +126,30 @@ jobs:
       #
       # `continue-on-error` on purpose: a diagnostic that can fail the build is
       # a second failure mode, not a diagnosis.
-      - name: What can this token actually see
+      # PREFLIGHT, and deliberately non-fatal on its own — the deploy below is
+      # what fails. It exists because the deploy's own error says only
+      # "Authentication error [code: 10000]", which reads as a bad token and is
+      # not one.
+      #
+      # MEASURED 2026-08-23, after this workflow had failed 30 runs out of 30:
+      #   /accounts/*/pages/projects        -> Authentication error 10000
+      #   /accounts/*/workers/scripts       -> ok, 42 scripts
+      #   /zones                            -> ok
+      # So CF_API_TOKEN carries Workers and zone-read and NO Pages permission at
+      # all. Not a wrong project name: the Pages LIST endpoint, which names no
+      # project, is refused too. `conduction-website` is real — it exists and
+      # serves www.conduction.nl, conduction.nl, academy., commonground. and
+      # connext. — the token just cannot see it.
+      #
+      # That also explains why ConductionNL/.github deploys docs.conduction.nl
+      # with this same token: every docs site in the fleet is a WORKER
+      # (`wrangler deploy`, name `<app>-docs`), and Workers is the permission
+      # this token has.
+      #
+      # THE FIX IS ONE DASHBOARD EDIT: add `Cloudflare Pages: Edit` to the org
+      # secret CF_API_TOKEN. Until then this step says so in the log, so the
+      # failure below names its cause instead of looking like a bad secret.
+      - name: Preflight — can this token see Cloudflare Pages
         if: github.event_name != 'pull_request'
         continue-on-error: true
         env:
@@ -134,29 +157,13 @@ jobs:
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID || secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -u
-          echo "--- token permission groups ---"
-          curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
-            https://api.cloudflare.com/client/v4/user/tokens/verify \
-            | python3 -c 'import json,sys; d=json.load(sys.stdin); print(json.dumps({"success":d.get("success"),"errors":d.get("errors"),"status":(d.get("result") or {}).get("status")}))'
-          echo "--- Pages projects ---"
-          curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects" \
-            | python3 -c 'import json,sys; d=json.load(sys.stdin); print("ok" if d.get("success") else d.get("errors")); print([p.get("name") for p in (d.get("result") or [])])'
-          echo "--- Worker scripts ---"
-          curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/workers/scripts" \
-            | python3 -c 'import json,sys; d=json.load(sys.stdin); print("ok" if d.get("success") else d.get("errors")); print([w.get("id") for w in (d.get("result") or [])])'
-          echo "--- Zones ---"
-          curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones?per_page=50" \
-            | python3 -c 'import json,sys; d=json.load(sys.stdin); print("ok" if d.get("success") else d.get("errors")); print([(z.get("name"), z.get("id")) for z in (d.get("result") or [])])'
-          echo "--- Who serves www.conduction.nl (custom domains per worker) ---"
-          for w in conduction-website-docs conduction-docs conduction-academy-preview; do
-            printf '%s: ' "$w"
-            curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
-              "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/workers/domains?service=$w" \
-              | python3 -c 'import json,sys; d=json.load(sys.stdin); print([r.get("hostname") for r in (d.get("result") or [])] if d.get("success") else d.get("errors"))'
-          done
+          if curl -sf -H "Authorization: Bearer $CF_API_TOKEN" \
+               "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects" \
+               | grep -q '"success":true'; then
+            echo "Pages is readable with this token."
+          else
+            echo "::error title=CF_API_TOKEN has no Cloudflare Pages permission::The deploy below will fail with Authentication error 10000. This is NOT a wrong project name — the Pages list endpoint, which names no project, is refused as well, while Workers and zones both answer. Add 'Cloudflare Pages: Edit' to the org secret CF_API_TOKEN. The conduction-website project exists and serves www.conduction.nl."
+          fi
 
       # Production publishing happens from `development` only. A
       # workflow_dispatch on any other ref would otherwise push that branch
