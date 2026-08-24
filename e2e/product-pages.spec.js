@@ -32,33 +32,33 @@ import {collectConsoleErrors, expectNoConsoleErrors} from './helpers.js';
 const APPS = {
   pipelinq: {ways: 'four', shelf: true, demo: true},
   openregister: {ways: 'four', shelf: true, demo: true},
-  openbuild: {ways: 'four', shelf: true, demo: true},
+  buildiq: {ways: 'four', shelf: true, demo: true},
   hermiq: {ways: 'four', shelf: true, demo: true},
   shillinq: {ways: 'four', shelf: true, demo: true},
   launchpad: {ways: 'four', shelf: true, demo: true},
-  softwarecatalog: {ways: 'four', shelf: true, demo: true},
-  decidesk: {ways: 'four', shelf: true, demo: true},
-  procest: {ways: 'four', shelf: true, demo: true},
-  scholiq: {ways: 'four', shelf: true, demo: true},
-  docudesk: {ways: 'four', shelf: true, demo: true},
+  stackiq: {ways: 'four', shelf: true, demo: true},
+  decidiq: {ways: 'four', shelf: true, demo: true},
+  dossiq: {ways: 'four', shelf: true, demo: true},
+  learniq: {ways: 'four', shelf: true, demo: true},
+  filinq: {ways: 'four', shelf: true, demo: true},
   opencatalogi: {ways: 'four', shelf: true, demo: true},
   openconnector: {ways: 'four', shelf: true, demo: true},
-  planix: {ways: 'four', shelf: true, demo: true},
-  hrmq: {ways: 'four', shelf: true, demo: true},
-  larpingapp: {ways: 'four', shelf: true, demo: true},
+  planninq: {ways: 'four', shelf: true, demo: true},
+  humaniq: {ways: 'four', shelf: true, demo: true},
+  larpinq: {ways: 'four', shelf: true, demo: true},
   /* Deliberate exceptions, and why:
-   * - doriath: a zero-knowledge vault has no client-self-service story,
+   * - keepiq: a zero-knowledge vault has no client-self-service story,
    *   so it honestly keeps three ways.
    * - portaliq: it IS the self-service story; the trio stays.
-   * - nldesign: ships zero widgets; its shelf shows the theme tokens.
+   * - thematiq: ships zero widgets; its shelf shows the theme tokens.
    * - zaakafhandelapp: sunset page pointing at Procest; no cards/shelf.
-   * - app-versions: in development; no cards/shelf/demo CTA. */
-  doriath: {ways: 'three', shelf: true, demo: true},
+   * - versioniq: in development; no cards/shelf/demo CTA. */
+  keepiq: {ways: 'three', shelf: true, demo: true},
   portaliq: {ways: 'three', shelf: true, demo: true},
-  /* nldesign: a theme has no client-self-service card either. */
-  nldesign: {ways: 'three', shelf: true, demo: true},
+  /* thematiq: a theme has no client-self-service card either. */
+  thematiq: {ways: 'three', shelf: true, demo: true},
   zaakafhandelapp: {ways: null, shelf: false, demo: true},
-  'app-versions': {ways: null, shelf: false, demo: false},
+  'versioniq': {ways: null, shelf: false, demo: false},
 };
 
 const WAYS_HEADING = {

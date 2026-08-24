@@ -22,23 +22,34 @@
 
 import {test, expect} from '@playwright/test';
 
-/* slug (unchanged, load-bearing) → display name (renamed 2026-08-21) */
+/* OLD slug -> [NEW slug, display name].
+ *
+ * The display names moved 2026-08-21; the PATHS moved 2026-08-23. Both old and
+ * new must work: the old URLs were published and are still linked from
+ * @conduction/docusaurus-preset's apps-registry, which feeds <AppCrossLinks/>
+ * and the academy product filter and still points at the old paths.
+ *
+ * So this asserts the REDIRECT, not the absence of one. An earlier version of
+ * this file asserted "the rename must not have moved the URL" — true when only
+ * the display name had moved, and false now. A test that pins the old
+ * behaviour after the behaviour changes does not protect anything; it just
+ * fails until someone edits it. */
 const RENAMED = {
-  openconnector: 'Integriq',
-  docudesk: 'Filinq',
-  procest: 'Dossiq',
-  doriath: 'Keepiq',
-  hrmq: 'Humaniq',
-  scholiq: 'Learniq',
-  decidesk: 'Decidiq',
-  softwarecatalog: 'Stackiq',
-  nldesign: 'Thematiq',
-  openbuild: 'Buildiq',
-  larpingapp: 'Larpinq',
-  'app-versions': 'Versioniq',
+  openconnector: ['integriq', 'Integriq'],
+  docudesk: ['filinq', 'Filinq'],
+  procest: ['dossiq', 'Dossiq'],
+  doriath: ['keepiq', 'Keepiq'],
+  hrmq: ['humaniq', 'Humaniq'],
+  scholiq: ['learniq', 'Learniq'],
+  decidesk: ['decidiq', 'Decidiq'],
+  softwarecatalog: ['stackiq', 'Stackiq'],
+  nldesign: ['thematiq', 'Thematiq'],
+  openbuild: ['buildiq', 'Buildiq'],
+  larpingapp: ['larpinq', 'Larpinq'],
+  'app-versions': ['versioniq', 'Versioniq'],
   // Planninq, not Planiq: "PlanIQ" is Anaplan's trademark in the same
   // planning category, so this one took the -inq form instead.
-  planix: 'Planninq',
+  planix: ['planninq', 'Planninq'],
 };
 
 /* Names that were deliberately NOT renamed; a sweep that catches them
@@ -54,11 +65,19 @@ const UNCHANGED = {
 };
 
 test.describe('renamed products', () => {
-  for (const [slug, name] of Object.entries(RENAMED)) {
-    test(`/apps/${slug} keeps its route and shows "${name}"`, async ({page}) => {
-      const response = await page.goto(`/apps/${slug}`);
-      // The rename must not have moved the URL.
-      expect(response.status(), `/apps/${slug} must still resolve`).toBeLessThan(400);
+  for (const [oldSlug, [newSlug, name]] of Object.entries(RENAMED)) {
+    test(`/apps/${oldSlug} redirects to /apps/${newSlug} and shows "${name}"`, async ({page}) => {
+      const response = await page.goto(`/apps/${oldSlug}`);
+      expect(response.status(), `/apps/${oldSlug} must still resolve`).toBeLessThan(400);
+      // Client-side redirect, so wait for the destination rather than reading
+      // the first response's URL.
+      await page.waitForURL(`**/apps/${newSlug}/`);
+      await expect(page.locator('h1')).toContainText(name);
+    });
+
+    test(`/apps/${newSlug} serves "${name}" directly`, async ({page}) => {
+      const response = await page.goto(`/apps/${newSlug}`);
+      expect(response.status(), `/apps/${newSlug} must resolve`).toBeLessThan(400);
       await expect(page.locator('h1')).toContainText(name);
     });
   }
