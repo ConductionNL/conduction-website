@@ -259,6 +259,174 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   ]}
 />
 
+<RotatingCards
+  eyebrow="Three ways Shillinq earns its place"
+  title="It works the way you work. And it works for you."
+  lede="Three things you would normally pay extra for. In Shillinq they are built in."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automate',
+      title: 'An invoice is overdue. The reminder is already on the list.',
+      summary: 'Today: you scroll through open invoices on Friday and hope you spot the late ones. Instead, set it up once. The day an invoice passes its due date, a reminder task lands on the right desk. A supplier bill above your limit waits for your approval before it is booked. Sixty days before a contract ends, the renewal is on your agenda. Nothing forgotten, no chasing from memory, no coding.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'Your books, your way. Without an accountant on the phone.',
+      summary: 'A garage wants the licence plate on every invoice. A design studio wants the project code on every hour. A caterer looks at cash position first thing every morning. Add the field. Drag the widget you check first to the top. Hide the reports you never open. In the running app, in minutes, and your changes stay with every update.',
+      cta: {label: 'How customising works', href: '/apps/openbuild'},
+      panel: <AppMock app="openbuild" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Talk to it',
+      title: 'Ask your books a question. Get the answer, not a report.',
+      summary: 'Ask "which invoices are overdue?" and get the list with amounts and days late. Ask "what did we spend with this supplier this year?" and the number is there. Hand it a receipt and it prepares the booking for you to confirm. Reading is instant; anything that changes your books waits for your say-so.',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: which invoices are overdue?',
+        'assistant: 3 invoices, 4,820 euro in total, oldest 34 days',
+        'assistant: Bakker BV owes 2,100 euro, no reminder sent yet',
+        'you: draft the first reminder for Bakker',
+        'assistant: reminder drafted for your review',
+      ]} cursor mode="asks before it changes anything" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="Your money on the dashboard you already open."
+  lede="Install Shillinq and its financial overview shows up in the app. Turnover and margin first, who owes you next, cash position below. Pick a period and every tile follows."
+  widgets={[
+    {
+      title: 'Turnover and margin',
+      desc: 'Turnover and margin for the period you pick, next to the same period last time. Red when margin turns negative.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 24, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>€ 218k</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.05em', color: 'var(--c-mint-500)'}}>+8%</div>
+          </div>
+          {[
+            {label: 'q1', val: '55%', tone: 'var(--c-cobalt-300)'},
+            {label: 'q2', val: '70%', tone: 'var(--c-lavender-300)'},
+            {label: 'q3', val: '80%', tone: 'var(--c-mint-500)'},
+            {label: 'q4', val: '45%', tone: 'var(--c-forest-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 50}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Open debtors',
+      desc: 'Who still owes you, how much, and how long. Click a name and you are on the invoice.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', stage: '34 days'},
+            {tone: 'var(--c-lavender-300)', stage: '12 days'},
+            {tone: 'var(--c-mint-500)', stage: 'due'},
+            {tone: 'var(--c-mint-500)', stage: 'due'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Cash flow',
+      desc: 'Money in and money out per month, and the cash position that follows. A thirteen-week forecast warns you weeks before the buffer runs low.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {val: '€ 42k', tone: 'var(--c-mint-500)'},
+            {val: '€ 38k', tone: 'var(--c-cobalt-300)'},
+            {val: '€ 51k', tone: 'var(--c-lavender-300)'},
+            {val: '€ 29k', tone: 'var(--c-orange-knvb)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 12, height: 14, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '65%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '45%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>{row.val}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="How Shillinq plugs into the workspace"
+  title="Mail, files and your CRM. Already yours."
+  lede="Your books live where your email, documents and sales already live. That is the point of a workspace."
+  layout="side"
+  defaultOpen="mail"
+  items={[
+    {
+      id: 'mail',
+      title: 'Start an invoice from an email',
+      summary: 'A customer confirms the job by email. Open the message in Nextcloud Mail and click "New invoice from this email". The customer, the date and the message reference are filled in, the invoice opens as a draft, and the email stays linked to it. No copying names from one screen to another.',
+      cta: {label: 'Read the docs', href: 'https://shillinq.conduction.nl'},
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
+            <div style={{height: 4, width: '75%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '55%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '85%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+          </div>
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>New invoice from this email</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>draft invoice for Bakker BV</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'files',
+      title: 'The PDF and the receipt, on the invoice',
+      summary: 'Every invoice keeps its own documents in Files: the PDF you sent, the signed order, the delivery note. Supplier bills and receipts you scan land on the booking they belong to. When the accountant asks for the paperwork behind a line, it is one click away.',
+      cta: {label: 'Read the docs', href: 'https://shillinq.conduction.nl'},
+      panel: <AppMock app="shillinq" />,
+    },
+    {
+      id: 'pipelinq',
+      title: 'From won deal to invoice, without retyping',
+      summary: 'Close a contract in PipelinQ and hand it to Shillinq for invoicing from the client record. Approved hours go the same way: one click sends the period to billing. Recurring revenue from your contracts shows up on the sales dashboard. Sales and finance look at the same numbers, entered once.',
+      cta: {label: 'See PipelinQ', href: '/apps/pipelinq'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'einvoice',
+      title: 'Send invoices the way big clients and the government want them',
+      summary: 'Large clients and public bodies increasingly ask for an electronic invoice, not a PDF. Shillinq exports your invoice in the standard e-invoice format and checks it before it goes. Supplier bills in that format read straight in, so nobody retypes line items. You never need to know what the standard is called.',
+      cta: {label: 'Read the docs', href: 'https://shillinq.conduction.nl'},
+      panel: <AppMock app="shillinq" />,
+    },
+  ]}
+/>
+
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"

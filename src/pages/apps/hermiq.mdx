@@ -261,6 +261,161 @@ export const app = getApp('hermiq');
   ]}
 />
 
+<RotatingCards
+  eyebrow={`Three ways ${app.name} earns its place`}
+  title="It works the way you work. And it works for you."
+  lede="Three things you would normally hire an extra pair of hands for. Here they come with the workspace."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automate',
+      title: 'Monday at eight, the list is in the chat. Nobody had to remember.',
+      summary: 'Give the assistant a job and a time. Every Monday: the quotes nobody followed up, per salesperson, in the sales chat. Every morning: the briefing, what is due today and what came in overnight. Every first of the month: the invoices past due, with the client and the amount. Or step it into an automation you drew: when a complaint comes in, it drafts a summary onto the record before anyone opens it. Every run is logged, and it only does what you allowed.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'Your assistant, your rules, your instructions.',
+      summary: 'Make one assistant for sales, one for the office, one for the fleet manager. Per assistant you tick what it may read and what it may change: this one logs calls, that one only reads. Give it your own instructions: how you address clients, which products you push this quarter, what it must never do. Add a skill and it learns a new task. Change your mind? Untick, and it stops that same minute.',
+      cta: {label: 'How permissions work', href: 'https://hermiq.conduction.nl/docs/tool-grants'},
+      panel: <AppMock app="hermiq" />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Talk to it',
+      title: 'From your phone, in the car, in Nextcloud Talk.',
+      summary: 'No new app to install on your phone. The assistant sits in Nextcloud Talk like a colleague. Type "plan a follow-up with Bakker next Tuesday at ten" and it is in your calendar. Ask "what did we agree with De Vries?" and it reads it back from the record. In a group chat it only speaks when you mention it. Every message runs as you, with your permissions, so it never sees more than you do.',
+      cta: {label: 'How the Talk bot works', href: 'https://hermiq.conduction.nl/docs/talk-chat-bridge'},
+      panel: <AgentTrace lines={[
+        'you: log my call with Jansen BV, they want the quote in May',
+        'assistant: call logged on Jansen BV, outcome positive',
+        'assistant: follow-up planned for 1 May',
+        'assistant: quote reminder drafted for your review',
+      ]} cursor mode="asks before it changes anything" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="What your assistants did, and what waits for you."
+  lede="Install it and the dashboard shows the runs of the day, what needs your approval, and what each assistant is allowed to do."
+  widgets={[
+    {
+      title: 'Runs today',
+      desc: 'How many jobs ran, how many finished well, and how long they took. Per assistant, click through for the log.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 24, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>38</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.05em', color: 'var(--c-mint-500)'}}>97% ok</div>
+          </div>
+          {[
+            {label: 'sales', val: '70%', tone: 'var(--c-cobalt-300)'},
+            {label: 'office', val: '45%', tone: 'var(--c-lavender-300)'},
+            {label: 'fleet', val: '25%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 50}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Waiting for your approval',
+      desc: 'Steps an assistant wants to take but may not without you. Approve or deny each one, with the reason it gave.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', what: 'send mail'},
+            {tone: 'var(--c-orange-knvb)', what: 'send mail'},
+            {tone: 'var(--c-lavender-300)', what: 'update quote'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 2 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '65%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '45%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.what}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'What each assistant may do',
+      desc: 'Per assistant: what it reads, what it may change, and what always needs your approval. Change it here.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {label: 'read CRM', on: true},
+            {label: 'log calls', on: true},
+            {label: 'send mail', on: false},
+            {label: 'change quotes', on: false},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 12, height: 14, clipPath: 'var(--hex-pointy-top)', background: row.on ? 'var(--c-mint-500)' : 'var(--c-cobalt-100)', flexShrink: 0}}></span>
+              <div style={{flex: 1, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-700)'}}>{row.label}</div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: row.on ? 'var(--c-mint-500)' : 'var(--c-cobalt-400)'}}>{row.on ? 'allowed' : 'off'}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow={`How ${app.name} plugs into the workspace`}
+  title="Talk, mail, calendar, contacts, files. And every Conduction app."
+  lede="The assistant lives where your team already works. It reads and acts in the tools you have, as you, with your permissions."
+  layout="side"
+  defaultOpen="talk"
+  items={[
+    {
+      id: 'talk',
+      title: 'Nextcloud Talk, on desktop and phone',
+      summary: 'The assistant is a participant in your Talk conversations. Chat with it one to one, or mention it in a team room. Its scheduled reports land in the room you choose, and a reply in that room continues the conversation. Nothing to install on your phone: the Talk app you have is enough. Each turn runs as the person who typed it.',
+      cta: {label: 'Read the docs', href: 'https://hermiq.conduction.nl'},
+      panel: <AgentTrace lines={[
+        'sales room, Monday 08:00',
+        'assistant: 6 quotes without follow-up this week',
+        'assistant: oldest is Bakker BV, 23 days',
+        'you: plan a call with Bakker for tomorrow 10:00',
+        'assistant: planned, in your calendar',
+      ]} cursor mode="runs as you" />,
+    },
+    {
+      id: 'groupware',
+      title: 'Mail, calendar, contacts and files',
+      summary: 'It reads your Nextcloud Mail and drafts the reply. It puts the follow-up in your Nextcloud Calendar. It finds the contact and updates the phone number. It looks up the contract in Files and reads you the clause. All the tools you already have, none of them replaced. Sending mail is a sensitive step, so it waits for your approval.',
+      cta: {label: 'Read the docs', href: 'https://hermiq.conduction.nl'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'apps',
+      title: 'Every action in every Conduction app',
+      summary: 'Log a call in the CRM. Start the meeting and add an action point in Decidesk. Look up a case in Procest. Find the invoice in Shillinq. Every action a Conduction app offers is available to the assistant, and you decide per assistant which ones it gets. Even without any automation, the chat is a way to command your apps.',
+      cta: {label: 'See all apps', href: '/apps'},
+      panel: <AppMock app="decidesk" />,
+    },
+    {
+      id: 'automation',
+      title: 'A step inside your automation',
+      summary: 'Draw an automation and put the assistant in as a step. A complaint comes in: it summarises the message onto the record and suggests a category. A quote is accepted: it drafts the kick-off mail for you to send. Structured answers land back on the record, so the next step can use them.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <AppMock app="openregister" />,
+    },
+  ]}
+/>
+
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
