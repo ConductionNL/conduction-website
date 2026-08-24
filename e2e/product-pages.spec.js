@@ -32,38 +32,65 @@ import {collectConsoleErrors, expectNoConsoleErrors} from './helpers.js';
 const APPS = {
   pipelinq: {ways: 'four', shelf: true, demo: true},
   openregister: {ways: 'four', shelf: true, demo: true},
-  openbuild: {ways: 'four', shelf: true, demo: true},
+  buildiq: {ways: 'four', shelf: true, demo: true},
   hermiq: {ways: 'four', shelf: true, demo: true},
   shillinq: {ways: 'four', shelf: true, demo: true},
   launchpad: {ways: 'four', shelf: true, demo: true},
-  softwarecatalog: {ways: 'four', shelf: true, demo: true},
-  decidesk: {ways: 'four', shelf: true, demo: true},
-  procest: {ways: 'four', shelf: true, demo: true},
-  scholiq: {ways: 'four', shelf: true, demo: true},
-  docudesk: {ways: 'four', shelf: true, demo: true},
+  stackiq: {ways: 'four', shelf: true, demo: true},
+  decidiq: {ways: 'four', shelf: true, demo: true},
+  dossiq: {ways: 'four', shelf: true, demo: true},
+  learniq: {ways: 'four', shelf: true, demo: true},
+  filinq: {ways: 'four', shelf: true, demo: true},
   opencatalogi: {ways: 'four', shelf: true, demo: true},
-  openconnector: {ways: 'four', shelf: true, demo: true},
-  planix: {ways: 'four', shelf: true, demo: true},
-  hrmq: {ways: 'four', shelf: true, demo: true},
-  larpingapp: {ways: 'four', shelf: true, demo: true},
+  integriq: {ways: 'four', shelf: true, demo: true},
+  planninq: {ways: 'four', shelf: true, demo: true},
+  humaniq: {ways: 'four', shelf: true, demo: true},
+  larpinq: {ways: 'four', shelf: true, demo: true},
   /* Deliberate exceptions, and why:
-   * - doriath: a zero-knowledge vault has no client-self-service story,
+   * - keepiq: a zero-knowledge vault has no client-self-service story,
    *   so it honestly keeps three ways.
    * - portaliq: it IS the self-service story; the trio stays.
-   * - nldesign: ships zero widgets; its shelf shows the theme tokens.
+   * - thematiq: ships zero widgets; its shelf shows the theme tokens.
    * - zaakafhandelapp: sunset page pointing at Procest; no cards/shelf.
-   * - app-versions: in development; no cards/shelf/demo CTA. */
-  doriath: {ways: 'three', shelf: true, demo: true},
+   * - versioniq: in development; no cards/shelf/demo CTA. */
+  keepiq: {ways: 'three', shelf: true, demo: true},
   portaliq: {ways: 'three', shelf: true, demo: true},
-  /* nldesign: a theme has no client-self-service card either. */
-  nldesign: {ways: 'three', shelf: true, demo: true},
+  /* thematiq: a theme has no client-self-service card either. */
+  thematiq: {ways: 'three', shelf: true, demo: true},
   zaakafhandelapp: {ways: null, shelf: false, demo: true},
-  'app-versions': {ways: null, shelf: false, demo: false},
+  'versioniq': {ways: null, shelf: false, demo: false},
 };
 
 const WAYS_HEADING = {
   en: {four: /Four ways .+ earns its place/i, three: /Three ways .+ earns its place/i},
   nl: {four: /Vier manieren waarop .+ zijn plek verdient/i, three: /Drie manieren waarop .+ zijn plek verdient/i},
+};
+
+/* PAGE SLUG -> the app id the PARTNERS PAGE and <AppMock> still use.
+ *
+ * The page paths moved 2026-08-23; these two identifiers did NOT, and the
+ * difference is deliberate. `?app=` filters the partners directory, and
+ * `<AppMock app>` resolves an illustration out of
+ * @conduction/docusaurus-preset — both keyed on the id those consumers know.
+ * Moving them here would filter on a value the partners page has never seen and
+ * render the "Unknown app" fallback frame, which the assertion just above
+ * explicitly forbids.
+ *
+ * Absent from this map means the page slug and the app id are still the same. */
+const PARTNER_APP_ID = {
+  versioniq: 'app-versions',
+  decidiq: 'decidesk',
+  filinq: 'docudesk',
+  keepiq: 'doriath',
+  humaniq: 'hrmq',
+  larpinq: 'larpingapp',
+  thematiq: 'nldesign',
+  buildiq: 'openbuild',
+  integriq: 'openconnector',
+  planninq: 'planix',
+  dossiq: 'procest',
+  learniq: 'scholiq',
+  stackiq: 'softwarecatalog',
 };
 
 for (const locale of ['en', 'nl']) {
@@ -96,10 +123,13 @@ for (const locale of ['en', 'nl']) {
           ).toBeVisible();
         }
 
-        // The demo CTA deeplinks to the partners page for this app.
+        // The demo CTA deeplinks to the partners page for this app — by the
+        // app id the partners directory knows, which is not always the page
+        // slug any more. See PARTNER_APP_ID.
         if (exp.demo) {
+          const appId = PARTNER_APP_ID[slug] ?? slug;
           await expect(
-            page.locator(`a[href*="/partners/?app=${slug}"]`).first(),
+            page.locator(`a[href*="/partners/?app=${appId}"]`).first(),
           ).toBeAttached();
         }
 
