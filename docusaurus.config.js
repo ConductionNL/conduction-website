@@ -228,6 +228,9 @@ module.exports = createConfig({
     /* INTERIM: Hermiq glyph override until the preset can publish to npm
        again (trusted publishing not configured). See the plugin header. */
     require.resolve('./plugins/hermiq-glyph-interim'),
+    /* INTERIM: apps-registry descriptions + AppCrossLinks description
+       rendering until the preset ships both. See the plugin header. */
+    require.resolve('./plugins/apps-registry-interim'),
     // [
     //   '@conduction/docusaurus-plugin-opencatalogi',
     //   {
@@ -299,6 +302,12 @@ module.exports = createConfig({
              same pattern as the /blog/* legacy stubs). */
           {from: '/academy/the-platform-moment', to: '/academy/opinion/the-platform-moment'},
           {from: '/academy/government-open-source-needs-an-engine', to: '/academy/opinion/government-open-source-needs-an-engine'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-1-your-work', to: '/academy/blog/this-is-going-to-hurt-part-1-your-work'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-2-the-big-three', to: '/academy/blog/this-is-going-to-hurt-part-2-the-big-three'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership', to: '/academy/blog/this-is-going-to-hurt-part-3-the-end-of-ownership'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed', to: '/academy/blog/this-is-going-to-hurt-part-4-security-at-machine-speed'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-5-the-singularity', to: '/academy/blog/this-is-going-to-hurt-part-5-the-singularity'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help', to: '/academy/blog/this-is-going-to-hurt-part-6-actually-it-might-help'},
           /* OpenSpec academy series moved from Dutch to English slugs
              (2026-06-11). Parts 1 and 2 were already published, so keep
              inbound links working. Parts 0/3/4 are new and never shipped a
