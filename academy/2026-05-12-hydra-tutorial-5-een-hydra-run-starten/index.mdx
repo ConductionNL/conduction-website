@@ -30,7 +30,7 @@ The first four parts were about concept, pipelines, gates and skills. Time to ac
 
 <Prerequisites title="What you need">
   <PrerequisiteItem>Parts 1 through 4 worked through.</PrerequisiteItem>
-  <PrerequisiteItem>The hydra repo cloned: <code>git clone git@codeberg.org:Conduction/hydra.git</code>.</PrerequisiteItem>
+  <PrerequisiteItem>The hydra repo cloned: <code>git clone git@github.com:ConductionNL/hydra.git</code>.</PrerequisiteItem>
   <PrerequisiteItem>A working Docker engine (rootless or root doesn't matter). Locally we run the three images without Kubernetes.</PrerequisiteItem>
   <PrerequisiteItem>A Claude Max account logged in via OAuth (Hydra uses no API keys; see <code>secrets/credentials.json</code> further down).</PrerequisiteItem>
   <PrerequisiteItem>GitHub PATs with the right scopes for builder/reviewer/security — ask your team lead if you don't have them yet.</PrerequisiteItem>
@@ -39,7 +39,7 @@ The first four parts were about concept, pipelines, gates and skills. Time to ac
 ## Step 1: clone and look around
 
 ```bash
-git clone git@codeberg.org:Conduction/hydra.git
+git clone git@github.com:ConductionNL/hydra.git
 cd hydra
 cat CLAUDE.md
 ```
@@ -87,7 +87,7 @@ HYDRA_REVIEW_SCOPE=diff
 Tip: the defaults are `ghcr.io/conductionnl/hydra` as prefix and `latest` as tag. In production/CI you leave `HYDRA_IMAGE_*` off and Hydra picks up those defaults.
 
 :::tip secrets/.env is loaded automatically
-`scripts/hydra-supervisor.sh` and `scripts/orchestrate.sh` source this file **themselves** at startup. Previously you had to export it in your shell — a silly bug that went unnoticed for months and was fixed as part of the [decidesk-44-45 retrospective](https://codeberg.org/Conduction/hydra/src/branch/main/docs/retrospectives/decidesk-44-45-phase-g.md) (April 2026). Every new long-running entrypoint MUST source this file at startup; that's a repo-wide contract.
+`scripts/hydra-supervisor.sh` and `scripts/orchestrate.sh` source this file **themselves** at startup. Previously you had to export it in your shell — a silly bug that went unnoticed for months and was fixed as part of the [decidesk-44-45 retrospective](https://github.com/ConductionNL/hydra/blob/main/docs/retrospectives/decidesk-44-45-phase-g.md) (April 2026). Every new long-running entrypoint MUST source this file at startup; that's a repo-wide contract.
 :::
 
 ## Step 4: HYDRA_LABEL_PREFIX — why and how
@@ -351,7 +351,7 @@ The running run looks at labels in the old namespace, your new supervisor at ano
   />
   <NextStep
     title="dev-run.md — operational reference"
-    href="https://codeberg.org/Conduction/hydra/src/branch/main/docs/operations/dev-run.md"
+    href="https://github.com/ConductionNL/hydra/blob/main/docs/operations/dev-run.md"
     description="The full operational doc with all dev-run flags and label-prefix explanation."
   />
 </NextSteps>

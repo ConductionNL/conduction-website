@@ -45,7 +45,7 @@ Code changes in your cloned app repos show up in the running Nextcloud without r
 
 **Beginner-friendly demo — [Run Nextcloud locally with Docker](/academy/run-nextcloud-locally).** A 30-minute walkthrough that pastes a standalone `docker-compose.yml` into a fresh folder. Aimed at someone who has never used Docker or a terminal. Good for a first run-through; not the layout you'll use day-to-day for actual app development (the standalone compose doesn't have an `apps-extra/` mount, so you can't iterate on Conduction app code that way).
 
-> **Alternative compose with profiles — optional, extra.** The Conduction [`openregister`](https://codeberg.org/Conduction/openregister) repo also ships its own `docker-compose.yml` with `--profile` flags (`ai`, `ui`, `exapps`, `solr`, `ollama`, `openproject`, `xwiki`, `openzaak`, `openklant`, and more) — documented in [`docs/claude/docker.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/docker.md). Useful when you need those heavier services, but not required for the workstation chain and not what most Conduction devs run day-to-day. Stick with `nextcloud-docker-dev` for now.
+> **Alternative compose with profiles — optional, extra.** The Conduction [`openregister`](https://github.com/ConductionNL/openregister) repo also ships its own `docker-compose.yml` with `--profile` flags (`ai`, `ui`, `exapps`, `solr`, `ollama`, `openproject`, `xwiki`, `openzaak`, `openklant`, and more) — documented in [`docs/claude/docker.md`](https://github.com/ConductionNL/.github/blob/main/docs/claude/docker.md). Useful when you need those heavier services, but not required for the workstation chain and not what most Conduction devs run day-to-day. Stick with `nextcloud-docker-dev` for now.
 
 The rest of this part is the **Conduction-dev-flow context** — which apps to clone into `apps-extra/`, and the reset workflow.
 
@@ -57,8 +57,8 @@ Inside `nextcloud-docker-dev/apps-extra/`, clone at minimum:
 
 ```bash
 cd ~/nextcloud-docker-dev/apps-extra
-git clone git@codeberg.org:Conduction/openregister.git
-git clone git@codeberg.org:Conduction/openconnector.git
+git clone git@github.com:ConductionNL/openregister.git
+git clone git@github.com:ConductionNL/integriq.git
 ```
 
 - **OpenRegister** — the schema-backed object store every Conduction app reads and writes through. Without it, nothing else works.
@@ -67,7 +67,7 @@ git clone git@codeberg.org:Conduction/openconnector.git
 A third app shows up in many tutorials — clone when you need it:
 
 ```bash
-git clone git@codeberg.org:Conduction/opencatalogi.git
+git clone git@github.com:ConductionNL/opencatalogi.git
 ```
 
 - **OpenCatalogi** — makes every register searchable as a public catalogue and federates to `data.overheid.nl`.
@@ -96,7 +96,7 @@ docker compose up nextcloud proxy
 
 `-v` removes the volumes, so all Nextcloud state — admin account, app config, registers, files — goes with it. The images stay cached so the next start is fast.
 
-> **Later — `clean-env` skill from Hydra.** Once you have the [`hydra`](https://codeberg.org/Conduction/hydra) repo cloned (later in the academy chain, not now), the [`clean-env` Claude skill](https://codeberg.org/Conduction/hydra/src/branch/main/.claude/skills/clean-env) wraps the reset + re-enables the core Conduction apps in one step. Optional and extra; the plain `docker compose down -v` above is all this tutorial needs.
+> **Later — `clean-env` skill from Hydra.** Once you have the [`hydra`](https://github.com/ConductionNL/hydra) repo cloned (later in the academy chain, not now), the [`clean-env` Claude skill](https://github.com/ConductionNL/hydra/tree/main/.claude/skills/clean-env) wraps the reset + re-enables the core Conduction apps in one step. Optional and extra; the plain `docker compose down -v` above is all this tutorial needs.
 
 The cleanup is fast — not a slow Windows-style "uninstall and reinstall". Don't be precious about your local state.
 
@@ -225,7 +225,7 @@ The rule of thumb: **same tutorial → keep, different tutorial → reset.**
   />
   <NextStep
     title="The canonical docker.md"
-    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/docker.md"
+    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/docker.md"
     description="Internal reference with the full Docker profile list and example compose commands."
   />
 </NextSteps>

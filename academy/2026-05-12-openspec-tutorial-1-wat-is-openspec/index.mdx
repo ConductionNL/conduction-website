@@ -23,7 +23,7 @@ import Details from '@theme/Details';
 **Your starting point.** You don't need to build anything special to follow along. Just clone any Conduction app and read along in its `openspec/` folder:
 
 ```bash
-git clone https://codeberg.org/Conduction/openregister.git
+git clone https://github.com/ConductionNL/openregister.git
 cd openregister && git checkout development
 ls openspec/          # specs/, changes/, changes/archive/
 ```
@@ -42,7 +42,7 @@ ls openspec/          # specs/, changes/, changes/archive/
 <Prerequisites title="What you'll need">
   <PrerequisiteItem>Basic Git and Markdown. We write specs in <code>.md</code> files that live in your repo.</PrerequisiteItem>
   <PrerequisiteItem>A working dev machine. Don't have one yet? Start with the <a href="/academy/workstation-tutorial-1-what-to-install">Workstation Setup tutorial series</a> (six short modules, one evening).</PrerequisiteItem>
-  <PrerequisiteItem>Access to a Conduction project to poke around in — any app like <a href="https://codeberg.org/Conduction/openregister">openregister</a> or <a href="https://codeberg.org/Conduction/opencatalogi">opencatalogi</a> will do.</PrerequisiteItem>
+  <PrerequisiteItem>Access to a Conduction project to poke around in — any app like <a href="https://github.com/ConductionNL/openregister">openregister</a> or <a href="https://github.com/ConductionNL/opencatalogi">opencatalogi</a> will do.</PrerequisiteItem>
 </Prerequisites>
 
 ## In one sentence
@@ -144,7 +144,7 @@ For everything in between — a new feature, a breaking change, a refactor that 
 
 ## What does a Conduction repo look like?
 
-All our projects share the same OpenSpec folder layout. One look at [openregister/openspec](https://codeberg.org/Conduction/openregister/src/branch/development/openspec) gives you a good picture:
+All our projects share the same OpenSpec folder layout. One look at [openregister/openspec](https://github.com/ConductionNL/openregister/tree/development/openspec) gives you a good picture:
 
 - `openspec/specs/` — the capabilities of this app, one folder per domain
 - `openspec/changes/` — in-flight changes (often one per open PR)
@@ -153,34 +153,34 @@ All our projects share the same OpenSpec folder layout. One look at [openregiste
 - `openspec/config.yaml` — project config (points at the shared Conduction schema)
 - `project.md` — high-level description of the app, in the repo **root** (not under `openspec/`)
 
-**Company-wide** ADRs do not live in every app — they live in [hydra/openspec/architecture](https://codeberg.org/Conduction/hydra/src/branch/main/openspec/architecture). Building inside a Conduction app? Then those ADRs apply to you too — the Hydra pipeline loads them into every build. Rule of thumb: only something that is *truly unique* to this app goes in `openspec/architecture/`; everything else belongs company-wide in `hydra/openspec/architecture/`.
+**Company-wide** ADRs do not live in every app — they live in [hydra/openspec/architecture](https://github.com/ConductionNL/hydra/tree/main/openspec/architecture). Building inside a Conduction app? Then those ADRs apply to you too — the Hydra pipeline loads them into every build. Rule of thumb: only something that is *truly unique* to this app goes in `openspec/architecture/`; everything else belongs company-wide in `hydra/openspec/architecture/`.
 
 ## Who writes the specs?
 
 Two patterns, side by side:
 
-1. **Manually, by a developer or architect** — use [`/opsx-new`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-new) to create the change folder, then [`/opsx-ff`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-ff) (everything in one run) or [`/opsx-continue`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-continue) (artefact by artefact) in Claude Code. That's what you'll do in Part 2.
-2. **Retrofit on an existing app** — for legacy code that predates OpenSpec. See [retrofit.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/retrofit.md). Not your first job.
+1. **Manually, by a developer or architect** — use [`/opsx-new`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-new) to create the change folder, then [`/opsx-ff`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-ff) (everything in one run) or [`/opsx-continue`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-continue) (artefact by artefact) in Claude Code. That's what you'll do in Part 2.
+2. **Retrofit on an existing app** — for legacy code that predates OpenSpec. See [retrofit.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/retrofit.md). Not your first job.
 
 Whichever route you take, the end result is identical: a clean change in `openspec/changes/` with the four expected artefacts.
 
 ## The OpenSpec pipeline at a glance
 
-A complete change moves through four stages, each with its own `/opsx-` command. Source: [spec-driven-development.md](https://codeberg.org/Conduction/.github/src/branch/main/docs/WayOfWork/spec-driven-development.md).
+A complete change moves through four stages, each with its own `/opsx-` command. Source: [spec-driven-development.md](https://github.com/ConductionNL/.github/blob/main/docs/WayOfWork/spec-driven-development.md).
 
 | Stage | Command | What it does |
 | --- | --- | --- |
-| **Obtain** | [`/opsx-explore`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-explore) | Explore a topic or problem before starting a change (optional) |
-| **Specify** | [`/opsx-new`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-new) | Create an empty change with metadata |
-| | [`/opsx-ff`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-ff) | Fast-forward: proposal + specs + design + tasks in one run |
-| | [`/opsx-continue`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-continue) | Build artefact by artefact instead of all at once |
-| | [`/opsx-plan-to-issues`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md) | Tasks → tracking issue + one GitHub issue per task |
-| **Build** | [`/opsx-apply`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-apply) | Implement the tasks one by one, against the spec |
-| **Validate** | [`/opsx-verify`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-verify) | Check that the code actually delivers the spec |
-| **Done** | [`/opsx-archive`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-archive) | Spec-delta → main spec; change → `archive/` |
-| | [`/opsx-sync`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-sync) | Merge only the delta into the main spec (without archiving). `/opsx-archive` also does this — running sync separately is for when you want the spec updated before closing the change. |
+| **Obtain** | [`/opsx-explore`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-explore) | Explore a topic or problem before starting a change (optional) |
+| **Specify** | [`/opsx-new`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-new) | Create an empty change with metadata |
+| | [`/opsx-ff`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-ff) | Fast-forward: proposal + specs + design + tasks in one run |
+| | [`/opsx-continue`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-continue) | Build artefact by artefact instead of all at once |
+| | [`/opsx-plan-to-issues`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md) | Tasks → tracking issue + one GitHub issue per task |
+| **Build** | [`/opsx-apply`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-apply) | Implement the tasks one by one, against the spec |
+| **Validate** | [`/opsx-verify`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-verify) | Check that the code actually delivers the spec |
+| **Done** | [`/opsx-archive`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-archive) | Spec-delta → main spec; change → `archive/` |
+| | [`/opsx-sync`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-sync) | Merge only the delta into the main spec (without archiving). `/opsx-archive` also does this — running sync separately is for when you want the spec updated before closing the change. |
 
-**The golden rule from the Conduction docs**: *most changes only need `/opsx-ff` → `/opsx-apply` → `/opsx-verify`*. The rest is opt-in. Fully automated runs are also an option — see [`/opsx-apply-loop`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-apply-loop) (one change, containerized) and [`/opsx-pipeline`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-pipeline) (multiple changes in parallel).
+**The golden rule from the Conduction docs**: *most changes only need `/opsx-ff` → `/opsx-apply` → `/opsx-verify`*. The rest is opt-in. Fully automated runs are also an option — see [`/opsx-apply-loop`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-apply-loop) (one change, containerized) and [`/opsx-pipeline`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-pipeline) (multiple changes in parallel).
 
 ### Visual — the pipeline end to end
 
