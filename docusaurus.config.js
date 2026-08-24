@@ -300,11 +300,8 @@ module.exports = createConfig({
              Keep the published URLs working. /academy/opinion/ itself is a
              static stub → /academy/?type=opinion (see static/academy/opinion/,
              same pattern as the /blog/* legacy stubs). */
-          {from: '/academy/the-platform-moment', to: '/academy/blog/the-platform-moment'},
-          {from: '/academy/government-open-source-needs-an-engine', to: '/academy/blog/government-open-source-needs-an-engine'},
-          {from: '/academy/opinion/feed-the-wolf-that-ships', to: '/academy/blog/feed-the-wolf-that-ships'},
-          {from: '/academy/opinion/the-platform-moment', to: '/academy/blog/the-platform-moment'},
-          {from: '/academy/opinion/government-open-source-needs-an-engine', to: '/academy/blog/government-open-source-needs-an-engine'},
+          {from: '/academy/the-platform-moment', to: '/academy/opinion/the-platform-moment'},
+          {from: '/academy/government-open-source-needs-an-engine', to: '/academy/opinion/government-open-source-needs-an-engine'},
           {from: '/academy/opinion/this-is-going-to-hurt-part-1-your-work', to: '/academy/blog/this-is-going-to-hurt-part-1-your-work'},
           {from: '/academy/opinion/this-is-going-to-hurt-part-2-the-big-three', to: '/academy/blog/this-is-going-to-hurt-part-2-the-big-three'},
           {from: '/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership', to: '/academy/blog/this-is-going-to-hurt-part-3-the-end-of-ownership'},
