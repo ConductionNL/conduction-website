@@ -23,7 +23,7 @@ With the runtimes in place from Part 2, it's time to add the AI pair programmer 
 <Outcomes title="What you'll deliver">
   <Outcome>The Claude Code extension installed inside your WSL-connected VS Code, signed into your Anthropic account.</Outcome>
   <Outcome>The Conduction global Claude settings installed at <code>&#126;/.claude/settings.json</code>, with the two mandatory safety hooks at <code>&#126;/.claude/hooks/</code>.</Outcome>
-  <Outcome>The version-check hook configured so you're warned at session start when a new settings version is available (the hook reads the slug in <code>~/.claude/settings-repo-url</code> — currently <code>ConductionNL/.github</code>, which is the GitHub mirror of the canonical <a href="https://codeberg.org/Conduction/.github">Conduction/.github</a> repo on Codeberg).</Outcome>
+  <Outcome>The version-check hook configured so you're warned at session start when a new settings version is available (the hook reads the slug in <code>~/.claude/settings-repo-url</code> — currently <code>ConductionNL/.github</code>, the canonical <a href="https://github.com/ConductionNL/.github">ConductionNL/.github</a> repo on GitHub).</Outcome>
   <Outcome>The kernel-level immutable lock applied — so even if every other guard fails, the kernel refuses unauthorised writes to your hooks.</Outcome>
   <Outcome>A first session in which Claude relays a <em>"Global Claude Settings checked — settings are up to date"</em> message at the top of its first response.</Outcome>
 </Outcomes>
@@ -60,16 +60,16 @@ Try a quick test prompt: ask Claude something simple like "what's the current di
 
 ## Step 3: clone the `.github` repo
 
-The global settings live in the canonical [`Conduction/.github`](https://codeberg.org/Conduction/.github) repo on Codeberg. Clone it once:
+The global settings live in the canonical [`ConductionNL/.github`](https://github.com/ConductionNL/.github) repo on GitHub. Clone it once:
 
 ```bash
 mkdir -p ~/code/conduction
 cd ~/code/conduction
-git clone git@codeberg.org:Conduction/.github.git
+git clone git@github.com:ConductionNL/.github.git
 cd .github
 ```
 
-> **No SSH key yet?** [Part 2 — Codeberg auth](/academy/workstation-tutorial-2-base-setup#step-7-codeberg-auth-ssh--tea) walks through it. As a fallback you can also clone over HTTPS: `git clone https://codeberg.org/Conduction/.github.git` — that works without auth but won't let you push.
+> **No SSH key yet?** [Part 2 — Codeberg auth](/academy/workstation-tutorial-2-base-setup#step-7-codeberg-auth-ssh--tea) walks through it. As a fallback you can also clone over HTTPS: `git clone https://github.com/ConductionNL/.github.git` — that works without auth but won't let you push.
 
 You only need to clone this once — the version-check hook fetches updates via the GitHub API after this (the settings repo is mirrored from Codeberg to `ConductionNL/.github` on GitHub for the hook), no further `git pull` needed.
 
@@ -147,7 +147,7 @@ A common point of confusion. Two layers:
 
 | Layer | Lives at | Covers | Who maintains it |
 | --- | --- | --- | --- |
-| **Global (user-level)** | `~/.claude/settings.json` + `~/.claude/hooks/` | Safety policy on **your** machine. Read-first, write-with-approval. Affects every project you open. | You — but from the canonical Conduction templates. Versioned in [`Conduction/.github`](https://codeberg.org/Conduction/.github) on Codeberg (mirrored to `ConductionNL/.github` on GitHub for the version-check hook). |
+| **Global (user-level)** | `~/.claude/settings.json` + `~/.claude/hooks/` | Safety policy on **your** machine. Read-first, write-with-approval. Affects every project you open. | You — but from the canonical Conduction templates. Versioned in [`ConductionNL/.github`](https://github.com/ConductionNL/.github) on GitHub, which the version-check hook reads. |
 | **Project-level** | `.claude/settings.json` inside each repo | Project-specific allowlist — which MCP servers to enable, which Bash commands are pre-approved for this project's tests. | The project maintainers; checked into the repo. |
 
 The two **complement** each other. Project settings can pre-approve specific commands for that project's tests; they cannot loosen the global write-approval policy. If a project tries to allow `rm -rf` without a prompt, the global hook still catches it.
@@ -299,7 +299,7 @@ Until one of those three is fixed, you're effectively running Claude with no saf
   />
   <NextStep
     title="The canonical global-claude-settings.md"
-    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/global-claude-settings.md"
+    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/global-claude-settings.md"
     description="The internal reference with the full breakdown of every config file, update flow, and security model."
   />
 </NextSteps>

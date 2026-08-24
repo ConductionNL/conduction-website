@@ -44,7 +44,7 @@ Codewijzigingen in je gekloonde app-repo's verschijnen meteen in de draaiende Ne
 
 **Beginner-vriendelijke demo — [Nextcloud lokaal draaien met Docker](/nl/academy/run-nextcloud-locally).** Een walk-through van 30 minuten die een standalone `docker-compose.yml` in een verse map plakt. Bedoeld voor wie nog nooit Docker of een terminal heeft gebruikt. Prima voor een eerste rondje, maar niet de layout die je dagelijks gebruikt voor échte app-ontwikkeling (de standalone compose heeft geen `apps-extra/`-mount, dus je kunt niet itereren op Conduction-app-code in die opzet).
 
-> **Alternatieve compose met profielen — optioneel, extra.** De Conduction [`openregister`](https://codeberg.org/Conduction/openregister)-repo levert ook een eigen `docker-compose.yml` met `--profile`-flags (`ai`, `ui`, `exapps`, `solr`, `ollama`, `openproject`, `xwiki`, `openzaak`, `openklant`, en meer) — beschreven in [`docs/claude/docker.md`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/docker.md). Handig als je die zwaardere diensten nodig hebt, maar niet vereist voor de workstation-keten en niet wat de meeste Conduction-devs dagelijks draaien. Blijf voor nu bij `nextcloud-docker-dev`.
+> **Alternatieve compose met profielen — optioneel, extra.** De Conduction [`openregister`](https://github.com/ConductionNL/openregister)-repo levert ook een eigen `docker-compose.yml` met `--profile`-flags (`ai`, `ui`, `exapps`, `solr`, `ollama`, `openproject`, `xwiki`, `openzaak`, `openklant`, en meer) — beschreven in [`docs/claude/docker.md`](https://github.com/ConductionNL/.github/blob/main/docs/claude/docker.md). Handig als je die zwaardere diensten nodig hebt, maar niet vereist voor de workstation-keten en niet wat de meeste Conduction-devs dagelijks draaien. Blijf voor nu bij `nextcloud-docker-dev`.
 
 De rest van dit deel gaat over de **Conduction-dev-flow-context** — welke apps je in `apps-extra/` cloned, en de reset-workflow.
 
@@ -56,8 +56,8 @@ Binnen `nextcloud-docker-dev/apps-extra/` clone je minimaal:
 
 ```bash
 cd ~/nextcloud-docker-dev/apps-extra
-git clone git@codeberg.org:Conduction/openregister.git
-git clone git@codeberg.org:Conduction/openconnector.git
+git clone git@github.com:ConductionNL/openregister.git
+git clone git@github.com:ConductionNL/integriq.git
 ```
 
 - **OpenRegister** — de schema-gedreven object store waar elke Conduction-app van leest en naar schrijft. Zonder OpenRegister werkt verder niets.
@@ -66,7 +66,7 @@ git clone git@codeberg.org:Conduction/openconnector.git
 Een derde app komt in veel tutorials terug — clone hem als je hem nodig hebt:
 
 ```bash
-git clone git@codeberg.org:Conduction/opencatalogi.git
+git clone git@github.com:ConductionNL/opencatalogi.git
 ```
 
 - **OpenCatalogi** — maakt elk register doorzoekbaar als publieke catalogus en federeert naar `data.overheid.nl`.
@@ -95,7 +95,7 @@ docker compose up nextcloud proxy
 
 `-v` gooit de volumes weg, dus alle Nextcloud-state — admin-account, app-config, registers, files — gaat mee. De images blijven gecached, dus de volgende start is snel.
 
-> **Later — `clean-env`-skill uit Hydra.** Als je de [`hydra`](https://codeberg.org/Conduction/hydra)-repo eenmaal gecloned hebt (later in de academy-keten, niet nu), wikkelt de [`clean-env`-Claude-skill](https://codeberg.org/Conduction/hydra/src/branch/main/.claude/skills/clean-env) de reset + het opnieuw activeren van de core-Conduction-apps in één stap. Optioneel en extra; de gewone `docker compose down -v` hierboven is alles wat deze tutorial nodig heeft.
+> **Later — `clean-env`-skill uit Hydra.** Als je de [`hydra`](https://github.com/ConductionNL/hydra)-repo eenmaal gecloned hebt (later in de academy-keten, niet nu), wikkelt de [`clean-env`-Claude-skill](https://github.com/ConductionNL/hydra/tree/main/.claude/skills/clean-env) de reset + het opnieuw activeren van de core-Conduction-apps in één stap. Optioneel en extra; de gewone `docker compose down -v` hierboven is alles wat deze tutorial nodig heeft.
 
 Het opschonen is snel — geen trage Windows-stijl "verwijderen en opnieuw installeren". Wees niet zuinig op je lokale state.
 
@@ -224,7 +224,7 @@ De vuistregel: **zelfde tutorial → aanhouden, andere tutorial → resetten.**
   />
   <NextStep
     title="De canonieke docker.md"
-    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/docker.md"
+    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/docker.md"
     description="Interne referentie met de volledige lijst Docker-profielen en voorbeeld-compose-commando's."
   />
 </NextSteps>
