@@ -42,7 +42,7 @@ const APPS = {
   learniq: {ways: 'four', shelf: true, demo: true},
   filinq: {ways: 'four', shelf: true, demo: true},
   opencatalogi: {ways: 'four', shelf: true, demo: true},
-  openconnector: {ways: 'four', shelf: true, demo: true},
+  integriq: {ways: 'four', shelf: true, demo: true},
   planninq: {ways: 'four', shelf: true, demo: true},
   humaniq: {ways: 'four', shelf: true, demo: true},
   larpinq: {ways: 'four', shelf: true, demo: true},
@@ -64,6 +64,33 @@ const APPS = {
 const WAYS_HEADING = {
   en: {four: /Four ways .+ earns its place/i, three: /Three ways .+ earns its place/i},
   nl: {four: /Vier manieren waarop .+ zijn plek verdient/i, three: /Drie manieren waarop .+ zijn plek verdient/i},
+};
+
+/* PAGE SLUG -> the app id the PARTNERS PAGE and <AppMock> still use.
+ *
+ * The page paths moved 2026-08-23; these two identifiers did NOT, and the
+ * difference is deliberate. `?app=` filters the partners directory, and
+ * `<AppMock app>` resolves an illustration out of
+ * @conduction/docusaurus-preset — both keyed on the id those consumers know.
+ * Moving them here would filter on a value the partners page has never seen and
+ * render the "Unknown app" fallback frame, which the assertion just above
+ * explicitly forbids.
+ *
+ * Absent from this map means the page slug and the app id are still the same. */
+const PARTNER_APP_ID = {
+  versioniq: 'app-versions',
+  decidiq: 'decidesk',
+  filinq: 'docudesk',
+  keepiq: 'doriath',
+  humaniq: 'hrmq',
+  larpinq: 'larpingapp',
+  thematiq: 'nldesign',
+  buildiq: 'openbuild',
+  integriq: 'openconnector',
+  planninq: 'planix',
+  dossiq: 'procest',
+  learniq: 'scholiq',
+  stackiq: 'softwarecatalog',
 };
 
 for (const locale of ['en', 'nl']) {
@@ -96,10 +123,13 @@ for (const locale of ['en', 'nl']) {
           ).toBeVisible();
         }
 
-        // The demo CTA deeplinks to the partners page for this app.
+        // The demo CTA deeplinks to the partners page for this app — by the
+        // app id the partners directory knows, which is not always the page
+        // slug any more. See PARTNER_APP_ID.
         if (exp.demo) {
+          const appId = PARTNER_APP_ID[slug] ?? slug;
           await expect(
-            page.locator(`a[href*="/partners/?app=${slug}"]`).first(),
+            page.locator(`a[href*="/partners/?app=${appId}"]`).first(),
           ).toBeAttached();
         }
 

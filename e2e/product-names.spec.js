@@ -85,7 +85,7 @@ test.describe('renamed products', () => {
   test('the apps index lists every new name', async ({page}) => {
     await page.goto('/apps');
     const body = await page.locator('body').innerText();
-    for (const name of Object.values(RENAMED)) {
+    for (const [, name] of Object.values(RENAMED)) {
       expect(body, `/apps should name ${name}`).toContain(name);
     }
   });

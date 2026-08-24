@@ -51,7 +51,7 @@ const PRESENTATION = {
   openconnector: {
     name: 'Integriq',
     tagline: <>Connect <span className="next-blue">Nextcloud</span> to anything, REST, SOAP, GraphQL, file drops, message queues.</>,
-    href: '/apps/openconnector',
+    href: '/apps/integriq',
     categories: ['Connectors'],
     icon: <AppGlyph app="openconnector" />,
   },

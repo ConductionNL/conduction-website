@@ -263,6 +263,7 @@ module.exports = createConfig({
              getApps() filters out any entry with no store match and no
              downloads, so renaming those keys would have removed all twelve
              apps from /apps entirely, silently. Only the href moved. */
+          {from: '/apps/openconnector', to: '/apps/integriq'},
           {from: '/apps/app-versions', to: '/apps/versioniq'},
           {from: '/apps/decidesk', to: '/apps/decidiq'},
           {from: '/apps/docudesk', to: '/apps/filinq'},
