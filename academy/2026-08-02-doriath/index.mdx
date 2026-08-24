@@ -1,26 +1,27 @@
 ---
 slug: doriath
-title: "Doriath: a zero-knowledge secrets vault inside Nextcloud"
+title: "Keepiq: a zero-knowledge secrets vault inside Nextcloud"
 contentType: webinar
+heroIcon: vault
 authors: [conduction]
 date: 2026-08-02
-summary: A walk-through of Doriath, the encrypted secrets manager for Nextcloud. Personal vaults, team sharing, and a write-without-read credential store for applications — all backed by a private Certificate Authority your instance bootstraps and manages itself.
-tags: [Doriath, Secrets, Encryption, Security, Nextcloud]
+summary: A walk-through of Keepiq, the encrypted secrets manager for Nextcloud. Personal vaults, team sharing, and a write-without-read credential store for applications — all backed by a private Certificate Authority your instance bootstraps and manages itself.
+tags: [Keepiq, Secrets, Encryption, Security, Nextcloud]
 apps: [doriath]
 durationMinutes: 40
 ---
 
 import {NextSteps, NextStep} from '@conduction/docusaurus-preset/components';
 
-Passwords, API keys, tokens, certificates — every team has them, and most teams keep them somewhere they shouldn't. Doriath puts them in the workspace people already log into, encrypted so that not even the administrator can read them. The full recording is above.
+Passwords, API keys, tokens, certificates — every team has them, and most teams keep them somewhere they shouldn't. Keepiq puts them in the workspace people already log into, encrypted so that not even the administrator can read them. The full recording is above.
 
 {/* truncate */}
 
 ## What we covered
 
-- Why a secrets vault belongs in the workspace rather than beside it — Doriath reuses Nextcloud's own users, groups, notifications and unified search instead of rebuilding them
+- Why a secrets vault belongs in the workspace rather than beside it — Keepiq reuses Nextcloud's own users, groups, notifications and unified search instead of rebuilding them
 - How zero-knowledge encryption actually works here: RSA-4096 per secret, AES-256 wrapping the private key behind a master password that is never stored
-- The private Certificate Authority Doriath bootstraps on your instance — root and intermediate, signing every user and application certificate, renewing itself
+- The private Certificate Authority Keepiq bootstraps on your instance — root and intermediate, signing every user and application certificate, renewing itself
 - Personal vaults in practice: folders, fuzzy search, copy-to-clipboard, and secrets surfacing in unified search without ever exposing a decrypted value
 - Sharing built for teams: share with a user or a Nextcloud group, sync-on-update, one-click revocation, password-protected links with a usage limit, and temporary ownership delegation when an owner is unavailable
 - Application credentials, not just passwords: CSR-based registration, the admin approval queue, write-without-read secrets, and the signed JWT assertion (RFC 7523) applications exchange for a short-lived Bearer token
@@ -30,9 +31,9 @@ Passwords, API keys, tokens, certificates — every team has them, and most team
 
 <NextSteps>
   <NextStep
-    title="Doriath on the app page"
+    title="Keepiq on the app page"
     href="/apps/doriath"
-    description="What the app does, who it is for, and the apps it pairs with. Doriath is in public beta — install from source while it finishes."
+    description="What the app does, who it is for, and the apps it pairs with. Keepiq is in public beta — install from source while it finishes."
   />
   <NextStep
     title="Read the documentation"
@@ -43,10 +44,10 @@ Passwords, API keys, tokens, certificates — every team has them, and most team
 
 ## Speakers
 
-Conduction's Doriath lead, walking through the vault, the sharing model, and the application credential flow on a live instance.
+Conduction's Keepiq lead, walking through the vault, the sharing model, and the application credential flow on a live instance.
 
 ## Resources
 
 - Slide deck (linked once the recording is up)
 - The instance used in the demo
-- Source and issues: [Doriath on Codeberg](https://codeberg.org/Conduction/doriath)
+- Source and issues: [Keepiq on GitHub](https://github.com/ConductionNL/keepiq)

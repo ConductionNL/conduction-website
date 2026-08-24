@@ -1,10 +1,10 @@
 ---
 title: Shillinq, Conduction
-description: Business administration on Nextcloud. Invoices, contracts, procurement on shared registers.
+description: Bookkeeping and invoicing for freelancers and small businesses, in the same Nextcloud you already work in. Send invoices, match your bank, file VAT, no separate accounting package.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -12,14 +12,15 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   appId="shillinq"
   crumb={[{label: 'Apps', href: '/apps'}, 'Shillinq']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.x"
+  version="v0.9"
   locales="NL · EN"
   title="Shillinq"
-  tagline={<>Business administration on <span className="next-blue">Nextcloud</span>. Invoices, contracts, procurement on shared registers. Built for the MKB that already runs Nextcloud and wants its finance, sales, and procurement in the same workspace.</>}
-  intro={<>Shillinq is an open-source business administration app for the Nextcloud workspace. It covers double-entry bookkeeping, sales and purchase invoicing (UBL, Peppol, NLCIUS), procurement workflows, contract lifecycle management, and bank reconciliation over SEPA / ISO 20022. Dutch government compliance ships in the box: BBV, IV3, SiSa, and DigiInkoop. Released under EUPL-1.2 and maintained by Conduction since 2019.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://shillinq.conduction.nl'}}
-  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/shillinq'}}
+  tagline={<>Bookkeeping and invoicing in the same <span className="next-blue">Nextcloud</span> you already work in. Send the invoice, match the bank, file the VAT. No separate accounting package.</>}
+  intro={<>Shillinq is open-source business administration for freelancers, sole proprietors and small businesses. You send invoices, import bank statements, book receipts and file VAT from one place. Purchase orders, supplier invoices and contracts live next to your books. Every figure stays on your own server. Municipalities and water boards get their statutory reporting formats in the same app. Released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/shillinq'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=shillinq'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/shillinq'}}
+  illustration={<AppMock app="shillinq" />}
 />
 
 <Section spacing="default">
@@ -27,30 +28,36 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="What it does"
-        title="Complete business administration on Nextcloud."
+        title="Invoices, bank, VAT, purchases, contracts. One set of books."
         align="stack"
-        lede="Shillinq handles invoicing, contracts and procurement in one app. No separate accounting software, no separate CRM, no standalone procurement portal. Everything lives in OpenRegister, so the figures in LaunchPad and reports in OpenCatalogi stay in sync."
+        lede="Shillinq is the administration a small business actually needs. Send invoices and chase the late ones. Match your bank statement. File VAT from what you already booked. Approve purchases before the money goes out."
       />
       <FeatureList>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-          title="Invoicing and receivables."
-        >
-          Generate invoices from templates. Send them straight from Nextcloud Mail. Track outstanding amounts in LaunchPad.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
-          title="Contracts with audit trail."
-        >
-          Versioned contracts in OpenRegister. See who signed what, when a renewal expires, which terms apply.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M3 7h18l-2 12H5z"/><path d="M9 7V4h6v3"/></svg>}
-          title="Procurement with approval flow."
-        >
-          PO requests, approval by spending limit, supplier register. Control spending before the purchase, match the invoice afterward.
-        </FeatureItem>
-      </FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      title="Send the invoice, see who still owes you."
+    >
+      Create an invoice in a minute, with the numbering the tax office expects. Recurring work invoices itself every month. Open invoices sit on your dashboard by customer and by age. Reminders go out in steps you set once.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4"/></svg>}
+      title="The bank statement matches itself."
+    >
+      Import the statement your bank exports. Shillinq matches each line to an open invoice or bill. You only look at the handful it could not place. Pay your suppliers in one batch and the payments book themselves back.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
+      title="The VAT return is already done at quarter end."
+    >
+      Every invoice and receipt you booked carries its VAT rate. At quarter end the return is the sum, per box, ready to check and file. Small-business exemption and EU sales are covered too.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 7h18l-2 12H5z"/><path d="M9 7V4h6v3"/></svg>}
+      title="Purchases, supplier bills and contracts, under control."
+    >
+      A purchase order waits for approval above the limit you set. When the goods and the bill arrive, Shillinq checks all three agree. Contracts carry their end date and notice period, so a renewal never surprises you.
+    </FeatureItem>
+  </FeatureList>
     </div>
     <AppCrossLinks
       variant="rail"
@@ -60,39 +67,231 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   </div>
 </Section>
 
-<PartnersForApp slug="shillinq" />
+<RotatingCards
+  eyebrow="Four ways Shillinq earns its place"
+  title="It works the way you work. And it works for you."
+  lede="Four things you would normally pay extra for. In Shillinq they are built in."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automate',
+      title: 'An invoice is overdue. The reminder is already on the list.',
+      summary: 'Today: you scroll through open invoices on Friday and hope you spot the late ones. Instead, set it up once. The day an invoice passes its due date, a reminder task lands on the right desk. A supplier bill above your limit waits for your approval before it is booked. Sixty days before a contract ends, the renewal is on your agenda. Nothing forgotten, no chasing from memory, no coding.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <FlowMock />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'Your books, your way. Without an accountant on the phone.',
+      summary: 'A garage wants the licence plate on every invoice. A design studio wants the project code on every hour. A caterer looks at cash position first thing every morning. Add the field. Drag the widget you check first to the top. Hide the reports you never open. In the running app, in minutes, and your changes stay with every update.',
+      cta: {label: 'How customising works', href: '/apps/buildiq'},
+      panel: <BuildMock />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Talk to it',
+      title: 'Ask your books a question. Get the answer, not a report.',
+      summary: 'Ask "which invoices are overdue?" and get the list with amounts and days late. Ask "what did we spend with this supplier this year?" and the number is there. Hand it a receipt and it prepares the booking for you to confirm. Reading is instant; anything that changes your books waits for your say-so.',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: which invoices are overdue?',
+        'assistant: 3 invoices, 4,820 euro in total, oldest 34 days',
+        'assistant: Bakker BV owes 2,100 euro, no reminder sent yet',
+        'you: draft the first reminder for Bakker',
+        'assistant: reminder drafted for your review',
+      ]} cursor mode="asks before it changes anything" />,
+    },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'Clients see their invoices, sign their quotes, and pay.',
+      summary: <>Today: a client mails for a copy of an invoice, and someone digs through sent items. Give clients their own door instead with <a href="/apps/portaliq">Portaliq</a>: a portal in your house style where they see their invoices and quotes, sign the quotation online, and pay what is open. The signed quote and the payment land straight in your books. Fewer copy-of-the-invoice mails, and money that arrives sooner.</>,
+      cta: {label: 'Give clients their own portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="We ship the widgets you need"
+  lede={<>Install Shillinq and its financial overview shows up in the app. The forecast first, who owes you next, your position below. Pick a period and every tile follows. Design your own widgets with <a href="/apps/buildiq">Buildiq</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
+  widgets={[
+    {
+      title: 'Turnover',
+      desc: 'Turnover for the period you pick, next to the same period last time.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 24, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>€ 218k</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.05em', color: 'var(--c-mint-500)'}}>+8%</div>
+          </div>
+          {[
+            {label: 'q1', val: '55%', tone: 'var(--c-cobalt-300)'},
+            {label: 'q2', val: '70%', tone: 'var(--c-lavender-300)'},
+            {label: 'q3', val: '80%', tone: 'var(--c-mint-500)'},
+            {label: 'q4', val: '45%', tone: 'var(--c-forest-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 50}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Open debtors',
+      desc: 'Who still owes you, how much, and how long. Click a name and you are on the invoice.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', stage: '34 days'},
+            {tone: 'var(--c-lavender-300)', stage: '12 days'},
+            {tone: 'var(--c-mint-500)', stage: 'due'},
+            {tone: 'var(--c-mint-500)', stage: 'due'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: '13-week cashflow forecast',
+      desc: 'Money in and money out for the coming thirteen weeks. It warns you weeks before the buffer runs low.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {val: '€ 42k', tone: 'var(--c-mint-500)'},
+            {val: '€ 38k', tone: 'var(--c-cobalt-300)'},
+            {val: '€ 51k', tone: 'var(--c-lavender-300)'},
+            {val: '€ 29k', tone: 'var(--c-orange-knvb)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 12, height: 14, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '65%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '45%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>{row.val}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {title: 'Cash position', desc: 'What is actually in the bank, across your accounts.'},
+    {title: 'Buffer status', desc: 'How far you sit above the buffer you set for bad weeks.'},
+    {title: 'Crisis mode alert', desc: 'A loud warning when the forecast dips below your buffer, weeks ahead.'},
+    {title: 'Margin', desc: 'What is left after costs, for the period you pick. Red when it turns negative.'},
+    {title: 'Turnover per month', desc: 'Turnover per month as a trend.'},
+    {title: 'Margin per month', desc: 'Margin per month, so one bad month stands out.'},
+    {title: 'Cashflow', desc: 'Money in and money out per month, side by side.'},
+    {title: 'Open creditors', desc: 'What you still owe suppliers, and when it is due.'},
+    {title: 'Billable', desc: 'Work done but not yet invoiced. Money waiting for you.'},
+    {title: 'Billable hours', desc: 'Hours written that can go on an invoice.'},
+    {title: 'Open debtors table', desc: 'Every open invoice by customer and age, ready to chase.'},
+    {title: 'Open creditors table', desc: 'Every supplier bill with its due date.'},
+    {title: 'Utilisation per person', desc: 'Billable share per person, so quiet weeks show early.'},
+    {title: 'Treasury position', desc: 'Public bodies: your position against the statutory treasury threshold.'},
+    {title: 'Low stock by location', desc: 'Stock that dropped below its minimum, per location.'},
+    {title: 'Reorders awaiting approval', desc: 'Purchase orders the app prepared for low stock, waiting for your approval.'},
+    {title: 'Iv3 status', desc: 'Municipalities: the status of each quarterly and yearly report at a glance.'},
+    {title: 'Recent Iv3 exports', desc: 'The reports you filed, with date and result.'},
+    {title: 'Expiring soon', desc: 'Records reaching the end of their retention period, ready for review.'},
+    {title: 'ENSIA college statement', desc: 'The accountability statement generated as a document, ready to sign.'},
+    {title: 'ENSIA portal export', desc: 'The file the ENSIA portal asks for, exported in one click.'},
+    {title: 'Open invoices', desc: "This customer's open invoices, right on the customer screen."},
+    {title: 'Overdue', desc: 'What this customer is late with, in days.'},
+    {title: 'Outstanding', desc: 'The total this customer still owes, gross.'},
+    {title: 'Invoices', desc: 'Every invoice for this customer, newest first.'},
+    {title: 'Invoice status tiles', desc: 'Gross, due and paid on the invoice itself.'},
+    {title: 'Dunning runs', desc: 'Which reminder step each invoice sits in.'},
+    {title: 'Dunning history', desc: 'Every reminder sent for the invoice, with date.'},
+    {title: 'BBV compliance', desc: 'On the Nextcloud home dashboard: your books checked against the public-sector rules.'},
+  ]}
+/>
+
+<Showcase
+  eyebrow="How Shillinq plugs into the workspace"
+  title="Mail, files and your CRM. Already yours."
+  lede="Your books live where your email, documents and sales already live. That is the point of a workspace."
+  layout="side"
+  defaultOpen="mail"
+  items={[
+    {
+      id: 'mail',
+      title: 'Start an invoice from an email',
+      summary: 'A customer confirms the job by email. Open the message in Nextcloud Mail and click "New invoice from this email". The customer, the date and the message reference are filled in, the invoice opens as a draft, and the email stays linked to it. No copying names from one screen to another.',
+      cta: {label: 'Read the docs', href: 'https://shillinq.conduction.nl'},
+      panel: <LeafMock leaf="mail" />,
+    },
+    {
+      id: 'files',
+      title: 'The PDF and the receipt, on the invoice',
+      summary: 'Every invoice keeps its own documents in Files: the PDF you sent, the signed order, the delivery note. Supplier bills and receipts you scan land on the booking they belong to. When the accountant asks for the paperwork behind a line, it is one click away.',
+      cta: {label: 'Read the docs', href: 'https://shillinq.conduction.nl'},
+      panel: <LeafMock leaf="files" />,
+    },
+    {
+      id: 'pipelinq',
+      title: 'From won deal to invoice, without retyping',
+      summary: <>Close a contract in <a href="/apps/pipelinq">Pipelinq</a> and hand it to Shillinq for invoicing from the client record. Approved hours go the same way: one click sends the period to billing. Recurring revenue from your contracts shows up on the sales dashboard. Sales and finance look at the same numbers, entered once.</>,
+      cta: {label: 'See Pipelinq', href: '/apps/pipelinq'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'einvoice',
+      title: 'Send invoices the way big clients and the government want them',
+      summary: 'Large clients and public bodies increasingly ask for an electronic invoice, not a PDF. Shillinq exports your invoice in the standard e-invoice format and checks it before it goes. Supplier bills in that format read straight in, so nobody retypes line items. You never need to know what the standard is called.',
+      cta: {label: 'Read the docs', href: 'https://shillinq.conduction.nl'},
+      panel: <AppMock app="shillinq" />,
+    },
+  ]}
+/>
 
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="The apps Shillinq depends on."
+    title="Three apps that make your books work harder."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Invoices, contracts, purchase orders as typed registers."
+      href="/apps/buildiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="Buildiq"
+      why="Put the licence plate on the invoice and the cash tile up top. Your books, arranged your way."
     />
     <PairCard
-      href="/apps/docudesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      name="DocuDesk"
-      why="Generates invoices, quotations and contracts from templates."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>}
+      name="Hermiq"
+      why="Ask your books a question in plain words. Anything that changes them waits for your say-so."
     />
     <PairCard
       href="/apps/launchpad"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
       name="LaunchPad"
-      why="Cash flow, revenue, top debtors as widgets on the dashboard."
+      why="Your cash, debtors and turnover on the start screen the whole team opens."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="shillinq" />
+
 <CtaBanner
-  title="Business administration, one workspace."
-  lede={<>Shillinq replaces separate accounting packages and CRM tools with one business administration system on Nextcloud. Open-source, on your own data.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+  title="Your books on your own Nextcloud."
+  lede={<>Open source. Free to install. Your figures stay on your own server. Shillinq runs on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/shillinq'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=shillinq'}}
 />

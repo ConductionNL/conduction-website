@@ -2,6 +2,7 @@
 slug: spec-driven-development
 title: "Spec-driven development with OpenSpec — let the AI write the code, you write the context"
 contentType: tutorial
+heroIcon: spec
 authors: [conduction]
 date: 2026-05-22
 summary: With OpenSpec, you stop hand-writing code and start writing context. Markdown specs describe what a feature must do. ADRs at org and app level govern how features hang together. An AI agent (Hydra) reads the spec, applies it, and a sequential quality + review harness validates the result. This tutorial walks the workflow, names the skills, and explains why "configuration over code" is the natural endpoint.
@@ -39,7 +40,7 @@ That sounds idealistic until you see it work. Conduction's apps are built this w
   <PrerequisiteItem>Good knowledge of <a href="https://nextcloud-vue.conduction.nl/docs/architecture/app-design-principles/">how we design Nextcloud apps</a> — the chassis, the five atoms, the stacked views.</PrerequisiteItem>
   <PrerequisiteItem>Basic knowledge of the <a href="https://nextcloud-vue.conduction.nl/docs/architecture/manifest/">app manifest</a> and <a href="https://nextcloud-vue.conduction.nl/docs/architecture/schemas-and-registers/">schemas and registers</a> — the two declarative surfaces a spec lands on.</PrerequisiteItem>
   <PrerequisiteItem>Claude, Mistral, Codex, or another LLM tool you can address from your editor or terminal. The workflow is model-agnostic; you bring your own agent.</PrerequisiteItem>
-  <PrerequisiteItem>The OpenSpec skills installed — the <code>{'opsx-*'}</code> family ships in the <a href="https://codeberg.org/Conduction/hydra">Conduction/hydra</a> repository. Clone it (or copy its <code>.claude/skills/</code> into your project) so the <code>{'/opsx-*'}</code> commands are available.</PrerequisiteItem>
+  <PrerequisiteItem>The OpenSpec skills installed — the <code>{'opsx-*'}</code> family ships in the <a href="https://github.com/ConductionNL/hydra">ConductionNL/hydra</a> repository. Clone it (or copy its <code>.claude/skills/</code> into your project) so the <code>{'/opsx-*'}</code> commands are available.</PrerequisiteItem>
 </Prerequisites>
 
 ## What "spec-driven" really means
@@ -90,7 +91,7 @@ ADRs sit at two levels, with a clean ownership split. The pattern is general —
 
 When a spec proposes something that conflicts with either level, the apply skill refuses and the reviewer flags it. That's how the two tiers keep dozens of independently-built features coherent.
 
-In Conduction's case the organisation-level ADRs are the fleet-wide set every Conduction app inherits (data layer, frontend, security, i18n, testing, licensing, the app-manifest convention, schema-declarative business logic, spec sizing). For a concrete, browsable example of **application-level** ADRs, OpenConnector's are a good read — 16 of them, from [`adr-001-domain-pinia-stores-app-local`](https://codeberg.org/Conduction/openconnector/src/branch/main/openspec/architecture) through encryption-service design, each a real local decision that doesn't bind the rest of the fleet.
+In Conduction's case the organisation-level ADRs are the fleet-wide set every Conduction app inherits (data layer, frontend, security, i18n, testing, licensing, the app-manifest convention, schema-declarative business logic, spec sizing). For a concrete, browsable example of **application-level** ADRs, Integriq's are a good read — 16 of them, from [`adr-001-domain-pinia-stores-app-local`](https://github.com/ConductionNL/integriq/tree/development/openspec/architecture) through encryption-service design, each a real local decision that doesn't bind the rest of the fleet.
 
 ## One feature, one spec
 
@@ -297,10 +298,10 @@ The reason this matters now: an LLM with a clean manifest schema, a complete ADR
   <NextStep title="Open OpenBuilt" href="https://conduction.nl/apps/openbuilt">
     The visual app builder. Same OpenSpec artifacts, no JSON editor. Designed for citizen developers and AI-driven generation.
   </NextStep>
-  <NextStep title="Walk a real OpenSpec change" href="https://codeberg.org/Conduction/hydra/src/branch/main/openspec/changes">
+  <NextStep title="Walk a real OpenSpec change" href="https://github.com/ConductionNL/hydra/tree/main/openspec/changes">
     The "consume OR workflow engine fleet-wide" change is a complete, real example: proposal, design, delta specs, tasks. Use it as a template the next time you write one.
   </NextStep>
-  <NextStep title="Try /opsx-explore in your own repo" href="https://codeberg.org/Conduction/hydra/src/branch/main/.claude/skills/opsx-explore/SKILL.md">
+  <NextStep title="Try /opsx-explore in your own repo" href="https://github.com/ConductionNL/hydra/blob/main/.claude/skills/opsx-explore/SKILL.md">
     Read the skill prompt, then invoke it in Claude Code against your own app. The stance is the easiest part of the workflow to internalise.
   </NextStep>
 </NextSteps>

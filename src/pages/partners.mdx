@@ -4,19 +4,62 @@ description: Implementation, hosting, and integration partners for the Conductio
 hide_table_of_contents: true
 ---
 
-import {Section, SectionHead, PartnerDirectory} from '@conduction/docusaurus-preset/components';
+import {Section, SectionHead, PartnerDirectory, getApp} from '@conduction/docusaurus-preset/components';
 import {usePartners, useBecomePartner} from '@site/src/data/partners-catalog';
 import PageHeading from '@site/src/components/PageHeading';
+import {useLocation} from '@docusaurus/router';
+import Link from '@docusaurus/Link';
 
 export function PartnerDirectoryBlock() {
   const partners = usePartners();
   const becomePartner = useBecomePartner();
+  const {search} = useLocation();
+  // Deeplink: /partners/?app=pipelinq or /partners/?solution=woo preselects
+  // the offering. Product pages' "Request a demo from a partner" CTAs carry
+  // this parameter, so the visitor lands on the partners that actually ship
+  // the app they came from.
+  const params = new URLSearchParams(search);
+  // Only a slug the registry knows gets acknowledged; anything else is
+  // ignored so a stale link never shows a made-up name or an empty page.
+  const app = params.get('app') ? getApp(params.get('app')) : null;
+  // Display-name rebrand 2026-08: the preset's apps-registry may still
+  // carry the former product names. Map them to the current display
+  // names so the partner filter keeps matching partners-catalog (which
+  // uses the new names) and the banner shows the new brand. Remove once
+  // @conduction/docusaurus-preset ships the renamed registry.
+  const RENAMED = {
+    Procest: 'Dossiq', DocuDesk: 'Filinq', Doriath: 'Keepiq', HRMQ: 'Humaniq',
+    Scholiq: 'Learniq', DeciDesk: 'Decidiq', SoftwareCatalog: 'Stackiq',
+    NLDesign: 'Thematiq', OpenBuild: 'Buildiq', OpenConnector: 'Integriq',
+    LarpingApp: 'Larpinq', 'App Versions': 'Versioniq',
+    OpenAnonymiser: 'Anonymiq', Planix: 'Planninq',
+  };
+  const appName = app ? (RENAMED[app.name] || app.name) : null;
+  const solutionSlug = params.get('solution');
+  const shown = appName
+    ? partners.filter(p => (p.apps || []).some(a => a.toLowerCase() === appName.toLowerCase()))
+    : solutionSlug
+      ? partners.filter(p => (p.solutions || []).some(s => s.toLowerCase() === solutionSlug.toLowerCase()))
+      : partners;
+  const effective = shown.length > 0 ? shown : partners;
+  const filterLabel = shown.length > 0 ? (appName || solutionSlug) : null;
   return (
-    <PartnerDirectory
-      partners={partners}
-      becomePartner={becomePartner}
-      gridColumns={3}
-    />
+    <>
+      {filterLabel ? (
+        <p style={{margin: '0 0 var(--space-4)'}}>
+          Showing partners for <strong>{filterLabel}</strong>. <Link to="/partners">Show all partners</Link>
+        </p>
+      ) : appName ? (
+        <p style={{margin: '0 0 var(--space-4)'}}>
+          Every partner below can help you get started with <strong>{appName}</strong>.
+        </p>
+      ) : null}
+      <PartnerDirectory
+        partners={effective}
+        becomePartner={becomePartner}
+        gridColumns={3}
+      />
+    </>
   );
 }
 

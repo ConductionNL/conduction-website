@@ -2,6 +2,7 @@
 slug: build-an-app-tutorial-0-three-paths
 title: "Build a Nextcloud app on the Conduction stack — Part 0: Three paths, one curriculum"
 contentType: tutorial
+heroIcon: blocks
 authors: [conduction]
 date: 2026-05-05
 summary: Before you write a line of code, decide which of the three Conduction app-building paths fits the app you have in mind. Traditional Nextcloud, OpenRegister + nextcloud-vue, or full manifest. Each one builds on what the previous gives you, and the rest of the series teaches the manifest path because that is where the curve becomes steep in our favour.
@@ -119,7 +120,7 @@ Paths 2 and 3 both build on this foundation. Path 1 does not. Every one of the b
 
 A common confusion when reading the rest of this series: **the manifest is not the same thing as the component library**, even though we teach them together.
 
-- The **manifest** is `src/manifest.json`. It is a JSON document validated by a schema (`https://codeberg.org/Conduction/nextcloud-vue/raw/branch/main/src/schemas/app-manifest-v2.schema.json`, currently version 2.7.0). It describes navigation entries, routes, and what each page renders. It has no runtime behaviour on its own.
+- The **manifest** is `src/manifest.json`. It is a JSON document validated by a schema (`https://github.com/ConductionNL/nextcloud-vue/raw/main/src/schemas/app-manifest-v2.schema.json`, currently version 2.7.0). It describes navigation entries, routes, and what each page renders. It has no runtime behaviour on its own.
 - The **component library** is `@conduction/nextcloud-vue`. It is a set of Vue 2 components prefixed `Cn*`. `CnAppRoot` mounts the app shell, `CnPageRenderer` reads the manifest and dispatches the right page component, `CnIndexPage`/`CnDetailPage`/`CnDashboardPage` render the actual page surfaces.
 
 You can use the library without the manifest. Path 2 in the table above does exactly that. A hand-rolled `App.vue` mounts `Cn*` components directly in a hand-written router. You write more Vue, but you keep the schema-driven listing/detail/form behaviour and you keep all the OpenRegister perks.

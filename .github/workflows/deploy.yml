@@ -8,9 +8,13 @@
 # domain, so the repo carried a second publishing path that produced
 # nothing anyone could see. Both are retired now.
 #
-# Requires two repository secrets:
-#   CLOUDFLARE_API_TOKEN   - token with the "Cloudflare Pages: Edit" permission
-#   CLOUDFLARE_ACCOUNT_ID  - the account owning the conduction-website project
+# Requires two ORG secrets (they already exist; the names matter):
+#   CF_API_TOKEN   - token with the "Cloudflare Pages: Edit" permission
+#   CF_ACCOUNT_ID  - the account owning the conduction-website project
+#
+# ConductionNL/.github's deploy-docs.yml uses the same two names; this workflow
+# asked for CLOUDFLARE_API_TOKEN, which is not a secret anywhere, so wrangler
+# got an empty token.
 #
 # Until those exist the deploy step fails loudly, which is the intended
 # behaviour: a deploy that cannot authenticate must not look like a
@@ -109,12 +113,74 @@ jobs:
       # from `development` under its own name would create a *preview*
       # deployment on a random *.pages.dev URL, succeed, and never reach
       # www.conduction.nl. Push events on development are production.
-      - name: Deploy to Cloudflare Pages
+      # DIAGNOSTIC, and deliberately non-fatal. This workflow has never once
+      # deployed successfully: `--project-name=conduction-website` is the only
+      # name it has ever used, and Cloudflare answers
+      # `Authentication error [code: 10000]` on
+      # /accounts/*/pages/projects/conduction-website — while the SAME
+      # CF_API_TOKEN deploys the `conduction-docs` project from
+      # ConductionNL/.github without complaint. So the token is valid and the
+      # name or its scope is wrong. Listing the projects the token can actually
+      # reach turns that guess into a measurement, in the log, without anyone
+      # opening the dashboard.
+      #
+      # `continue-on-error` on purpose: a diagnostic that can fail the build is
+      # a second failure mode, not a diagnosis.
+      # PREFLIGHT, and deliberately non-fatal on its own — the deploy below is
+      # what fails. It exists because the deploy's own error says only
+      # "Authentication error [code: 10000]", which reads as a bad token and is
+      # not one.
+      #
+      # MEASURED 2026-08-23, after this workflow had failed 30 runs out of 30:
+      #   /accounts/*/pages/projects        -> Authentication error 10000
+      #   /accounts/*/workers/scripts       -> ok, 42 scripts
+      #   /zones                            -> ok
+      # So CF_API_TOKEN carries Workers and zone-read and NO Pages permission at
+      # all. Not a wrong project name: the Pages LIST endpoint, which names no
+      # project, is refused too. `conduction-website` is real — it exists and
+      # serves www.conduction.nl, conduction.nl, academy., commonground. and
+      # connext. — the token just cannot see it.
+      #
+      # That also explains why ConductionNL/.github deploys docs.conduction.nl
+      # with this same token: every docs site in the fleet is a WORKER
+      # (`wrangler deploy`, name `<app>-docs`), and Workers is the permission
+      # this token has.
+      #
+      # THE FIX IS ONE DASHBOARD EDIT: add `Cloudflare Pages: Edit` to the org
+      # secret CF_API_TOKEN. Until then this step says so in the log, so the
+      # failure below names its cause instead of looking like a bad secret.
+      - name: Preflight — can this token see Cloudflare Pages
         if: github.event_name != 'pull_request'
+        continue-on-error: true
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID || secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -u
+          if curl -sf -H "Authorization: Bearer $CF_API_TOKEN" \
+               "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects" \
+               | grep -q '"success":true'; then
+            echo "Pages is readable with this token."
+          else
+            echo "::error title=CF_API_TOKEN has no Cloudflare Pages permission::The deploy below will fail with Authentication error 10000. This is NOT a wrong project name — the Pages list endpoint, which names no project, is refused as well, while Workers and zones both answer. Add 'Cloudflare Pages: Edit' to the org secret CF_API_TOKEN. The conduction-website project exists and serves www.conduction.nl."
+          fi
+
+      # Production publishing happens from `development` only. A
+      # workflow_dispatch on any other ref would otherwise push that branch
+      # straight to the production `main` alias below and replace
+      # www.conduction.nl with it.
+      - name: Deploy to Cloudflare Pages
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/development'
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # The org secrets are CF_API_TOKEN / CF_ACCOUNT_ID. This step asked
+          # for CLOUDFLARE_API_TOKEN, which does not exist, so wrangler received
+          # an empty token and every deploy since ~15 Aug failed — while PR
+          # checks stayed green, because this step is skipped on pull_request.
+          # The repo-level CLOUDFLARE_ACCOUNT_ID is kept as a fallback so this
+          # keeps working if the org secret is ever scoped away.
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID || secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: >-
             pages deploy build
             --project-name=conduction-website

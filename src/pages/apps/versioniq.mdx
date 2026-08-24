@@ -1,0 +1,71 @@
+---
+title: Versioniq, Conduction
+description: Pin and roll back any Nextcloud app version. Multi-source picker, audit-trailed. In development.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, CtaBanner} from '@conduction/docusaurus-preset/components';
+
+<DetailHero
+  background="cobalt"
+  appId="app-versions"
+  crumb={[{label: 'Apps', href: '/apps'}, 'Versioniq']}
+  status={{label: 'In development', color: 'var(--c-cobalt-400)'}}
+  version="v0.x"
+  locales="NL · EN"
+  title="Versioniq"
+  tagline={<>Pin and roll back any <span className="next-blue">Nextcloud</span> app version. Pick any version from the app store or your own download source. When an update bites, roll back with a click and see who changed what.</>}
+  secondaryCta={{label: 'Read the docs', href: 'https://app-versions.conduction.nl/'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/app-versions'}}
+/>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="What it does"
+    title="A version picker for the apps you actually run."
+    align="stack"
+    lede="Nextcloud's built-in updater jumps to the latest. Versioniq (formerly App Versions) adds the missing knob: pick any release, from any configured source, and pin or roll back without leaving the admin UI. The change is recorded, so when something breaks two days later you know who downgraded what."
+  />
+  <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="19" cy="18" r="2"/></svg>}
+      title="Per-app version table."
+    >
+      For every installed app: current version, available versions per source, last upgrade, rollback target. One screen, no command line.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>}
+      title="Multiple sources."
+    >
+      The Nextcloud app store, GitHub releases, or your own private downloads. One screen shows what runs, what is available and what ran before.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 4v4h-4"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 20v-4h4"/></svg>}
+      title="Rollback or pin."
+    >
+      One click to revert to a known-good release. Or pin a version so a future auto-update can't move it. Per app, not fleet-wide.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13l2 2 4-4"/></svg>}
+      title="Audit trail."
+    >
+      Every version change recorded: who, when, from what to what, why. Visible to the admin team, exportable for compliance.
+    </FeatureItem>
+  </FeatureList>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Status"
+    title="Where it stands today."
+    align="stack"
+    lede="The design is done and documented. The admin screen is being built. Watch the repository on GitHub for the first release."
+  />
+</Section>
+
+<CtaBanner
+  title="A safety net for the next upgrade cycle."
+  lede={<>Versioniq is the difference between 'roll forward and hope' and 'roll back if it bites'. Open-source, admin-only, no extra service to run.</>}
+  primaryCta={{label: 'Read the docs', href: 'https://app-versions.conduction.nl/'}}
+  secondaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/app-versions'}}
+/>

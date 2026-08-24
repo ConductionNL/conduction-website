@@ -167,8 +167,8 @@ module.exports = createConfig({
         items: [
           {label: 'OpenCatalogi',  href: 'https://opencatalogi.conduction.nl/'},
           {label: 'OpenRegister',  href: 'https://openregister.conduction.nl/'},
-          {label: 'OpenConnector', href: 'https://openconnector.conduction.nl/'},
-          {label: 'DocuDesk',      href: 'https://docudesk.conduction.nl/'},
+          {label: 'Integriq',      href: 'https://openconnector.conduction.nl/'},
+          {label: 'Filinq',        href: 'https://docudesk.conduction.nl/'},
           {label: 'LaunchPad',        href: 'https://launchpad.conduction.nl/'},
         ],
       },
@@ -251,16 +251,54 @@ module.exports = createConfig({
       '@docusaurus/plugin-client-redirects',
       {
         redirects: [
+          /* -iq product rename (2026-08-23): the twelve renamed apps moved
+             from /apps/<old-repo-slug> to /apps/<new-name>. Every one of these
+             URLs was live and is linked from the apps grid, the academy product
+             filter and the apps-registry shipped by
+             @conduction/docusaurus-preset — which still points at the old
+             paths, so these redirects are what keeps the preset's cross-links
+             working until it ships a release with the new ones.
+
+             The PRESENTATION keys in src/data/apps-catalog.js deliberately did
+             NOT move. They are the join key against `apps[].id` in
+             data/app-downloads.json, which is the NEXTCLOUD APP-STORE id, not
+             the GitHub repo slug — and the store still lists the old ids.
+             getApps() filters out any entry with no store match and no
+             downloads, so renaming those keys would have removed all twelve
+             apps from /apps entirely, silently. Only the href moved. */
+          {from: '/apps/openconnector', to: '/apps/integriq'},
+          {from: '/apps/app-versions', to: '/apps/versioniq'},
+          {from: '/apps/decidesk', to: '/apps/decidiq'},
+          {from: '/apps/docudesk', to: '/apps/filinq'},
+          {from: '/apps/doriath', to: '/apps/keepiq'},
+          {from: '/apps/hrmq', to: '/apps/humaniq'},
+          {from: '/apps/larpingapp', to: '/apps/larpinq'},
+          {from: '/apps/nldesign', to: '/apps/thematiq'},
+          {from: '/apps/openbuild', to: '/apps/buildiq'},
+          {from: '/apps/planix', to: '/apps/planninq'},
+          {from: '/apps/procest', to: '/apps/dossiq'},
+          {from: '/apps/scholiq', to: '/apps/learniq'},
+          {from: '/apps/softwarecatalog', to: '/apps/stackiq'},
           /* Governance blog retitled to the two-wolves frame (2026-08-10).
              Both earlier URLs were briefly live; point each straight at the
              final slug, no chains. */
-          {from: '/academy/governance-open-source-nix-implosion', to: '/academy/blog/feed-the-wolf-that-ships'},
-          {from: '/academy/opinion/governance-is-the-silent-killer-of-open-source', to: '/academy/blog/feed-the-wolf-that-ships'},
-          /* All opinion posts moved under /academy/opinion/ (2026-08-10),
-             then the opinion type was deprecated and every essay moved to
-             /academy/blog/ (2026-08-11). Point every earlier URL straight
-             at the final slug, no chains. /academy/opinion/ itself is a
-             static stub → /academy/?type=blog (see static/academy/opinion/,
+          {from: '/academy/governance-open-source-nix-implosion', to: '/academy/opinion/feed-the-wolf-that-ships'},
+          {from: '/academy/opinion/governance-is-the-silent-killer-of-open-source', to: '/academy/opinion/feed-the-wolf-that-ships'},
+          /* "This is going to hurt" reclassified from opinion to blog
+             (2026-08-11). The six parts shipped at /academy/opinion/… on
+             2026-08-10 and were live for a day, so every old URL points at
+             its new /academy/blog/ address. /academy/blog/ itself is a
+             static stub → /academy/?type=blog (see static/academy/blog/,
+             same pattern as static/academy/opinion/). */
+          {from: '/academy/opinion/this-is-going-to-hurt-part-1-your-work', to: '/academy/blog/this-is-going-to-hurt-part-1-your-work'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-2-the-big-three', to: '/academy/blog/this-is-going-to-hurt-part-2-the-big-three'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership', to: '/academy/blog/this-is-going-to-hurt-part-3-the-end-of-ownership'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed', to: '/academy/blog/this-is-going-to-hurt-part-4-security-at-machine-speed'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-5-the-singularity', to: '/academy/blog/this-is-going-to-hurt-part-5-the-singularity'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help', to: '/academy/blog/this-is-going-to-hurt-part-6-actually-it-might-help'},
+          /* All opinion posts moved under /academy/opinion/ (2026-08-10).
+             Keep the published URLs working. /academy/opinion/ itself is a
+             static stub → /academy/?type=opinion (see static/academy/opinion/,
              same pattern as the /blog/* legacy stubs). */
           {from: '/academy/the-platform-moment', to: '/academy/blog/the-platform-moment'},
           {from: '/academy/government-open-source-needs-an-engine', to: '/academy/blog/government-open-source-needs-an-engine'},
@@ -328,7 +366,7 @@ module.exports = createConfig({
              search engines and shipped on partner sites; redirect them to
              the new canonical app pages. */
           {from: '/apps/mydash', to: '/apps/launchpad'},
-          {from: '/apps/openbuilt', to: '/apps/openbuild'},
+          {from: '/apps/openbuilt', to: '/apps/buildiq'},
           /* Academy series rename 2026-06-01: deskdesk-tutorial →
              build-an-app-tutorial. The seven existing parts (0–6) were
              linked from earlier blog posts, partner decks, and the

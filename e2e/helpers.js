@@ -68,7 +68,30 @@ export async function openBannerFromFooter(page) {
      command arrives mangled. That shows up as a game that "did not boot",
      which is a confusing way to learn about a race. This element only
      exists once the component has mounted. */
-  await page.locator(`${BANNER} input[aria-label*="Terminal"]`).waitFor({state: 'attached'});
+  const input = page.locator(`${BANNER} input[aria-label*="Terminal"]`);
+  await input.waitFor({state: 'attached'});
+
+  /* Being attached is not the same as being listened to. The keydown
+     handler lives on `window` and is registered by an effect, which React
+     runs after paint — so there is a window where the input exists and
+     keystrokes still go nowhere. Waiting on the element alone left the
+     suite flaky: a different test failed on roughly one run in thirteen,
+     always with a mangled command.
+
+     So prove the shell is listening instead of assuming it: send one
+     harmless character and wait for the buffer to echo it (the input
+     mirrors the buffer via value={buffer}), then clear it with Escape.
+     Any letter is safe here — the shell deliberately has no letter
+     shortcuts, and digits only toggle from an empty prompt. */
+  await expect(async () => {
+    /* Clear first: once the listener does come up, probes from earlier
+       attempts would otherwise accumulate ("xx") and never match. */
+    await page.keyboard.press('Escape');
+    await page.keyboard.press('x');
+    await expect(input).toHaveValue('x', {timeout: 250});
+  }).toPass({timeout: 5000});
+  await page.keyboard.press('Escape');
+  await expect(input).toHaveValue('');
 }
 
 /**

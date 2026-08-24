@@ -1,57 +1,63 @@
 ---
 title: Shillinq, Conduction
-description: Bedrijfsadministratie op Nextcloud. Facturen, contracten en inkoop op gedeelde registers.
+description: Boekhouden en factureren voor zzp'ers en kleine bedrijven, in dezelfde Nextcloud waar je werkt. Stuur facturen, koppel je bank, doe je btw-aangifte, geen apart boekhoudpakket.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
+  background="cobalt"
   appId="shillinq"
   crumb={[{label: 'Apps', href: '/apps'}, 'Shillinq']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.x"
+  version="v0.9"
   locales="NL · EN"
   title="Shillinq"
-  tagline={<>Bedrijfsadministratie op <span className="next-blue">Nextcloud</span>. Facturen, contracten en inkoop op gedeelde registers. Gebouwd voor het MKB dat al op Nextcloud draait en zijn finance, sales en inkoop in dezelfde workspace wil.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://docs.conduction.nl/shillinq'}}
-  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/shillinq'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="19" cy="18" r="2"/></svg>}
+  tagline={<>Boekhouden en factureren in dezelfde <span className="next-blue">Nextcloud</span> waar je werkt. Stuur de factuur, koppel de bank, doe de btw-aangifte. Geen apart boekhoudpakket.</>}
+  intro={<>Shillinq is open-source bedrijfsadministratie voor zzp'ers, eenmanszaken en kleine bedrijven. Je stuurt facturen, importeert bankafschriften, boekt bonnetjes en doet je btw-aangifte vanaf één plek. Inkooporders, leveranciersfacturen en contracten staan naast je boekhouding. Elk cijfer blijft op je eigen server. Gemeenten en waterschappen krijgen hun wettelijke rapportageformaten in dezelfde app. Uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/shillinq'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=shillinq'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/shillinq'}}
+  illustration={<AppMock app="shillinq" />}
 />
-
-Shillinq is een open-source app voor bedrijfsadministratie in de Nextcloud-workspace. Hij dekt dubbel boekhouden, verkoop- en inkoopfacturatie (UBL, Peppol, NLCIUS), inkoop-workflows, contract-lifecycle-management en bankreconciliatie via SEPA / ISO 20022. Nederlandse overheids-compliance zit in de doos: BBV, IV3, SiSa en DigiInkoop. Uitgegeven onder EUPL-1.2, onderhouden door Conduction sinds 2019.
 
 <Section spacing="default">
   <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="Wat het doet"
-        title="Een complete bedrijfsadministratie op Nextcloud."
+        title="Facturen, bank, btw, inkoop, contracten. Eén boekhouding."
         align="stack"
-        lede="Shillinq pakt facturatie, contracten en inkoop in één app. Geen aparte boekhoudsoftware, geen aparte CRM, geen los inkoopportaal. Alles staat in OpenRegister, dus de cijfers in LaunchPad en de rapportages in OpenCatalogi lopen synchroon."
+        lede="Shillinq is de administratie die een klein bedrijf echt nodig heeft. Stuur facturen en jaag de late na. Koppel je bankafschrift. Doe je btw-aangifte uit wat je al boekte. Keur inkopen goed voordat het geld de deur uit gaat."
       />
       <FeatureList>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-          title="Facturatie en debiteuren."
-        >
-          Genereer facturen uit sjablonen. Stuur ze direct uit Nextcloud Mail. Volg openstaande bedragen in LaunchPad.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
-          title="Contracten met audit trail."
-        >
-          Versioned contracten in OpenRegister. Zie wie wat heeft getekend, wanneer een verlenging vervalt, welke voorwaarden gelden.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M3 7h18l-2 12H5z"/><path d="M9 7V4h6v3"/></svg>}
-          title="Inkoop met goedkeurings-flow."
-        >
-          PO-aanvragen, goedkeuring per drempelbedrag, leveranciersregister. Voor de bestelling de hand op de knip houden, achteraf de factuur erbij.
-        </FeatureItem>
-      </FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      title="Stuur de factuur, zie wie je nog moet betalen."
+    >
+      Maak in een minuut een factuur, met de nummering die de Belastingdienst verwacht. Terugkerend werk factureert zichzelf elke maand. Open facturen staan op je dashboard per klant en per ouderdom. Herinneringen gaan de deur uit in stappen die je één keer instelt.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4"/></svg>}
+      title="Het bankafschrift koppelt zichzelf."
+    >
+      Importeer het afschrift dat je bank exporteert. Shillinq koppelt elke regel aan een open factuur of rekening. Jij kijkt alleen naar het handjevol dat het niet kon plaatsen. Betaal je leveranciers in één batch en de betalingen boeken zichzelf terug.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
+      title="De btw-aangifte is aan het eind van het kwartaal al klaar."
+    >
+      Elke factuur en elk bonnetje dat je boekte, draagt zijn btw-tarief. Aan het eind van het kwartaal is de aangifte de optelsom, per rubriek, klaar om te controleren en in te dienen. De kleineondernemersregeling en verkopen binnen de EU zijn ook gedekt.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 7h18l-2 12H5z"/><path d="M9 7V4h6v3"/></svg>}
+      title="Inkoop, leveranciersfacturen en contracten, onder controle."
+    >
+      Een inkooporder wacht op goedkeuring boven de grens die jij instelt. Als de goederen en de factuur binnenkomen, controleert Shillinq of alle drie kloppen. Contracten dragen hun einddatum en opzegtermijn, dus een verlenging verrast je nooit.
+    </FeatureItem>
+  </FeatureList>
     </div>
     <AppCrossLinks
       variant="rail"
@@ -61,37 +67,231 @@ Shillinq is een open-source app voor bedrijfsadministratie in de Nextcloud-works
   </div>
 </Section>
 
+<RotatingCards
+  eyebrow="Vier manieren waarop Shillinq zijn plek verdient"
+  title="Het werkt zoals jij werkt. En het werkt voor je."
+  lede="Vier dingen waar je normaal extra voor betaalt. In Shillinq zitten ze ingebouwd."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automatiseer',
+      title: 'Een factuur is over de vervaldatum. De herinnering staat al op de lijst.',
+      summary: 'Nu: je scrolt op vrijdag door de open facturen en hoopt dat je de late ziet. Straks stel je het één keer in. De dag dat een factuur over de vervaldatum gaat, landt een herinneringstaak op het juiste bureau. Een leveranciersfactuur boven jouw grens wacht op jouw goedkeuring voordat hij wordt geboekt. Zestig dagen voordat een contract afloopt, staat de verlenging in je agenda. Niets vergeten, geen nabellen uit je hoofd, geen programmeerwerk.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
+      panel: <FlowMock />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Jouw boekhouding, op jouw manier. Zonder accountant aan de lijn.',
+      summary: 'Een garage wil het kenteken op elke factuur. Een ontwerpstudio wil de projectcode op elk uur. Een cateraar kijkt elke ochtend eerst naar de kaspositie. Voeg het veld toe. Sleep de widget waar je het eerst naar kijkt naar boven. Verberg de rapporten die je nooit opent. In de draaiende app, in minuten, en je aanpassingen blijven bij elke update staan.',
+      cta: {label: 'Zo werkt aanpassen', href: '/apps/buildiq'},
+      panel: <BuildMock />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Praat ermee',
+      title: 'Stel je boekhouding een vraag. Krijg het antwoord, geen rapport.',
+      summary: 'Vraag "welke facturen zijn over de vervaldatum?" en je krijgt de lijst met bedragen en dagen te laat. Vraag "wat hebben we dit jaar bij deze leverancier uitgegeven?" en het getal staat er. Geef het een bonnetje en het zet de boeking klaar zodat jij hem bevestigt. Lezen gaat direct; alles wat je boekhouding verandert, wacht op jouw akkoord.',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'jij: welke facturen zijn over de vervaldatum?',
+        'assistent: 3 facturen, 4.820 euro in totaal, de oudste 34 dagen',
+        'assistent: Bakker BV moet nog 2.100 euro betalen, nog geen herinnering gestuurd',
+        'jij: zet de eerste herinnering voor Bakker klaar',
+        'assistent: herinnering klaargezet voor je akkoord',
+      ]} cursor mode="vraagt eerst voordat het iets verandert" />,
+    },
+    {
+      tone: 'mint',
+      eyebrow: 'Laat klanten zichzelf helpen',
+      title: 'Klanten zien hun facturen, tekenen hun offertes, en betalen.',
+      summary: <>Nu: een klant mailt om een kopie van een factuur, en iemand graaft door verzonden items. Geef klanten in plaats daarvan hun eigen ingang met <a href="/apps/portaliq">Portaliq</a>: een portaal in jouw huisstijl waar ze hun facturen en offertes zien, de offerte online tekenen, en betalen wat openstaat. De getekende offerte en de betaling landen rechtstreeks in je boekhouding. Minder kopie-van-de-factuurmails, en geld dat eerder binnenkomt.</>,
+      cta: {label: 'Geef klanten hun eigen portaal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets die we meeleveren"
+  title="We leveren de widgets die je nodig hebt"
+  lede={<>Installeer Shillinq en het financiële overzicht staat in de app. De prognose eerst, wie je nog moet betalen daarna, je positie eronder. Kies een periode en elke tegel volgt. Ontwerp je eigen widgets met <a href="/apps/buildiq">Buildiq</a>, of bouw je eigen dashboard uit al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
+  widgets={[
+    {
+      title: 'Omzet',
+      desc: 'Omzet voor de periode die je kiest, naast dezelfde periode vorige keer.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 24, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>€ 218k</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.05em', color: 'var(--c-mint-500)'}}>+8%</div>
+          </div>
+          {[
+            {label: 'k1', val: '55%', tone: 'var(--c-cobalt-300)'},
+            {label: 'k2', val: '70%', tone: 'var(--c-lavender-300)'},
+            {label: 'k3', val: '80%', tone: 'var(--c-mint-500)'},
+            {label: 'k4', val: '45%', tone: 'var(--c-forest-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 50}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Openstaande debiteuren',
+      desc: 'Wie je nog moet betalen, hoeveel, en hoe lang al. Klik op een naam en je staat op de factuur.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', stage: '34 dagen'},
+            {tone: 'var(--c-lavender-300)', stage: '12 dagen'},
+            {tone: 'var(--c-mint-500)', stage: 'vervalt'},
+            {tone: 'var(--c-mint-500)', stage: 'vervalt'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Kasstroomprognose 13 weken',
+      desc: 'Geld in en geld uit voor de komende dertien weken. Het waarschuwt je weken voordat de buffer krap wordt.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {val: '€ 42k', tone: 'var(--c-mint-500)'},
+            {val: '€ 38k', tone: 'var(--c-cobalt-300)'},
+            {val: '€ 51k', tone: 'var(--c-lavender-300)'},
+            {val: '€ 29k', tone: 'var(--c-orange-knvb)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 12, height: 14, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '65%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '45%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>{row.val}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {title: 'Kaspositie', desc: 'Wat er echt op de bank staat, over al je rekeningen.'},
+    {title: 'Bufferstatus', desc: 'Hoe ver je boven de buffer zit die je voor slechte weken instelde.'},
+    {title: 'Crisisalarm', desc: 'Een luide waarschuwing als de prognose onder je buffer duikt, weken van tevoren.'},
+    {title: 'Marge', desc: 'Wat er na kosten overblijft, voor de periode die je kiest. Rood als hij negatief wordt.'},
+    {title: 'Omzet per maand', desc: 'Omzet per maand als trend.'},
+    {title: 'Marge per maand', desc: 'Marge per maand, zodat één slechte maand opvalt.'},
+    {title: 'Kasstroom', desc: 'Geld in en geld uit per maand, naast elkaar.'},
+    {title: 'Openstaande crediteuren', desc: 'Wat je leveranciers nog moet betalen, en wanneer het moet.'},
+    {title: 'Factureerbaar', desc: 'Werk dat gedaan is maar nog niet gefactureerd. Geld dat op je wacht.'},
+    {title: 'Factureerbare uren', desc: 'Geschreven uren die op een factuur kunnen.'},
+    {title: 'Debiteurentabel', desc: 'Elke open factuur per klant en ouderdom, klaar om na te jagen.'},
+    {title: 'Crediteurentabel', desc: 'Elke leveranciersfactuur met zijn vervaldatum.'},
+    {title: 'Bezetting per persoon', desc: 'Factureerbaar aandeel per persoon, zodat stille weken vroeg opvallen.'},
+    {title: 'Schatkistpositie', desc: 'Overheden: je positie tegenover de wettelijke schatkistgrens.'},
+    {title: 'Lage voorraad per locatie', desc: 'Voorraad die onder zijn minimum zakte, per locatie.'},
+    {title: 'Bestellingen ter goedkeuring', desc: 'Inkooporders die de app klaarzette voor lage voorraad, wachtend op jouw akkoord.'},
+    {title: 'Iv3-status', desc: 'Gemeenten: de status van elk kwartaal- en jaarrapport in één oogopslag.'},
+    {title: 'Recente Iv3-exporten', desc: 'De rapporten die je indiende, met datum en resultaat.'},
+    {title: 'Verloopt binnenkort', desc: 'Dossiers die het einde van hun bewaartermijn naderen, klaar voor beoordeling.'},
+    {title: 'ENSIA-collegeverklaring', desc: 'De verantwoordingsverklaring als document gegenereerd, klaar om te tekenen.'},
+    {title: 'ENSIA-portaalexport', desc: 'Het bestand dat het ENSIA-portaal vraagt, in één klik geëxporteerd.'},
+    {title: 'Open facturen', desc: 'De open facturen van deze klant, direct op het klantscherm.'},
+    {title: 'Te laat', desc: 'Waar deze klant te laat mee is, in dagen.'},
+    {title: 'Uitstaand', desc: 'Het totaal dat deze klant nog moet betalen, bruto.'},
+    {title: 'Facturen', desc: 'Elke factuur voor deze klant, nieuwste eerst.'},
+    {title: 'Factuurstatustegels', desc: 'Bruto, te betalen en betaald op de factuur zelf.'},
+    {title: 'Herinneringsstappen', desc: 'In welke herinneringsstap elke factuur zit.'},
+    {title: 'Herinneringshistorie', desc: 'Elke herinnering die voor de factuur is gestuurd, met datum.'},
+    {title: 'BBV-naleving', desc: 'Op het Nextcloud-startscherm: je boekhouding getoetst aan de regels voor de publieke sector.'},
+  ]}
+/>
+
+<Showcase
+  eyebrow="Zo sluit Shillinq aan op je werkplek"
+  title="Mail, bestanden en je CRM. Al van jou."
+  lede="Je boekhouding woont waar je e-mail, documenten en sales al wonen. Dat is het hele punt van een werkplek."
+  layout="side"
+  defaultOpen="mail"
+  items={[
+    {
+      id: 'mail',
+      title: 'Start een factuur vanuit een e-mail',
+      summary: 'Een klant bevestigt de opdracht per e-mail. Open het bericht in Nextcloud Mail en klik op "Nieuwe factuur uit deze e-mail". De klant, de datum en het kenmerk van het bericht zijn ingevuld, de factuur opent als concept, en de e-mail blijft eraan gekoppeld. Geen namen overtypen van het ene scherm naar het andere.',
+      cta: {label: 'Lees de docs', href: 'https://shillinq.conduction.nl'},
+      panel: <LeafMock leaf="mail" />,
+    },
+    {
+      id: 'files',
+      title: 'De pdf en het bonnetje, op de factuur',
+      summary: 'Elke factuur bewaart zijn eigen documenten in Bestanden: de pdf die je stuurde, de getekende opdracht, de pakbon. Leveranciersfacturen en bonnetjes die je scant, landen op de boeking waar ze bij horen. Vraagt de accountant naar het papierwerk achter een regel, dan is het één klik weg.',
+      cta: {label: 'Lees de docs', href: 'https://shillinq.conduction.nl'},
+      panel: <LeafMock leaf="files" />,
+    },
+    {
+      id: 'pipelinq',
+      title: 'Van gewonnen deal naar factuur, zonder overtypen',
+      summary: <>Sluit een contract in <a href="/apps/pipelinq">Pipelinq</a> en geef het vanuit het klantdossier door aan Shillinq voor facturatie. Goedgekeurde uren gaan dezelfde weg: één klik stuurt de periode naar facturatie. Terugkerende omzet uit je contracten verschijnt op het salesdashboard. Sales en financiën kijken naar dezelfde cijfers, één keer ingevoerd.</>,
+      cta: {label: 'Bekijk Pipelinq', href: '/apps/pipelinq'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'einvoice',
+      title: 'Stuur facturen zoals grote klanten en de overheid ze willen',
+      summary: 'Grote klanten en overheden vragen steeds vaker om een elektronische factuur, geen pdf. Shillinq exporteert je factuur in het standaard e-factuurformaat en controleert hem voordat hij weggaat. Leveranciersfacturen in dat formaat leest het direct in, dus niemand typt regels over. Je hoeft nooit te weten hoe de standaard heet.',
+      cta: {label: 'Lees de docs', href: 'https://shillinq.conduction.nl'},
+      panel: <AppMock app="shillinq" />,
+    },
+  ]}
+/>
+
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Werkt goed met"
-    title="De apps waarop Shillinq leunt."
+    eyebrow="Past goed bij"
+    title="Drie apps die je boekhouding harder laten werken."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Facturen, contracten, inkooporders als typed registers."
+      href="/apps/buildiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="Buildiq"
+      why="Zet het kenteken op de factuur en de kastegel bovenaan. Jouw boekhouding, op jouw manier ingericht."
     />
     <PairCard
-      href="/apps/docudesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      name="DocuDesk"
-      why="Genereert facturen, offertes en contracten uit sjablonen."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>}
+      name="Hermiq"
+      why="Stel je boekhouding een vraag in gewone woorden. Alles wat haar verandert, wacht op jouw akkoord."
     />
     <PairCard
       href="/apps/launchpad"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
       name="LaunchPad"
-      why="Cash-flow, omzet, top-debiteuren als widgets op het dashboard."
+      why="Je kas, debiteuren en omzet op het startscherm dat het hele team opent."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="shillinq" />
+
 <CtaBanner
-  title="Bedrijfsadministratie, één werkplek."
-  lede={<>Shillinq vervangt losse boekhoudpakketten en CRM-tools door één bedrijfsadministratie op Nextcloud. Open-source, op je eigen data.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  title="Je boekhouding op je eigen Nextcloud."
+  lede={<>Open source. Gratis te installeren. Je cijfers blijven op je eigen server. Shillinq draait op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/shillinq'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=shillinq'}}
 />

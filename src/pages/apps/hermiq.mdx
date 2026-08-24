@@ -1,25 +1,28 @@
 ---
 title: Hermiq, Conduction
-description: Schedule autonomous AI agents in Nextcloud. Chat, memory, skills, and human approval gates, delivered to Nextcloud Talk.
+description: The assistant that works in every Conduction app. Talk to it from Nextcloud Talk, also on your phone. Give it jobs on a schedule. You decide per assistant what it may do, and everything is logged, on your own server.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock, getApp} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+export const app = getApp('hermiq');
 
 <DetailHero
   background="cobalt"
   appId="hermiq"
-  crumb={[{label: 'Apps', href: '/apps'}, 'Hermiq']}
+  crumb={[{label: 'Apps', href: '/apps'}, app.name]}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
   version="v0.1"
   locales="NL · EN"
-  title="Hermiq"
-  tagline={<>Schedule autonomous AI agents in <span className="next-blue">Nextcloud</span>. Give an agent a prompt, tools and skills, then run it daily, hourly, or on a flow trigger — delivered straight to Nextcloud Talk.</>}
-  intro={<>Hermiq brings autonomous AI agents to the Nextcloud workspace. Define an agent, give it MCP tools and installable skills, and run it on a schedule — daily reports, inbox triage, monitoring, morning briefings. Agents chat over a live streaming thread, keep session history and consolidating memory, and can be gated behind a human approval inbox before they act. Every agent, run, memory and skill is stored as an OpenRegister object, so it is governed, audited and multi-tenant by construction. Released under EUPL-1.2 and maintained by Conduction.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://hermiq.conduction.nl'}}
-  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/hermiq'}}
+  title={app.name}
+  tagline={<>The assistant that works in every app on your <span className="next-blue">Nextcloud</span>. Chat with it, give it jobs on a schedule, and decide exactly what it may do.</>}
+  intro={<>{app.name} is the AI assistant for the Nextcloud workspace. Talk to it from Nextcloud Talk, also from your phone in the car. It can act in every Conduction app: log the call, plan the follow-up, draft the reply, pull the list. Give it jobs on a schedule: every Monday at eight, the quotes nobody followed up. You decide per assistant what it may do. Writes are off until you allow them, sensitive steps wait for your approval, and everything it does is logged. It runs on your own server, and by default the AI itself runs there too, so nothing goes out. Open source, released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=hermiq'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/hermiq'}}
+  illustration={<AppMock app="hermiq" />}
 />
 
 <Section spacing="default">
@@ -27,40 +30,40 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="What it does"
-        title="Autonomous agents, on your own Nextcloud."
+        title="Chat away while your apps do the work."
         align="stack"
-        lede="Hermiq turns a prompt, a set of tools and a schedule into a working agent. No external agent hosting, no separate vector database — agents, their memory and their skills all live as OpenRegister objects inside your own Nextcloud instance."
+        lede="An assistant that knows your CRM, your invoices, your files, your mail and your calendar. You talk, it acts. You set the rules, it keeps to them. Everything stays on your own server."
       />
       <FeatureList>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>}
-          title="Agents with tools and skills."
+          icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
+          title="Talk to it where you already talk. Also on your phone."
         >
-          Define an agent with a prompt, a model, MCP tools, and installable skills from the agentskills.io catalog. Manage them from the Agents catalog and detail page.
+          Back in the car after a client visit. Open Nextcloud Talk on your phone and say "log my call with Jansen, they want the quote in May". The call is logged, the follow-up is planned, the reminder is drafted. Ask "which deals went quiet this month?" out loud and it reads you the list. Order it to prepare the quotation and a draft waits at the office. In a group conversation it only answers when you mention it.
         </FeatureItem>
         <FeatureItem
           icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
-          title="Scheduled runs, delivered to Talk."
+          title="Jobs on a schedule. Monday at eight, done."
         >
-          Attach a schedule to an agent — daily, hourly, or flow-triggered — and its output lands in a Nextcloud Talk conversation (or a notification when Talk isn't installed).
+          Today: someone remembers to check the open quotes, or nobody does. Instead: every Monday at eight the assistant lists the quotes nobody followed up and posts it in your sales chat. Every morning at seven, a briefing in the team chat: what is due today, what came in overnight. Reply in that chat and it picks up where the report left off.
         </FeatureItem>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
-          title="Chat, sessions and memory."
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>}
+          title="It can act in every Conduction app."
         >
-          Talk to any agent over a live streaming chat thread. Sessions keep the full conversation history; consolidating memory keeps long-running agents within their context budget.
+          Log the call in the CRM. Add the action point in the meeting minutes. Find the contract in Files. Put the site visit in the calendar. Draft the reply in Mail. Every action an app offers, the assistant can do for you, as you, with your permissions. Whatever you could not do, it cannot do either.
         </FeatureItem>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
-          title="Human approval gate."
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>}
+          title="You decide what it may do. Everything is logged."
         >
-          Route sensitive agent actions to a reviewer inbox before they run. Approve or deny per action, with an org-level kill switch.
+          Per assistant you tick what it may read and what it may change. Changes are off until you switch them on. Sensitive steps, like sending mail to a client, wait in your approval inbox first. Every step it takes is written to a log you can read back. One switch stops every assistant at once.
         </FeatureItem>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-          title="Governed by OpenRegister."
+          icon={<svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/></svg>}
+          title="On your own server. Nothing goes out."
         >
-          Every agent, run, memory and skill is an OpenRegister object — audited, RBAC'd and multi-tenant, with a run-analytics view and a per-org quota and audit export for tenant admins.
+          The assistant runs on your Nextcloud, and by default the AI itself runs on your own hardware. Your client data does not travel to a cloud AI unless you choose one. Names and numbers are stripped before anything is stored in the log. Built for the EU AI Act, so the paperwork is there when someone asks.
         </FeatureItem>
       </FeatureList>
     </div>
@@ -72,27 +75,225 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   </div>
 </Section>
 
-<PartnersForApp slug="hermiq" />
+<RotatingCards
+  eyebrow={`Four ways ${app.name} earns its place`}
+  title="It works the way you work. And it works for you."
+  lede="Four things you would normally hire an extra pair of hands for. Here they come with the workspace."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automate',
+      title: 'Monday at eight, the list is in the chat. Nobody had to remember.',
+      summary: 'Give the assistant a job and a time. Every Monday: the quotes nobody followed up, per salesperson, in the sales chat. Every morning: the briefing, what is due today and what came in overnight. Every first of the month: the invoices past due, with the client and the amount. Or step it into an automation you drew: when a complaint comes in, it drafts a summary onto the record before anyone opens it. Every run is logged, and it only does what you allowed.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <FlowMock />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'Your assistant, your rules, your instructions.',
+      summary: 'Make one assistant for sales, one for the office, one for the fleet manager. Per assistant you tick what it may read and what it may change: this one logs calls, that one only reads. Give it your own instructions: how you address clients, which products you push this quarter, what it must never do. Add a skill and it learns a new task. Change your mind? Untick, and it stops that same minute.',
+      cta: {label: 'How permissions work', href: 'https://hermiq.conduction.nl/docs/tool-grants'},
+      panel: <BuildMock />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Talk to it',
+      title: 'From your phone, in the car, in Nextcloud Talk.',
+      summary: 'No new app to install on your phone. The assistant sits in Nextcloud Talk like a colleague, and in the car you just talk to it. Say "plan a follow-up with Bakker next Tuesday at ten" and it is in your calendar. Ask "what did we agree with De Vries?" and it reads it back from the record. Order it to prepare the quotation and the draft waits for your review. In a group chat it only speaks when you mention it. Every message runs as you, with your permissions, so it never sees more than you do.',
+      cta: {label: 'How the Talk bot works', href: 'https://hermiq.conduction.nl/docs/talk-chat-bridge'},
+      panel: <AgentTrace lines={[
+        'you: log my call with Jansen BV, they want the quote in May',
+        'assistant: call logged on Jansen BV, outcome positive',
+        'assistant: follow-up planned for 1 May',
+        'assistant: quote reminder drafted for your review',
+      ]} cursor mode="asks before it changes anything" />,
+    },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'Clients get answers without waiting for your team.',
+      summary: <>The assistant helps your team all day. Your clients get their own door with <a href="/apps/portaliq">Portaliq</a>: a portal in your house style where they see their contracts and products, ask and sign quotations, and follow their tickets. The question that used to be a phone call is now a click, answered from the same records your team works in. Your people keep the conversations that actually need a person.</>,
+      cta: {label: 'Give clients their own portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="We ship the widgets you need"
+  lede={<>Install it and the dashboard shows the runs of the day, what needs your approval, and what each assistant is allowed to do. Design your own widgets with <a href="/apps/buildiq">Buildiq</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
+  widgets={[
+    {
+      title: 'Total runs',
+      desc: 'How many jobs ran, how many finished well, and how long they took. Per assistant, click through for the log.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 24, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>38</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.05em', color: 'var(--c-mint-500)'}}>97% ok</div>
+          </div>
+          {[
+            {label: 'sales', val: '70%', tone: 'var(--c-cobalt-300)'},
+            {label: 'office', val: '45%', tone: 'var(--c-lavender-300)'},
+            {label: 'fleet', val: '25%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 50}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Run operations',
+      desc: 'Steps an assistant wants to take but may not without you. Approve or deny each one, with the reason it gave.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', what: 'send mail'},
+            {tone: 'var(--c-orange-knvb)', what: 'send mail'},
+            {tone: 'var(--c-lavender-300)', what: 'update quote'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 2 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '65%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '45%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.what}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Tool grants',
+      desc: 'Per assistant: what it reads, what it may change, and what always needs your approval. Change it here.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {label: 'read CRM', on: true},
+            {label: 'log calls', on: true},
+            {label: 'send mail', on: false},
+            {label: 'change quotes', on: false},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 12, height: 14, clipPath: 'var(--hex-pointy-top)', background: row.on ? 'var(--c-mint-500)' : 'var(--c-cobalt-100)', flexShrink: 0}}></span>
+              <div style={{flex: 1, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-700)'}}>{row.label}</div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: row.on ? 'var(--c-mint-500)' : 'var(--c-cobalt-400)'}}>{row.on ? 'allowed' : 'off'}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {title: 'Success rate', desc: 'How many assistant runs finish well. The number to watch.'},
+    {title: 'Average latency', desc: 'How fast the assistant answers, on average.'},
+    {title: 'Usage', desc: 'What each run and assistant consumes, so AI costs never surprise you.'},
+    {title: 'Running flows', desc: 'The jobs running right now, live.'},
+    {title: 'Skill maturity scorecard', desc: 'How proven each skill is, from first draft to trusted.'},
+    {title: 'Eval evidence', desc: 'The test results behind each skill, so trust is measured, not assumed.'},
+    {title: 'Runs by agent', desc: 'Which assistant does the work, and how much.'},
+    {title: 'Schedules quota', desc: 'How many scheduled jobs you use of your allowance.'},
+    {title: 'Agents quota', desc: 'How many assistants you run of your allowance.'},
+    {title: 'Memory', desc: 'What an assistant remembers per client or case, with the button to wipe it.'},
+    {title: 'Breakdown', desc: 'Runs split by outcome, so you see where attention is needed.'},
+    {title: 'Agents table', desc: 'Every assistant with its runs, results and last activity.'},
+    {title: 'Agent scorecard', desc: "One assistant's runs, results, speed and usage on its own page."},
+    {title: 'Skills', desc: 'The skills an assistant carries, and where each one came from.'},
+    {title: 'Tool activity', desc: 'What the assistant actually did with its permissions, action by action.'},
+    {title: 'Run history', desc: 'Every past run with its outcome, ready to read back.'},
+    {title: 'Eval baseline', desc: 'The reference score an assistant is measured against.'},
+    {title: 'Skill origin and review', desc: 'Who wrote a skill, who reviewed it, and when.'},
+    {title: 'Learnings', desc: 'What a skill picked up from real runs, waiting for your review.'},
+    {title: 'Improvement draft', desc: 'A suggested better version of a skill. You approve it, or not.'},
+    {title: 'Skill versions', desc: 'Every version of a skill, with one click back.'},
+    {title: 'Linked skills', desc: 'Which skills a test set covers.'},
+    {title: 'Test runs', desc: 'Run the tests against a skill and see the outcome.'},
+  ]}
+/>
+
+<Showcase
+  eyebrow={`How ${app.name} plugs into the workspace`}
+  title="Talk, mail, calendar, contacts, files. And every Conduction app."
+  lede="The assistant lives where your team already works. It reads and acts in the tools you have, as you, with your permissions."
+  layout="side"
+  defaultOpen="talk"
+  items={[
+    {
+      id: 'talk',
+      title: 'Nextcloud Talk, on desktop and phone',
+      summary: 'The assistant is a participant in your Talk conversations. Chat with it one to one, or mention it in a team room. Its scheduled reports land in the room you choose, and a reply in that room continues the conversation. Nothing to install on your phone: the Talk app you have is enough. Each turn runs as the person who typed it.',
+      cta: {label: 'Read the docs', href: 'https://hermiq.conduction.nl'},
+      panel: <AgentTrace lines={[
+        'sales room, Monday 08:00',
+        'assistant: 6 quotes without follow-up this week',
+        'assistant: oldest is Bakker BV, 23 days',
+        'you: plan a call with Bakker for tomorrow 10:00',
+        'assistant: planned, in your calendar',
+      ]} cursor mode="runs as you" />,
+    },
+    {
+      id: 'groupware',
+      title: 'Mail, calendar, contacts and files',
+      summary: 'It reads your Nextcloud Mail and drafts the reply. It puts the follow-up in your Nextcloud Calendar. It finds the contact and updates the phone number. It looks up the contract in Files and reads you the clause. All the tools you already have, none of them replaced. Sending mail is a sensitive step, so it waits for your approval.',
+      cta: {label: 'Read the docs', href: 'https://hermiq.conduction.nl'},
+      panel: <LeafMock leaf="mail" />,
+    },
+    {
+      id: 'apps',
+      title: 'Every action in every Conduction app',
+      summary: <>Log a call in the CRM. Start the meeting and add an action point in <a href="/apps/decidiq">Decidiq</a>. Look up a case in <a href="/apps/dossiq">Dossiq</a>. Find the invoice in <a href="/apps/shillinq">Shillinq</a>. Every action a Conduction app offers is available to the assistant, and you decide per assistant which ones it gets. Even without any automation, the chat is a way to command your apps.</>,
+      cta: {label: 'See all apps', href: '/apps'},
+      panel: <AppMock app="decidesk" />,
+    },
+    {
+      id: 'automation',
+      title: 'A step inside your automation',
+      summary: 'Draw an automation and put the assistant in as a step. A complaint comes in: it summarises the message onto the record and suggests a category. A quote is accepted: it drafts the kick-off mail for you to send. Structured answers land back on the record, so the next step can use them.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <FlowMock />,
+    },
+  ]}
+/>
 
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="The apps Hermiq depends on."
+    title="Three apps that go with the assistant."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Agents, memory, skills and runs stored as governed, audited registers."
+      href="/apps/buildiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="Buildiq"
+      why="Describe the app you need to the assistant, approve the draft, and shape it further yourself."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="The start screen where the assistant's reports and your widgets come together."
+    />
+    <PairCard
+      href="/apps/portaliq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg>}
+      name="Portaliq"
+      why="A client portal on the same records. Clients help themselves, your team keeps the real conversations."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="hermiq" />
+
 <CtaBanner
-  title="AI agents that live in your Nextcloud."
-  lede={<>Hermiq schedules autonomous AI agents on your own infrastructure, governed by OpenRegister and delivered to Nextcloud Talk. Open-source, on your own data.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+  title="An assistant on your own Nextcloud."
+  lede={<>Open source. Free to install. Runs on your own server, and by default the AI itself runs there too. Works in every Conduction app on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=hermiq'}}
 />

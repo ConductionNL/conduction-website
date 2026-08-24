@@ -35,8 +35,10 @@ test.beforeEach(async ({page}) => {
 test('the shell responds, and ls reveals an executable', async ({page}) => {
   await openBannerFromFooter(page);
   await typeCommand(page, 'ls');
+  /* Wait for the listing to render before snapshotting it; the regex
+     assertion below needs the whole line, not a half-painted one. */
+  await expect(page.locator(BANNER)).toContainText('game.exe');
   const text = await terminalText(page);
-  expect(text).toContain('game.exe');
   expect(text, 'game.exe should be listed as executable').toMatch(/-rwxr-xr-x\s+\d+\s+game\.exe/);
 });
 
@@ -50,7 +52,7 @@ test('typing a command does not trigger the consent shortcuts', async ({page}) =
 test('an unknown command is rejected rather than ignored', async ({page}) => {
   await openBannerFromFooter(page);
   await typeCommand(page, 'xyzzy');
-  expect(await terminalText(page)).toContain('command not found');
+  await expect(page.locator(BANNER)).toContainText('command not found');
 });
 
 /**
@@ -66,7 +68,10 @@ for (const command of ['sudo rm -rf /', 'rm cookies.toml', 'ls']) {
     await openBannerFromFooter(page);
     await typeCommand(page, command);
     await expect(page.locator(BANNER), 'the banner must not close').toBeVisible();
-    expect(await terminalText(page)).toContain(command);
+    /* Retrying assertion, not a terminalText() snapshot: the echo appears
+       on the next React render, so a one-shot read races the paint under
+       parallel load and fails on a command that did reach the shell. */
+    await expect(page.locator(BANNER)).toContainText(command);
   });
 }
 

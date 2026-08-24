@@ -2,6 +2,7 @@
 slug: build-an-app-tutorial-2-schemas-manifest
 title: "Build a Nextcloud app on the Conduction stack — Part 2: Schemas + manifest"
 contentType: tutorial
+heroIcon: blocks
 authors: [conduction]
 date: 2026-05-13
 summary: Define the category, pet, and order schemas in OpenRegister, declare them in a manifest.json, and watch CnAppRoot replace ~200 lines of hand-rolled Vue with three lines of config.
@@ -38,7 +39,7 @@ The shape we keep saying "this saves you code" finally has numbers behind it: ~2
 <Prerequisites title="Where you should be">
   <PrerequisiteItem>Part 1 done: PetStore installed, the chassis renders at <code>http://localhost:8080/apps/petstore/</code>.</PrerequisiteItem>
   <PrerequisiteItem>OpenRegister installed, enabled, and at version 0.2.10 or newer (the <code>importFromFilePath</code> ConfigurationService method is required).</PrerequisiteItem>
-  <PrerequisiteItem>The local clone of <a href="https://codeberg.org/Conduction/petstore">Conduction/petstore</a> on your filesystem and a working <code>npm run build</code>.</PrerequisiteItem>
+  <PrerequisiteItem>The local clone of <a href="https://github.com/ConductionNL/petstore">ConductionNL/petstore</a> on your filesystem and a working <code>npm run build</code>.</PrerequisiteItem>
 </Prerequisites>
 
 ## Step 1: Define the three schemas
@@ -96,7 +97,7 @@ The `pet` schema adds the typed relation to category:
 
 The `order` schema is the same shape: a relation, a couple of date-times, an enum status, a quantity, and a boolean completion flag.
 
-The full file ships in [the petstore repo](https://codeberg.org/Conduction/petstore/src/branch/main/lib/Settings/petstore_register.json), with five seed pets, three categories (Dogs, Cats, Fish), and three orders so the app is browsable on first install.
+The full file ships in [the petstore repo](https://github.com/ConductionNL/petstore/blob/main/lib/Settings/petstore_register.json), with five seed pets, three categories (Dogs, Cats, Fish), and three orders so the app is browsable on first install.
 
 ## Step 2: Declare the register itself
 
@@ -155,7 +156,7 @@ The matching path the SettingsService takes is **importFromFilePath** with a pat
 
 ```json title="src/manifest.json"
 {
-  "$schema": "https://codeberg.org/Conduction/nextcloud-vue/raw/branch/main/src/schemas/app-manifest-v2.schema.json",
+  "$schema": "https://github.com/ConductionNL/nextcloud-vue/raw/main/src/schemas/app-manifest-v2.schema.json",
   "version": "2.0.0",
   "dependencies": ["openregister"],
   "menu": [

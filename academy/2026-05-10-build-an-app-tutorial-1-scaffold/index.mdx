@@ -2,6 +2,7 @@
 slug: build-an-app-tutorial-1-scaffold
 title: "Build a Nextcloud app on the Conduction stack — Part 1: Scaffold"
 contentType: tutorial
+heroIcon: blocks
 authors: [conduction]
 date: 2026-05-10
 summary: Clone the Conduction app template, rename it to PetStore, build, enable, and see the canonical app chassis. The first hands-on part of the nine-part app-building series, using the OpenAPI Pet Store as the running domain.
@@ -48,31 +49,31 @@ In Part 1 you scaffold the app, rename it, build it, and see the canonical app c
 | 1 | Scaffold (you're here) | Empty app shell, chassis visible, navigable |
 | 2 | [Schemas + manifest](/academy/build-an-app-tutorial-2-schemas-manifest) | Pet, order, category schemas, full CRUD, dashboard |
 | 3 | [Schema-driven integrations](/academy/build-an-app-tutorial-3-calendar) | Order ship-dates appear in NC Calendar via the OpenRegister calendar provider |
-| 4 | [External knowledge + ship](/academy/build-an-app-tutorial-4-knowledge-and-ship) | xWiki care-guides via OpenConnector, sidebar tab, package, publish |
+| 4 | [External knowledge + ship](/academy/build-an-app-tutorial-4-knowledge-and-ship) | xWiki care-guides via Integriq, sidebar tab, package, publish |
 | 5 | [Advanced manifest features](/academy/build-an-app-tutorial-5-advanced-manifest) | actionToggles, fieldWidgets, public-mode pages, the other page types |
-| 6 | [Integrate](/academy/build-an-app-tutorial-6-integrate) | Cross-register reads, OpenConnector source/sync, two-way webhook back into OR |
+| 6 | [Integrate](/academy/build-an-app-tutorial-6-integrate) | Cross-register reads, Integriq source/sync, two-way webhook back into OR |
 | 7 | [The nc-vue component library](/academy/build-an-app-tutorial-7-nc-vue) | Capability-driven tour: forms, dialogs, status, filtering, composables, theming |
 | 8 | [Document and showcase](/academy/build-an-app-tutorial-8-document-and-showcase) | Stand up a docs site for the app you built, with screen mocks + Playwright capture |
 
 Same shape, two repos:
 
-- **App source:** [`Conduction/petstore`](https://codeberg.org/Conduction/petstore). The actual Nextcloud app you're forking from the template.
-- **Tutorial source:** [`Conduction/conduction-website`](https://codeberg.org/Conduction/conduction-website). The post you're reading right now.
+- **App source:** [`ConductionNL/petstore`](https://github.com/ConductionNL/petstore). The actual Nextcloud app you're forking from the template.
+- **Tutorial source:** [`ConductionNL/conduction-website`](https://github.com/ConductionNL/conduction-website). The post you're reading right now.
 
 :::note Repo creation
-At the time of writing, `Conduction/petstore` is the canonical reference repo for this tutorial. If it doesn't exist yet on Codeberg, fork from the template into your own org as shown in Step 1; the tutorial body uses `petstore` throughout as the example slug.
+At the time of writing, `ConductionNL/petstore` is the canonical reference repo for this tutorial. If it doesn't exist yet on GitHub, fork from the template into your own org as shown in Step 1; the tutorial body uses `petstore` throughout as the example slug.
 :::
 
 <Prerequisites title="What you need">
   <PrerequisiteItem>A running Nextcloud (28+) with admin access. If you don't have one, follow <a href="/academy/run-nextcloud-locally">Nextcloud lokaal draaien met Docker</a> first.</PrerequisiteItem>
   <PrerequisiteItem><strong>OpenRegister</strong> installed and enabled in that Nextcloud (Apps → search "OpenRegister" → Download).</PrerequisiteItem>
   <PrerequisiteItem>Node.js 20+ and PHP 8.1+ on your host, plus Composer and the GitHub CLI (<code>gh</code>). The template ships with PHPCS, Psalm, PHPStan, and ESLint configs ready to go.</PrerequisiteItem>
-  <PrerequisiteItem>A GitHub or Codeberg account so you can fork the template into your own org (or <code>Conduction</code> if you have access).</PrerequisiteItem>
+  <PrerequisiteItem>A GitHub account so you can fork the template into your own org (or <code>ConductionNL</code> if you have access).</PrerequisiteItem>
 </Prerequisites>
 
 ## Step 1: Use the template
 
-[`Conduction/nextcloud-app-template`](https://codeberg.org/Conduction/nextcloud-app-template) is a repository template. The "Use this template" button on Codeberg (or GitHub's mirror) gives you a fresh repo with the full starter kit: Vue 2 + Pinia frontend, PHP backend, OpenRegister wiring, quality pipeline, OpenSpec scaffolding, CI workflows.
+[`ConductionNL/nextcloud-app-template`](https://github.com/ConductionNL/nextcloud-app-template) is a repository template. The "Use this template" button on GitHub gives you a fresh repo with the full starter kit: Vue 2 + Pinia frontend, PHP backend, OpenRegister wiring, quality pipeline, OpenSpec scaffolding, CI workflows.
 
 ```bash title="Pick a name. We're calling ours petstore."
 gh repo create ConductionNL/petstore \
@@ -85,7 +86,7 @@ Then clone it next to your other Nextcloud apps. Most workspaces keep them in a 
 
 ```bash
 cd /path/to/your/nextcloud/workspace/apps-extra
-git clone https://codeberg.org/Conduction/petstore.git
+git clone https://github.com/ConductionNL/petstore.git
 cd petstore
 ```
 
@@ -180,7 +181,7 @@ Open `http://localhost:8080/apps/petstore/` and log in. You see a placeholder da
 
 ## The chassis: the whole point of Part 1
 
-Every Conduction app (PetStore, OpenRegister, OpenCatalogi, Procest, LaunchPad, the dozen others) looks the same way on first sight. Same five structural pieces, same place, same behaviour. That recognisability is what `@conduction/nextcloud-vue` enforces: a user who learnt one app navigates the next one without docs.
+Every Conduction app (PetStore, OpenRegister, OpenCatalogi, Dossiq, LaunchPad, the dozen others) looks the same way on first sight. Same five structural pieces, same place, same behaviour. That recognisability is what `@conduction/nextcloud-vue` enforces: a user who learnt one app navigates the next one without docs.
 
 The chassis is **one shape, five atoms**, the same five structural pieces in the same place, app after app.
 

@@ -1,10 +1,10 @@
 ---
 title: ZaakAfhandelApp, Conduction
-description: ZGW case handling (zaakgericht werken) on Nextcloud — cases, tasks, klanten and a ZGW API, built on OpenRegister.
+description: Dutch municipal case handling on Nextcloud. No longer actively developed. New deployments should look at Dossiq.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, AppCrossLinks} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -12,216 +12,89 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   appId="zaakafhandelapp"
   crumb={[{label: 'Apps', href: '/apps'}, 'ZaakAfhandelApp']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.2.7"
+  version="v0.2.11"
   locales="NL · EN"
   title="ZaakAfhandelApp"
-  tagline={<>Zaakgericht werken (VNG GEMMA/ZGW) on your <span className="next-blue">Nextcloud</span>. Case workers manage zaken from intake to formal closure, log klantcontacten, and expose a ZGW (ZRC/ZTC/DRC/BRC) REST API — no separate case system, no second login.</>}
-  intro={<>Zaak Afhandel App (ZAA) is an open-source case-handling app for the Nextcloud workspace. It manages Dutch zaakafhandeling end-to-end: zaaktypen, statussen, rollen, besluiten and resultaten; taken (tasks); klanten, personen and organisaties with contactmoment logging; in-case berichten with a message audit trail; opschorting and verlenging (suspend/extend) on a running case; a personal werkvoorraad dashboard; and a ZGW (ZRC/ZTC/DRC/BRC) REST API surface. Data, search, RBAC and audit are provided by OpenRegister. Released under EUPL-1.2 and maintained by Conduction since 2019. ZAA is no longer actively developed — new deployments should look at Procest or Pipelinq.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://zaakafhandelapp.conduction.nl'}}
-  tertiaryCta={{label: 'View on GitHub', href: 'https://codeberg.org/Conduction/zaakafhandelapp'}}
+  tagline={<>Municipal case handling on your <span className="next-blue">Nextcloud</span>. Citizens track the status of their own case, no phone call required.</>}
+  intro={<>ZaakAfhandelApp is our first case-handling app for Dutch municipalities, maintained since 2019. It runs a case from intake to formal closure: case types, statuses, roles, decisions and results, tasks, customer contact logging, and a personal work-queue dashboard. It speaks the national case standard (ZGW) so surrounding systems can talk to it. It is no longer actively developed. New deployments should look at <a href="/apps/dossiq">Dossiq</a>, its successor, which does the same job with configurable workflows and deadlines. Open source, released under EUPL-1.2.</>}
+  primaryCta={{label: 'See Dossiq instead', href: '/apps/dossiq'}}
+  secondaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/zaakafhandelapp'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/zaakafhandelapp'}}
   illustration={<AppMock app="zaakafhandelapp" />}
 />
 
 <Section spacing="default">
-  <SectionHead
-    eyebrow="What it does"
-    title="Zaakgericht werken for case-workers, on Nextcloud."
-    align="stack"
-    lede="Case-workers manage zaken from intake through formal closure in the same Nextcloud where they store the documents — zaaktypen, statussen, rollen, besluiten, resultaten, tasks and klantcontact, all backed by OpenRegister."
-  />
-  <FeatureList>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>}
-      title="Cases (zaken), start to close."
-    >
-      Zaaktypen, statussen, rollen, eigenschappen, besluiten and resultaten — the full ZGW case lifecycle, with opschorting and verlenging (suspend/extend) on a running case.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>}
-      title="Tasks (taken)."
-    >
-      Assign taken to medewerkers or klanten, track deadlines and status from the werkvoorraad dashboard.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
-      title="Klanten, personen and organisaties."
-    >
-      A 360° relation view with contactmoment logging for every interaction, and berichten (in-case messages) with a message audit trail.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>}
-      title="ZGW REST API surface."
-    >
-      A ZGW (ZRC/ZTC/DRC/BRC) REST API surface for zaken, taken, besluiten and documenten, so other ZGW-speaking systems can integrate.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
-      title="Audit trail per case."
-    >
-      Every status change, every task, every case-worker action gets a tamper-evident trail via OpenRegister, ready for inspection or appeal.
-    </FeatureItem>
-  </FeatureList>
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="A case from intake to closure, in one screen."
+        align="stack"
+        lede="For municipalities that already run it. Everything below keeps working; nothing new is being added."
+      />
+      <FeatureList>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg>}
+          title="Every case follows its type."
+        >
+          Open a case, and its steps, roles and result options come with it. Suspend or extend a running case when the law allows. Close it with a recorded decision.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>}
+          title="Your work queue, not your inbox."
+        >
+          Each case worker opens the day with their own list: cases and tasks, sorted by what is due. Nothing lives only in someone's mailbox.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 18a5 5 0 0 1 10 0"/></svg>}
+          title="Every call and letter on the citizen's record."
+        >
+          Log the phone call, the counter visit and the letter on the person or organisation. The next colleague sees the whole history before picking up the phone.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7z"/></svg>}
+          title="A record that stands up to an objection."
+        >
+          Every change on a case is logged with who and when. Two years later the file answers the question without a reconstruction.
+        </FeatureItem>
+      </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['zaakafhandelapp']}
+      surface="product"
+    />
+  </div>
 </Section>
-
-<PartnersForApp slug="zaakafhandelapp" />
-
-<RotatingCards
-  eyebrow="Three ways ZaakAfhandelApp earns its place"
-  title="One case-worker queue, every step audited."
-  lede="Scroll the cards. Each pins as you reach it; the next slides up to cover."
-  cards={[
-    {
-      tone: 'lavender',
-      eyebrow: 'Case lifecycle',
-      title: 'Zaken, start to close.',
-      summary: 'Zaaktypen, statussen, rollen, besluiten and resultaten model the full ZGW case lifecycle, with opschorting and verlenging to pause or extend a running zaak.',
-      cta: {label: 'See ZaakAfhandelApp', href: '/apps/zaakafhandelapp'},
-      panel: <AppMock app="zaakafhandelapp" />,
-    },
-    {
-      tone: 'forest',
-      eyebrow: 'ZGW REST API',
-      title: 'A ZGW API other systems can call.',
-      summary: 'Zaken, taken, besluiten and documenten are exposed through a ZGW (ZRC/ZTC/DRC/BRC) REST API surface, built on OpenRegister for storage, search and RBAC.',
-      cta: {label: 'See OpenRegister', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
-    },
-    {
-      tone: 'workspace',
-      eyebrow: 'Audit-ready',
-      title: 'A tamper-evident trail per case.',
-      summary: 'Every status change, task and case-worker action is logged through OpenRegister\'s audit trail. Each zaak also carries a computed archiefactiedatum, derived from its ZGW afleidingswijze.',
-      cta: {label: 'See OpenRegister', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
-    },
-  ]}
-/>
-
-<WidgetShelf
-  eyebrow="Widgets we ship"
-  title="The case-worker's morning view."
-  lede="Install ZaakAfhandelApp and these widgets show up on the dashboard: open and active cases, open tasks, and contact moments."
-  widgets={[
-    {
-      title: 'Open cases',
-      desc: 'A live count of open zaken, one click through to the Cases list.',
-      panel: (
-        <div style={{display: 'flex', flexDirection: 'column', gap: 6, fontFamily: 'var(--conduction-typography-font-family-body)'}}>
-          {[
-            {tone: 'var(--c-orange-knvb)', l1: '60%', l2: '40%', av: 'var(--c-mint-300)'},
-            {tone: 'var(--c-lavender-300)', l1: '70%', l2: '50%', av: 'var(--c-lavender-300)'},
-            {tone: 'var(--c-red-vermillion)', l1: '55%', l2: '45%', av: 'var(--c-orange-knvb)'},
-            {tone: 'var(--c-lavender-300)', l1: '65%', l2: '35%', av: 'var(--c-mint-300)'},
-            {tone: 'var(--c-lavender-300)', l1: '75%', l2: '50%', av: 'var(--c-forest-300)'},
-          ].map((row, i) => (
-            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
-              <span style={{width: 14, height: 16, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
-              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 3}}>
-                <div style={{height: 5, width: row.l1, background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
-                <div style={{height: 3, width: row.l2, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
-              </div>
-              <span style={{width: 18, height: 18, borderRadius: '50%', background: row.av, flexShrink: 0}}></span>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      title: 'Open tasks',
-      desc: 'Open taken across the queue, assigned to medewerkers or klanten.',
-      panel: (
-        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
-          {[
-            {tone: 'var(--c-mint-500)', stage: 'open'},
-            {tone: 'var(--c-cobalt-300)', stage: 'done'},
-            {tone: 'var(--c-mint-500)', stage: 'open'},
-            {tone: 'var(--c-cobalt-300)', stage: 'done'},
-          ].map((row, i) => (
-            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
-              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
-              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
-                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
-                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
-              </div>
-              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      title: 'Contact moments',
-      desc: 'Logged contactmomenten with klanten, filterable by date range.',
-      panel: (
-        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
-          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
-            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-orange-knvb)'}}>4</div>
-            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>this month</div>
-          </div>
-          {[{w: '70%', accent: true}, {w: '60%'}, {w: '55%'}, {w: '45%'}].map((row, i) => (
-            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
-              <span style={{width: 8, height: 9, clipPath: 'var(--hex-pointy-top)', background: row.accent ? 'var(--c-orange-knvb)' : 'var(--c-cobalt-300)'}}></span>
-              <div style={{flex: 1, height: 4, background: 'var(--c-cobalt-200)', borderRadius: 1, width: row.w}}></div>
-              <div style={{height: 4, width: 30, background: 'var(--c-cobalt-100)', borderRadius: 1}}></div>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-  ]}
-/>
-
-<Showcase
-  eyebrow="How ZaakAfhandelApp plugs into the workspace"
-  title="Cases and documents, one Nextcloud."
-  lede="ZaakAfhandelApp keeps a case's attachments in Nextcloud Files and exposes the case data as a ZGW REST API for other systems."
-  layout="side"
-  defaultOpen="files"
-  items={[
-    {
-      id: 'files',
-      title: 'Files',
-      summary: 'Each zaak, taak, besluit and document carries a Files widget on its detail page — attachments live in the same Nextcloud the case-worker already uses.',
-      cta: {label: 'See the docs', href: 'https://zaakafhandelapp.conduction.nl'},
-      panel: <AppMock app="zaakafhandelapp" />,
-    },
-    {
-      id: 'zgw-api',
-      title: 'ZGW REST API',
-      summary: 'Zaken, taken, besluiten and documenten are reachable through a ZGW (ZRC/ZTC/DRC/BRC) REST API surface, so other ZGW-speaking systems can integrate without a separate adapter.',
-      cta: {label: 'See the docs', href: 'https://zaakafhandelapp.conduction.nl'},
-      panel: <AppMock app="openregister" />,
-    },
-  ]}
-/>
 
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Pairs well with"
-    title="Built on OpenRegister."
+    eyebrow="Where to go from here"
+    title="Dossiq is the successor."
     align="stack"
-    lede="ZaakAfhandelApp requires OpenRegister for storage, search, RBAC and audit. ZAA itself is no longer actively developed — for new deployments, see Procest or Pipelinq."
+    lede="Same job, actively maintained: configurable case types, statutory deadlines that warn and escalate by themselves, objection and appeal, and a citizen portal."
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Required dependency. Zaken, taken, klanten and besluiten become typed registers with audit log and RBAC out of the box."
+      href="/apps/dossiq"
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      name="Dossiq"
+      why="Case and process management for municipalities. Start here for any new deployment."
     />
     <PairCard
-      href="/apps/procest"
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
-      name="Procest"
-      why="Successor app for new deployments — process and case management for Nextcloud, actively maintained."
+      href="/apps/pipelinq"
+      icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>}
+      name="Pipelinq"
+      why="If your need is customer contact and requests rather than formal cases."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="zaakafhandelapp" />
+
 <CtaBanner
-  title="ZGW case handling, on your Nextcloud."
-  lede={<>ZaakAfhandelApp runs on your <span className="next-blue">Nextcloud</span>. Case-workers manage zaken from intake to closure, with a ZGW API for the systems around it.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Talk to a partner', href: '/partners'}}
+  title="Running ZaakAfhandelApp today?"
+  lede={<>It keeps working on your <span className="next-blue">Nextcloud</span>. When you are ready to move, a partner can plan the step to <a href="/apps/dossiq">Dossiq</a> with you.</>}
+  primaryCta={{label: 'See Dossiq', href: '/apps/dossiq'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=zaakafhandelapp'}}
 />

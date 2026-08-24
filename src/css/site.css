@@ -472,3 +472,51 @@ html,
 body {
   overflow-x: clip;
 }
+
+/**
+ * Academy article wrappers: restore markdown spacing inside them.
+ *
+ * Docusaurus styles post bodies with DIRECT-child selectors (`.markdown > p`),
+ * so anything nested inside a wrapper div in an MDX post is a grandchild and
+ * matches nothing: paragraphs and headings render with `margin: 0` and run
+ * together with no gaps at all. Posts have been working around this with
+ * `<br/>` between paragraphs, which produces a line break rather than a
+ * paragraph and leaves the spacing at the mercy of the line height.
+ *
+ * `.hfaw-split` (text left, visual right) and `.hfaw-well` (aside) are the two
+ * wrappers the academy long-reads use. Each post declares their layout in its
+ * own style block; only the inherited typography is restored here, so a post's
+ * own rules still win where they set something explicitly.
+ */
+.hfaw-split p,
+.hfaw-well p {
+  margin: 0 0 1.15rem;
+}
+
+.hfaw-split h3,
+.hfaw-split h4 {
+  margin: 1.6rem 0 0.6rem;
+}
+
+.hfaw-split ul,
+.hfaw-split ol,
+.hfaw-well ul,
+.hfaw-well ol {
+  margin: 0 0 1.15rem;
+  padding-left: 1.25rem;
+}
+
+.hfaw-split li,
+.hfaw-well li {
+  margin: 0 0 0.35rem;
+}
+
+.hfaw-split > div > *:first-child,
+.hfaw-well > *:first-child {
+  margin-top: 0;
+}
+
+.hfaw-split > div > p:last-child,
+.hfaw-well > p:last-child {
+  margin-bottom: 0;
+}
