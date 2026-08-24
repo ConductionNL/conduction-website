@@ -1,0 +1,294 @@
+---
+title: Integriq, Conduction
+description: Connect anything to anything, without vendor lock-in or pricey integrators. Your webshop, your bookkeeping and your customer file stop disagreeing. Changes copy across by themselves, and what fails is on one list in the morning.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+{/* Display-name rebrand 2026-08: OpenConnector → Integriq. The preset's
+    apps-registry may still carry the former name, so pin the display
+    name here; slug, URLs and repo stay `openconnector`. */}
+export const app = {...getApp('openconnector'), name: 'Integriq'};
+
+<DetailHero
+  background="cobalt"
+  appId="openconnector"
+  crumb={[{label: 'Apps', href: '/apps'}, app.name]}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.3"
+  locales="NL · EN"
+  title={app.name}
+  tagline={<>Connect anything to anything, without vendor lock-in or pricey integrators. On your own <span className="next-blue">Nextcloud</span>.</>}
+  intro={<>{app.name} (formerly OpenConnector) keeps the systems you already have in step with each other. Your webshop, your accounting package and your old customer file each hold a copy of the same client. It copies changes between them the moment they happen, or every night, whichever you choose. Nobody re-keys an order. When something arrives that does not fit, it is refused and you see why. When a delivery fails at night, it retries by itself. Open source, released under EUPL-1.2 and maintained by Conduction since 2019.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/integriq'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=openconnector'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/openconnector'}}
+  illustration={<AppMock app="openconnector" />}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="Your systems stop disagreeing. Nobody re-keys anything."
+        align="stack"
+        lede="An order placed in the webshop is in the bookkeeping. A client who moves is moved everywhere. What does not fit is refused, and what fails at night is on one list in the morning."
+      />
+      <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
+      title="One client, three systems, no re-typing."
+    >
+      Today: a client moves, and someone updates the webshop, the bookkeeping and the customer file by hand. One of the three is wrong by Friday. Instead: change it once. It is copied to the other two the moment it happens, or every night, whichever you choose. In both directions, so it does not matter where the change was made.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
+      title="What does not fit is refused, and you see why."
+    >
+      Today: an order with a missing postcode slips through and comes back from the carrier a week later. Instead: it is refused at the door, and the reason is on the list. A rule such as "refuse an order without a VAT number" you write yourself, in the app, without a developer. An order over ten thousand euros? It waits for your approval before it lands.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      title="It fails at three in the morning. You see one line at nine."
+    >
+      Today: the bookkeeping system was down for an hour at night, and an order is simply missing. You find out when the client calls. Instead: a delivery that fails is retried by itself. What still fails is on one list in the morning, with the reason. You fix the cause and replay it with a click. Not one order goes missing.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
+      title="Every exchange logged, for as long as you say."
+    >
+      What went out to the accountant, what came in from the shop, and when? It is in the log, per record. Export it as a spreadsheet when the auditor asks. You set how long the log is kept.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
+      title="For municipalities: the national standards, built in."
+    >
+      It speaks the national address, case and mail standards Dutch municipalities run: PDOK for addresses, StUF for case systems, DSO for permit applications, and Berichtenbox for official mail. Configure the connection, and the data flows.
+    </FeatureItem>
+  </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['openconnector']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<RotatingCards
+  eyebrow={`Four ways ${app.name} earns its place`}
+  title="It works the way you work. And it works for you."
+  lede="Four things you would normally pay extra for. Here they are built in."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automate',
+      title: 'A delivery fails at night. In the morning it is one line, not a missing order.',
+      summary: 'Today: an outside system is down for an hour and nobody notices until a client calls. Instead: a delivery that fails is kept, retried by itself, and if it still fails it is on one list with the reason. You fix the cause and replay it with a click, and that click is logged with your name. It also gives your other automations a step they cannot do alone: call an outside system. The moment a quote is accepted, the client is created in the bookkeeping. Every night, the stock levels from the supplier. You draw it once, and it happens.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <FlowMock />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'Your connections, your rules, your screens. Without a developer.',
+      summary: 'A wholesaler wants the delivery region copied to the shop. An installer wants the site address to go to the planning tool. A municipality wants a permit application to wait for a check before it lands. Add the field, add the rule, put the list of failed deliveries at the top of your dashboard. In the running app, in minutes, and your changes stay with every update.',
+      cta: {label: 'How customising works', href: '/apps/buildiq'},
+      panel: <BuildMock />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Talk to it',
+      title: 'Ask why last night\'s sync failed. Get the reason, not a log to read.',
+      summary: 'Type "what failed last night?" and get the list of failed runs with the reason for each. Ask "when did the Jansen order go to the bookkeeping?" and get the time and the outcome. The assistant reads the same log you see, and only reads it. When an assistant needs something from an outside system, it goes through a connection you set up, and every call is logged.',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: what failed last night?',
+        'assistant: 1 of 214 deliveries failed: order 4471 to the bookkeeping, connection refused at 03:12',
+        'assistant: it was retried three times. Want me to open it for replay?',
+      ]} cursor mode="reads the log, changes nothing" />,
+    },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'Clients check their own order. In data that is actually current.',
+      summary: <>Give clients their own door. Through <a href="/apps/portaliq">Portaliq</a> they log in and see their orders, their invoices and the questions they asked, read from the same records the connector keeps in step with your shop and your bookkeeping. The status they see is the status that is true. Nobody calls to ask where the order is, and nobody answers from a stale screen.</>,
+      cta: {label: 'See the client portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="We ship the widgets you need"
+  lede={<>Install it and the home screen shows what ran, what failed, and what needs a replay. Checking on your connections is a glance, not a job. Want more? Design your own widgets with <a href="/apps/buildiq">Buildiq</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
+  widgets={[
+    {
+      title: 'Runs today',
+      desc: 'Every run of every connection, hour by hour. You see at a glance that the night went well.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 26, fontWeight: 700, color: 'var(--c-cobalt-900)'}}>214</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, fontWeight: 600, color: 'var(--c-mint-500)'}}>213 ok</div>
+          </div>
+          <svg viewBox="0 0 200 60" preserveAspectRatio="none" style={{width: '100%', height: 50}}>
+            <path d="M 0 48 L 28 40 L 56 44 L 84 20 L 112 30 L 140 12 L 168 26 L 200 18" stroke="var(--c-blue-cobalt)" strokeWidth="2" fill="none"/>
+            <path d="M 0 48 L 28 40 L 56 44 L 84 20 L 112 30 L 140 12 L 168 26 L 200 18 L 200 60 L 0 60 Z" fill="var(--c-cobalt-100)"/>
+            <circle cx="84" cy="20" r="3" fill="var(--c-orange-knvb)"/>
+          </svg>
+        </div>
+      ),
+    },
+    {
+      title: 'Latest runs',
+      desc: 'The last runs across every connection: which system, how long it took, and whether it went well.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-mint-500)'},
+            {tone: 'var(--c-mint-500)'},
+            {tone: 'var(--c-orange-knvb)'},
+            {tone: 'var(--c-mint-500)'},
+            {tone: 'var(--c-red-vermillion)'},
+            {tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '3px 0', borderBottom: i < 5 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 8, height: 9, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, height: 3, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-400)', minWidth: 32, textAlign: 'right'}}>{`${[12, 8, 24, 14, 38, 6][i]}s`}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Needs a replay',
+      desc: 'Deliveries that failed and are waiting for you. Which system, what went wrong, and a button to replay. Empty on a good day.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 2}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 26, fontWeight: 700, color: 'var(--c-orange-knvb)'}}>1</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>waiting</div>
+          </div>
+          {[0].map((i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{display: 'inline-block', padding: '1px 6px', background: 'var(--c-coral-50)', color: 'var(--c-orange-knvb)', borderRadius: 2, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, fontWeight: 700}}>bookkeeping</span>
+              <div style={{flex: 1, height: 3, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              <div style={{height: 16, width: 16, borderRadius: 3, background: 'var(--c-blue-cobalt)'}}></div>
+            </div>
+          ))}
+          <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-400)'}}>order 4471, connection refused, 03:12</div>
+        </div>
+      ),
+    },
+    {title: 'Outgoing calls', desc: 'Calls to outside systems per day and per hour, so a spike stands out.'},
+    {title: 'Errors per source', desc: 'Which connection throws errors, counted per system.'},
+    {title: 'Circuit breaker', desc: 'A connection that keeps failing is paused before it floods the log. The badge shows it.'},
+    {title: 'Failed deliveries', desc: 'Messages that did not arrive at a subscriber, kept and ready to replay.'},
+    {title: 'Sync runs', desc: 'Synchronisation runs per day and per hour, with their outcomes.'},
+    {title: 'Job executions', desc: 'Scheduled jobs per day and per hour, so you see the night actually happened.'},
+    {title: 'Sources', desc: 'Every outside system you connected, in one count.'},
+    {title: 'Mappings', desc: 'The translations between your fields and theirs, in one list.'},
+    {title: 'Synchronisations', desc: 'The sync set-ups you run, each with its direction and schedule.'},
+    {title: 'Contracts', desc: 'The agreements per connection: what may flow, which way, how often.'},
+    {title: 'Jobs', desc: 'The scheduled work: what runs when, and what it did last time.'},
+    {title: 'Connection points', desc: 'The addresses outside systems can reach you on, in one inventory.'},
+    {title: 'Source calls', desc: 'The calls to one system, on the connection itself.'},
+    {title: 'Source objects', desc: 'What one connection brought in, as records you can open.'},
+    {title: 'Payload preview', desc: 'What a message actually contained, for the moment you need to look.'},
+    {title: 'Recent calls', desc: 'The last calls of one connection, with their outcomes.'},
+    {title: 'Environments', desc: 'Test and production per connection, kept safely apart.'},
+    {title: 'Consumer deliveries', desc: 'What was delivered to each subscriber, in one count.'},
+    {title: 'Subscriptions', desc: 'Who subscribed to which changes, per subscriber.'},
+    {title: 'Recent deliveries', desc: 'The last deliveries per subscriber, with their outcomes.'},
+    {title: 'Event deliveries', desc: 'Deliveries per event, so you trace one change end to end.'},
+  ]}
+/>
+
+<Showcase
+  eyebrow={`How ${app.name} plugs into the workspace`}
+  title="The systems you have, the apps you use, and the step in between."
+  lede="It sits between the systems outside your workspace and the apps inside it. Outside stays what it is. Inside, your team sees one client, one order, one truth."
+  layout="side"
+  defaultOpen="outside"
+  items={[
+    {
+      id: 'outside',
+      title: 'The systems you already have',
+      summary: 'Your webshop, your accounting package, your supplier\'s ordering system, a public data source. Set up the connection once, with the login it needs, and it stays logged in by itself. From then on it reads and writes for you: what changed since last time, in both directions. It keeps to the limits the outside system sets. The outside system stays what it is.',
+      cta: {label: 'Read the docs', href: 'https://openconnector.conduction.nl'},
+      panel: <MockScene
+        width={680}
+        height={420}
+        items={[
+          {type: 'sidebar', kind: 'openconnector-run-detail', x: 220, y: 10,  size: 'md', z: 1},
+          {type: 'widget',  kind: 'openconnector-runs',       x: 0,   y: 0,   size: 'sm', z: 2},
+          {type: 'widget',  kind: 'openregister-activity',    x: 0,   y: 230, size: 'sm', z: 2},
+        ]}
+      />,
+    },
+    {
+      id: 'inside',
+      title: 'The apps your team works in',
+      summary: 'What comes in lands in the records your CRM, invoicing and projects already use. The order from the shop is on the client in your CRM. The stock level from the supplier is on the product. Your team never opens the outside system to look something up, and never re-types what it saw there.',
+      cta: {label: 'See the CRM', href: '/apps/pipelinq'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'step',
+      title: 'The outside step in your automations',
+      summary: 'Your automations can read and write your own records. This adds the step they cannot do alone: call an outside system. The moment a quote is accepted, the client is created in the bookkeeping. Every night at two, the stock levels come in from the supplier. Each call goes through a connection you set up, and each call is logged.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <FlowMock />,
+    },
+    {
+      id: 'government',
+      title: 'For municipalities: addresses, cases and official mail',
+      summary: 'Look up an address the way the national address service spells it. Receive a permit application from the national permit desk. Send an official letter to a resident\'s government mailbox. Exchange cases with the case system you already run. The standards are built in, so your team configures a connection instead of commissioning one.',
+      cta: {label: 'Read the docs', href: 'https://openconnector.conduction.nl'},
+      panel: <AppMock app="procest" />,
+    },
+  ]}
+/>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="Three apps that make it more yours."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/buildiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="Buildiq"
+      why="Change rules, fields and screens in the running app. A wholesaler and a municipality run the same app, each their own way."
+    />
+    <PairCard
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 1 1-4-6.9"/><path d="M12 8v4l3 2"/></svg>}
+      name="Hermiq"
+      why="The assistant that reads the run log and explains what failed lives here. It reads, you replay."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Compose your own dashboard from the connection widgets above, next to everything else your organisation runs."
+    />
+  </PairRow>
+</Section>
+
+<PartnersForApp slug="openconnector" />
+
+<CtaBanner
+  title="Your systems in step, on your own Nextcloud."
+  lede={<>Open source. Free to install. GDPR-compliant by default. Your webshop, bookkeeping and customer file agree with each other, from the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/integriq'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=openconnector'}}
+/>

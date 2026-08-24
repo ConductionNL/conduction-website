@@ -1,0 +1,274 @@
+---
+title: Filinq, Conduction
+description: Documenten genereren, ondertekenen en anonimiseren, zonder ze aan een derde partij te geven. Contracten en brieven vullen zichzelf uit je gegevens, klanten tekenen op hun telefoon, persoonsgegevens worden voor je zwartgemaakt.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+{/* Display-name rebrand 2026-08: DocuDesk → Filinq. De apps-registry
+    van de preset kan de oude naam nog dragen; pin de weergavenaam hier.
+    Slug, URLs en repo blijven `docudesk`. */}
+export const app = {...getApp('docudesk'), name: 'Filinq'};
+
+<DetailHero
+  background="cobalt"
+  appId="docudesk"
+  crumb={[{label: 'Apps', href: '/apps'}, app.name]}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.0.46"
+  locales="NL · EN"
+  title={app.name}
+  tagline={<>Brieven, contracten en exporten genereren zonder je documenten uit handen te geven. Op je eigen <span className="next-blue">Nextcloud</span>.</>}
+  intro={<>{app.name} (voorheen DocuDesk) laat het papierwerk van je bedrijf zichzelf schrijven. Contracten, brieven en besluiten vullen zichzelf uit de gegevens die je al bijhoudt. Klanten tekenen via een link, op elk apparaat, en de getekende versie landt waar hij hoort. Persoonsgegevens in een bestand worden voor je zwartgemaakt voordat het de deur uitgaat. Niets verlaat je eigen server. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/filinq'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=docudesk'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/docudesk'}}
+  illustration={<AppMock app="docudesk" />}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="Documenten die zichzelf schrijven, zichzelf ondertekenen en hun geheimen bewaren."
+        align="stack"
+        lede="Brieven en contracten komen uit je eigen sjablonen, gevuld uit je eigen gegevens. Ondertekenen gebeurt op de telefoon. Persoonsgegevens worden zwartgemaakt voordat een bestand de deur uitgaat. En elke stap wordt gelogd."
+      />
+      <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      title="Het contract vult zichzelf uit de klantkaart."
+    >
+      Nu: iemand kopieert naam, adres en bedrag van de klant in het contract, en typt op een dag het bedrag verkeerd. In plaats daarvan: kies de klant en het sjabloon. Naam, adres en bedrag staan al in het contract. Niemand typt ze een tweede keer, dus niemand typt ze verkeerd. Je eigen huisstijl, in het Nederlands of Engels, als PDF of Word-bestand.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg>}
+      title="Persoonsgegevens voor je zwartgemaakt, op je eigen server."
+    >
+      Nu: een dossier van een inwoner moet openbaar onder de Wet open overheid (Woo). Iemand gaat zitten met een stift en een scanner. In plaats daarvan: sleep het bestand erin. Namen, adressen en persoonsnummers worden voor je gevonden en zwartgemaakt. Jij controleert het resultaat en bevestigt wat verborgen blijft. Gescande pagina's en foto's werken ook. Het bestand blijft op je eigen server.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
+      title="Getekend op de telefoon. Opgeborgen op de klantkaart."
+    >
+      Nu: printen, tekenen, scannen, mailen, wachten en nabellen. In plaats daarvan: de klant krijgt een link en tekent op zijn telefoon. Twee of meer ondertekenaars, om de beurt of tegelijk. De getekende versie landt op de klantkaart, en elke stap van het ondertekenen staat in het logboek. Niets om te printen, niets om na te bellen.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      title="De bezwaartermijn wordt voor je geteld."
+    >
+      Voordat een document openbaar wordt, mogen de mensen erin bezwaar maken. Nu: iemand houdt een spreadsheet met datums bij. In plaats daarvan: de termijn van vier weken start zodra je het besluit vastlegt, en de deadline staat op het onderdeel. Nadert de datum, dan krijgt de juiste collega een herinnering. Het besluit en de geschiedenis worden bewaard voor de auditor.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
+      title="Elke versie bewaard, elke wijziging zichtbaar."
+    >
+      Twee versies van een contract, en niemand weet nog wat er veranderd is? Zet ze naast elkaar en de verschillen lichten op. Elke brief, elke handtekening en elke zwartgemaakte passage wordt gelogd met wie het deed en wanneer. Dat is je antwoord bij de audit, en het zit standaard in de installatie.
+    </FeatureItem>
+  </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['docudesk']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<RotatingCards
+  eyebrow={`Vier manieren waarop ${app.name} zijn plek verdient`}
+  title="Het werkt zoals jij werkt. En het werkt voor jou."
+  lede="Vier dingen waar je normaal extra voor betaalt. Hier zitten ze erin."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automatiseer',
+      title: 'De klant tekent. De rest gebeurt vanzelf.',
+      summary: 'Nu: je kijkt in je mailbox wie er getekend heeft en werkt de klantkaart met de hand bij. In plaats daarvan: je tekent het één keer uit. Zodra het contract is getekend, staat het op de klantkaart en ligt de kick-off-taak op het juiste bureau. Geweigerd? Een nabelgesprek landt op de lijst van de accountmanager. Na twee weken nog niet getekend? De accountmanager krijgt een taak om erachteraan te gaan. Komt er tijdens de termijn van vier weken een bezwaar binnen? De publicatie gaat in de wacht en een taak landt bij de behandelaar. Niets vergeten, geen nabellen, geen programmeerwerk.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
+      panel: <FlowMock />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Jouw brieven, jouw velden, jouw schermen. Zonder ontwikkelaar.',
+      summary: 'Een notaris heeft een tweede ondertekenaar nodig op elke akte. Een woningcorporatie wil het complexnummer op elke brief. Een gemeente wil het zaaknummer op het bezwaarscherm. Voeg het veld toe, voeg de stap toe, zet de lijst die je het eerst bekijkt bovenaan, verberg wat je nooit gebruikt. In de draaiende app, in minuten, en je aanpassingen blijven bij elke update staan.',
+      cta: {label: 'Zo werkt aanpassen', href: '/apps/buildiq'},
+      panel: <BuildMock />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Praat ermee',
+      title: 'Zeg wat je nodig hebt. Keur het goed voordat het de deur uitgaat.',
+      summary: 'Typ "maak het onderhoudscontract voor Jansen op uit het standaardsjabloon" en het concept staat er, naam, adres en prijs ingevuld. Zeg "zet de prijs in de offerte voor Jansen op 4.200" en die regel verandert, verder niets. Vraag om een grafiek in het kwartaalrapport en hij staat in het Word-bestand. Elke actie hier kan aan een assistent worden overgedragen. Jij bepaalt wat hij mag, en hij vraagt het voordat er iets de deur uitgaat.',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'jij: maak het onderhoudscontract voor Jansen BV op uit het standaardsjabloon',
+        'assistent: concept klaar, klantgegevens en prijs gevuld uit de klantkaart',
+        'assistent: opgeslagen als Word-bestand op de klantkaart van Jansen BV',
+        'assistent: omzetten naar PDF om te ondertekenen?',
+        'jij: ja',
+        'assistent: PDF klaar, naast het Word-bestand',
+      ]} cursor mode="vraagt eerst voordat het iets wijzigt" />,
+    },
+    {
+      tone: 'mint',
+      eyebrow: 'Laat klanten zichzelf helpen',
+      title: 'Klanten vinden zelf hun exemplaar. Zonder jou om een kopie te vragen.',
+      summary: <>Geef klanten en leveranciers hun eigen deur. Via <a href="/apps/portaliq">Portaliq</a> loggen ze in en zien ze de documenten die hen aangaan: het contract dat op hun handtekening wacht, de offerte die ze direct kunnen tekenen, en de getekende exemplaren waar ze je anders om vragen. Ze tekenen daar en de kaart werkt zichzelf bij. Niemand graaft door verzonden mail naar de laatste versie.</>,
+      cta: {label: 'Bekijk het klantportaal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets die we meeleveren"
+  title="We leveren de widgets die je nodig hebt"
+  lede={<>Installeer het en het startscherm toont wat er wacht op een handtekening, welke bestanden nog persoonsgegevens bevatten, en waar een bezwaartermijn bijna sluit. Meer nodig? Ontwerp je eigen widgets met <a href="/apps/buildiq">Buildiq</a>, of bouw je eigen dashboard uit al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
+  widgets={[
+    {
+      title: 'Hier anonimiseren',
+      desc: 'Sleep een bestand op het startscherm. Persoonsgegevens worden gevonden en zwartgemaakt, en de veilige kopie staat klaar om te controleren.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'stretch'}}>
+          <div style={{height: 90, border: '2px dashed var(--c-cobalt-300)', borderRadius: 'var(--radius-md)', background: 'var(--c-cobalt-50)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8}}>
+            <span style={{width: 28, height: 32, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-terracotta-500)'}}></span>
+            <div style={{height: 4, width: 80, background: 'var(--c-cobalt-400)', borderRadius: 1}}></div>
+          </div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 8, height: 9, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{flex: 1, height: 3, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: 26, background: 'var(--c-cobalt-100)', borderRadius: 1}}></div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: 'Wacht op handtekening',
+      desc: 'Documenten waar nog iemand op moet tekenen, oudste eerst. Die van jou bovenaan, één klik om te tekenen.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {accent: true,  l1: '70%'},
+            {accent: false, l1: '60%'},
+            {accent: false, l1: '55%'},
+            {accent: false, l1: '65%'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 12, height: 14, clipPath: 'var(--hex-pointy-top)', background: row.accent ? 'var(--c-orange-knvb)' : 'var(--c-cobalt-300)'}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 3}}>
+                <div style={{height: 4, width: row.l1, background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '40%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{height: 18, width: 18, borderRadius: 3, background: row.accent ? 'var(--c-orange-knvb)' : 'var(--c-cobalt-50)', border: row.accent ? 'none' : '1px solid var(--c-cobalt-200)'}}></div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Bestanden met persoonsgegevens',
+      desc: 'De bestanden die je verwerkte, hoeveel persoonsgegevens elk bevatte, en of de veilige kopie klaar is.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {n: '7',  done: true},
+            {n: '12', done: true},
+            {n: '3',  done: false},
+            {n: '0',  done: true},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.done ? 'var(--c-mint-500)' : 'var(--c-orange-knvb)', flexShrink: 0}}></span>
+              <div style={{flex: 1, height: 4, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, color: 'var(--c-cobalt-700)', minWidth: 18, textAlign: 'right'}}>{row.n}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {title: 'Totaal toestemmingen', desc: 'Iedereen van wie je toestemming bijhoudt, in één telling.'},
+    {title: 'Openstaande toestemmingen', desc: 'Toestemmingsverzoeken die nog op antwoord wachten, voordat de termijn sluit.'},
+    {title: 'Akkoord', desc: 'Gegeven toestemmingen, met wie ze gaf en wanneer.'},
+    {title: 'Bezwaar gemaakt', desc: 'Wie bezwaar maakte, zodat publicatie wacht en de behandelaar het weet.'},
+    {title: 'Openstaande lijst', desc: 'De open toestemmingsverzoeken als lijst om door te werken en na te bellen.'},
+  ]}
+/>
+
+<Showcase
+  eyebrow={`Zo sluit ${app.name} aan op je werkplek`}
+  title="Je bestanden, je mail, je klantkaarten. Al van jou."
+  lede="Het werkt op de bestanden die je al hebt, vult brieven uit de gegevens die je al bijhoudt, en geeft het resultaat door aan de apps en mensen die het nodig hebben."
+  layout="side"
+  defaultOpen="files"
+  items={[
+    {
+      id: 'files',
+      title: 'Het werkt op je bestanden, waar ze staan',
+      summary: 'Kies een bestand uit Bestanden en anonimiseer het, of wijs een hele map aan en laat het op de achtergrond alles doorwerken. De veilige kopie staat naast het origineel. Elke gegenereerde brief, elk getekend contract en elk zwartgemaakt bestand is een gewoon bestand in je Nextcloud: deel het, bewaar versies, vind het terug met zoeken. Niets wordt naar een tweede systeem gekopieerd.',
+      cta: {label: 'Lees de docs', href: 'https://docudesk.conduction.nl'},
+      panel: <LeafMock leaf="files" />,
+    },
+    {
+      id: 'records',
+      title: 'Brieven gevuld uit de gegevens die je al bijhoudt',
+      summary: 'De klant in je CRM, de zaak in je zaaksysteem, de huurder in je woningdossier: kies de kaart en het sjabloon, en de brief is klaar. Wordt een vergunning verleend, dan staat de besluitbrief klaar om te versturen, in je huisstijl, met de zaakgegevens er al in. Tweehonderd brieven voor tweehonderd inwoners? Zelfde sjabloon, één run, en je hoort het als ze klaar zijn.',
+      cta: {label: 'Bekijk het CRM', href: '/apps/pipelinq'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'mail',
+      title: 'Klaar voor je mailbox',
+      summary: 'Een brief kan eruit komen als PDF, als Word-bestand, of als tekst om in een e-mail te plakken. Je verstuurt hem vanuit de mailbox die je al gebruikt, dus het antwoord landt waar je team het leest. Wie moet tekenen krijgt een melding en een herinnering voor de deadline. Je hoort het zodra iedereen getekend heeft.',
+      cta: {label: 'Lees de docs', href: 'https://docudesk.conduction.nl'},
+      panel: <LeafMock leaf="mail" />,
+    },
+    {
+      id: 'portal',
+      title: 'Externe ondertekenaars tekenen via je portaal',
+      summary: 'Een klant of leverancier heeft geen account op je Nextcloud nodig. Hij opent de link in je klantportaal, leest het document en tekent of weigert, op zijn telefoon. Wie tekende en wanneer komt op de kaart. Twee ondertekenaars die om de beurt moeten tekenen? Het wacht op de eerste voordat het de tweede vraagt.',
+      cta: {label: 'Bekijk het portaal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Past goed bij"
+    title="Drie apps die Filinq nog meer van jou maken."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/buildiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="Buildiq"
+      why="Pas schermen, velden en stappen aan in de draaiende app. Een notaris en een gemeente draaien dezelfde app, elk op hun eigen manier."
+    />
+    <PairCard
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 1 1-4-6.9"/><path d="M12 8v4l3 2"/></svg>}
+      name="Hermiq"
+      why="De assistent die documenten opstelt, omzet en bijwerkt woont hier. Jij bepaalt wat hij mag."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Stel je eigen dashboard samen uit de documentwidgets hierboven, naast alles wat je organisatie verder draait."
+    />
+  </PairRow>
+</Section>
+
+<PartnersForApp slug="docudesk" />
+
+<CtaBanner
+  title="Jouw documenten, op je eigen Nextcloud."
+  lede={<>Open source. Gratis te installeren. Standaard AVG-proof. Contracten, brieven en handtekeningen op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/filinq'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=docudesk'}}
+/>

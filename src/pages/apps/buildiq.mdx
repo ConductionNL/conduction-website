@@ -1,13 +1,16 @@
 ---
-title: OpenBuild, Conduction
+title: Buildiq, Conduction
 description: Make every Conduction app fit your business, without a developer. Add a field, add a step, move a widget, in the running app. Or build a small app of your own in ten minutes.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, getApp} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
-export const app = getApp('openbuild');
+{/* Display-name rebrand 2026-08: OpenBuild → Buildiq. The preset's
+    apps-registry may still carry the former name, so pin the display
+    name here; slug, URLs and repo stay `openbuild`. */}
+export const app = {...getApp('openbuild'), name: 'Buildiq'};
 
 <DetailHero
   background="cobalt"
@@ -18,9 +21,9 @@ export const app = getApp('openbuild');
   locales="NL · EN"
   title={app.name}
   tagline={<>Make every app fit your business, without a developer. Add a field, add a step, move a widget, in the running app on your own <span className="next-blue">Nextcloud</span>.</>}
-  intro={<>{app.name} is the app builder for the Nextcloud workspace. Open any Conduction app, click edit, and change what is on the page: a field, a step, a widget, a menu item. Your changes stay through every update. Need something the apps do not do? Build a small app of your own: name it, add the fields, say who sees it, and it is in the top bar. Try changes on a test copy first, publish when happy, one click back if not. Open source, released under EUPL-1.2 and maintained by Conduction.</>}
-  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  intro={<>{app.name} (formerly OpenBuild) is the app builder for the Nextcloud workspace. Open any Conduction app, click edit, and change what is on the page: a field, a step, a widget, a menu item. Your changes stay through every update. Need something the apps do not do? Build a small app of your own: name it, add the fields, say who sees it, and it is in the top bar. Try changes on a test copy first, publish when happy, one click back if not. Open source, released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/buildiq'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=openbuild'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/openbuild'}}
   illustration={<AppMock app="openbuild" />}
 />
@@ -69,12 +72,10 @@ export const app = getApp('openbuild');
   </div>
 </Section>
 
-<PartnersForApp slug="openbuild" />
-
 <RotatingCards
-  eyebrow={`Three ways ${app.name} earns its place`}
+  eyebrow={`Four ways ${app.name} earns its place`}
   title="It works the way you work. And it works for you."
-  lede="Three things you would normally pay a developer for. Here you do them yourself, in the running app."
+  lede="Four things you would normally pay a developer for. Here you do them yourself, in the running app."
   cards={[
     {
       tone: 'forest',
@@ -82,7 +83,7 @@ export const app = getApp('openbuild');
       title: 'Your new field, your new step, and the automation that uses them.',
       summary: 'You added an inspection date to the vehicle list. Now draw what should happen with it: thirty days before the date, a task for the fleet manager, and the vehicle marked as due. A rule with a condition, no coding. You added a site-visit step to the pipeline: the moment the visit is done, the quote task is on the right desk. Fields and steps you add today are ready for automation the same day.',
       cta: {label: 'How automation works', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
@@ -90,7 +91,7 @@ export const app = getApp('openbuild');
       title: 'One hundred percent your app. Down to the last widget.',
       summary: 'Every page of every Conduction app is open for change. Rename a field so it says what your team calls it. Put the customer\'s phone number where the eye lands first. Take the widget nobody reads off the dashboard. Give the app your own icon. Decide per group who sees which page. Everything you change is kept apart from what we ship, so the next update lands and your changes stay.',
       cta: {label: 'Read the docs', href: 'https://openbuild.conduction.nl'},
-      panel: <AppMock app="openbuild" />,
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
@@ -104,16 +105,24 @@ export const app = getApp('openbuild');
         'assistant: visible to group "office". Approve, or change something?',
       ]} cursor mode="drafts, you approve" />,
     },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'The app you built, with a front door for clients.',
+      summary: <>Your team works in the apps you shaped. Give clients their own window on the same records with <a href="/apps/portaliq">Portaliq</a>: a portal in your house style where they see their contracts and products, ask and sign quotations, and follow their tickets. You decide what a client sees, the same way you decide it for your team. No second system to build, no data copied out.</>,
+      cta: {label: 'Give clients their own portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets we ship"
-  title="Your apps and your changes, at a glance."
-  lede="Install it and its dashboard shows the apps you built, what is waiting on the test copy, and who changed what."
+  title="We ship the widgets you need"
+  lede={<>Install it and its dashboard shows the apps you built, what you published, and what your team touched last. And this is the place where you design your own widgets, for every app on the workspace. Put them all on one board with <a href="/apps/launchpad">LaunchPad</a>, your own dashboard from all your data.</>}
   widgets={[
     {
-      title: 'Your apps',
+      title: 'Apps',
       desc: 'Every app you built or changed, with its live version and its test copy. Click to open the designer.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
@@ -136,8 +145,8 @@ export const app = getApp('openbuild');
       ),
     },
     {
-      title: 'Waiting to publish',
-      desc: 'Changes on a test copy that are not live yet. Publish from here, or open the test copy first.',
+      title: 'Published versions',
+      desc: 'Every version you published, and what still waits on a test copy. One click back to the previous version.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
           <div style={{display: 'flex', alignItems: 'baseline', gap: 6}}>
@@ -154,8 +163,8 @@ export const app = getApp('openbuild');
       ),
     },
     {
-      title: 'Who changed what',
-      desc: 'The last edits to your apps: which page, which field, by whom, and when. Undo is one click away.',
+      title: 'Recent apps',
+      desc: 'The apps your team touched last: which page, which field, by whom, and when.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {['var(--c-forest-300)', 'var(--c-lavender-300)', 'var(--c-mint-300)', 'var(--c-terracotta-300)'].map((tone, i) => (
@@ -171,6 +180,7 @@ export const app = getApp('openbuild');
         </div>
       ),
     },
+    {title: 'Hybrid apps', desc: 'Apps that mix our pages with your own, so you extend what exists instead of rebuilding it.'},
   ]}
 />
 
@@ -185,7 +195,7 @@ export const app = getApp('openbuild');
       id: 'apps',
       title: 'The apps you already use',
       summary: 'Your CRM, your invoicing, your case files: every Conduction app is built from pages you can open in the designer. Click edit on the page you are looking at, change it, save. The change is yours and it stays through updates. Start with the CRM: add the delivery region, add the site visit, and watch the pipeline follow your process.',
-      cta: {label: 'See PipelinQ', href: '/apps/pipelinq'},
+      cta: {label: 'See Pipelinq', href: '/apps/pipelinq'},
       panel: <AppMock app="pipelinq" />,
     },
     {
@@ -221,28 +231,36 @@ export const app = getApp('openbuild');
 <Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="Two apps you will change first."
+    title="Three apps that finish what you build."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/pipelinq"
-      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 8v10"/></svg>}
-      name="PipelinQ"
-      why="CRM, quotes and deals. Add the field, add the step, and the pipeline follows your process."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>}
+      name="Hermiq"
+      why="Describe the app you need and approve the draft. Then talk to what you built."
     />
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Where your data lives. Every field you add and every app you build stores its records here."
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Your widgets and your apps on one start screen, for the whole team."
+    />
+    <PairCard
+      href="/apps/portaliq"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg>}
+      name="Portaliq"
+      why="A client portal on the records behind your apps. Clients help themselves, in your house style."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="openbuild" />
+
 <CtaBanner
   title="Apps that fit your business, on your own Nextcloud."
   lede={<>Open source. Free to install. Change the apps you have, or build the one you miss, on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
-  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
-  secondaryCta={{label: 'Request a demo from a partner', href: '/partners'}}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/buildiq'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=openbuild'}}
 />

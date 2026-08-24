@@ -28,10 +28,12 @@ name is `main`. Deploying from `development` under its own name produces a
 *preview* deployment on a random `*.pages.dev` URL. It succeeds, it looks
 right, and it never reaches `www.conduction.nl`.
 
-**Required secrets.** `CLOUDFLARE_API_TOKEN` (permission: Account →
-Cloudflare Pages → Edit) and `CLOUDFLARE_ACCOUNT_ID`. Without them the
-deploy step fails loudly, which is deliberate: a deploy that cannot
-authenticate must not look like a success.
+**Required secrets.** `CF_API_TOKEN` (permission: Account → Cloudflare
+Pages → Edit) and `CF_ACCOUNT_ID`, both org-level and already present.
+The names matter: this workflow previously asked for
+`CLOUDFLARE_API_TOKEN`, which is not a secret anywhere, so every deploy
+since ~15 Aug failed on an empty token while PR checks stayed green —
+the deploy step is skipped on `pull_request`, so nothing surfaced it.
 
 ## Deploying by hand
 

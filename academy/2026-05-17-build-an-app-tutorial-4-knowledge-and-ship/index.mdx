@@ -6,7 +6,7 @@ heroIcon: blocks
 authors: [conduction]
 date: 2026-05-17
 summary: Spin up xWiki locally, author per-category care guides, surface them per pet via an OpenRegister care_guide schema, package the app, publish to the Conduction app store.
-tags: [App development, OpenConnector, xWiki, Knowledge management, Release, Tutorial series]
+tags: [App development, Integriq, xWiki, Knowledge management, Release, Tutorial series]
 apps: [openconnector, openregister]
 durationMinutes: 35
 series: build-an-app-tutorial
@@ -27,7 +27,7 @@ import {
 
 Part 4 of the nine-part app-building tutorial series. Part 3 made orders appear in NC Calendar with one schema annotation. Part 4 brings external knowledge, category-specific care advice, husbandry notes, feeding tips, from xWiki into the pet detail sidebar via a `care_guide` OpenRegister schema. Then we package the app and ship it.
 
-External knowledge integration is the canonical case for OpenConnector. Pull data from a system you don't own (xWiki here, but the same applies to Confluence, Notion, SharePoint, Decos, Mendix), surface it inside Nextcloud-native UI without making the user context-switch.
+External knowledge integration is the canonical case for Integriq. Pull data from a system you don't own (xWiki here, but the same applies to Confluence, Notion, SharePoint, Decos, Mendix), surface it inside Nextcloud-native UI without making the user context-switch.
 
 {/* truncate */}
 
@@ -42,7 +42,7 @@ External knowledge integration is the canonical case for OpenConnector. Pull dat
 <Prerequisites title="Where you should be">
   <PrerequisiteItem>Parts 1–3 done: PetStore shell, schemas + manifest, calendar integration all working.</PrerequisiteItem>
   <PrerequisiteItem>A local Nextcloud + OpenRegister stack you can <code>docker exec</code> into. The reference stack at <a href="/academy/run-nextcloud-locally">Nextcloud lokaal draaien met Docker</a> is what we test against; it already ships the xWiki service we'll start in Step 0.</PrerequisiteItem>
-  <PrerequisiteItem><strong>OpenConnector</strong> installed and enabled, for when you switch from seed data to a live xWiki sync later in the tutorial.</PrerequisiteItem>
+  <PrerequisiteItem><strong>Integriq</strong> installed and enabled, for when you switch from seed data to a live xWiki sync later in the tutorial.</PrerequisiteItem>
 </Prerequisites>
 
 :::note Repo creation
@@ -121,7 +121,7 @@ Two things to note about the URL: the REST API lives at `/rest`, **not** `/xwiki
 
 For tutorial purposes we use a dedicated parent space **PetStore** with one subspace per category. The folder layout matches the pet's `category` enum (`dogs`, `cats`, `fish`, `reptiles`) so each pet maps cleanly to its category's guides.
 
-You can author the articles via xWiki's UI (Create Page → set parent space → write content). Faster path: drive xWiki's REST API directly. The same payload shape works from cURL, OpenConnector, or any HTTP client.
+You can author the articles via xWiki's UI (Create Page → set parent space → write content). Faster path: drive xWiki's REST API directly. The same payload shape works from cURL, Integriq, or any HTTP client.
 
 ```bash title="Four short articles, one PUT each"
 put() {
@@ -162,7 +162,7 @@ Before we sync from xWiki, give OpenRegister a place to put the articles. Add a 
   "icon": "BookOpenVariantOutline",
   "version": "0.1.0",
   "title": "Care guide",
-  "description": "An external care guide surfaced in PetStore via OpenConnector. Read-only, canonical source lives in xWiki.",
+  "description": "An external care guide surfaced in PetStore via Integriq. Read-only, canonical source lives in xWiki.",
   "type": "object",
   "required": ["name", "category"],
   "properties": {
@@ -187,7 +187,7 @@ While you're in there, bump the register's `info.version` to `0.4.0` so the impo
 }
 ```
 
-Also seed four articles matching the xWiki content. The seeds make the app demo-able before you wire the sync, and serve as a reference shape for the OpenConnector mapping you'll build in Step 3.
+Also seed four articles matching the xWiki content. The seeds make the app demo-able before you wire the sync, and serve as a reference shape for the Integriq mapping you'll build in Step 3.
 
 ```json title="components.objects (excerpt)"
 "care-guide-dogs-basics": {
@@ -200,7 +200,7 @@ Also seed four articles matching the xWiki content. The seeds make the app demo-
 }
 ```
 
-Add the `care_guide` slug to the small list `SettingsService::SCHEMA_SLUGS` in [lib/Service/SettingsService.php](https://codeberg.org/Conduction/petstore/src/branch/main/lib/Service/SettingsService.php) so `/api/settings` exposes its numeric id alongside the other schemas. Same in `src/store/store.js`:
+Add the `care_guide` slug to the small list `SettingsService::SCHEMA_SLUGS` in [lib/Service/SettingsService.php](https://github.com/ConductionNL/petstore/blob/main/lib/Service/SettingsService.php) so `/api/settings` exposes its numeric id alongside the other schemas. Same in `src/store/store.js`:
 
 ```js title="src/store/store.js"
 const SCHEMAS = ['category', 'pet', 'order', 'care_guide']
@@ -214,9 +214,9 @@ docker exec nextcloud apache2ctl graceful
 # (the petstore admin page has a Reload button that does this for you)
 ```
 
-## Step 3: Create an OpenConnector source for xWiki
+## Step 3: Create an Integriq source for xWiki
 
-The seeds get the UI working immediately. For *live* data, when an article changes in xWiki you want to see the change in PetStore on the next sync, you wire OpenConnector.
+The seeds get the UI working immediately. For *live* data, when an article changes in xWiki you want to see the change in PetStore on the next sync, you wire Integriq.
 
 Go to `/apps/openconnector/sources` and create a new source.
 
@@ -232,7 +232,7 @@ Headers:    Accept: application/json
 Test:       GET /wikis/xwiki/spaces/PetStore/spaces/Dogs/pages
 ```
 
-The Test should return the Dogs article. OpenConnector saves the source with a numeric id; we reference it from the synchronisation in the next step.
+The Test should return the Dogs article. Integriq saves the source with a numeric id; we reference it from the synchronisation in the next step.
 
 ## Step 4: Define the synchronisation
 
@@ -369,7 +369,7 @@ export default {
 </template>
 ```
 
-(See the [reference repo](https://codeberg.org/Conduction/petstore/src/branch/main/src/App.vue) for the complete file. App.vue also provides `objectSidebarState` so CnDetailPage's external-sidebar channel works.)
+(See the [reference repo](https://github.com/ConductionNL/petstore/blob/main/src/App.vue) for the complete file. App.vue also provides `objectSidebarState` so CnDetailPage's external-sidebar channel works.)
 
 Build, reload, navigate to a Dogs-category pet's detail URL. The right sidebar shows three tabs: Data, Care guides, Metadata. Click **Care guides**. The "Dog care basics" article appears, with the body rendered and a link back to the wiki for editing.
 
@@ -396,7 +396,7 @@ The release process is mechanical:
 4. **Sign the tarball** with the EC key Nextcloud's app store expects (see [the Nextcloud docs](https://nextcloudappstore.readthedocs.io/en/latest/developer.html#publishing-your-app)).
 5. **Push to Codeberg** with a tag matching the version (`git tag v0.4.0 && git push origin v0.4.0`). The template ships a `.woodpecker/release.yml` (or `.github/workflows/release.yml` on GitHub-origin apps) that picks up the tag, builds the tarball, signs it, and publishes the release.
 
-For the **Conduction app store** (`apps.conduction.nl`), the same release pipeline pushes to that endpoint when the secret is configured. See [the release workflow](https://codeberg.org/Conduction/nextcloud-app-template/src/branch/main/.github/workflows/release.yml) reference.
+For the **Conduction app store** (`apps.conduction.nl`), the same release pipeline pushes to that endpoint when the secret is configured. See the release workflows in [the template's `.github/workflows/`](https://github.com/ConductionNL/nextcloud-app-template/tree/main/.github/workflows) for reference.
 
 ## Step 7: Submit to apps.nextcloud.com (optional)
 
@@ -410,7 +410,7 @@ You started Part 1 with an empty template. Forty-eight steps later, you have:
 - Four OpenRegister schemas with relations and seed data
 - A manifest-driven shell with two small wrappers (Index, Detail) that go away once the library wires auto-fetch into the default page types
 - Orders that appear in NC Calendar via a schema annotation
-- Care guides from xWiki that appear in the pet-detail sidebar via OpenConnector
+- Care guides from xWiki that appear in the pet-detail sidebar via Integriq
 - A versioned, packaged, publishable release
 
 Total Vue you wrote: **three small files** (`IndexPageWrapper`, `DetailPageWrapper`, `CareGuidesTab`), about 100 lines together. Total PHP: the rename ritual + a path-resolution fix in SettingsService + the schema-slug list. Everything else is JSON.
@@ -429,7 +429,7 @@ That ratio, JSON describing what you want, framework rendering it, is the entire
   <TroubleshootingItem problem="xWiki Distribution Wizard wants to download Flavor and the container has no internet">
     Pick <strong>Let the wiki be empty</strong> at Step 2. The empty flavor still supports REST + page creation, which is all the tutorial needs.
   </TroubleshootingItem>
-  <TroubleshootingItem problem="OpenConnector source 'Test' returns HTML instead of JSON">
+  <TroubleshootingItem problem="Integriq source 'Test' returns HTML instead of JSON">
     Set <code>Accept: application/json</code> in the source's Headers section. xWiki defaults to XML for REST responses, but content-negotiates JSON when asked.
   </TroubleshootingItem>
 </Troubleshooting>
@@ -445,11 +445,11 @@ That ratio, JSON describing what you want, framework rendering it, is the entire
   <NextStep
     title="Part 6: Integrate"
     href="/academy/build-an-app-tutorial-6-integrate"
-    description="Connect your shipped app to the rest of the workspace. Cross-register reads, OpenConnector sources, and a two-way webhook sync, three integration patterns layered from least to most invasive."
+    description="Connect your shipped app to the rest of the workspace. Cross-register reads, Integriq sources, and a two-way webhook sync, three integration patterns layered from least to most invasive."
   />
   <NextStep
     title="Reference repo (may not exist yet)"
-    href="https://codeberg.org/Conduction/petstore"
+    href="https://github.com/ConductionNL/petstore"
     description="Canonical PetStore reference. If the repo is still 404 at the time you read this, push your own fork to Codeberg under the same name."
   />
   <NextStep
@@ -460,6 +460,6 @@ That ratio, JSON describing what you want, framework rendering it, is the entire
   <NextStep
     title="Conduction app catalogue"
     href="https://www.conduction.nl/apps"
-    description="See how Procest, OpenCatalogi, LaunchPad, and the rest compose the same patterns. PetStore now joins them."
+    description="See how Dossiq, OpenCatalogi, LaunchPad, and the rest compose the same patterns. PetStore now joins them."
   />
 </NextSteps>

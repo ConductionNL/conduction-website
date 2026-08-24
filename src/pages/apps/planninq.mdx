@@ -1,0 +1,275 @@
+---
+title: Planninq, Conduction
+description: Boards, backlog and hours for teams that build and fix things, on your own Nextcloud. A column holds only so many cards, so the team finishes before it starts. Beta.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, KanbanMock} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+<DetailHero
+  background="cobalt"
+  appId="planix"
+  crumb={[{label: 'Apps', href: '/apps'}, 'Planninq']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.2.11"
+  locales="NL · EN"
+  title="Planninq"
+  tagline={<>Boards, backlog and hours for teams that build and fix things, on your own <span className="next-blue">Nextcloud</span>. Finish before you start.</>}
+  intro={<>Planninq (formerly Planix) is an open-source project board for the team that builds your product or keeps your systems running. Every project gets a board with columns you choose. A column holds only so many cards, so the sixth one waits and the bottleneck shows itself. Ideas go in the backlog, not in someone's head. Hours logged on the task are the hours per project at month end. Made for development and IT teams, plain enough for anyone who runs work in stages. Released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=planix'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/planninq'}}
+  illustration={<KanbanMock />}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="Board, backlog, hours, dependencies. One place per project."
+        align="stack"
+        lede="Planninq keeps the work of a project on one board. Drag a card from left to right as it moves along. Keep the ideas for later in the backlog. Log the hours on the task you did them for. See what is stuck, and why, without a status meeting."
+      />
+      <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="6" height="16"/><rect x="10" y="4" width="6" height="10"/><rect x="17" y="4" width="4" height="7"/></svg>}
+      title="A column holds five cards. The sixth waits."
+    >
+      Today everyone starts everything and nothing gets finished. Instead, you give a column a limit. When "In progress" already holds five cards, the column turns red and the sixth one waits. The team finishes before it starts, and you see the bottleneck on the board instead of hearing about it in a meeting. The limit is a warning, not a wall: a card can still be dragged over it when it has to.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 5l8 5-8 5"/><path d="M14 5h6v14h-6z"/></svg>}
+      title="Ideas go in the backlog, not in someone's head."
+    >
+      A client asks for something during a call. Today it lives in the memory of whoever picked up the phone. Instead, it goes in the backlog with a priority and a due date. Sort by what matters most, and drag it onto the board the day the team has room. Nothing gets lost between "good idea" and "on the board".
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      title="The hours on the task are the hours per project at month end."
+    >
+      Give a task an estimate, log the hours you spent on it, and your timesheet groups them by day and week. At month end the hours per project are already there, no reconstruction from memory or chat history. Estimate against actual shows you where the plan was optimistic.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.2 7.2L12 15.8M15.8 7.2L12 15.8"/></svg>}
+      title="A task that waits on another wears a badge. Nobody starts the roof before the walls."
+    >
+      Mark a task as blocked by another. The card shows a "Blocked" badge until the other one is done, on the board and in the list, so nobody picks it up too early. Planninq refuses a loop where two tasks wait on each other, so the badge always tells the truth.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>}
+      title="Due tomorrow shows up before it is due yesterday."
+    >
+      Every card carries its due date as a badge that changes colour as the day comes closer. The person the task is assigned to gets a Nextcloud notification ahead of the deadline, with a lead time you set. Across all projects, the timeline view shows what runs when.
+    </FeatureItem>
+  </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['planix']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<RotatingCards
+  eyebrow="Four ways Planninq earns its place"
+  title="It works the way you work. And it works for you."
+  lede="Four things you would normally pay extra for. In Planninq they are built in."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automate',
+      title: 'A card reaches "Done". The rest happens by itself.',
+      summary: 'Today: a task is finished and someone remembers to tell the client, update the sheet and start the next one. Instead, set it up once. The moment a card moves to "Done", the task that was waiting on it loses its badge and lands on the next person\'s list. A card that sits in "Review" for more than three days puts a nudge on the lead\'s desk. Every Friday, a list of tasks with no hours logged. Nothing forgotten, no chasing, no coding.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <FlowMock />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'Your columns, your labels, your limits.',
+      summary: 'A support team wants "Waiting for client" as a column. A build team wants "Testing" between "Doing" and "Done". A studio wants a label per client. Add the column, set its limit, add the label, and give each project its own colour. In the running app, in minutes, and your changes stay with every update. A board that fits how your team really works, not one you bend the team around.',
+      cta: {label: 'How customising works', href: '/apps/buildiq'},
+      panel: <BuildMock />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Talk to it',
+      title: 'Ask what is stuck. Get the list, not a meeting.',
+      summary: 'Ask "what is overdue on the website project?" and you get the cards, with who holds them. Ask "how many hours went into the app this month?" and the number is there. The assistant reads the same tasks and hours you are allowed to see, and asks before it changes anything. Moving cards and logging hours stay with you.',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: what is overdue on the website project?',
+        'assistant: 3 tasks overdue, 2 with Sanne, 1 blocked on the logo',
+        'you: how many hours went into it this month?',
+        'assistant: 46 hours logged, 52 estimated',
+      ]} cursor mode="reads only, asks before it changes anything" />,
+    },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'Your client follows the project without calling you.',
+      summary: <>The client who asked for the website does not need a seat in your Nextcloud. Through <a href="/apps/portaliq">Portaliq</a> they log in to their own portal and see their projects and how far along each one is, the tasks that wait on them, and the hours already spent against the estimate. The contractor you hired logs hours on their own tasks from the same portal. Fewer "how is it going?" calls, and the answer is always today's board, not last week's mail.</>,
+      cta: {label: 'See the client portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="What you see first"
+  title="We ship the widgets you need"
+  lede={<>Open Planninq and your dashboard shows your open and overdue tasks, the projects you touched last, and what is due this week. Click a number and you are on the list. Design your own widgets with <a href="/apps/buildiq">Buildiq</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
+  widgets={[
+    {
+      title: 'My open and overdue tasks',
+      desc: 'Open, overdue, in progress and finished today. Four numbers, each a click away from the tasks behind it.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-orange-knvb)'}}>2</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>overdue</div>
+          </div>
+          {[
+            {label: 'open', val: '70%', tone: 'var(--c-cobalt-300)'},
+            {label: 'doing', val: '40%', tone: 'var(--c-lavender-300)'},
+            {label: 'done today', val: '25%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Due this week',
+      desc: 'Tasks due in the next seven days, closest first, with the project they belong to. Today and tomorrow are highlighted.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', stage: 'today'},
+            {tone: 'var(--c-orange-knvb)', stage: 'tomorrow'},
+            {tone: 'var(--c-lavender-300)', stage: 'thu'},
+            {tone: 'var(--c-mint-500)', stage: 'fri'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Recent projects',
+      desc: 'The five projects you worked in last, each with its task count and how far along it is.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {label: 'website', val: '80%', tone: 'var(--c-mint-500)'},
+            {label: 'app v2', val: '45%', tone: 'var(--c-lavender-300)'},
+            {label: 'migration', val: '20%', tone: 'var(--c-cobalt-300)'},
+            {label: 'support', val: '60%', tone: 'var(--c-forest-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="How Planninq plugs into the workspace"
+  title="Notifications, activity and the people outside. Already yours."
+  lede="The board lives where your team already reads its notifications and its activity feed. That is the point of a workspace."
+  layout="side"
+  defaultOpen="notify"
+  items={[
+    {
+      id: 'notify',
+      title: 'A reminder in the Nextcloud bell, not in yet another app',
+      summary: 'A task is due in two days. The person it is assigned to sees it in the same Nextcloud notifications where they see a shared file or a chat mention. You set the lead time, they can switch it off. Every change on a task shows up in the Activity feed, so "who moved this card?" has an answer.',
+      cta: {label: 'Read the docs', href: 'https://planix.conduction.nl'},
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
+            <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+          </div>
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Due in 2 days</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>Deploy new checkout, project Webshop</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'procest',
+      title: 'A case becomes a project on the board',
+      summary: <>A permit application or a complaint in <a href="/apps/dossiq">Dossiq</a> needs real work done. Give the project and its tasks the case number, and everyone on the board knows which case the work is for. From the task you jump to the case. Starting a project straight from the case is on the roadmap.</>,
+      cta: {label: 'See Dossiq', href: '/apps/dossiq'},
+      panel: <AppMock app="procest" />,
+    },
+    {
+      id: 'portal',
+      title: 'A contractor logs their hours from the portal',
+      summary: <>The freelancer or the agency you hired does not need a seat in your Nextcloud. Through <a href="/apps/portaliq">Portaliq</a> they see the tasks and projects that are theirs, and log the hours on them. You see the hours on the same task as your own team's, and nothing else of yours is visible to them.</>,
+      cta: {label: 'See Portaliq', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="Build with it, ask about it, see it on your dashboard."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/buildiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="Buildiq"
+      why="Shape your own columns, labels and screens without a developer. The board fits your team, not the other way round."
+    />
+    <PairCard
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7v3a7 7 0 0 1-14 0V9a7 7 0 0 1 7-7Z"/><path d="M9 22h6"/><circle cx="9.5" cy="10" r="1"/><circle cx="14.5" cy="10" r="1"/></svg>}
+      name="Hermiq"
+      why="The assistant for your workspace. Ask what is stuck or how many hours a project took, and get the list, not a meeting."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Your own dashboard across all your apps. Your overdue tasks and this week's deadlines, next to the rest of your day."
+    />
+  </PairRow>
+</Section>
+
+<PartnersForApp slug="planix" />
+
+<CtaBanner
+  title="Project boards on your own Nextcloud."
+  lede={<>Open source. Free to install. Your projects and hours stay on your own server. Planninq runs on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=planix'}}
+/>

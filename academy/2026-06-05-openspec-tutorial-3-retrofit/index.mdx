@@ -18,11 +18,11 @@ import Details from '@theme/Details';
 
 **Heads up — this is an optional, situational tutorial.** Most developers will never need to run a retrofit. Day-to-day work in a Conduction app — writing changes, implementing tasks, opening PRs — doesn't touch any of the commands below. You can finish Parts 1 + 2 and go straight to the [Hydra series](/academy/hydra-tutorial-1-what-is-hydra) or the [Claude skills series](/academy/claude-skills-tutorial-1-what-are-claude-skills) without losing anything.
 
-This part is only relevant in one specific case: **an older Conduction app needs to be brought up to date with the current OpenSpec convention after the fact**. A small number of our apps were built before `openspec/specs/` and the `@spec`-tag convention existed — they have working code, but no specs and no annotations pointing from code to requirements. *If* one of those apps ever has to be brought into line with the convention, this is the playbook for it. We work through the [retrofit playbook](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/retrofit.md) end to end.
+This part is only relevant in one specific case: **an older Conduction app needs to be brought up to date with the current OpenSpec convention after the fact**. A small number of our apps were built before `openspec/specs/` and the `@spec`-tag convention existed — they have working code, but no specs and no annotations pointing from code to requirements. *If* one of those apps ever has to be brought into line with the convention, this is the playbook for it. We work through the [retrofit playbook](https://github.com/ConductionNL/.github/blob/main/docs/claude/retrofit.md) end to end.
 
 {/* truncate */}
 
-> **Discuss with your team lead before you start.** A retrofit is real work — not a side-quest you run after lunch. The full pass on a medium-sized app easily takes hours of wall-clock time and a serious chunk of Claude tokens (often the cost of a normal feature change, sometimes more, especially if Bucket 2 turns out to be large and `/opsx-reverse-spec` has to run on many clusters). The retrofit playbook explicitly lists a [roll-out order across our apps](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/retrofit.md#roll-out-order) for exactly this reason: not every app is next, and not every app needs it now. Don't run a retrofit on your own initiative — confirm with your team lead or product owner first whether this app is the right candidate, what budget is available, and which apps are higher priority. Then start at Step 1.
+> **Discuss with your team lead before you start.** A retrofit is real work — not a side-quest you run after lunch. The full pass on a medium-sized app easily takes hours of wall-clock time and a serious chunk of Claude tokens (often the cost of a normal feature change, sometimes more, especially if Bucket 2 turns out to be large and `/opsx-reverse-spec` has to run on many clusters). The retrofit playbook explicitly lists a [roll-out order across our apps](https://github.com/ConductionNL/.github/blob/main/docs/claude/retrofit.md#roll-out-order) for exactly this reason: not every app is next, and not every app needs it now. Don't run a retrofit on your own initiative — confirm with your team lead or product owner first whether this app is the right candidate, what budget is available, and which apps are higher priority. Then start at Step 1.
 
 <Outcomes title="What you'll learn in this part">
   <Outcome>What <strong>spec-coverage</strong> is, and how the audit report buckets every method into one of six states.</Outcome>
@@ -42,7 +42,7 @@ This part is only relevant in one specific case: **an older Conduction app needs
 
 ## Why retrofit?
 
-Almost every Conduction app was built **before** the spec ↔ code annotation convention from [ADR-003](https://codeberg.org/Conduction/hydra/src/branch/main/openspec/architecture/adr-003-backend.md). That convention says: every PHP file's main docblock and every public method's docblock carries one or more `@spec openspec/changes/<change-name>/tasks.md#task-N` tags pointing at the task(s) it implements.
+Almost every Conduction app was built **before** the spec ↔ code annotation convention from [ADR-003](https://github.com/ConductionNL/hydra/blob/main/openspec/architecture/adr-003-backend.md). That convention says: every PHP file's main docblock and every public method's docblock carries one or more `@spec openspec/changes/<change-name>/tasks.md#task-N` tags pointing at the task(s) it implements.
 
 Apps you build spec-first via `/opsx-apply` get those tags **for free** — the builder writes the tag while it writes the code. Apps that already exist need a **one-time retrofit pass**, otherwise `/opsx-verify` (Part 2, Step 11) falls back to fragile keyword matching: every audit becomes a guessing game, every refactor a coin flip.
 
@@ -58,9 +58,9 @@ Retrofit gives you three things at once:
 
 | Skill | What it does | Writes |
 | --- | --- | --- |
-| [`/opsx-coverage-scan`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-coverage-scan) | **Audit only.** Buckets every code unit into one of six categories. | `openspec/coverage-report.md` + `.json` sidecar |
-| [`/opsx-annotate`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-annotate) | Adds `@spec` tags to every Bucket 1 method via a **ghost change**. | Annotation-only PR |
-| [`/opsx-reverse-spec`](https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/commands-openspec.md#opsx-reverse-spec) | Drafts REQs for a Bucket 2 cluster via a ghost change, then annotates. | One spec PR per cluster |
+| [`/opsx-coverage-scan`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-coverage-scan) | **Audit only.** Buckets every code unit into one of six categories. | `openspec/coverage-report.md` + `.json` sidecar |
+| [`/opsx-annotate`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-annotate) | Adds `@spec` tags to every Bucket 1 method via a **ghost change**. | Annotation-only PR |
+| [`/opsx-reverse-spec`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-reverse-spec) | Drafts REQs for a Bucket 2 cluster via a ghost change, then annotates. | One spec PR per cluster |
 
 Run them in **exactly this order**. The audit is the contract between the three: annotate reads its report to know what to tag, and reverse-spec reads it to know which clusters still need a home. Don't skip the audit — and don't run annotate on a stale report.
 
@@ -97,7 +97,7 @@ git pull
 git status                       # MUST be clean
 ```
 
-Optional but recommended — create `.opsx-ignore` in the app root for paths you deliberately don't want scanned (vendor code, generated files, deliberately-unspec'd internal tools). One glob per line, `#` for comments. See [openregister/.opsx-ignore](https://codeberg.org/Conduction/openregister/src/branch/development/.opsx-ignore) for a worked example.
+Optional but recommended — create `.opsx-ignore` in the app root for paths you deliberately don't want scanned (vendor code, generated files, deliberately-unspec'd internal tools). One glob per line, `#` for comments. See [openregister/.opsx-ignore](https://github.com/ConductionNL/openregister/blob/development/.opsx-ignore) for a worked example.
 
 Specter prereq (one-time, idempotent):
 
@@ -177,7 +177,7 @@ A few things to know:
 
 - **Idempotent.** Re-running with no code changes produces no new annotations. If a dated ghost change already exists for today, the skill asks whether to reuse it or open a fresh one. Running it again next week creates a new dated ghost change.
 - **Annotation-only PR.** The diff only adds docblock comments. Reviewers don't need to read it line by line — they need to spot-check the matches against the report.
-- **PHPCS rejecting the tag order?** Stop. **Fix the PHPCS config, never reorder the tags.** The ADR-003 + [hydra-gate-spdx](https://codeberg.org/Conduction/hydra/src/branch/main/.claude/skills/hydra-gate-spdx/SKILL.md) format is fixed.
+- **PHPCS rejecting the tag order?** Stop. **Fix the PHPCS config, never reorder the tags.** The ADR-003 + [hydra-gate-spdx](https://github.com/ConductionNL/hydra/blob/main/.claude/skills/hydra-gate-spdx/SKILL.md) format is fixed.
 - **`.git-blame-ignore-revs` only works locally if developers enable it once:** `git config blame.ignoreRevsFile .git-blame-ignore-revs`. The skill suggests this but won't run it for you.
 
 ## Step 5: reverse-spec Bucket 2 entries — one cluster at a time
@@ -437,7 +437,7 @@ A retrofit is done when App Mode is ✅ on every row (ghost changes archived, ta
   />
   <NextStep
     title="The retrofit playbook in full"
-    href="https://codeberg.org/Conduction/.github/src/branch/main/docs/claude/retrofit.md"
+    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/retrofit.md"
     description="The source document this tutorial draws on — every gotcha, the roll-out order across apps, and the prerequisites for Python ExApps."
   />
 </NextSteps>
