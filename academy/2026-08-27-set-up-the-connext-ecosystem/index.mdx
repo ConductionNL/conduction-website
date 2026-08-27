@@ -1,0 +1,191 @@
+---
+slug: set-up-the-connext-ecosystem
+title: Set up the Connext ecosystem locally
+contentType: tutorial
+heroIcon: container
+authors: [conduction]
+date: 2026-08-27
+summary: Two commands and a coffee. You end with the whole Connext stack running on your own machine — OpenRegister, OpenCatalogi, Portaliq and eight more apps, wired together, with a themed public portal you can click through. No PHP, no Node, no checkouts.
+tags: [Connext, Docker, Setup, Demo, Local, OpenRegister, OpenCatalogi]
+apps: [openregister, opencatalogi, portaliq, integriq, filinq, launchpad, pipelinq, shillinq, hermiq]
+durationMinutes: 20
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep} from '@conduction/docusaurus-preset/components';
+
+Connext is not one app. It is a registry (OpenRegister) with a set of applications built on top of it, and the interesting behaviour lives in how they fit together — a catalogue that publishes, a portal that renders it, a connector that feeds it. Reading about that is not the same as clicking through it.
+
+This tutorial gets the whole thing running locally so you can click through it.
+
+<Outcomes>
+  <Outcome>The Connext stack running on your machine: eleven apps on one Nextcloud, enabled in dependency order.</Outcome>
+  <Outcome>A themed public portal, with content, that you can open in a browser without logging in.</Outcome>
+  <Outcome>An understanding of how to check that it actually worked — which is not the same as checking that a page loaded.</Outcome>
+  <Outcome>One command to remove all of it again.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>Docker, with Compose v2.23 or newer. Nothing else — no PHP, no Node, no repository checkouts.</PrerequisiteItem>
+  <PrerequisiteItem>About 4 GB of free memory and 5 GB of disk.</PrerequisiteItem>
+  <PrerequisiteItem>A working internet connection for the first run — it downloads roughly a gigabyte of application archives.</PrerequisiteItem>
+</Prerequisites>
+
+> **This is a demo environment, not a development environment.** It runs the real software and behaves the same way, so what you learn here applies to a production deployment. But nothing here is backed up, and `docker compose down -v` permanently deletes all of it. Explore freely; do not put real data in it.
+
+## Step 1: Check your Docker version
+
+```bash
+docker compose version
+```
+
+You need **v2.23 or newer**. If it prints something older, upgrade before continuing.
+
+This matters more than a version check usually does. The compose file declares its install scripts inline, using a Compose feature older versions do not have — and they do not complain about it. They ignore the field, start Nextcloud with no applications installed, and give you an empty instance with nothing in the logs to explain why.
+
+## Step 2: Download the compose file
+
+```bash
+curl -fsSLO https://www.conduction.nl/connext/connext-compose.yml
+```
+
+One self-contained file. There is nothing else to fetch, and nothing to edit.
+
+## Step 3: Start the stack
+
+```bash
+docker compose -f connext-compose.yml up -d
+```
+
+The first run takes several minutes. It pulls three images, then downloads and unpacks eleven application archives before Nextcloud starts at all.
+
+Watch the install if you like:
+
+```bash
+docker compose -f connext-compose.yml logs -f app-installer
+```
+
+You are looking for a line naming each app, and then this:
+
+```
+==> apps present: filinq hermiq integriq launchpad nldesign opencatalogi
+    openregister pipelinq portaliq shillinq zaakafhandelapp
+```
+
+Nextcloud then installs itself and enables the apps **in dependency order** — OpenRegister first, because every other app declares its registers and schemas against it, and a leaf app enabled before it finds no register to attach to.
+
+The stack is ready when this returns `"installed":true`:
+
+```bash
+curl -s http://localhost:8700/status.php
+```
+
+## Step 4: Open it
+
+| What | Where |
+| --- | --- |
+| **Public portal** | [http://localhost:8700/apps/portaliq/site?portal=demo](http://localhost:8700/apps/portaliq/site?portal=demo) |
+| Admin interface | [http://localhost:8700](http://localhost:8700) — `admin` / `admin` |
+| Directory API | [http://localhost:8700/apps/opencatalogi/api/directory](http://localhost:8700/apps/opencatalogi/api/directory) |
+
+Start with the portal. It is public — no login — and that is the point: it is what a citizen would see. Signing in as admin shows you a different and more permissive view.
+
+### Why the portal needs `?portal=demo`
+
+One instance can host several portals, and Portaliq resolves which to serve in exactly two ways: an explicit `?portal=<slug>`, or a request hostname matching a portal's **verified** domain.
+
+There is deliberately no third mode and no default-portal fallback. A default is precisely how a multi-tenant host ends up serving one tenant's content under another tenant's domain. The seeded demo portal ships with no domains at all, because an install hook has no business claiming a hostname on your behalf — so the slug parameter is how you reach it.
+
+On a throwaway box you can bind `localhost` yourself under **Portaliq → Portals → demo → Domains**, mark it verified, and then drop the parameter.
+
+## Step 5: Check that it actually worked
+
+This is the step people skip, and it is the one worth doing.
+
+**A page loading is not a page working.** Nextcloud serves its page shell before an app decides whether it has anything to render, so the portal URL returns HTTP 200 even when it resolves to nothing at all. A smoke test that checks for a 200 would call that a success.
+
+So check content instead:
+
+```bash
+# Should name the portal — not answer {"error":"not_found"}
+curl -s "http://localhost:8700/apps/portaliq/api/content/site?portal=demo"
+
+# Should list at least one catalog — not {"results":[],"total":0}
+curl -s "http://localhost:8700/apps/opencatalogi/api/directory"
+```
+
+The second one deserves a note. An empty directory does **not** mean "no federation peers" — it means the register configuration was never imported. Those two states are indistinguishable from the outside, and one of them is a broken install. That ambiguity is exactly why the check is worth running rather than trusting the absence of an error.
+
+## Pinning versions
+
+By default each app resolves to its newest release, pre-releases included, because most Connext apps do not yet publish a stable one. That is honest about what exists, but it is not reproducible.
+
+Pin whatever you need:
+
+```bash
+OPENREGISTER_VERSION=1.1.6 \
+OPENCATALOGI_VERSION=1.0.9 \
+CONNEXT_PORT=9000 \
+docker compose -f connext-compose.yml up -d
+```
+
+## Removing it
+
+```bash
+# Stop, keep the data
+docker compose -f connext-compose.yml down
+
+# Stop and delete everything, including the database
+docker compose -f connext-compose.yml down -v
+```
+
+## Why nothing is mounted from a checkout
+
+You may notice this compose file downloads release archives rather than pointing at repositories, and that no volume maps to a directory on your machine. Both are deliberate.
+
+Nextcloud installs and updates an app by **deleting** the app directory and extracting a fresh archive over it. Point that at a git checkout and an app-store update will delete your working tree — we measured exactly that on a development machine in August 2026: an updater fired on a container restart and removed every top-level file from a bind-mounted checkout, including its `.git` directory.
+
+There is a second reason, and it is the one that bites quietly. A release archive is a **complete** application: it carries its `vendor/` directory and its built JavaScript. A `git clone` carries neither — and a Nextcloud app with no `vendor/` does not fail loudly. It warns once and keeps loading, so the app appears installed while every service that needs a dependency is silently missing.
+
+To work *on* these apps rather than *with* them, you want a development environment instead. This file cannot serve that purpose and does not try.
+
+<Troubleshooting lede="Something not behaving? Find the matching situation below.">
+
+<TroubleshootingItem symptom="`app-installer` exits and some apps are missing">
+The log ends with `!! NOT INSTALLED: <names>`. An archive could not be downloaded — usually a pinned version with no matching release. The rest of the stack still starts; run `up` again to retry the missing ones.
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom="The whole thing stops with `openregister missing; aborting`">
+OpenRegister could not be downloaded, and the installer refuses to continue without it. Every other app declares registers against OpenRegister, so a stack without it would start and then fail in a dozen confusing ways instead of one clear one. Check your connection and run `up` again.
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom="The portal renders but has no styling">
+NLDesign is not installed or not enabled. The theme resolver deliberately renders unthemed rather than wrong when it is absent, so this is a cosmetic failure, not a broken portal.
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom='The directory API answers `{"results":[],"total":0}`'>
+The register configuration was not imported. Re-run it from **Settings → OpenCatalogi → Reload configuration**.
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom="Everything returns 404 or a maintenance page after a restart">
+Nextcloud is waiting for an upgrade. Run `docker compose -f connext-compose.yml exec -u www-data nextcloud php occ upgrade`.
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom="Ports 8700 is already in use">
+Set another one: `CONNEXT_PORT=9000 docker compose -f connext-compose.yml up -d`. The port also has to appear in the trusted-domain list, which the compose file handles for you from the same variable.
+</TroubleshootingItem>
+
+</Troubleshooting>
+
+<NextSteps title="Next step" lede="A running stack is the entry point, not the destination.">
+  <NextStep href="/academy/model-data-with-openregister" title="Model data with OpenRegister" cta="Start tutorial">
+    Build the schemas everything else in Connext is built on.
+  </NextStep>
+  <NextStep href="/academy/publish-catalog-with-opencatalogi" title="Publish a public catalog" cta="Start tutorial">
+    Take a register public, with DCAT-AP export for national harvesters.
+  </NextStep>
+  <NextStep href="/academy/pull-data-with-openconnector" title="Pull data with OpenConnector" cta="Start tutorial">
+    Feed the registry from systems you do not control.
+  </NextStep>
+</NextSteps>
