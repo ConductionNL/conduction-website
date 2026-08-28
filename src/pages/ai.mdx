@@ -1,0 +1,289 @@
+---
+title: How we use AI
+description: Conduction builds with AI and stays responsible for the result. A human reviews every line of code, every page of documentation, and every blog before it is published. This page says exactly where we use AI, and where we do not.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
+
+{/* A processor, not a brain or a robot. The point of this page is that
+    the machine is a tool, so the icon should read as hardware rather
+    than as something that thinks. Stroke-only 24x24 to match the other
+    page icons (see PrivacyIcon in privacy.mdx). */}
+export const AiIcon = (
+  <svg viewBox="0 0 24 24">
+    <rect x="7" y="7" width="10" height="10" rx="2" />
+    <path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4" />
+  </svg>
+);
+
+{/* Defined as a component, not written inline in the page body. MDX parses
+    the children of a block-level JSX tag as markdown, so an inline
+    <blockquote> wrapping a <p> nests a paragraph inside a paragraph; the
+    HTML parser then splits that and the page fails hydration. Inside an
+    export the JSX is just JSX, and nothing is re-parsed. */}
+export const IbmQuote = () => (
+  <blockquote style={{margin: '4px 0 26px', padding: '18px 22px', background: 'var(--c-cobalt-50)', borderLeft: '3px solid var(--c-orange-knvb)', borderRadius: '0 6px 6px 0'}}>
+    <p style={{margin: 0, fontSize: 17, lineHeight: 1.5, fontWeight: 600, color: 'var(--c-cobalt-900)'}}>
+      “A computer can never be held accountable, therefore a computer must never make a management decision.”
+    </p>
+    <footer style={{marginTop: 10, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)'}}>
+      IBM training manual, 1979
+    </footer>
+  </blockquote>
+);
+
+export const PracticeNote = ({children}) => (
+  <div style={{marginTop: 24, padding: '16px 20px', background: 'var(--c-cobalt-50)', border: '1px solid var(--c-cobalt-100)', borderRadius: 6, fontSize: 13, lineHeight: 1.6, color: 'var(--c-cobalt-700)'}}>
+    {children}
+  </div>
+);
+
+export const USES = [
+  {
+    id: 'code',
+    eyebrow: 'Code',
+    title: 'We write code with AI agents.',
+    body: (
+      <>
+        Our pipeline is called Hydra. An agent writes a change, a second agent reviews it, and a third checks it for
+        security problems. Every change then runs through the same quality gates as any other pull request. A developer
+        reads the result and merges it, or sends it back.
+      </>
+    ),
+    /* The academy landing page filters on ?series=, validated against the
+       series slugs found in post frontmatter. Points at the ordered
+       seven-part run rather than the tag page, which is an unordered pile. */
+    link: {label: 'Read the Hydra series in the academy', href: '/academy/?series=hydra-tutorial'},
+  },
+  {
+    id: 'docs',
+    eyebrow: 'Documentation',
+    title: 'We draft documentation with skills.',
+    body: (
+      <>
+        Two skills do most of the work. The journeydoc skill turns a real click-through of an app into a tutorial, with
+        screenshots captured from the running product. The tutorial skill drafts the surrounding explanation. Both
+        produce a draft. A person checks it against the product before it ships.
+      </>
+    ),
+    link: {label: 'Browse the academy', href: '/academy'},
+  },
+  {
+    id: 'research',
+    eyebrow: 'Research',
+    title: 'We use AI to find and read sources.',
+    body: (
+      <>
+        AI is good at gathering material and summarising it. We use it to find standards, tenders, prior art, and
+        documentation we would otherwise miss. We check the sources it returns. A summary is a starting point, not a
+        citation.
+      </>
+    ),
+  },
+  {
+    id: 'language',
+    eyebrow: 'Language',
+    title: 'We use AI to check our writing.',
+    body: (
+      <>
+        Spelling, grammar, and clarity. Most of our team writes in Dutch and publishes in English as well. AI helps us
+        catch the mistakes that come with that, and tightens sentences that run too long.
+      </>
+    ),
+  },
+];
+
+<DetailHero
+  background="cobalt"
+  crumb={[{label: 'About', href: '/about'}, 'AI']}
+  locales="Transparency"
+  title={<>A human is<br/>always responsible.</>}
+  tagline={<>We build with AI. We do not publish what it produces without reading it. Every change to our code, every page of documentation, and every blog passes a person before it goes out. <strong>The human stays responsible. The AI stays a tool.</strong></>}
+  primaryCta={{label: 'How we work with it', href: '#how', tone: 'orange'}}
+  secondaryCta={{label: 'Quality & ISO →', href: '/quality'}}
+  iconColor="var(--c-orange-knvb)"
+  icon={AiIcon}
+/>
+
+<Section spacing="default" background="tinted">
+
+<div id="how" />
+
+## The rule
+
+<div style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 8, boxShadow: '0 2px 16px rgba(33, 70, 139, 0.06)', padding: '36px clamp(20px, 4vw, 48px)', maxWidth: 820, margin: '24px auto 0'}}>
+
+<div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-orange-knvb)', marginBottom: 10}}>Human in the loop</div>
+
+IBM wrote this on a training slide in 1979. It has not aged a day.
+
+<IbmQuote />
+
+We are a human-in-the-loop organisation. That is one rule, and it applies everywhere.
+
+Nothing we produce is published on the say-so of a model. Code, documentation, blogs, research notes: a person reads the output, judges it, and decides. If nobody checked it, it does not ship.
+
+Accountability is the whole reason. A model cannot answer for a claim. It cannot be sued, fired, or asked what it was thinking. The person who published it can, and is. When you read something on this site, someone at Conduction stands behind it.
+
+<div style={{marginTop: 28, paddingTop: 20, borderTop: '2px solid var(--c-cobalt-100)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 18}}>
+  {[
+    {k: 'The AI', v: 'Drafts, gathers, checks, suggests.'},
+    {k: 'The human', v: 'Decides, edits, approves, answers for it.'},
+  ].map((row) => (
+    <div key={row.k}>
+      <div style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)', marginBottom: 6}}>{row.k}</div>
+      <div style={{fontSize: 14, color: 'var(--c-cobalt-900)', lineHeight: 1.5}}>{row.v}</div>
+    </div>
+  ))}
+</div>
+
+</div>
+
+</Section>
+
+<Section spacing="default">
+
+## Where we use it
+
+{/* A <div>, not a <p>: MDX parses the children of a block-level JSX tag as
+    markdown, so a <p> here nests a paragraph inside a paragraph. The HTML
+    parser then splits that into three siblings while React's own tree has
+    one, and the page fails hydration. */}
+<div style={{maxWidth: 720, fontSize: 15, lineHeight: 1.6, marginBottom: 8}}>
+  Four places. Each one produces a draft, and a person takes it from there.
+</div>
+
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, marginTop: 28}}>
+  {USES.map((use) => (
+    <div key={use.id} style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 8, padding: '24px 26px', display: 'flex', flexDirection: 'column', gap: 10}}>
+      <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-orange-knvb)'}}>{use.eyebrow}</div>
+      <h3 style={{margin: 0, fontSize: 19, lineHeight: 1.25, color: 'var(--c-cobalt-900)'}}>{use.title}</h3>
+      <p style={{margin: 0, fontSize: 14, lineHeight: 1.6, color: 'var(--c-cobalt-700)'}}>{use.body}</p>
+      {use.link && (
+        <a href={use.link.href} style={{marginTop: 'auto', paddingTop: 8, fontSize: 13, fontWeight: 600, color: 'var(--c-blue-cobalt)', textDecoration: 'none'}}>
+          {use.link.label} →
+        </a>
+      )}
+    </div>
+  ))}
+</div>
+
+</Section>
+
+<Section spacing="default" background="tinted">
+
+## Blogs and articles
+
+<div style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 8, boxShadow: '0 2px 16px rgba(33, 70, 139, 0.06)', padding: '36px clamp(20px, 4vw, 48px)', maxWidth: 820, margin: '24px auto 0'}}>
+
+We are developers. Geeks and nerds, at core. We write code, not blogs.
+
+Good writing means putting yourself in the reader's head. Being thoughtful. Empathic. Building a model of another person's mind so you can predict what they will feel about a sentence before they read it.
+
+Written down like that, it is also roughly the job description of a sociopath. We are fine with this.
+
+The honest problem is narrower. We have thoughts worth sharing and we are not natural writers. AI is how the thought gets out of the head and onto the page in a shape someone else enjoys reading. For a person with something to say and no gift for saying it, that is not a convenience. It is an irreplaceable tool.
+
+The value is not volume. Anyone can generate an endless amount of content, and most of it is slop. The value is the opposite of volume: one specific idea, from one specific person, made readable.
+
+So the answer to the question behind this section, did a person write this or did a machine, is that a person wrote it.
+
+The idea comes from a human. So does the subject, the angle, and the scope we set for the piece. The point being made is a human point. The opinion in it is a human opinion. If an article argues something, someone here believes that argument and put their name on it.
+
+The AI does three jobs, and they are all support jobs.
+
+<div style={{margin: '24px 0 8px', display: 'flex', flexDirection: 'column', gap: 14}}>
+  {[
+    {n: '1', t: 'It collects sources.', d: 'It gathers external material we should read before writing, and points at things we had not found.'},
+    {n: '2', t: 'It checks the spelling.', d: 'Spelling, grammar, and the small errors that survive three rereads.'},
+    {n: '3', t: 'It helps us write better.', d: 'It suggests a tighter sentence or a clearer order. We take the suggestion or we ignore it.'},
+  ].map((item) => (
+    <div key={item.n} style={{display: 'flex', gap: 14, alignItems: 'flex-start'}}>
+      <span style={{flexShrink: 0, width: 26, height: 26, borderRadius: 4, background: 'var(--c-cobalt-50)', border: '1px solid var(--c-cobalt-100)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>{item.n}</span>
+      <div>
+        <div style={{fontSize: 15, fontWeight: 700, color: 'var(--c-cobalt-900)', marginBottom: 2}}>{item.t}</div>
+        <div style={{fontSize: 14, lineHeight: 1.55, color: 'var(--c-cobalt-700)'}}>{item.d}</div>
+      </div>
+    </div>
+  ))}
+</div>
+
+The AI is a research tool and a writing tool. It is not the author.
+
+The editing is human. A person decides what goes in, what comes out, and what the piece finally says. That is the job we do not hand over.
+
+</div>
+
+</Section>
+
+<Section spacing="default">
+
+## Where this sits in the AI Act
+
+<div style={{maxWidth: 820, margin: '0 auto'}}>
+
+The EU AI Act's transparency rules apply from 2 August 2026. People keep asking which banner we owe them, so here is the plain answer.
+
+**Article 50(4)** covers AI-generated or AI-manipulated text published to inform the public on matters of public interest. Two things put us outside it, and either one is enough on its own.
+
+We do not publish on matters of public interest. We write about our own software, how we build it, and how to run it. That is a company writing about its own products, not journalism or public information.
+
+And the paragraph exempts content that has been through human review or editorial control, where a person or organisation holds editorial responsibility. Final editing here stays in human hands, and Conduction B.V. holds that responsibility.
+
+So Article 50 does not apply, and we are not obliged to put a banner on anything.
+
+We wrote this page anyway. Not to satisfy a rule, but because you should be able to see where the machine sits in our process and where the human hand is.
+
+**Article 50(1)** covers AI systems that interact with people directly: those systems have to make clear that you are talking to a machine. This website has no chatbot and no AI assistant. Nothing on it talks back.
+
+**Images.** Everything you see here is a logo, a certificate, or a diagram we drew. We publish no AI-generated images, on this site or in the academy. This page has been about text because text is the only thing we generate.
+
+**Our own products.** Two entries in our sidecar catalogue sit in the AI category, and both are still marked coming soon. One wraps [Ollama](/sidecars/), which runs models locally in your own workspace rather than sending anything to somebody else's. When they ship, what they do with your data belongs on the product page, not on this one.
+
+**Article 4** is the one that does apply to us. Since 2 February 2025 it asks anyone deploying AI to make sure the people using it on their behalf actually understand it. Not a certificate, a working understanding: what the tool is good at, where it fails, and when to distrust it.
+
+We treat that as a hiring and training matter rather than a paperwork one. Everyone who ships work here has used these tools long enough to know their failure modes, and knowing that a model will produce a confident, fluent, wrong answer is exactly why a person reads everything before it goes out. We also write our own training material in public: the [Hydra series in the academy](/academy/?series=hydra-tutorial) is how we build with AI, published so anyone can check our reasoning or copy it.
+
+<PracticeNote>This page describes how we work. It is a statement of practice, not a claim of legal conformity, and not a claim of adherence to any code of practice we have not signed.</PracticeNote>
+
+</div>
+
+</Section>
+
+<Section spacing="default">
+
+<div style={{display: 'flex', gap: 12, flexWrap: 'wrap'}}>
+  <a href="/academy/?series=hydra-tutorial" style={{padding: '10px 18px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    How Hydra writes our code →
+  </a>
+  <a href="/quality" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Quality, certifications & ISMS →
+  </a>
+  <a href="/privacy" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Privacy policy →
+  </a>
+</div>
+
+</Section>
+
+<FAQ title="AI at Conduction.">
+  <FAQItem question="Is anything on this site written entirely by AI?" defaultOpen>
+    No. Everything published here has been read and approved by a person. Some pages started as an AI draft, and the academy tutorials in particular are drafted with skills that capture the product as it actually runs. A person then checks that draft against the product and edits it. Nothing goes out unread.
+  </FAQItem>
+  <FAQItem question="Who is responsible if something is wrong?">
+    We are. A model cannot hold responsibility for a claim, so we do not let it. The person who approved the text or merged the code is accountable for it, and Conduction is accountable as a company. If you find an error, write to info@conduction.nl and we will correct it.
+  </FAQItem>
+  <FAQItem question="Do AI agents merge their own code?">
+    No. Agents open pull requests and review each other, which catches a lot. The merge is a human decision, and the change runs the same quality gates as any other pull request: linting, static analysis, tests, and a security review.
+  </FAQItem>
+  <FAQItem question="Do you use our data to train models?">
+    No. We do not train models on customer data. What we process, and why, is set out in our privacy policy.
+  </FAQItem>
+  <FAQItem question="Does the EU AI Act require you to label these pages?">
+    No. Article 50 does not apply to us, for two separate reasons, either of which is enough. We do not publish to inform the public on matters of public interest: we write about our own software. And final editing stays in human hands, which the article exempts explicitly, with Conduction B.V. holding editorial responsibility. So no banner is owed. We publish this page regardless, because you should be able to see where AI sits in our process and where the human hand is.
+  </FAQItem>
+  <FAQItem question="Which parts of a blog are the author's own?">
+    The idea, the subject, the angle, the argument, and the conclusion. Those are human every time. AI contributes source material, a spelling check, and suggestions on phrasing. The author decides what to keep.
+  </FAQItem>
+</FAQ>

@@ -1,0 +1,226 @@
+---
+slug: hydra-tutorial-7-ci-and-deployment
+title: "Hydra tutorial series — Part 7: CI and deployment"
+contentType: tutorial
+heroIcon: pipeline
+authors: [conduction]
+date: 2026-06-11
+summary: Parts 5 and 6 ran Hydra on your own machine. This part zooms out to how Hydra runs unattended, triggered by Codeberg/Forgejo Actions, with container images in the Codeberg registry, scoped credentials and token rotation. It lays out the three deployment models and marks honestly what is documented and what is infrastructure-only.
+tags: [Hydra, CI/CD, Codeberg, Deployment, Operations, Tutorial series]
+apps: []
+durationMinutes: 14
+series: hydra-tutorial
+partNumber: 7
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, Troubleshooting, TroubleshootingItem, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+In [part 5](/academy/hydra-tutorial-5-starting-a-run) you started Hydra by hand: build the images, run the supervisor, label an issue. That is the right way to learn Hydra, but it is not how it runs day to day. In production nobody runs `hydra-supervisor.sh` from a terminal. Instead the forge itself triggers the pipeline when an issue is labelled, pulls pre-built images from a registry, and runs each stage as a CI job. This part explains that path, and the three deployment models behind it.
+
+{/* truncate */}
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>How a labelled issue triggers Hydra through <strong>Codeberg/Forgejo Actions</strong>, with no human at a terminal.</Outcome>
+  <Outcome>Where the container images come from (the <strong>Codeberg Container Registry</strong>) and how the image tag is configured.</Outcome>
+  <Outcome>The credential model: scoped per-persona git tokens, multiple Claude tokens, and automatic rotation on rate-limit.</Outcome>
+  <Outcome>The three deployment models (local, CI runner, Kubernetes) and which parts are documented vs infrastructure-only.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you'll need">
+  <PrerequisiteItem>Parts 1 to 6 of this series, especially <a href="/academy/hydra-tutorial-5-starting-a-run">part 5</a> (the local run) and <a href="/academy/hydra-tutorial-2-three-pipelines">part 2</a> (the supervisor and orchestrator split).</PrerequisiteItem>
+  <PrerequisiteItem>A rough idea of what a CI runner is (a machine that executes pipeline jobs on a trigger).</PrerequisiteItem>
+  <PrerequisiteItem>Only if you are actually deploying: access to the private <a href="https://github.com/ConductionNL/hydra">Conduction/hydra</a> repo and its <code>.forgejo/workflows/</code> and <code>manifests/</code> folders.</PrerequisiteItem>
+</Prerequisites>
+
+## Same pipeline, different trigger
+
+Nothing about the pipeline changes between local and CI. The personas, the labels, the gates, the no-loop rule from part 2: all identical. What changes is who pulls the trigger and where the work runs:
+
+| | Local (part 5) | CI / production (this part) |
+|---|---|---|
+| Trigger | you run `hydra-label.sh` / `hydra-supervisor.sh` | the forge fires on `issues: labeled` |
+| Where stages run | containers on your machine | CI runner jobs |
+| Images | you `docker build` them | pulled from the Codeberg registry |
+| Credentials | your local `secrets/` | forge org secrets and variables |
+
+So everything you learned about labels and the state machine still applies. You are just handing the steering wheel to the forge.
+
+## Trigger: Codeberg/Forgejo Actions
+
+Hydra's canonical CI lives in `.forgejo/workflows/`. Codeberg runs Forgejo Actions, which speak the same YAML dialect as GitHub Actions. There are three workflows:
+
+- **`hydra-build.yml`** fires `on: issues: [labeled]`. It checks the label against the trigger name and, on a match, runs the builder stage. The match honours the label prefix from part 5:
+
+  ```yaml
+  on:
+    issues:
+      types: [labeled]
+  jobs:
+    build:
+      if: github.event.label.name == format('{0}{1}ready-to-build',
+            vars.HYDRA_LABEL_PREFIX,
+            vars.HYDRA_LABEL_PREFIX != '' && '-' || '')
+  ```
+
+- **`hydra-review.yml`** fires on pull-request events for Hydra's feature branches, running the code-review and security-review stages.
+- **`hydra-image.yml`** builds the four persona images and pushes them to the registry, so the other two workflows have something to pull.
+
+The single entry point is unchanged from part 1: a tracking issue labelled **`ready-to-build`** (or `<prefix>-ready-to-build`). Locally a polling daemon notices that label. In CI the forge's event system notices it. Same contract, different plumbing.
+
+<HexCard title="Codeberg-native, GitHub as a fallback">
+  Hydra is built forge-agnostic. The <code>HYDRA_FORGE</code> variable selects the REST adapter: <code>codeberg</code> or <code>forgejo</code> (the default, <code>scripts/lib/forgejo-rest.sh</code>), or <code>github</code> (<code>scripts/lib/github-rest.sh</code>). The canonical CI is the Forgejo workflows above. GitHub Actions is supported but secondary. If you see <code>ConductionNL/&lt;app&gt;</code> GitHub URLs in older docs and <code>codeberg.org/Conduction/&lt;app&gt;</code> in newer ones, that is the migration showing. Codeberg is now home.
+</HexCard>
+
+## Images: the Codeberg Container Registry
+
+In a local run you build the four images yourself. In CI that would waste minutes on every job, so the images are built once by `hydra-image.yml`, pushed to the **Codeberg Container Registry**, then pulled by the build and review jobs. The naming is driven by two variables:
+
+```bash
+HYDRA_IMAGE_PREFIX="${HYDRA_IMAGE_PREFIX:-codeberg.org/conduction/hydra}"
+HYDRA_IMAGE_TAG="${HYDRA_IMAGE_TAG:-latest}"
+```
+
+So the reviewer image resolves to `codeberg.org/conduction/hydra-reviewer:latest`, and the same for builder, security and applier. Pinning `HYDRA_IMAGE_TAG` to a digest or a dated tag is how you freeze a known-good pipeline version instead of always tracking `latest`.
+
+## Credentials and token rotation
+
+Production Hydra never uses a shared org-admin token. That is a hard security rule. Two credential sets live in git-ignored `secrets/credentials.json` (org secrets in CI):
+
+```jsonc
+{
+  "claude_tokens": [                 // multiple accounts, tried in order
+    { "name": "account-1", "token": "..." },
+    { "name": "account-2", "token": "..." }
+  ],
+  "git_tokens": {                    // one scoped token PER persona
+    "builder":  "...",
+    "reviewer": "...",
+    "security": "..."
+  }
+}
+```
+
+Two things matter here:
+
+1. **Per-persona git tokens.** The builder, reviewer and security personas each push with their own scoped token. Their commits and review comments are attributable, and their permissions are minimal. No persona can act as another.
+2. **Claude token rotation.** When a run hits a rate limit, the container-launch helper rotates to the next Claude token in the list (`run_container_with_fallback` plus `scripts/lib/github-rotate.sh`) instead of failing the stage. Several Claude Max accounts in `claude_tokens` keep a busy fleet moving.
+
+## The three deployment models
+
+Hydra's `docs/deployment-models.md` describes three ways to run it, in increasing operational weight.
+
+<HexCard title="Model 1: local (developer machine)">
+  Build the images, run <code>hydra-supervisor.sh</code>, optionally drive it from cron. This is parts 5 and 6 of this series. Best for development, debugging, and one-off runs. Fully documented.
+</HexCard>
+
+<HexCard title="Model 2: CI runner (Forgejo or GitHub Actions)">
+  The workflows above run on a hosted or self-hosted Actions runner, triggered by issue labels and PR events, with credentials in org secrets. This is the everyday production path for the fleet. The workflows and their triggers are in the repo and described here.
+</HexCard>
+
+<HexCard title="Model 3: Kubernetes and ArgoCD">
+  Each stage runs as a Kubernetes <code>Job</code> (<code>manifests/builder-job.yaml</code>, <code>reviewer-job.yaml</code>, <code>security-job.yaml</code>), with a <code>NetworkPolicy</code> and an ArgoCD <code>Application</code> that syncs <code>manifests/</code> from <code>main</code>. For scale and isolation.
+</HexCard>
+
+<HexCard title="Honest status: Model 3 is infrastructure-as-code, not a runbook">
+  The Kubernetes manifests exist and are real. But at the time of writing there is no step-by-step operator guide for the K8s path: no documented credential-setup-for-cluster, no runbook. If you are standing up Model 3, treat the manifests as the source of truth and expect to read them directly rather than follow a playbook. This tutorial will not pretend a guide exists that does not. Models 1 and 2 are the well-trodden paths.
+</HexCard>
+
+## Troubleshooting CI runs
+
+<Troubleshooting title="Common CI-specific snags">
+  <TroubleshootingItem title="The label is set but no workflow fires">
+    Check the <code>HYDRA_LABEL_PREFIX</code> variable on the forge matches the label you applied. The <code>if:</code> guard in <code>hydra-build.yml</code> builds the expected label name from that variable. A mismatch means the event is ignored silently.
+  </TroubleshootingItem>
+  <TroubleshootingItem title="A stage fails pulling its image">
+    The registry tag is wrong or the image was never built. Confirm <code>hydra-image.yml</code> ran and pushed the image at <code>codeberg.org/conduction/hydra-&lt;role&gt;</code> with the expected tag, and that the runner has pull access to the registry.
+  </TroubleshootingItem>
+  <TroubleshootingItem title="Runs die on rate limits despite multiple tokens">
+    Verify all accounts are present in <code>claude_tokens</code> and that the secret is actually mounted in the job. Rotation only helps if there is more than one valid token to rotate to.
+  </TroubleshootingItem>
+  <TroubleshootingItem title="Commits show the wrong author or lack permissions">
+    A persona is using the wrong scoped git token. Each of builder, reviewer and security needs its own entry in <code>git_tokens</code>. A shared token breaks attribution and the least-privilege model.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+## Test yourself
+
+<div className="tutorial-quiz">
+
+**1. What actually changes between a local run (part 5) and a CI run, and what stays the same?**
+
+<Details summary="Hint">
+
+Think about the trigger and the runtime versus the pipeline itself.
+
+</Details>
+
+<Details summary="Answer">
+
+What changes: the trigger (a forge event on `issues: labeled` instead of your local supervisor daemon), where stages run (CI runner jobs instead of local containers), where images come from (registry pull instead of local `docker build`), and where credentials live (org secrets instead of local `secrets/`).
+
+What stays the same: the entire pipeline. Personas, labels, the state machine, the 22 gates, the no-loop rule. The contract is still one tracking issue labelled `ready-to-build`.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Why does each persona have its own git token instead of one shared token?**
+
+<Details summary="Hint">
+
+Two reasons: who did what, and how much each can do.
+
+</Details>
+
+<Details summary="Answer">
+
+Attribution (each persona's commits and comments are traceable to that persona) and least privilege (each token carries only the permissions that role needs, and no persona can act as another). A shared org-admin token is explicitly forbidden.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Which deployment model is the everyday production path, and which one lacks a written operator runbook?**
+
+<Details summary="Hint">
+
+One runs on Actions runners. One runs on Kubernetes.
+
+</Details>
+
+<Details summary="Answer">
+
+Model 2 (CI runner, Forgejo or GitHub Actions) is the everyday production path for the fleet. Model 3 (Kubernetes and ArgoCD) has real manifests but no step-by-step operator runbook yet, so you read the manifests directly. Model 1 (local) is parts 5 and 6.
+
+</Details>
+
+</div>
+
+<NextSteps title="Done — the whole series" lede="That is the full Hydra picture, from concept to production. Where to from here:">
+  <NextStep
+    title="Part 6 — Troubleshooting & escalation"
+    href="/academy/hydra-tutorial-6-troubleshooting-escalation"
+    description="When a CI run lands on needs-input, this is how you read hydra.json and recover."
+  />
+  <NextStep
+    title="OpenSpec series — the other half"
+    href="/academy/openspec-tutorial-0-why-spec-first"
+    description="Hydra builds OpenSpec changes. If you came here first, this is where the changes come from."
+  />
+  <NextStep
+    title="The deployment manifests (private)"
+    href="https://github.com/ConductionNL/hydra/tree/main/manifests"
+    description="The real Kubernetes Job and ArgoCD manifests behind Model 3."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Questions about running Hydra in CI?"
+  body="Talk to your team lead or ask in #hydra on Slack. Issues with this tutorial can go on the corresponding GitHub issue."
+  cta={{ label: "Email the Hydra team", href: "mailto:wilco@conduction.nl?subject=Hydra%20leerlijn%20deel%207" }}
+/>

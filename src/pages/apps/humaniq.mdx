@@ -1,0 +1,300 @@
+---
+title: Humaniq, Conduction
+description: HR and payroll on your own Nextcloud. Someone reports sick and the dates the law demands are on the case the same day. A contract ends in sixty days and you hear now. Hours in once, payslip and journal entry out. Beta.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+<DetailHero
+  background="cobalt"
+  appId="hrmq"
+  crumb={[{label: 'Apps', href: '/apps'}, 'Humaniq']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.2"
+  locales="NL · EN"
+  title="Humaniq"
+  tagline={<>HR and payroll on your own <span className="next-blue">Nextcloud</span>. The deadlines the law sets are on your calendar the day they start counting.</>}
+  intro={<>Humaniq (formerly HRMQ) runs the HR administration of a Dutch employer. Hours, expenses and leave with an approval step. Sickness cases with the statutory dates already filled in. Contracts that warn you before they end. A payroll calculation that turns hours and salary into a payslip, a wage tax figure and a journal entry from the same numbers. Recruiting, onboarding, offboarding and the laptops in between. Built for the Dutch rules, honest about what is not certified yet. Released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=hrmq'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/hrmq'}}
+  illustration={<AppMock app="hrmq" />}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="Sickness, contracts, payroll, people. The dates that cost money, on time."
+        align="stack"
+        lede="Dutch employment law is a calendar of deadlines. Miss one and it costs a fine, a lawsuit or a month of extra salary. Humaniq puts the dates on the record the moment they start counting, checks your files against the rules on demand, and shows you what needs you today."
+      />
+      <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>}
+      title="Someone reports sick. The four dates the law demands are on the case the same day."
+    >
+      Today someone counts weeks on a wall calendar and hopes not to miss one. Instead, you enter the first sick day and Humaniq fills in the dates Dutch sickness law demands: the problem analysis in week 6, the plan of action in week 8, the report to the benefits agency in week 42, the first-year review in week 52. Miss none, pay no fine. The shared calendar shows only "absent" and a name. Never why.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>}
+      title="A fixed-term contract ends in sixty days. You hear now, not on the last day."
+    >
+      A contract runs out and nobody planned what happens next. Today you find out when the person asks. Instead, every fixed-term contract ending within sixty days with no successor is on your dashboard. For contracts of six months or more, Humaniq tracks the written notice the law requires one month before the end. Send it late and you owe up to a month of salary. Send it on time and note the date, and the warning goes away.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h2M14 14h4M8 17h6"/></svg>}
+      title="Enter hours and salary once. Payslip, wage tax figure and journal entry come out."
+    >
+      Approve the hours, run payroll, and the payslip, the wage tax return figures, the pension filing and the journal entry all come from the same calculation. No re-keying into a second system, no numbers that disagree. The journal entry and the payment batch land in [Shillinq](/apps/shillinq) for booking and paying. Honest line: the payroll calculation follows the official Dutch 2026 rules but is not certified yet, and it says so on every payslip.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/></svg>}
+      title="A rejected candidate has a deletion date the moment you reject."
+    >
+      Privacy law says a rejected applicant's file goes after four weeks, or after a year if they agreed to stay in your talent pool. Today someone has to remember. Instead, the deletion date is on the application the moment you move it to rejected, and the check tells you when it has passed. Vacancies, applications and interviews run through one pipeline. Nobody has to remember GDPR.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>}
+      title="A laptop still checked out to someone whose last day was Friday. You see it before they go."
+    >
+      Laptops, phones, cars, tools and access passes are records with a name on them. Start an offboarding and Humaniq checks that nothing stays checked out past the last day. Start an onboarding and the checklist is there: identity checked, contract signed, tax form in before the first payroll. Each item is a box the check looks at, not a line in someone's to-do list.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg>}
+      title="Everyone sees their own hours, leave, expenses and payslips. Managers see their team."
+    >
+      An employee logs hours, submits an expense claim with the receipt, requests leave and downloads a payslip, all from their own page. Their manager approves, rejects or reopens from a queue that shows only their own team. Every decision stays on the record. HR sees everything, and the check runs across all of it on demand.
+    </FeatureItem>
+  </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['hrmq']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<RotatingCards
+  eyebrow="Four ways Humaniq earns its place"
+  title="It works the way you work. And it works for you."
+  lede="Four things you would normally pay extra for. In Humaniq they are built in."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automate',
+      title: 'A sick case reaches week five. The plan is already on someone\'s desk.',
+      summary: 'Today: HR keeps a spreadsheet of sick cases and checks it when they remember. Instead, set it up once. A week before the problem analysis is due, a task lands on the manager\'s desk. A contract that enters its last sixty days puts "decide on renewal" on the owner\'s list. An expense claim over your limit waits for a second approval before anything is paid. Every Monday, a list of leave requests nobody answered. Nothing forgotten, no chasing, no coding.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <FlowMock />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'A bakery, a care home or an agency. Same app, your fields.',
+      summary: 'A care home wants the emergency-response certificate on every employee. A construction firm wants the vehicle plate on the asset. An agency wants the client on every timesheet line. Add the field, hide the block you never use, drag the widget you check first to the top. In the running app, in minutes, and your changes stay with every update. HR administration that fits your business, not one you fit into.',
+      cta: {label: 'How customising works', href: '/apps/buildiq'},
+      panel: <BuildMock />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Talk to it',
+      title: 'Ask which contracts end this quarter. Get the list, not a report.',
+      summary: 'Ask "which contracts end in the next sixty days?" and the names are there. Ask "how many open sick cases do we have?" and you get the number, not the diagnoses, because those are never stored. The assistant reads the same records you are allowed to see and asks before it changes anything. Approving, paying and hiring stay with you.',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: which contracts end in the next sixty days?',
+        'assistant: 2 fixed-term contracts, both without a successor',
+        'you: has the written notice gone out?',
+        'assistant: one yes, on 3 May. One not yet, due before 15 June',
+      ]} cursor mode="reads only, asks before it changes anything" />,
+    },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'Not everyone on your payroll has a desk in your Nextcloud.',
+      summary: <>Through <a href="/apps/portaliq">Portaliq</a> the people outside log in and help themselves. The freelancer sees their own contract and what was paid on it. A former employee downloads the annual statement in January without calling HR. An applicant follows their own application instead of asking how it went. Every line checked against the person who is logged in, and nothing of anyone else's file in sight.</>,
+      cta: {label: 'See the self-service portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="We ship the widgets you need"
+  lede={<>Install Humaniq and the dashboard fits your role. An employee sees their own hours and requests. A manager sees what waits for approval. HR sees the sick cases nearing the long-term limit and the contracts about to end. Design your own widgets with <a href="/apps/buildiq">Buildiq</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
+  widgets={[
+    {
+      title: 'Waiting for your approval',
+      desc: 'For the manager. Hours, expense claims and leave requests from your own team, waiting for a yes or no. Click and you are on the queue.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-orange-knvb)'}}>7</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>to approve</div>
+          </div>
+          {[
+            {label: 'hours', val: '60%', tone: 'var(--c-cobalt-300)'},
+            {label: 'expenses', val: '35%', tone: 'var(--c-lavender-300)'},
+            {label: 'leave', val: '20%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Contracts about to end',
+      desc: 'For HR. Fixed-term contracts ending within sixty days, soonest first, with whether the written notice went out.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', stage: '12 days'},
+            {tone: 'var(--c-orange-knvb)', stage: '31 days'},
+            {tone: 'var(--c-lavender-300)', stage: '48 days'},
+            {tone: 'var(--c-mint-500)', stage: '59 days'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Open sick cases',
+      desc: 'For HR. Open cases, and the ones nearing the 42-week limit where the report to the benefits agency is due. Next to it, leave requests still open and leave hours approved this month.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>4</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>open cases</div>
+          </div>
+          {[
+            {label: 'week 42', val: '25%', tone: 'var(--c-orange-knvb)'},
+            {label: 'leave open', val: '45%', tone: 'var(--c-lavender-300)'},
+            {label: 'approved', val: '70%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 62}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'My hours, expenses and leave',
+      desc: 'For the employee. Your submitted hours, your expense claims and your leave requests, each with its status.',
+    },
+    {
+      title: 'Expiring first-aid certificates',
+      desc: 'Emergency-response certificates about to run out, so the refresher course is booked before the certificate lapses.',
+    },
+    {
+      title: 'Free-space budget',
+      desc: 'The fiscal wage bill, the free space for untaxed allowances, what is used, and the levy if you go over.',
+    },
+    {
+      title: 'Payroll run totals',
+      desc: 'Total gross, total net, and a withholding balance that clears to zero when everything is booked.',
+    },
+    {
+      title: 'Mutation report',
+      desc: 'Wage-cost change against last run, and who entered, left or changed. Your payroll answer in one view.',
+    },
+    {
+      title: 'Employee overview',
+      desc: 'One page per person: contracts, payslips, pending expenses and hours, with the full history underneath.',
+    },
+    {
+      title: 'Garnishments',
+      desc: 'What was ordered, the protected minimum that must be respected, and the total claim as it runs down.',
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="How Humaniq plugs into the workspace"
+  title="Calendar, books and documents. Already yours."
+  lede="Who is away, what payroll costs, and the contract on paper. Humaniq hands each of them to the place your team already looks. That is the point of a workspace."
+  layout="side"
+  defaultOpen="calendar"
+  items={[
+    {
+      id: 'calendar',
+      title: 'Who is away, in the calendar everyone already shares',
+      summary: 'Approve a leave request and it is in a shared Nextcloud Calendar the same minute. A sick case appears as "absent" with a name. Nothing else, no reason, no diagnosis, ever. The team plans around it from the calendar they already open, and HR never answers "is Sanne in on Thursday?" again.',
+      cta: {label: 'Read the docs', href: 'https://hrmq.conduction.nl'},
+      panel: <LeafMock leaf="calendar" />,
+    },
+    {
+      id: 'shillinq',
+      title: 'Payroll lands in the books by itself',
+      summary: <>Every approved payroll run produces a balanced journal entry and a draft payment batch with every employee's account number and net pay. Both land in <a href="/apps/shillinq">Shillinq</a>. Your bookkeeper sees the salary costs where the rest of the costs are, and pays the batch from there. Nobody types the totals over.</>,
+      cta: {label: 'See Shillinq', href: '/apps/shillinq'},
+      panel: <AppMock app="shillinq" />,
+    },
+    {
+      id: 'docudesk',
+      title: 'The contract, the payslip and the annual statement, as documents',
+      summary: <>Employment contract, offer letter, employer statement, reference, payslip and annual statement are generated from the record through <a href="/apps/filinq">Filinq</a> and stored back on it. The employee downloads their payslip from their own page. Change the letterhead once and every new document carries it.</>,
+      cta: {label: 'See Filinq', href: '/apps/filinq'},
+      panel: <AppMock app="docudesk" />,
+    },
+  ]}
+/>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="Build with it, ask about it, see it on your dashboard."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/buildiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="Buildiq"
+      why="Add the field your business needs and hide the block you never use, without a developer. Your changes survive every update."
+    />
+    <PairCard
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7v3a7 7 0 0 1-14 0V9a7 7 0 0 1 7-7Z"/><path d="M9 22h6"/><circle cx="9.5" cy="10" r="1"/><circle cx="14.5" cy="10" r="1"/></svg>}
+      name="Hermiq"
+      why="The assistant for your workspace. Ask which contracts end this quarter and get the names, never a diagnosis."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Your own dashboard across all your apps. Approvals, ending contracts and sick cases, next to the rest of your day."
+    />
+  </PairRow>
+</Section>
+
+<PartnersForApp slug="hrmq" />
+
+<CtaBanner
+  title="HR and payroll on your own Nextcloud."
+  lede={<>Open source. Free to install. Employee data stays on your own server. Humaniq runs on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=hrmq'}}
+/>

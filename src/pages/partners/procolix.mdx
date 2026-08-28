@@ -1,15 +1,26 @@
 ---
 title: Procolix, Host partner, Conduction
-description: Nederlandse managed-Nextcloud-hoster uit Dordrecht. Levert beheerde Nextcloud-omgevingen op eigen EU-infrastructuur, open source als uitgangspunt.
+description: Dutch managed-Nextcloud hoster from Dordrecht. Delivers managed Nextcloud environments on dedicated EU infrastructure, open source by default.
 hide_table_of_contents: true
 ---
 
 import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, ReferenceGrid, ReferenceCard, PartnerCard, PartnerSidecard, CtaBanner} from '@conduction/docusaurus-preset/components';
-import {PARTNERS} from '@site/src/data/partners-catalog';
+import {partnerByName, usePartnerSummary} from '@site/src/data/partners-catalog';
 import {solutionsBySlugs} from '@site/src/data/solutions-catalog';
 
-export const PROCOLIX = PARTNERS.find(p => p.name === 'Procolix');
+export const PROCOLIX = partnerByName('Procolix');
 export const PROCOLIX_SOLUTIONS = solutionsBySlugs(PROCOLIX.solutions);
+
+export function ProcolixSidecard() {
+  const summary = usePartnerSummary(PROCOLIX);
+  return (
+    <PartnerSidecard
+      partner={{...PROCOLIX, summary}}
+      solutions={PROCOLIX_SOLUTIONS}
+      cta={{label: 'Talk to Procolix', href: 'mailto:hello@procolix.com'}}
+    />
+  );
+}
 
 <DetailHero
   crumb={[{label: 'Partners', href: '/partners'}, 'Procolix']}
@@ -17,7 +28,7 @@ export const PROCOLIX_SOLUTIONS = solutionsBySlugs(PROCOLIX.solutions);
   version="Founded 2007"
   locales="Hilversum, NL · 35 employees"
   title="Procolix."
-  tagline={<>Nederlandse managed-<span className="next-blue">Nextcloud</span>-hoster uit Dordrecht. Levert beheerde Nextcloud-omgevingen op eigen EU-infrastructuur, open source als uitgangspunt. Conduction-apps draaien daar bovenop voor klanten die hosting + apps bij één leverancier willen.</>}
+  tagline={<>Dutch managed-<span className="next-blue">Nextcloud</span> hoster from Dordrecht. Delivers managed Nextcloud environments on dedicated EU infrastructure, open source by default. Conduction apps run on top for customers who want hosting and apps from one vendor.</>}
   primaryCta={{label: 'Talk to Procolix', href: 'mailto:hello@procolix.com'}}
   secondaryCta={{label: 'Visit procolix.com', href: 'https://procolix.com'}}
   tertiaryCta={{label: 'All partners', href: '/partners'}}
@@ -32,34 +43,30 @@ export const PROCOLIX_SOLUTIONS = solutionsBySlugs(PROCOLIX.solutions);
         eyebrow="Specialties"
         title="Where Procolix shines."
         align="stack"
-        lede="Two apps Procolix is officieel-certified op, plus de Nextcloud-distributie zelf. Ideaal voor uitvoeringsorganisaties die hosting + software bij één leverancier willen."
+        lede="Two apps Procolix is officially certified on, plus the Nextcloud distribution itself. Ideal for government agencies who want hosting and software from one vendor."
       />
     <FeatureList>
       <FeatureItem
         icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-        title="DocuDesk-certified op Nederlands."
+        title="Filinq certified in Dutch."
       >
-        Procolix is door Conduction gecertificeerd op DocuDesk-implementaties. Document-flows voor gemeenten, jaarverslagen, beschikkingen, bezwaarbrieven.
+        Procolix is Conduction-certified on Filinq implementations. Document flows for municipalities, annual reports, decisions, objection letters.
       </FeatureItem>
       <FeatureItem
         icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-        title="OpenConnector-certified op zaaksystemen."
+        title="Integriq certified on case systems."
       >
-        Officiële koppelingen met de Nederlandse zaaksystemen-stack: Atos, Centric, GovUnited, plus de open ZGW APIs. Tested en gecertificeerd.
+        Official integrations with the Dutch case-system stack: Atos, Centric, GovUnited, plus the open ZGW APIs. Tested and certified.
       </FeatureItem>
       <FeatureItem
         icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
-        title="Officieel Nextcloud-distributeur."
+        title="Official Nextcloud distributor."
       >
-        Levert <strong>Nextcloud Hub Enterprise</strong> als hosted dienst, inclusief BIO/AVG-conform datacenter in Nederland. Conduction-apps draaien daar bovenop.
+        Delivers <strong>Nextcloud Hub Enterprise</strong> as a hosted service, including BIO/GDPR-compliant data center in the Netherlands. Conduction apps run on top.
       </FeatureItem>
     </FeatureList>
     </div>
-    <PartnerSidecard
-      partner={PROCOLIX}
-      solutions={PROCOLIX_SOLUTIONS}
-      cta={{label: 'Talk to Procolix', href: 'mailto:hello@procolix.com'}}
-    />
+    <ProcolixSidecard />
   </div>
 </Section>
 
@@ -71,22 +78,22 @@ export const PROCOLIX_SOLUTIONS = solutionsBySlugs(PROCOLIX.solutions);
   />
   <ReferenceGrid columns={3}>
     <ReferenceCard
-      sector="Uitvoeringsorganisatie"
+      sector="Government Agency"
       name="UWV"
-      what="Documentstroom voor inkomende post. DocuDesk classificeert, OpenConnector koppelt aan zaaksysteem. Productie sinds Q4 2025."
-      stack={['DocuDesk', 'OpenConnector']}
+      what="Document flow for incoming mail. Filinq classifies, Integriq links to case system. Production since Q4 2025."
+      stack={['Filinq', 'Integriq']}
     />
     <ReferenceCard
-      sector="Gemeente"
-      name="Gemeente Hilversum"
-      what="ZGW-koppeling tussen bestaand zaaksysteem en OpenRegister. OpenConnector ingest, MyDash dashboards voor managementteam."
-      stack={['OpenConnector', 'OpenRegister', 'MyDash']}
+      sector="Municipality"
+      name="Municipality of Hilversum"
+      what="ZGW integration between existing case system and OpenRegister. Integriq ingest, LaunchPad dashboards for management team."
+      stack={['Integriq', 'OpenRegister', 'LaunchPad']}
     />
     <ReferenceCard
-      sector="Waterschap"
-      name="Waterschap Vallei en Veluwe"
-      what="Vergunning-archivering volgens Archiefwet 2026. DocuDesk genereert en archiveert, OpenConnector koppelt aan DMS."
-      stack={['DocuDesk', 'OpenConnector']}
+      sector="Water Authority"
+      name="Water Authority Vallei en Veluwe"
+      what="Permit archiving per Dutch Archive Act 2026. Filinq generates and archives, Integriq links to DMS."
+      stack={['Filinq', 'Integriq']}
     />
   </ReferenceGrid>
 </Section>
@@ -104,7 +111,7 @@ export const PROCOLIX_SOLUTIONS = solutionsBySlugs(PROCOLIX.solutions);
       tier="certified"
       name="Acato"
       logo="/img/partners/acato.png"
-      why="Certified partner. Joint roadmap, tender-eligible op de Conduction Woo-solution."
+      why="Certified partner. Joint roadmap, tender-eligible on the Conduction Woo solution."
     />
     <PartnerCard
       variant="other"
@@ -112,14 +119,14 @@ export const PROCOLIX_SOLUTIONS = solutionsBySlugs(PROCOLIX.solutions);
       tier="host"
       name="YARD"
       logo="/img/partners/yard.png"
-      why="Host partner. Digital agency uit Utrecht voor gemeenten en zorg, ship op de Woo-stack."
+      why="Host partner. Digital agency from Utrecht for municipalities and care, ships on the Woo stack."
     />
   </div>
 </Section>
 
 <CtaBanner
-  title="Hosting + DocuDesk + zaaksysteem-koppeling in één pakket."
-  lede="Procolix levert de hosting, de Nextcloud-distributie, en de gecertificeerde implementatie van DocuDesk en OpenConnector. Voor uitvoeringsorganisaties die het complete pakket bij één leverancier willen."
+  title="Hosting plus Filinq plus case-system integration in one package."
+  lede="Procolix provides the hosting, the Nextcloud distribution, and the certified implementation of Filinq and Integriq. For government agencies that want the complete package from one vendor."
   primaryCta={{label: 'Talk to Procolix', href: 'mailto:hello@procolix.com'}}
   secondaryCta={{label: 'Browse all partners', href: '/partners'}}
 />

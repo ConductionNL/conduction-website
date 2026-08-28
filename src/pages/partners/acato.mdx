@@ -1,23 +1,34 @@
 ---
 title: Acato, Certified partner, Conduction
-description: Nederlandse open-source specialist uit Almere. Bouwt en host Nextcloud-omgevingen voor gemeenten en zorginstellingen.
+description: Dutch open-source specialist with offices in Den Haag, Didam, and Utrecht. Builds and hosts Nextcloud environments for municipalities and care institutions.
 hide_table_of_contents: true
 ---
 
 import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, ReferenceGrid, ReferenceCard, PartnerCard, PartnerSidecard, CtaBanner, Pill} from '@conduction/docusaurus-preset/components';
-import {PARTNERS} from '@site/src/data/partners-catalog';
+import {partnerByName, usePartnerSummary} from '@site/src/data/partners-catalog';
 import {solutionsBySlugs} from '@site/src/data/solutions-catalog';
 
-export const ACATO = PARTNERS.find(p => p.name === 'Acato');
+export const ACATO = partnerByName('Acato');
 export const ACATO_SOLUTIONS = solutionsBySlugs(ACATO.solutions);
+
+export function AcatoSidecard() {
+  const summary = usePartnerSummary(ACATO);
+  return (
+    <PartnerSidecard
+      partner={{...ACATO, summary}}
+      solutions={ACATO_SOLUTIONS}
+      cta={{label: 'Talk to Acato', href: 'mailto:hello@acato.nl'}}
+    />
+  );
+}
 
 <DetailHero
   crumb={[{label: 'Partners', href: '/partners'}, 'Acato']}
   status={{label: 'Certified partner', color: 'var(--c-blue-cobalt)'}}
   version="Founded 2008"
-  locales="Almere, NL · 24 employees"
+  locales="Den Haag · Didam · Utrecht · 24 employees"
   title="Acato."
-  tagline={<>Nederlandse open-source specialist uit Almere. Bouwt en host <span className="next-blue">Nextcloud</span>-omgevingen voor gemeenten en zorginstellingen, al meer dan tien jaar, met focus op AVG-compliance, NLDS-conformiteit, en lange-termijn beheer.</>}
+  tagline={<>Dutch open-source specialist with offices in Den Haag, Didam, and Utrecht. Builds and hosts <span className="next-blue">Nextcloud</span> environments for municipalities and care institutions for more than a decade, focused on GDPR compliance, NLDS conformance, and long-term management.</>}
   primaryCta={{label: 'Talk to Acato', href: 'mailto:hello@acato.nl'}}
   secondaryCta={{label: 'Visit acato.nl', href: 'https://acato.nl'}}
   tertiaryCta={{label: 'All partners', href: '/partners'}}
@@ -32,34 +43,30 @@ export const ACATO_SOLUTIONS = solutionsBySlugs(ACATO.solutions);
         eyebrow="Specialties"
         title="Where Acato shines."
         align="stack"
-        lede="Three apps Acato has shipped to production at multiple gemeenten and three sectors where they hold the most context."
+        lede="Three apps Acato has shipped to production at multiple municipalities and three sectors where they hold the most context."
       />
     <FeatureList>
       <FeatureItem
         icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>}
         title="OpenRegister at scale."
       >
-        Schema design and migration patterns for registers with millions of records. Acato has shipped OpenRegister to gemeenten with the largest live registers in the network.
+        Schema design and migration patterns for registers with millions of records. Acato has shipped OpenRegister to municipalities with the largest live registers in the network.
       </FeatureItem>
       <FeatureItem
         icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
-        title="OpenCatalogi for Wet open overheid."
+        title="OpenCatalogi for Freedom of Information Act."
       >
-        WOO publication flows including the eleven categories, federation to data.overheid.nl, and the audit-evidence pack that surrounds each disclosure.
+        WOO publication flows including the eleven categories, federation to data.overheid.nl, and the audit evidence pack that surrounds each disclosure.
       </FeatureItem>
       <FeatureItem
         icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-        title="DocuDesk for inbound zaakcorrespondentie."
+        title="Filinq for inbound case correspondence."
       >
-        Auto-classification, anonymisation, and routing for the high-volume inbound mail at uitvoeringsorganisaties. Templates for jaarverslagen, beschikkingen, en bezwaar.
+        Auto-classification, anonymization, and routing for high-volume inbound mail at government agencies. Templates for annual reports, decisions, and objections.
       </FeatureItem>
     </FeatureList>
     </div>
-    <PartnerSidecard
-      partner={ACATO}
-      solutions={ACATO_SOLUTIONS}
-      cta={{label: 'Talk to Acato', href: 'mailto:hello@acato.nl'}}
-    />
+    <AcatoSidecard />
   </div>
 </Section>
 
@@ -68,26 +75,26 @@ export const ACATO_SOLUTIONS = solutionsBySlugs(ACATO.solutions);
     eyebrow="References"
     title="Live deployments."
     align="stack"
-    lede="Three of Acato's productie-deployments. Sectors and apps used. Talk to Acato for a full list."
+    lede="Three of Acato's production deployments. Sectors and apps used. Talk to Acato for a full list."
   />
   <ReferenceGrid columns={3}>
     <ReferenceCard
-      sector="Gemeente"
-      name="Gemeente Rotterdam"
-      what="WOO portal in production sinds Q2 2025. Eleven categories live, 18.000 documents publicly searchable, audit log integrated with DMS."
-      stack={['OpenCatalogi', 'OpenRegister', 'OpenConnector']}
+      sector="Municipality"
+      name="Municipality of Rotterdam"
+      what="WOO portal in production since Q2 2025. Eleven categories live, 18,000 documents publicly searchable, audit log integrated with DMS."
+      stack={['OpenCatalogi', 'OpenRegister', 'Integriq']}
     />
     <ReferenceCard
-      sector="Provincie"
-      name="Provincie Zuid-Holland"
-      what="Subsidie-register naar OpenRegister gemigreerd. ZGW-koppeling via OpenConnector, MyDash voor wekelijkse rapportages aan gedeputeerde."
-      stack={['OpenRegister', 'OpenConnector', 'MyDash']}
+      sector="Province"
+      name="Province of South Holland"
+      what="Subsidy register migrated to OpenRegister. ZGW integration via Integriq, LaunchPad for weekly reports to provincial executives."
+      stack={['OpenRegister', 'Integriq', 'LaunchPad']}
     />
     <ReferenceCard
-      sector="Uitvoeringsorganisatie"
-      name="UWV-pilot"
-      what="Documentstroom-pilot: DocuDesk classificeert en routeert inkomende post, OpenConnector koppelt aan zaaksysteem. Vier weken van pilot tot productie."
-      stack={['DocuDesk', 'OpenConnector']}
+      sector="Government Agency"
+      name="UWV pilot"
+      what="Document flow pilot: Filinq classifies and routes incoming mail, Integriq links to case system. Four weeks from pilot to production."
+      stack={['Filinq', 'Integriq']}
     />
   </ReferenceGrid>
 </Section>
@@ -106,7 +113,7 @@ export const ACATO_SOLUTIONS = solutionsBySlugs(ACATO.solutions);
       tier="host"
       name="YARD"
       logo="/img/partners/yard.png"
-      why="Digital agency uit Utrecht voor gemeenten en zorg. Levert de Conduction Woo-solution."
+      why="Digital agency from Utrecht for municipalities and care. Delivers the Conduction Woo solution."
     />
     <PartnerCard
       variant="other"
@@ -114,14 +121,14 @@ export const ACATO_SOLUTIONS = solutionsBySlugs(ACATO.solutions);
       tier="host"
       name="Procolix"
       logo="/img/partners/procolix.png"
-      why="Managed Nextcloud-hosting op eigen EU-infrastructuur, open source als uitgangspunt."
+      why="Managed Nextcloud hosting on dedicated EU infrastructure, open source by default."
     />
   </div>
 </Section>
 
 <CtaBanner
   title="Need help shipping Conduction?"
-  lede={<>Acato runs the rollout, the hosting, en de lange-termijn beheer. Voor elke <span className="next-blue">Nextcloud</span>-omgeving die zichzelf serieus neemt.</>}
+  lede={<>Acato runs the rollout, hosting, and long-term management. For every <span className="next-blue">Nextcloud</span> environment that takes itself seriously.</>}
   primaryCta={{label: 'Talk to Acato', href: 'mailto:hello@acato.nl'}}
   secondaryCta={{label: 'Browse all partners', href: '/partners'}}
 />

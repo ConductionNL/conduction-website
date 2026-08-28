@@ -1,0 +1,135 @@
+---
+title: Anonymize, GDPR-proof publication and reuse
+description: Privacy-by-design pipeline on Nextcloud. Filinq and OpenRegister detect and redact PII before documents and records are published, shared, or exported. Presidio under the hood.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, Pipeline, PairRow, PairCard, CtaBanner} from '@conduction/docusaurus-preset/components';
+import {PartnersForSolution} from '@site/src/components/PartnersFor';
+
+<DetailHero
+  crumb={[{label: 'Solutions', href: '/solutions'}, 'Anonymize']}
+  status={{label: 'Pilot', color: 'var(--c-amber-500)'}}
+  version="Sector: Public & SMB"
+  title="Anonymize before you publish."
+  tagline={<>A privacy-by-design pipeline on <span className="next-blue">Nextcloud</span>. Filinq and OpenRegister detect and redact records and documents before they leave your organization. Works for Woo publication, dataset export, customer communication, and knowledge sharing. Presidio under the hood, GDPR-explainable.</>}
+  primaryCta={{label: 'Talk to a partner', href: '/partners'}}
+  secondaryCta={{label: 'Read the recipe', href: 'https://docs.conduction.nl/anonimiseren'}}
+  iconColor="var(--c-blue-cobalt)"
+  icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/><path d="M9 8h6"/></svg>}
+/>
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="The outcome"
+    title="No PII leaves without your knowledge."
+    align="stack"
+    lede="Every publication, export, or API call passes through the anonymization layer first. Names, BSNs, license plates, addresses, and other personal data are detected, redacted, and logged with an explainable decision per match. What your organization shares is what your organization chose to share."
+  />
+
+  <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>}
+      title="Detection on text, table, and document."
+    >
+      Presidio-based detection for BSNs, names, addresses, IBANs, phone numbers, license plates, email addresses, birth dates. Works on plain text, PDF, Word, Excel, and on fields in an OpenRegister record.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>}
+      title="Redaction with proof preserved."
+    >
+      Filinq writes a redacted copy, preserves the original behind permissions, and maintains the per-match mapping. Audit trail shows what was redacted, why, and under which policy.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 12h18M12 3v18"/><circle cx="12" cy="12" r="9"/></svg>}
+      title="Policy per register, per category."
+    >
+      Each OpenRegister gets its own anonymization profile: which entities to detect, which to redact, which to block. Woo publication, GDPR request, dataset export, and internal sharing each get their own threshold.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
+      title="Human review where it matters."
+    >
+      Low-confidence matches go to a review queue in Nextcloud. The reviewer confirms or rejects; the decision becomes part of the profile and improves future detection.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
+      title="GDPR-explainable."
+    >
+      Every redacted match records: PII type, model, version, profile. Your Data Protection Officer can trace every decision without accessing the original document.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>}
+      title="API and pipeline, not just UI."
+    >
+      Callable from Integriq flows, n8n, Windmill, and direct REST calls. Plugs into existing Woo, export, and publication processes without touching the UI.
+    </FeatureItem>
+  </FeatureList>
+</Section>
+
+<PartnersForSolution slug="anonimiseren" />
+
+<Section spacing="default">
+  <SectionHead
+    eyebrow="The pipeline"
+    title="From internal source to safe publication."
+    align="stack"
+    lede="Integriq pulls records and files from your source systems. OpenRegister keeps them typed and versioned. Filinq runs Presidio over the content, redacts per policy, and delivers the anonymized copy to the publication channel. The original stays in Nextcloud, behind permissions and audit."
+  />
+  <Pipeline
+    start={{label: 'Sources', items: [
+      {label: 'DMS',          icon: 'doc'},
+      {label: 'Case system',  icon: 'db'},
+      {label: 'Files',        icon: 'doc'},
+      {label: 'Customer data',icon: 'db'},
+    ]}}
+    steps={[
+      {number: '01', kicker: 'Ingest',    name: 'Integriq', caption: 'Pulls records and documents from your source systems via REST, SOAP, or file drops.'},
+      {number: '02', kicker: 'Store',     name: 'OpenRegister',  caption: 'Typed registers per category. Versioned, audit-logged, with anonymization profile.'},
+      {number: 'PLATFORM',                name: 'Nextcloud',     family: 'workspace', pill: 'files · users · auth', caption: 'The workspace your team already logs into.'},
+      {number: '03', kicker: 'Anonymize', name: 'Filinq',      caption: 'Detects PII via Presidio, redacts per policy, logs every decision.'},
+    ]}
+    end={{label: 'Consumers', items: [
+      {label: 'Woo portal',         icon: 'globe'},
+      {label: 'Open data',          icon: 'download'},
+      {label: 'GDPR access',        icon: 'person'},
+      {label: 'External partners',  icon: 'globe'},
+    ]}}
+  />
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Built on"
+    title="Two Conduction apps, one PII engine."
+    align="stack"
+    lede="No custom work. Each piece is a component you can install separately and reuse for other processes."
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/filinq"
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      name="Filinq"
+      why="Performs redaction on text, PDF, and Word, writes an anonymized copy, and keeps original and mapping safe behind permissions."
+    />
+    <PairCard
+      href="/apps/openregister"
+      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>}
+      name="OpenRegister"
+      why="Delivers the typed registers with an anonymization profile per category. Audit trail shows which match was redacted under which policy."
+    />
+    <PairCard
+      href="/apps/openregister#integrations"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2L4 5v7c0 5 3.5 9 8 10 4.5-1 8-5 8-10V5z"/><circle cx="12" cy="11" r="2.2" fill="#fff"/><path d="M9 16h6" stroke="#fff" strokeWidth="1.6" fill="none"/></svg>}
+      name="Presidio"
+      why="Microsoft's open-source PII detection library. Powers Filinq's detection layer; GDPR-explainable, on-premise, no external API."
+    />
+  </PairRow>
+</Section>
+
+<CtaBanner
+  title="Anonymize as part of install, not as a project."
+  lede={<>Two apps and a PII engine. Talk to a partner if you'd rather we run the rollout, or install yourself from the <span className="next-blue">Nextcloud</span> app store and follow the recipe.</>}
+  primaryCta={{label: 'Talk to a partner', href: '/partners'}}
+  secondaryCta={{label: 'Read the recipe', href: 'https://docs.conduction.nl/anonimiseren'}}
+/>

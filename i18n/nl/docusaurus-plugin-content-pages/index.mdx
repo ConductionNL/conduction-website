@@ -6,7 +6,18 @@ hide_table_of_contents: true
 
 import {Hero, StatsStrip, AppsPreview, CtaBanner, PairRow, PairCard, Section, SectionHead, Clients, DEFAULT_CLIENTS, PartnerDirectory, CommonGroundPlus, HexRain} from '@conduction/docusaurus-preset/components';
 import {totalDownloads, formatDownloads} from '@conduction/docusaurus-preset/data';
-import {PARTNERS, totalPartners} from '@site/src/data/partners-catalog';
+import {usePartners, useBecomePartner, totalPartners} from '@site/src/data/partners-catalog';
+
+export function HomePartnerDirectory() {
+  const partners = usePartners();
+  const becomePartner = useBecomePartner();
+  return (
+    <PartnerDirectory
+      partners={partners}
+      becomePartner={{...becomePartner, ctaLabel: 'Aanmelden via /support'}}
+    />
+  );
+}
 
 {/* Conduction main landing. Public Tech framing: tech to serve people.
     Three doors out: install an app yourself, get it as managed SaaS, or
@@ -56,11 +67,11 @@ import {PARTNERS, totalPartners} from '@site/src/data/partners-catalog';
       icon: <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg>,
     },
     {
-      name: 'OpenConnector',
+      name: 'Integriq',
       tagline: <>Verbind <span className="next-blue">Nextcloud</span> met alles. REST, SOAP, GraphQL, file drops, message queues. Geen middleware.</>,
       status: 'BETA',
       version: 'v1.2 · NL · EN',
-      href: '/apps/openconnector',
+      href: '/apps/integriq',
       icon: <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>,
     },
   ]}
@@ -101,16 +112,7 @@ import {PARTNERS, totalPartners} from '@site/src/data/partners-catalog';
     align="stack"
     lede="Implementatie-, hosting- en integratiepartners die Conduction-apps bij klanten uitrollen. Vraag aan via /support om opgenomen te worden."
   />
-  <PartnerDirectory
-    partners={PARTNERS}
-    becomePartner={{
-      href: '/support#become-a-partner',
-      eyebrow: 'Word partner',
-      title: 'Lever Conduction aan jouw klanten.',
-      body: 'Word Partner, Certified of Strategic. Conduction traint je team, jij doet de uitrol. De apps blijven open source, de relatie blijft direct.',
-      ctaLabel: 'Aanmelden via /support',
-    }}
-  />
+  <HomePartnerDirectory />
 </Section>
 
 <Clients

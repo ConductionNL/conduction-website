@@ -1,0 +1,413 @@
+---
+slug: claude-skills-tutorial-2-your-first-skill
+title: "Claude Skills tutorial series — Part 2: Writing your first skill"
+contentType: tutorial
+heroIcon: puzzle
+authors: [conduction]
+date: 2026-05-15
+summary: Write a working Claude Skill from scratch — a mini-skill that summarises git statuses. Using /skill-creator as a starting point, a solid description, local testing, and adding it to your registry. Second of four short modules.
+tags: [Claude, Claude Code, Skills, AI, Tutorial series]
+apps: []
+durationMinutes: 18
+series: claude-skills-tutorial
+partNumber: 2
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+In part 1 you saw *what* a skill is. In this part you'll write one yourself: a working `git-status-summary` skill that produces a readable summary of the current working tree. At the end it sits in your `~/.claude/skills/` folder, you can invoke it via `/git-status-summary`, and you'll know how to share it with your team.
+
+{/* truncate */}
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>Scaffold a complete skill with <code>/skill-creator</code> instead of laying out folders by hand.</Outcome>
+  <Outcome>Write a good <code>description</code> that triggers reliably both manually (<code>/</code>) and automatically.</Outcome>
+  <Outcome>Test the skill locally before you share it — using a should-trigger / should-not-trigger checklist.</Outcome>
+  <Outcome>When a skill belongs in global scope (<code>~/.claude/skills/</code>) and when in a project (<code>repo/.claude/skills/</code>).</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>Part 1 read: <a href="/academy/claude-skills-tutorial-1-what-are-claude-skills">What are Claude Skills?</a></PrerequisiteItem>
+  <PrerequisiteItem>Claude Code installed, and a working session in any Git repo. Even an empty <code>git init</code> folder is enough.</PrerequisiteItem>
+  <PrerequisiteItem>The <code>skill-creator</code> skill installed. It ships as a plugin with Claude Code by default; if you don't have it: <code>git clone https://github.com/anthropics/skills</code> and copy <code>skills/skill-creator/</code> into your <code>~/.claude/skills/</code>.</PrerequisiteItem>
+</Prerequisites>
+
+## What we're building
+
+A mini-skill that summarises your `git status` in a readable way — with categories (staged / unstaged / untracked), file counts, and a list of changes per category. Simple enough to write out completely in this part, but concrete enough to illustrate every step.
+
+End result: type `/git-status-summary` in your session and you get something like:
+
+```
+Working tree status
+
+Staged (3 files):
+  • src/components/Button.vue — modified
+  • src/components/Card.vue — modified
+  • README.md — modified
+
+Unstaged (2 files):
+  • src/App.vue — modified
+  • src/utils/format.ts — modified
+
+Untracked (1 file):
+  • notes.txt
+```
+
+## Step 1 — Scaffold with `/skill-creator`
+
+The easiest way to start a new skill is **not** to lay out folders yourself, but to let `/skill-creator` guide you. Open a Claude session and type:
+
+```
+/skill-creator
+```
+
+Claude then asks what you want to create. Answer roughly like this:
+
+> I want a skill `git-status-summary` that runs `git status --porcelain`, parses the output, and presents it in three groups (staged / unstaged / untracked) with filenames and change type. It should work on any Git repo.
+
+`/skill-creator` will then:
+
+1. Ask for a short description — paste the carefully crafted version from below here.
+2. Ask whether the skill has side effects (no — read-only).
+3. Create a folder: `~/.claude/skills/git-status-summary/` with a starter `SKILL.md`.
+
+:::tip Don't be afraid to start by hand
+If `/skill-creator` doesn't work for any reason, you can also just create the folder directly: `mkdir -p ~/.claude/skills/git-status-summary && touch ~/.claude/skills/git-status-summary/SKILL.md`. The skill is a plain text file.
+:::
+
+## Step 2 — Craft the `description` carefully
+
+Recall from part 1: only the `description` is permanently loaded in the system prompt. This is where your auto-triggering stands or falls.
+
+A good description for our skill:
+
+```
+description: Summarise the current Git working tree — groups changes by staged, unstaged, and untracked, and lists files per group with their change type
+```
+
+What's in there?
+
+| Piece | Why |
+|---|---|
+| `Summarise` | Action verb up front. No "this skill is" or "helps with". |
+| `current Git working tree` | Concrete trigger words: someone who types "git status overview" or "what's changed" lands here. |
+| `groups changes by staged, unstaged, and untracked` | Tells Claude exactly what he gets — useful when choosing between several skills. |
+| `lists files per group with their change type` | Closes with the observable result so a user immediately recognises whether this is what they want. |
+
+Write it in **third person** (the description is injected verbatim into the system prompt) and stay under ~250 characters — skill listings cut off after that.
+
+## Step 3 — Write the `SKILL.md`
+
+Open `~/.claude/skills/git-status-summary/SKILL.md` and fill it in like this:
+
+````markdown
+---
+name: git-status-summary
+description: Summarise the current Git working tree — groups changes by staged, unstaged, and untracked, and lists files per group with their change type
+metadata:
+  category: Workflow
+  tags: [git, workspace]
+---
+
+# Git Status Summary
+
+Produces a clean, grouped summary of the current Git working tree.
+
+**Input**: no arguments. Always reads `git status --porcelain` from the current
+working directory.
+
+**Steps**
+
+1. **Verify a Git repo**
+
+   Run `git rev-parse --is-inside-work-tree`. If it returns anything other than
+   `true`, abort with: *"Not inside a Git repository — cd into one first."*
+
+2. **Read the porcelain status**
+
+   Run `git status --porcelain=v1` and split the output by line. Each line
+   starts with a two-character XY status code:
+   - `X` = index status, `Y` = working tree status
+   - `M` = modified, `A` = added, `D` = deleted, `R` = renamed, `??` = untracked
+
+3. **Group the lines**
+
+   - **Staged**: lines where `X` is not blank and not `?`
+   - **Unstaged**: lines where `Y` is not blank and the line is not untracked
+   - **Untracked**: lines starting with `??`
+
+   A single file can appear in both Staged and Unstaged (modified in both).
+   Show it in both groups when that happens.
+
+4. **Render the summary**
+
+   Output in this exact shape (preserve formatting):
+
+   ```
+   Working tree status
+
+   Staged (N files):
+     • path/to/file — modified
+
+   Unstaged (N files):
+     • path/to/file — modified
+
+   Untracked (N files):
+     • path/to/file
+   ```
+
+   Omit any group that has zero files. If all three are empty, output:
+   *"Working tree clean — nothing to commit."*
+
+**Guardrails**
+
+- Never run `git add`, `git commit`, `git reset`, or any other write command.
+  This skill is read-only.
+- Never call `git status` without `--porcelain` — the human-readable form is
+  fragile across locales and Git versions.
+- Never pass `--ignored` to `git status`. The "X is not blank and not `?`"
+  staged-check would otherwise also match `!` (ignored) lines and produce
+  a wrong staged group.
+- Do not invent files. Only list what `git status --porcelain` actually returns.
+````
+
+Three things to note:
+
+1. **Numbered steps** — no prose paragraphs. One action per step, with a clear heading.
+2. **A "Guardrails" section** — what the skill explicitly may not do. For read-only skills, the "no write actions" rule is crucial.
+3. **Concrete output format in a code block** — Claude follows visible examples far more reliably than vague instructions.
+
+### How specific should your SKILL.md be? — degrees of freedom
+
+A common mistake: giving every skill the same level of detail. In practice, your specificity should match the fragility of the task:
+
+| Kind of task | Freedom | Skill style |
+|---|:---:|---|
+| Exploration, brainstorming, code review | **High** | Give goals and guardrails, let Claude pick the approach |
+| Feature work, refactor | **Medium** | Give steps with decision points, let Claude adapt |
+| DB migrations, production deploys, CI config | **Low** | Prescribed commands, explicit confirmation gates |
+
+Our `git-status-summary` is read-only and mechanical — medium-to-low, with explicit formatting and hard guardrails. A hypothetical `/explore-architecture` would want high freedom instead ("think out loud, compare options, no fixed shape").
+
+### Dynamic content: injecting arguments and shell output
+
+A last bit of syntax you'll run into later, but don't need yet for `git-status-summary`:
+
+| Syntax | Meaning | Example |
+|---|---|---|
+| `$ARGUMENTS` | Everything typed after `/skill-name` | `/app-create my-app` → `$ARGUMENTS` = `"my-app"` |
+| `$ARGUMENTS[0]` | First positional argument | First word after the skill name |
+| `${CLAUDE_SKILL_DIR}` | Absolute path to the skill folder | For references to bundled scripts |
+| `` !`command` `` | Shell output injected *before* the skill loads | `` !`git branch --show-current` `` injects the current branch |
+
+The `` !`command` `` syntax in particular is powerful: it runs *before* the skill enters context, so you can pass runtime information (current branch, git user, date) to Claude as context. Not needed for our mini-skill, but worth knowing about for when you write more dynamic skills.
+
+### Asking the user something: `AskUserQuestion`
+
+Some skills need input you can't derive from shell commands — for example a choice between two approaches, or confirmation before a destructive action. For that there is the **`AskUserQuestion`** tool: a built-in Claude Code tool that lets a skill, mid-execution, ask the user a short multiple-choice question and wait for the answer.
+
+In your `SKILL.md` you simply instruct it in text:
+
+```markdown
+3. **Confirm before applying**
+
+   Use the `AskUserQuestion` tool to ask: *"Apply this migration to the
+   production database?"* with options `Yes, apply now` and `No, abort`.
+   Only continue to step 4 if the user picks the first option.
+```
+
+When to use it: at decision moments where Claude shouldn't choose autonomously (production deploys, branch strategy, sensitive refactors). When *not*: for info you can pull from `git`, `gh` or the file itself — then `` !`command` `` or a Read call is faster and less intrusive. There's no decision moment in `git-status-summary`, so we don't use it — but keep it in mind for your next, heavier skill.
+
+## Step 4 — Test locally
+
+Before you share the skill: test it yourself. Three kinds of tests:
+
+### A. Manual trigger
+
+Open a Claude session in a Git repo with some unstaged changes and type:
+
+```
+/git-status-summary
+```
+
+What you expect: a clean summary in the promised format. What you check: do the counts match? Is a file missing? Are staged + unstaged shown twice for mixed changes?
+
+### B. Auto-trigger checklist
+
+The harder test: does it trigger automatically when it should, and stay quiet when it shouldn't?
+
+| Prompt | Expected behaviour |
+|---|---|
+| "What's changed in my working tree?" | **Should trigger** |
+| "Give me an overview of staged and unstaged" | **Should trigger** |
+| "Show me the diff for src/App.vue" | **Should not trigger** (that's `git diff`, not status) |
+| "Commit my changes" | **Should not trigger** (write action, not status) |
+| "What does git rebase do?" | **Should not trigger** (informational question) |
+
+A prompt going wrong? Tweak the `description` and try again. Triggers over-eagerly? Add more specific words ("working tree", "staged/unstaged/untracked"). Triggers too rarely? Strip jargon and add natural terms ("git status overview", "what's changed").
+
+### C. Edge cases
+
+- **Empty repo** — no commits, no changes. Do you get the "Working tree clean" message?
+- **Untracked only** — `echo "test" > new.txt` without add. Is only the Untracked group shown?
+- **File with spaces** — `touch "my file.txt" && git add "my file.txt"`. Is the name rendered correctly?
+
+## Step 5 — Global or per project?
+
+Now that the skill works, the question is: where do you keep it?
+
+<HexCard title="~/.claude/skills/ — global">
+  For skills you find useful in <strong>every repo</strong>. Our <code>git-status-summary</code> is a good candidate here — it's a general Git helper. Downside: your teammates don't get it automatically.
+</HexCard>
+
+<HexCard title="repo/.claude/skills/ — per project">
+  For skills <strong>specific to this repo</strong> (custom quality gates, custom workflow, custom domain knowledge). Upside: you commit it, your team gets it, and CI/Hydra containers use the same version. Almost all skills in Conduction repos live here.
+</HexCard>
+
+<HexCard title="vendor/skills/ — external">
+  For skills you <strong>import from outside</strong> (Anthropic community, Trail of Bits, OWASP). Keeping them separate helps with audit trail and maintenance — you don't mutate external skills, you follow upstream.
+</HexCard>
+
+For `git-status-summary` global is fine. For a fictional `conduction-quality-check` skill that runs the Conduction-specific PHPCS/Psalm/ESLint config, it belongs in `.claude/skills/` of the project repo itself.
+
+## Step 6 — Add it to the skill registry
+
+Within Conduction we keep a list of all internal skills (both personally useful and project-level). If you write a new skill that's valuable to the team:
+
+1. **Add it to the relevant repo** — usually `<repo>/.claude/skills/<name>/` with a regular commit.
+2. **Update the `README.md` of that `.claude/skills/` folder** if it exists — add a line with the name, a one-sentence description, and when you invoke it.
+3. **Update the Hydra skill docs in [`ConductionNL/.github`](https://github.com/ConductionNL/.github)** if the skill runs in a Hydra pipeline — the central documentation about which skills Hydra knows, what family they belong to, and what they do lives there. Without that update, the rest of the team (and later Hydra runs) won't know your skill exists.
+4. **Open a PR** and let one teammate trigger the skill in their own session. Don't review the description theoretically — literally type a prompt that ought to trigger it.
+
+For global-personal skills (`~/.claude/skills/`) nothing needs to be committed — it's your own workshop.
+
+## Common beginner mistakes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Skill never triggers automatically | `description` is too vague or lacks trigger words | Rewrite in third person, action verb up front, concrete nouns from the user's question |
+| Skill triggers too often on unrelated prompts | `description` is too broad or overlaps with other skills | Add specific scoping ("only for X, not Y") |
+| `/skill-name` doesn't work | `name` field in frontmatter differs from folder name | Make them identical (folder `git-status-summary` → `name: git-status-summary`) |
+| Skill does something unexpectedly destructive | No guardrails | Add a **Guardrails** section with explicit "never do X" rules |
+| Skill works on one laptop, not another | Hardcoded paths or OS-specific commands | Use relative paths; check OS-dependent commands (`grep` vs `ggrep`, etc.) |
+
+## Test yourself
+
+Four short questions to check you understood this part. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. How do you test a skill before sharing it with the team?**
+
+<Details summary="Hint">
+
+Three kinds of tests: a manual one, one for auto-triggering, and one for edge cases. What does each of them do?
+
+</Details>
+
+<Details summary="Answer">
+
+Three levels:
+
+1. **Manual trigger** — type `/skill-name` in a session where the skill applies. Check that the output is correct and the format is tight.
+2. **Auto-trigger checklist** — come up with 5+ prompts that *should* trigger and 5+ that *should not* trigger. Walk through them one by one. Triggers too rarely? `description` too vague. Too often? `description` too broad.
+3. **Edge cases** — test situations that can predictably go wrong (empty input, special characters, missing dependencies). A skill that handles the happy path but misses the empty case isn't finished.
+
+Only after all three do you share it — otherwise you discover problems in a teammate's session instead of your own.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Where would you put a skill for "fill in the Conduction-specific PR template" — global or per project?**
+
+<Details summary="Hint">
+
+The question is: who is this useful for? Just you, or the whole team?
+
+</Details>
+
+<Details summary="Answer">
+
+**Per project**, in `<repo>/.claude/skills/`. Reason: it's Conduction-specific (a general Claude user wouldn't benefit) and you want the whole team — and Hydra's containers — to have the same version. Commit it to Git so it comes along with every fresh checkout.
+
+Global (`~/.claude/skills/`) is for skills you find useful across *all* repos and that have nothing to do with the specific codebase. For example: a personal `summarise-clipboard` skill.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Why must the `name` in the frontmatter exactly match the folder name?**
+
+<Details summary="Hint">
+
+The name you type after `/` has to come from somewhere. What does Claude see first — the folder or the frontmatter field?
+
+</Details>
+
+<Details summary="Answer">
+
+Claude finds skills by scanning your `~/.claude/skills/` and `.claude/skills/` for folders containing a `SKILL.md`. For the slash trigger it looks at the `name` field in the frontmatter. If they don't match, there are two possible symptoms:
+
+- **`/foldername` doesn't work** but `/namefield` does — confusing, because your teammate only knows the folder name from Git.
+- **Auto-trigger behaves unexpectedly** — Claude links the description to the frontmatter name, not the folder name.
+
+Rule of thumb: pick one name, use it everywhere identically. `skill-creator` keeps them in sync; with manual scaffolding you have to watch it yourself.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. You have a skill that sometimes over-eagerly triggers on unrelated prompts. What's your first action?**
+
+<Details summary="Hint">
+
+Which field decides when Claude picks up a skill? And what tool do you have to validate that field?
+
+</Details>
+
+<Details summary="Answer">
+
+Tweak the **`description`**. Concretely:
+
+1. **Make it more specific** — add trigger words that only fit the intended situation ("for the current Git working tree", not just "for changes").
+2. **Add scoping** — a short sentence like "Only for X, not Y" works surprisingly well.
+3. **Re-test** with your should-trigger / should-not-trigger checklist (see question 1).
+
+Only once the description is rock-solid and it's *still* over-eager should you consider `disable-model-invocation: true` to turn auto-triggering off entirely and only allow `/<name>`. That's a last resort — usually a better description solves it.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="Your skill works now. In part 3 you'll learn how to systematically measure whether it keeps working — with skill evals.">
+  <NextStep
+    title="Part 3 — Skill evals: measuring whether your skill works"
+    href="/academy/claude-skills-tutorial-3-skill-evals"
+    description="Writing test scenarios, baseline measurement, trigger tests. How to move from a 'feels good' skill to a measured skill (Maturity Level 5)."
+  />
+  <NextStep
+    title="Previous step — What are Claude Skills?"
+    href="/academy/claude-skills-tutorial-1-what-are-claude-skills"
+    description="The concept introduction if you want to re-read it."
+  />
+  <NextStep
+    title="Anthropic skill-creator on GitHub"
+    href="https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md"
+    description="The official skill-creator skill, with scripts for scaffolding, eval runner, and description optimiser."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Stuck on your first skill?"
+  body="Send us your SKILL.md and the prompts you're testing with — we'll take a look and help you get it right faster."
+  cta={{ label: "Email Conduction", href: "mailto:info@conduction.nl?subject=Claude%20Skills%20track%20part%202" }}
+/>

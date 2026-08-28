@@ -1,0 +1,283 @@
+---
+title: Dossiq, Conduction
+description: Case management for permits, objections, complaints and enforcement, on your own Nextcloud. Every legal deadline counted from day one, warned about in time, and written down.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+<DetailHero
+  background="cobalt"
+  appId="procest"
+  crumb={[{label: 'Apps', href: '/apps'}, 'Dossiq']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.3.9"
+  locales="NL · EN"
+  title="Dossiq"
+  tagline={<>Case management for permits, objections, complaints and enforcement, on your own <span className="next-blue">Nextcloud</span>. Every legal deadline counted from day one.</>}
+  intro={<>Dossiq (formerly Procest) is open-source case management for Dutch municipalities and other public bodies. Case workers see their cases and tasks in one place. Residents follow their own case. Every legal deadline is counted, warned about and written down. It follows the Dutch case-management exchange standard (ZGW), so it fits the systems you already run. Released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/dossiq'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=procest'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/procest'}}
+  illustration={<AppMock app="procest" />}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="Cases, deadlines, decisions, residents. One case system."
+        align="stack"
+        lede="Dossiq handles building permits, inspections, enforcement, demolition notices, objections and appeals, complaints and open government requests (Woo). You set up each case type yourself. The deadline clock, the decision and the file come with it."
+      />
+      <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      title="The deadline that never gets missed."
+    >
+      A permit has eight weeks by law. Dossiq starts counting on day one. Two weeks before the end the case worker hears about it. At one week the team leader hears too. At two days the manager gets the red flag. If the day passes anyway, the case is marked overdue, everyone on it is told, and it is written down that this happened. No permit is granted by default because someone was on leave. When you ask the applicant for more information, the clock pauses. When a decision does run late, Dossiq calculates the penalty the law prescribes.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 3h7v7"/></svg>}
+      title="Case types you set up yourself."
+    >
+      Statuses, deadlines, documents and who signs off: you draw the process on a canvas. A functional administrator changes it. No developer, no waiting for a release.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 18a5 5 0 0 1 10 0"/></svg>}
+      title="Residents see what you see."
+    >
+      The resident opens their case and sees the same status the case worker sees. The "where is my permit?" calls stop. When an inspection is needed, they pick a slot themselves through a public link, and it lands in the inspector's calendar.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      title="The full file, two years later."
+    >
+      An objection arrives two years after the decision. One click opens the whole file: every document, every status change, every decision and who took it. Export it for the objections committee or the court in one go.
+    </FeatureItem>
+  </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['procest']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<RotatingCards
+  eyebrow="Four ways Dossiq earns its place"
+  title="It works the way you work. And it works for you."
+  lede="Four things you would normally pay extra for. In Dossiq they are built in."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automate',
+      title: 'A case is ready for decision. The sign-off is already on its way.',
+      summary: 'Today: the case worker finishes the assessment, then walks the file to whoever may sign. Instead, set it up once. The moment a case reaches "ready for decision", the sign-off task is on the desk of the person with the mandate. A permit above your threshold waits for a second pair of eyes before anything goes out. A case that has not moved in three weeks turns up on the team leader\'s list on Monday. Nothing forgotten, no chasing, no coding.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <FlowMock />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'Your case types, your fields, your screens.',
+      summary: 'A small municipality wants the neighbourhood on every case. An environmental service wants the inspector\'s photos at the top of the file. A water board never handles objections and wants that page out of the menu. Add the field, move the block, hide what you never use. In the running app, in minutes, and your changes stay with every update.',
+      cta: {label: 'How customising works', href: '/apps/buildiq'},
+      panel: <BuildMock />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Talk to it',
+      title: 'Ask which cases are open. Get the list, not a report.',
+      summary: 'Ask "which cases are still in intake?" and you get the list. Ask "what happened on case 2026-0042?" and you get the history, step by step, with who did what. Ask which deadlines fall this week and the assistant reads the same clock the dashboard shows. It reads. Changing a case stays with the case worker.',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: which cases are still in intake?',
+        'assistant: 6 cases in intake, oldest 11 days',
+        'you: what happened on 2026-0042?',
+        'assistant: received 3 March, assigned 4 March, more information requested 12 March',
+        'assistant: clock paused since 12 March, 34 days left',
+      ]} cursor mode="reads only, never changes a case" />,
+    },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'Residents and businesses open their own case. Without calling you.',
+      summary: <>Give the people you work for their own door. Through <a href="/apps/portaliq">Portaliq</a> a resident or business logs in and sees their own cases, the tenders they take part in and the invoices they have paid or still owe. They upload the missing document themselves and the case moves on. The counter is open in the evening too, and nobody had to pick up a phone.</>,
+      cta: {label: 'See the client portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="We ship the widgets you need"
+  lede={<>Install Dossiq and every case worker sees the deadlines coming up, the cases already late and their own tasks the moment they log in. No separate inbox. Want more? Design your own widgets with <a href="/apps/buildiq">Buildiq</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
+  widgets={[
+    {
+      title: 'Deadline alerts',
+      desc: 'Cases whose legal deadline falls this week. The one that needs you today is on top.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-orange-knvb)'}}>3</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>this week</div>
+          </div>
+          {[{w: '70%', accent: true}, {w: '60%'}, {w: '55%'}].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <span style={{width: 8, height: 9, clipPath: 'var(--hex-pointy-top)', background: row.accent ? 'var(--c-orange-knvb)' : 'var(--c-cobalt-300)'}}></span>
+              <div style={{flex: 1, height: 4, background: 'var(--c-cobalt-200)', borderRadius: 1, width: row.w}}></div>
+              <div style={{height: 4, width: 30, background: 'var(--c-cobalt-100)', borderRadius: 1}}></div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Overdue',
+      desc: 'Cases past their deadline, oldest first. Also on your Nextcloud home screen.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {['permit', 'enforcement', 'permit', 'notice'].map((_, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: i === 1 ? 'var(--c-red-vermillion)' : 'var(--c-orange-knvb)'}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{height: 3, width: 22, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'My tasks',
+      desc: 'Your own tasks across all cases, due date first. Tick one off and the case moves on.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6, fontFamily: 'var(--conduction-typography-font-family-body)'}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', l1: '60%', l2: '40%', av: 'var(--c-mint-300)'},
+            {tone: 'var(--c-lavender-300)', l1: '70%', l2: '50%', av: 'var(--c-lavender-300)'},
+            {tone: 'var(--c-red-vermillion)', l1: '55%', l2: '45%', av: 'var(--c-orange-knvb)'},
+            {tone: 'var(--c-lavender-300)', l1: '65%', l2: '35%', av: 'var(--c-mint-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 14, height: 16, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 3}}>
+                <div style={{height: 5, width: row.l1, background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: row.l2, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <span style={{width: 18, height: 18, borderRadius: '50%', background: row.av, flexShrink: 0}}></span>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {title: 'Stalled cases', desc: 'Cases that have not moved in weeks, so nothing dies quietly in a drawer.'},
+    {title: 'Throughput time', desc: 'How long each case type really takes, from intake to decision.'},
+    {title: 'Statutory clock', desc: 'The legal clock on an objection, including pauses and suspensions.'},
+    {title: 'Adaptive case plan', desc: 'The plan on the case adjusts itself when the case changes course.'},
+    {title: 'Case assistant', desc: 'Ask the case a question and get the answer straight from the file.'},
+    {title: 'Cases by status', desc: 'All running cases, grouped by where they stand.'},
+    {title: 'Cases by type', desc: 'Permits, complaints, enforcement: how much of each is on your plate.'},
+    {title: 'New cases', desc: 'What came in today and this week, before anyone asks.'},
+    {title: 'Completed', desc: 'What your team finished, so the work done stays visible too.'},
+    {title: 'Open cases', desc: 'Every running case in one list, filtered the way you want.'},
+    {title: 'Task due reminders', desc: 'Tasks nearing their due date, flagged before they are late.'},
+    {title: 'Open tasks on the case', desc: 'What still has to happen on the case you have open.'},
+    {title: 'Case documents', desc: 'Every document on the case, with every version kept.'},
+    {title: 'Case decisions', desc: 'The decisions taken on the case and who took them.'},
+    {title: 'Sub-cases', desc: 'The smaller cases hanging under the big one, at a glance.'},
+    {title: 'Hours on the case', desc: 'The hours written on the case, ready for cost recovery.'},
+    {title: 'Proposals', desc: 'Draft decisions waiting for the person with the mandate.'},
+    {title: 'Locations', desc: 'The addresses and places the case is about, on the map of the file.'},
+    {title: 'Initiator', desc: 'Who started the case and how to reach them, right on the case.'},
+    {title: 'Advice requests', desc: 'Advice asked from the objections committee and what came back.'},
+    {title: 'Committee assignments', desc: 'Which objections sit with which committee member.'},
+    {title: 'In deliberation', desc: 'The cases the committee is discussing right now.'},
+    {title: 'Partner organisations', desc: 'The other organisations working with you on the case.'},
+    {title: 'Enforcement steps', desc: 'Where each enforcement case sits on the national enforcement ladder.'},
+    {title: 'Cases overview', desc: 'The state of all your cases on your Nextcloud home screen.'},
+    {title: 'Start case', desc: 'Start a new case straight from your Nextcloud home screen.'},
+  ]}
+/>
+
+<Showcase
+  eyebrow="How Dossiq plugs into the workspace"
+  title="Mail, calendar, contacts and files. Already yours."
+  lede="The case lives where your email, your calendar and your documents already live. That is the point of a workspace."
+  layout="side"
+  defaultOpen="mail"
+  items={[
+    {
+      id: 'mail',
+      title: 'The email on the case',
+      summary: <>A resident replies to your request for more information. Open the message in Nextcloud Mail, link it to the case, and it sits in the case file next to the documents. Reply from a template and the case number, the name and the dates are already filled in as a draft. With <a href="/apps/filinq">Filinq</a> installed, linked mail is archived to the file as a document, so it is still there when the objection comes.</>,
+      cta: {label: 'Read the docs', href: 'https://procest.conduction.nl'},
+      panel: <LeafMock leaf="mail" />,
+    },
+    {
+      id: 'calendar',
+      title: 'Hearings and appointments in the calendar',
+      summary: 'Plan the hearing or the site visit from the case and it is in your Nextcloud Calendar, linked to the case. Let residents book their own inspection slot: Dossiq offers the free slots and puts the confirmed appointment in the inspector\'s agenda. No phone tag to find a date.',
+      cta: {label: 'Read the docs', href: 'https://procest.conduction.nl'},
+      panel: <LeafMock leaf="calendar" />,
+    },
+    {
+      id: 'contacts',
+      title: 'The people on the case are your contacts',
+      summary: 'The applicant, the objector, the neighbour who complained: every person on a case is a Nextcloud contact, connected to the case. Look up who is involved without opening a second address book. The phone number on the case is the one in your contacts.',
+      cta: {label: 'Read the docs', href: 'https://procest.conduction.nl'},
+      panel: <LeafMock leaf="contacts" />,
+    },
+    {
+      id: 'files',
+      title: 'The drawings and the decision, in the file',
+      summary: 'Every case keeps its own folder in Files. The drawings, the site photos, the decision letter: on the case, searchable, with every version kept. Found a drawing in Files and wonder which case it belongs to? It tells you, and takes you there.',
+      cta: {label: 'Read the docs', href: 'https://procest.conduction.nl'},
+      panel: <LeafMock leaf="files" />,
+    },
+  ]}
+/>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="Three apps that make Dossiq more yours."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/buildiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="Buildiq"
+      why="Change screens, fields and case types in the running app. No developer needed, and your changes survive every update."
+    />
+    <PairCard
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 1 1-4-6.9"/><path d="M12 8v4l3 2"/></svg>}
+      name="Hermiq"
+      why="The assistant that answers questions about your cases lives here. Give it more skills as your team grows into it."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Compose your own dashboard from the case widgets above, next to everything else your organisation runs."
+    />
+  </PairRow>
+</Section>
+
+<PartnersForApp slug="procest" />
+
+<CtaBanner
+  title="Case management on your own Nextcloud."
+  lede={<>Open source. Free to install. Your case files stay on your own server. Dossiq runs on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/dossiq'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=procest'}}
+/>

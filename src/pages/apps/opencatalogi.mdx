@@ -1,24 +1,27 @@
 ---
 title: OpenCatalogi, Conduction
-description: Federated data catalogue for apps, datasets, APIs. Public-facing search at your Nextcloud, federation to data.overheid.nl out of the box.
+description: Make your data discoverable and reusable, beyond your organisation too. Publish once, be found everywhere. Public documents, datasets and services from your own Nextcloud, with the national index fed for you.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, Pipeline, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+export const app = getApp('opencatalogi');
 
 <DetailHero
+  background="cobalt"
   appId="opencatalogi"
-  crumb={[{label: 'Apps', href: '/apps'}, 'OpenCatalogi']}
-  status={{label: 'Stable', color: 'var(--c-mint-500)'}}
-  version="v2.4"
+  crumb={[{label: 'Apps', href: '/apps'}, app.name]}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.7"
   locales="NL · EN"
-  title="OpenCatalogi"
-  tagline={<>The public-facing software, dataset, and API catalogue. Drops into your <span className="next-blue">Nextcloud</span>, surfaces every register as a searchable entry, federates to data.overheid.nl out of the box.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/opencatalogi'}}
+  title={app.name}
+  tagline={<>Make your data discoverable and reusable, beyond your organisation too. Publish once from your own <span className="next-blue">Nextcloud</span>, be found everywhere.</>}
+  intro={<>{app.name} is the public catalogue for public bodies. Decisions, datasets, reports and services go public from the same Nextcloud where the team already works. A resident searches once and finds your document and the neighbouring municipality's. The national open data index is fed for you. Every item carries its own retention date, and it comes down again on time. Open source, released under EUPL-1.2 and maintained by Conduction since 2019.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/opencatalogi'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=opencatalogi'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/opencatalogi'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
   illustration={<AppMock app="opencatalogi" />}
 />
 
@@ -27,40 +30,40 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="What it does"
-        title="One catalogue, every register, every public link."
+        title="Publish once. Be found everywhere. Come down on time."
         align="stack"
-        lede="Connect OpenCatalogi to your registers, configure once, and your team is publishing searchable entries the same morning. Citizens land at jouwgemeente.nl/catalogi and find what they need without writing a Woo-verzoek."
+        lede="You publish from the records you already keep. Residents, journalists and other public bodies find it in one search. The national index picks it up. And every item knows when it has to go."
       />
       <FeatureList>
         <FeatureItem
           icon={<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>}
-          title="Federated search by default."
+          title="One search across every catalogue that joined."
         >
-          Search runs across every register on your install plus every catalogue you've federated with. Results stay sovereign, no central index.
+          Today: a resident looks for a zoning decision and visits three municipal websites. Instead: they search once and find your document and the neighbouring municipality's in the same list. Nobody built a shared database. Each organisation keeps its own catalogue on its own server, and the search reaches across them.
         </FeatureItem>
         <FeatureItem
           icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
-          title="DCAT-AP profile, NLDS-aligned."
+          title="Change it once, and the public page changes with it."
         >
-          Every entry exports as DCAT-AP and NLDS metadata. data.overheid.nl picks it up without manual upload.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5 1 6-5.5-3-5.5 3 1-6L3 9l6-1z"/></svg>}
-          title="Citation-stable URLs."
-        >
-          Every catalogue entry gets a permanent identifier. Tweede Kamer-vragen and audit trails keep working through reorganisations.
+          Today: a date is corrected in the case system, and someone remembers to correct the website too. Or not. Instead: the public page reads the record itself. Correct the field once, and the public page shows the correction. No second edit, no two versions of the truth.
         </FeatureItem>
         <FeatureItem
           icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>}
-          title="WOO publication flow."
+          title="All seventeen Woo categories, in the format the national index reads."
         >
-          Eleven Woo-categorieën each get a register; the catalogue surfaces them at jouwgemeente.nl/woo with audit log and retention policies built in.
+          The Woo, the Dutch open government act, names seventeen kinds of information every public body has to publish. Today: someone uploads to the national index by hand, again and again. Instead: publish here, and the national index picks it up in the format it requires. Each item already carries its retention date, so it comes down again on time.
         </FeatureItem>
         <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
-          title="Open, forever."
+          icon={<svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5 1 6-5.5-3-5.5 3 1-6L3 9l6-1z"/></svg>}
+          title="Links that keep working."
         >
-          Every entry exportable to plain JSON. The day you uninstall is as easy as the day you installed. No vendor lock-in, ever.
+          A member of parliament cites your report in a written question. Two reorganisations later, the link still opens the same document. Every published item keeps its own permanent address, so citations, audit files and court records keep working.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>}
+          title="Open, and yours to take with you."
+        >
+          Every item exports as plain, open files. Your reading room runs on the server you host, or your partner hosts for you. The day you leave is as easy as the day you started.
         </FeatureItem>
       </FeatureList>
     </div>
@@ -72,65 +75,58 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
   </div>
 </Section>
 
-<Section spacing="default" background="tinted">
-  <SectionHead
-    eyebrow="How it works"
-    title="Four steps, one configuration pass."
-    align="stack"
-    lede="The same pipeline applies to a software catalogue, a Woo-portal, or a public API directory. Configure the connector, point it at your register, the catalogue lights up."
-  />
-  <Pipeline
-    start={{label: 'Sources', items: ['Spreadsheets', 'Databases', 'REST / SOAP', 'Legacy systems']}}
-    steps={[
-      {number: '01', kicker: 'Ingest', name: 'OpenConnector', caption: 'Pull data in from existing systems via REST, SOAP, file drops.'},
-      {number: '02', kicker: 'Validate', name: 'OpenRegister', caption: 'Schema validates every write. Citation-stable IDs assigned.'},
-      {number: '03', kicker: 'Surface', name: 'OpenCatalogi', caption: 'Federated public catalogue. Search, filter, share.'},
-      {number: '04', kicker: 'Render', name: 'MyDash', caption: 'Optional dashboards and reports for the team.'},
-    ]}
-    end={{label: 'Consumers', items: ['Citizens', 'Partners', 'API clients', 'Auditors']}}
-  />
-</Section>
-
 <RotatingCards
-  eyebrow="Three ways OpenCatalogi earns its place"
-  title="Federated catalogue, register-aware, dashboard-ready."
-  lede="Scroll the cards. Each pins as you reach it; the next slides up to cover."
+  eyebrow={`Four ways ${app.name} earns its place`}
+  title="It works the way you work. And it works for you."
+  lede="Four things you would normally pay extra for. Here they are built in."
   cards={[
     {
       tone: 'forest',
-      eyebrow: 'Federated by default',
-      title: 'One catalogue, many publishers.',
-      summary: 'OpenCatalogi indexes registers across organisations and federates to data.overheid.nl. Search once, find every published record. No central database, no nightly import.',
-      cta: {label: 'See the catalogue', href: '/apps/opencatalogi'},
-      panel: <AppMock app="opencatalogi" />,
+      eyebrow: 'Automate',
+      title: 'The council decides on Tuesday. It is public on Wednesday, by itself.',
+      summary: 'Today: someone keeps a list of what has to go public when, and what has to come down when. Instead: you draw it once. Set the publication date, and the item goes public on the day. Set the retention term, and it comes down on the day, with a note of why. A publication whose term is about to end lands on the records officer\'s list before the date. A batch of two hundred documents cleared for publication? Published in one go, and every one of them logged. Nothing forgotten, no chasing, no coding.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
-      eyebrow: 'Register-aware',
-      title: 'Every entry is a typed register row.',
-      summary: 'OpenCatalogi reads OpenRegister directly. Schema changes flow through. Citation-stable IDs land in the catalogue automatically.',
-      cta: {label: 'See OpenRegister', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      eyebrow: 'Make it yours',
+      title: 'Your reading room, your fields, your look. Without a developer.',
+      summary: 'A province wants the water board on every dataset. A municipality wants a decision number on every decision. A ministry wants a page per theme, in its own house style. Add the field, add the page, build the menu, pick the theme. In the running app, in minutes, and your changes stay with every update.',
+      cta: {label: 'How customising works', href: '/apps/buildiq'},
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
-      eyebrow: 'Dashboard-ready',
-      title: 'What you publish, you can chart.',
-      summary: 'MyDash reads the same registers OpenCatalogi indexes. Publish a dataset and a graph of it shows up on the dashboard the same morning.',
-      cta: {label: 'See MyDash', href: '/apps/mydash'},
-      panel: <AppMock app="mydash-bi" />,
+      eyebrow: 'Talk to it',
+      title: 'Ask for the document. Get the document.',
+      summary: 'Type "which permits did we publish about the harbour last year?" and get the list, with links that open. Ask "what does the retention on the traffic decisions say?" and get the answer, not a spreadsheet to build. The assistant reads the catalogue the way a resident does. It only reads, and you decide who may ask it.',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: which permits did we publish about the harbour last year?',
+        'assistant: 6 publications found, newest 14 November',
+        'assistant: want the links, or a summary of each?',
+      ]} cursor mode="reads the catalogue, changes nothing" />,
+    },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'The people you serve look it up themselves. Without a request form.',
+      summary: <>The catalogue is the public front door, and <a href="/apps/portaliq">Portaliq</a> is the personal one. Behind a login, residents and businesses see what applies to them: the requests they filed, the contracts they hold, the invoices they owe or paid. A quotation is asked for and signed in the same place. The counter is open in the evening too, and your inbox stays quiet.</>,
+      cta: {label: 'See the client portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
     },
   ]}
 />
 
 <WidgetShelf
   eyebrow="Widgets we ship"
-  title="On every Nextcloud dashboard."
-  lede="Install OpenCatalogi and the home screen tracks what got published, what was searched, and what other gemeenten are federating from you."
+  title="We ship the widgets you need"
+  lede={<>Install it and the home screen shows what the public reads, what still waits to go out, and which items are about to reach their retention date. Want more? Design your own widgets with <a href="/apps/buildiq">Buildiq</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
   widgets={[
     {
-      title: 'Recent publications',
-      desc: 'Last items added to the public catalogue. Category hex, title, federation status.',
+      title: 'Most-read publications',
+      desc: 'Top publications by views and downloads, counted without storing anything about the reader. You see what the public actually reads.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {['var(--c-blue-cobalt)', 'var(--c-forest-500)', 'var(--c-lavender-500)', 'var(--c-terracotta-500)', 'var(--c-mint-500)'].map((tone, i) => (
@@ -144,14 +140,14 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
       ),
     },
     {
-      title: 'Catalogue stats',
-      desc: 'Three KPIs at a glance: total publications, federated downstream, queries this week.',
+      title: 'Catalogues at a glance',
+      desc: 'Every catalogue you run, how much is published in each, and how much still waits for a decision.',
       panel: (
         <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6}}>
           {[
-            {n: '3.4k', l: 'records', tone: 'var(--c-cobalt-900)'},
-            {n: '12',  l: 'feeders', tone: 'var(--c-mint-500)'},
-            {n: '847', l: 'queries', tone: 'var(--c-orange-knvb)'},
+            {n: '3.4k', l: 'published', tone: 'var(--c-cobalt-900)'},
+            {n: '12',  l: 'catalogues', tone: 'var(--c-mint-500)'},
+            {n: '847', l: 'waiting', tone: 'var(--c-orange-knvb)'},
           ].map((kpi, i) => (
             <div key={i} style={{padding: '8px 6px', background: 'var(--c-cobalt-50)', borderRadius: 'var(--radius-sm)', display: 'flex', flexDirection: 'column', gap: 2}}>
               <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 18, fontWeight: 700, color: kpi.tone}}>{kpi.n}</div>
@@ -162,16 +158,14 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
       ),
     },
     {
-      title: 'Federation status',
-      desc: 'Who is consuming your catalogue, who is publishing back. Mint = healthy, orange = retry, red = down.',
+      title: 'Retention review',
+      desc: 'Publications whose retention term needs a decision: expiring soon, review required, and archived. Each opens the filtered list.',
       panel: (
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           {[
-            {tone: 'var(--c-mint-500)',       label: 'data.overheid.nl'},
-            {tone: 'var(--c-mint-500)',       label: 'gemeente Tilburg'},
-            {tone: 'var(--c-orange-knvb)',    label: 'gemeente Almere'},
-            {tone: 'var(--c-mint-500)',       label: 'Forum Standaardisatie'},
-            {tone: 'var(--c-red-vermillion)', label: 'gemeente Hoorn'},
+            {tone: 'var(--c-orange-knvb)',    label: 'Expiring soon (4)'},
+            {tone: 'var(--c-red-vermillion)', label: 'Review required (2)'},
+            {tone: 'var(--c-mint-500)',       label: 'Archived (11)'},
           ].map((row, i) => (
             <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
               <span style={{width: 8, height: 9, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
@@ -182,72 +176,101 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid,
         </div>
       ),
     },
+    {title: 'Popular search terms', desc: 'What the public searches for, so you publish what they actually look for.'},
+    {title: 'Traffic', desc: 'Visits to your reading room over time, counted without tracking anyone.'},
+    {title: 'Activity', desc: 'What was published, changed and taken down, day by day.'},
+    {title: 'Publications', desc: 'Everything you have published, in one running count.'},
+    {title: 'Concept', desc: 'Items drafted but not yet public, waiting for a decision.'},
+    {title: 'Published', desc: 'What is live right now, across all your catalogues.'},
+    {title: 'Depublished', desc: 'What came down, when, and why it did.'},
+    {title: 'By category', desc: 'Publications per category, so gaps show up on sight.'},
+    {title: 'Working lists', desc: 'Three lists of items that need a hand: to check, to enrich, to decide.'},
+    {title: 'Publication views', desc: 'How often one publication was read, on the publication itself.'},
+    {title: 'Publication downloads', desc: 'How often the document behind it was downloaded.'},
+    {title: 'Organisation publications', desc: 'What one organisation has published, in one list.'},
+    {title: 'Organisation catalogues', desc: 'The catalogues one organisation runs.'},
+    {title: 'Theme usage', desc: 'Which themes are used where, before you change one.'},
+    {title: 'Theme preview', desc: 'How a theme looks before you put it on a live page.'},
+    {title: 'Glossary graph', desc: 'How your public terms relate, drawn as a map.'},
+    {title: 'Page tree', desc: 'The pages of your reading room, in their hierarchy.'},
+    {title: 'Menu tree', desc: 'The menus of your reading room, ready to rearrange.'},
+    {title: 'Concept attachments', desc: 'Draft attachments waiting to go out, on your Nextcloud home screen.'},
+    {title: 'Concept publications', desc: 'Draft publications waiting for a decision, on your Nextcloud home screen.'},
   ]}
 />
 
 <Showcase
-  eyebrow="How OpenCatalogi plugs into the workspace"
-  title="One catalogue, surfaced wherever you ask."
-  lede="Three integration paths that take the published catalogue beyond its own page, into the wiki, the workflow tools, and the AI assistant."
+  eyebrow={`How ${app.name} plugs into the workspace`}
+  title="Your files, your photos, your neighbours, the national index."
+  lede="A publication is the document itself, the photos that go with it and the links that belong to it. They live in your Nextcloud. The catalogue makes them public, and passes them on."
   layout="side"
-  defaultOpen="xwiki"
+  defaultOpen="files"
   items={[
     {
-      id: 'xwiki',
-      title: 'XWiki',
-      summary: 'Embed a live catalogue query inside any wiki page. Procedure docs cite the canonical dataset, not a snapshot. The wiki stays explanatory; the catalogue stays authoritative.',
-      cta: {label: 'See the wiki macro', href: 'https://docs.conduction.nl/opencatalogi/xwiki'},
+      id: 'files',
+      title: 'The document, the photos and the links, on the publication',
+      summary: 'A publication is not a form. It is the report itself, the map that goes with it, the photos of the site and the links to the underlying decisions. Drop them on the publication from Files, and they are the public download. Everyone downloads the same version you see. Update the file, and the public download is the new file.',
+      cta: {label: 'Read the docs', href: 'https://opencatalogi.conduction.nl'},
+      panel: <LeafMock leaf="files" />,
+    },
+    {
+      id: 'schedule',
+      title: 'Public on the day, down on the day',
+      summary: 'Give an item a publication date, and it goes public that day. Give it a retention term, and it comes down that day, with the reason recorded. Every night the catalogue checks what is due. Items about to reach their term show up on the records officer\'s list ahead of time, so nothing is a surprise.',
+      cta: {label: 'Read the docs', href: 'https://opencatalogi.conduction.nl'},
       panel: <AppMock app="opencatalogi" />,
     },
     {
-      id: 'mail-files',
-      title: 'Mail and Files',
-      summary: 'Find a catalogued dataset without leaving Mail or Files. The sidebar lets you search the federated catalogue, attach a citation-stable URL to the email, drop the dataset reference into a folder.',
-      cta: {label: 'See the sidebar guide', href: 'https://docs.conduction.nl/opencatalogi/mail-files'},
+      id: 'federation',
+      title: 'Search across the catalogues of other public bodies',
+      summary: 'Register your catalogue in the shared directory, and other organisations can find and follow it. Their residents search once and see your publications next to theirs. Your data stays on your server. Nobody copies it into a central database, and nobody has to.',
+      cta: {label: 'Read the docs', href: 'https://opencatalogi.conduction.nl'},
       panel: <AppMock app="opencatalogi" />,
     },
     {
-      id: 'llms',
-      title: 'LLMs (Claude, Mistral, Ollama)',
-      summary: 'Ask the catalogue in plain language. The LLM resolves your question to a federated query, returns datasets with citation-stable IDs, and explains why each one matched. Helpful when the catalogue gets to thousands of items.',
-      cta: {label: 'See the semantic search', href: 'https://docs.conduction.nl/opencatalogi/llm-search'},
-      panel: <AppMock app="mydash-bi" />,
+      id: 'national',
+      title: 'The national open data index, fed for you',
+      summary: 'Publish a dataset here, and the national open data portal can pick it up in the format it requires. No separate upload, no second description to keep in sync. Search engines get a sitemap per catalogue, so a resident who searches the web finds your publication too.',
+      cta: {label: 'Read the docs', href: 'https://opencatalogi.conduction.nl'},
+      panel: <AppMock app="opencatalogi" />,
     },
   ]}
 />
 
-<Section spacing="default">
+<Section spacing="default" background="tinted">
   <SectionHead
     eyebrow="Pairs well with"
-    title="Three apps that fill the catalogue."
+    title="Three apps that make the catalogue more yours."
     align="stack"
-    lede="OpenCatalogi surfaces what's already typed. These apps fill, connect, and extend the registers OpenCatalogi reads from."
+    lede="Shape the reading room, ask it questions, and put its numbers on your own dashboard."
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>}
-      name="OpenRegister"
-      why="The typed-data foundation. Every catalogue entry is a register record."
+      href="/apps/buildiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="Buildiq"
+      why="Change pages, fields and menus of your reading room in the running app. A province and a ministry run the same app, each their own way."
     />
     <PairCard
-      href="/apps/openconnector"
-      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-      name="OpenConnector"
-      why="Pulls data from existing systems into registers, no glue code."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 1 1-4-6.9"/><path d="M12 8v4l3 2"/></svg>}
+      name="Hermiq"
+      why="The assistant that finds publications and answers retention questions lives here. You decide who may ask it."
     />
     <PairCard
-      href="/apps/docudesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      name="DocuDesk"
-      why="Anonymises documents before they're published in the catalogue."
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Compose your own dashboard from the catalogue widgets above, next to everything else your organisation runs."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="opencatalogi" />
+
 <CtaBanner
-  title="One catalogue. Every public link."
-  lede={<>Install OpenCatalogi from the <span className="next-blue">Nextcloud</span> app store, point it at your registers, and citizens find what they need the same morning.</>}
-  primaryCta={{label: 'Install from app store', href: '/install'}}
-  secondaryCta={{label: 'Read the docs', href: 'https://docs.conduction.nl/opencatalogi'}}
+  title="Your public catalogue, on your own Nextcloud."
+  lede={<>Open source. Free to install. GDPR-compliant by default. Publish from the same <span className="next-blue">Nextcloud</span> where your team already works, and be found everywhere.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/opencatalogi'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=opencatalogi'}}
 />

@@ -7,21 +7,28 @@
     "docusaurus": "docusaurus",
     "postinstall": "node scripts/sync-app-downloads.js",
     "prestart": "node scripts/sync-app-downloads.js",
-    "start": "docusaurus start",
+    "start": "docusaurus start --locale en",
+    "start:nl": "docusaurus start --locale nl",
+    "preview": "docusaurus build && docusaurus serve",
     "prebuild": "python3 .github/scripts/app_downloads.py && node scripts/sync-app-downloads.js",
     "build": "docusaurus build",
+    "postbuild": "node scripts/validate-ai-baseline.mjs",
+    "validate:ai-baseline": "node scripts/validate-ai-baseline.mjs",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "ci": "npm ci --legacy-peer-deps && npm run build"
+    "ci": "npm ci --legacy-peer-deps && npm run build",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
-    "@conduction/docusaurus-preset": "^3.3.0",
-    "@docusaurus/core": "^3.5.0",
-    "@docusaurus/preset-classic": "^3.5.0",
+    "@conduction/docusaurus-preset": "^3.35.0",
+    "@docusaurus/core": "^3.10.2",
+    "@docusaurus/plugin-client-redirects": "^3.10.2",
+    "@docusaurus/preset-classic": "^3.10.2",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
     "prism-react-renderer": "^2.3.0",
@@ -29,8 +36,9 @@
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^3.5.0",
-    "@docusaurus/types": "^3.5.0"
+    "@docusaurus/module-type-aliases": "^3.10.2",
+    "@docusaurus/types": "^3.10.2",
+    "@playwright/test": "^1.62.1"
   },
   "browserslist": {
     "production": [
@@ -45,6 +53,6 @@
     ]
   },
   "engines": {
-    "node": ">=18.0"
+    "node": ">=20.0"
   }
 }

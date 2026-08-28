@@ -1,0 +1,238 @@
+---
+slug: hermiq-skills-tutorial-2-qualifying-a-skill
+title: "Hermiq skills tutorial series — Part 2: Qualifying a skill (L1–L7)"
+contentType: tutorial
+heroIcon: robot
+authors: [conduction]
+date: 2026-07-27
+summary: Run the Qualify action on the seeded skills, read the seven-level scorecard, fix a failing level, and attest L4 as a curator. Also covers why most skills stop at L4, and why that is fine. Part 2 of 4.
+tags: [Hermiq, AI, Skills, Maturity, Governance, Tutorial series]
+apps: [hermiq, openregister]
+durationMinutes: 20
+series: hermiq-skills-tutorial
+partNumber: 2
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+} from '@conduction/docusaurus-preset/components';
+
+import scorecardImg from './images/01-qualify-scorecard.png';
+import Details from '@theme/Details';
+
+Every skill row in the Hermiq catalog carries a badge of seven dots. In this part you
+learn what the dots mean, run the **Qualify** action to earn them mechanically, read
+the scorecard that explains every failure, and attest level 4 as a human curator. You
+also learn why the ladder deliberately gets harder to climb from level 5 on.
+
+{/* truncate */}
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>An understanding of the L1–L7 maturity ladder, from anatomy to workforce.</Outcome>
+  <Outcome>How to run the Qualify action and read the per-level scorecard.</Outcome>
+  <Outcome>What each mechanical check (L1–L3) actually tests, and how to fix a failing level.</Outcome>
+  <Outcome>How to attest L4 as a curator, and why L4 can never be auto-detected.</Outcome>
+  <Outcome>A clear picture of why most skills plateau at L4, and why that is fine.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>Part 1 done: <a href="/academy/hermiq-skills-tutorial-1-skills-for-your-agents">Skills for your agents</a>. The seeded skills and your own hand-written skill are the material for this part.</PrerequisiteItem>
+  <PrerequisiteItem>An account with admin rights. The seeds are system-owned, and an admin acts as their custodian for qualification.</PrerequisiteItem>
+</Prerequisites>
+
+## The ladder, briefly
+
+The maturity model comes from the fleet-wide skill-writing practice (ADR-068) and has
+seven levels. Each level stacks on the previous one: level n only counts when levels 1
+through n minus 1 also pass.
+
+| Level | Name | What it proves |
+|---|---|---|
+| **L1** | Anatomy | The skill parses: frontmatter with name and description, non-empty body |
+| **L2** | Golden rule | The description triggers well, the body stays compact and disclosed progressively |
+| **L3** | Foundations | Detail lives in `references/` or `examples/` files, not in one monolith |
+| **L4** | Personalisation | A human attests the skill carries real business knowledge |
+| **L5** | Measurement | Paired eval evidence: pass rate, baseline delta, last validated |
+| **L6** | Self-improvement | A living learnings loop with consolidation |
+| **L7** | Workforce | The skill demonstrably runs inside an executed orchestration chain |
+
+Three things to know before you touch anything:
+
+- **L1 to L3 are mechanical.** Hermiq computes them from the skill's content. No
+  judgement involved.
+- **L4 is human, always.** No heuristic can verify that a skill encodes your
+  organisation's actual way of working. A curator attests it, on the record.
+- **L5 to L7 are evidence-based.** Hermiq never grants them from the skill's text.
+  The evidence is written by other subsystems: paired eval runs (Part 3), the
+  learnings loop (Part 4), and executed orchestration chains. No evidence, no level,
+  with the reason spelled out on the scorecard.
+
+Maturity is also strictly separate from the lifecycle state you saw in Part 1. A
+quarantined skill keeps its maturity; qualifying never changes state. And none of the
+maturity fields ever enter the exported agentskills.io package, which stays
+byte-identical before and after qualification.
+
+## Step 1: Read the dots on the catalog
+
+Open **Skills**. The three example seeds ship at a deliberate spread:
+
+| Skill | Dots | Why |
+|---|---|---|
+| `meeting-notes-cleanup` | 1 | Valid structure, but the description is a bare noun phrase |
+| `woo-request-triage` | 2 | Good trigger description, compact body, no reference files |
+| `tender-summary` | 4 | References, examples, and a seeded curator attestation |
+
+**Verify:** the badges on the three rows show 1, 2, and 4 filled dots, each with a
+textual level for screen readers.
+
+## Step 2: Qualify a skill and read the scorecard
+
+Qualification recomputes L1 to L3 from the current content, persists the result, and
+returns a scorecard for all seven levels.
+
+1. On the `meeting-notes-cleanup` row, open the row actions and choose **Qualify**.
+2. The scorecard opens: seven rows, each with pass or fail and readable reasons.
+
+Expect this picture:
+
+- **L1 pass.** Frontmatter parses, name and description present, body non-empty.
+- **L2 fail, with a triggering reason.** The description `Meeting notes helper` names
+  a topic but not a trigger. It does not start with a verb, and it never says when an
+  agent should use it.
+- **Everything above L2 fails** by the contiguity rule, whatever else the skill has.
+
+The L2 check tests three things at once: trigger quality of the description (a
+verb-shaped phrase plus when-to-use phrasing), a body under 500 lines, and progressive
+disclosure (a large body must be accompanied by `references/` files rather than being
+one monolith).
+
+<figure>
+  <img src={scorecardImg} alt="The Maturity scorecard modal for meeting-notes-cleanup: a one-of-seven dot badge reading L1 with Target: L2, then seven level rows — L1 Anatomy Passed; L2 Triggering Not passed with reasons that the description does not start with trigger phrasing and has no when-to-use phrasing; L3 Patterns, L4 Personalization, L5 Measurement, L6 Self-Improvement and L7 AI Workforce all Not passed" />
+  <figcaption>The scorecard for <code>meeting-notes-cleanup</code>: L1 passes, L2 fails on trigger quality, and everything above fails by contiguity. Each failing row names its reason.</figcaption>
+</figure>
+
+**Verify:** the scorecard shows L1 passed and L2 failed with a reason that mentions
+the description's trigger quality.
+
+## Step 3: Fix the failing level and re-qualify
+
+The scorecard tells you what to fix first. For `meeting-notes-cleanup` that is the
+description.
+
+1. Edit `meeting-notes-cleanup` (the authoring form from Part 1).
+2. Replace the description with a trigger-quality one:
+   `Clean up raw meeting notes — use when the user pastes meeting notes and wants tidy headings, grouped action items, and decisions kept verbatim.`
+3. Update the frontmatter's `description:` line to match, and save.
+4. Run **Qualify** again.
+
+**Verify:** the skill now reports level 2, and the scorecard's first failure has
+moved to L3 with a missing references/examples reason.
+
+To reach L3 you would add at least one `references/*` or `examples/*` entry in the
+files editor. Try it on your own `pet-store-order-summary` skill from Part 1: add
+`examples/order-summary-example.md` with one worked example and re-qualify. L3 now
+passes.
+
+## Step 4: Attest L4 as a curator
+
+L4 says: this skill encodes business-specific knowledge, and a person checked. Hermiq
+refuses to guess this. The attest action is gated by action authorization: your group
+must be mapped to the `skill.attest-maturity` action in Hermiq's admin settings.
+
+1. As an admin, confirm your group is mapped to `skill.attest-maturity` (Hermiq admin
+   settings, action authorization section). Admins pass by default.
+2. Open the `woo-request-triage` detail page. After step 3-style fixes it sits at the
+   level its content earns.
+3. Use the **Attest L4** action on the maturity scorecard and add a short note, for
+   example: `Checked routing and deadlines against our municipality's WOO process documentation.`
+4. The attestation records who attested, when, and the note, then recomputes the
+   level.
+
+An unauthorized user gets a plain 403 and the skill stays unchanged. And attesting a
+skill that still fails L2 or L3 does not skip anything: levels stay contiguous, so
+the attestation waits in the evidence until the lower levels pass.
+
+**Verify:** the detail scorecard shows the attestation with your user id and
+timestamp under L4.
+
+## Step 5: Read why the ladder stops here for now
+
+Open `tender-summary`. It ships at L4 with `targetLevel: 5`, so the scorecard shows
+exactly the situation most real skills live in:
+
+- L1 to L3 pass mechanically.
+- L4 carries a seeded attestation.
+- **L5 fails with an eval-evidence reason.** No paired eval run has written evidence
+  for this skill yet.
+
+You cannot fix this from the skill page. L5 evidence has exactly one writer: a
+completed paired eval run. Hand-editing `maturityLevel` does not work either; the
+write paths silently ignore client-supplied maturity fields and carry the stored
+values forward. Part 3 sets up and runs that eval.
+
+**Verify:** the `tender-summary` scorecard reports L5 failed with a reason pointing
+at missing eval evidence.
+
+## Why most skills plateau at L4
+
+Most skills stop at L4, and that is a reasonable place to stop. L5 costs eval
+datasets and roughly double the tokens per run. L6 costs a capture and consolidation
+loop. L7 costs an orchestrated chain that actually executes. For a skill you use
+weekly, L4 with a fresh attestation is enough. Reserve L5 and beyond for the skills
+that carry daily workflows or steer other skills. For those, measured evidence is
+worth the extra cost.
+
+## Test yourself
+
+**Question 1:** A skill has excellent `references/` files but a description that is a
+bare noun phrase. What level does Qualify report, and why?
+
+<Details summary="Hint">
+  Think about the contiguity rule.
+</Details>
+
+<Details summary="Answer">
+  Level 1. The references would satisfy L3's check, but L2 fails on trigger quality,
+  and a passed higher check never skips a failed lower level. The scorecard reports L2
+  failed with a triggering reason and L3's own check as passing, so you know exactly
+  what to fix.
+</Details>
+
+**Question 2:** Why can an admin edit a skill's `targetLevel` but not its
+`maturityLevel`?
+
+<Details summary="Hint">
+  One field records intent; the other records a computed fact.
+</Details>
+
+<Details summary="Answer">
+  <code>targetLevel</code> is curator intent: where you want the skill to go. It is
+  freely editable. <code>maturityLevel</code> is a computed fact with exactly one
+  writer per evidence type: the qualify service for L1–L3, the attest endpoint for L4,
+  and external subsystems for L5–L7. Client-supplied values are silently ignored so
+  the badge always tells the truth.
+</Details>
+
+## Where to go from here
+
+Your skills now have accurate badges and one named gap: eval evidence. Part 3 links an
+eval dataset to a skill, runs a paired with-and-without baseline, and watches the L5
+evidence arrive on the scorecard.
+
+<NextSteps>
+  <NextStep
+    title="Part 3 — Measuring skills with paired evals"
+    href="/academy/hermiq-skills-tutorial-3-paired-evals">
+    Link a dataset, run with/without baselines, read pass rate and baseline delta, and understand the cost of joint versus per-skill mode.
+  </NextStep>
+  <NextStep
+    title="Claude Skills tutorial series — Part 3: Skill evals"
+    href="/academy/claude-skills-tutorial-3-skill-evals">
+    The same L4-to-L5 step in the Claude Code world, with evals.json and the skill-creator eval runner.
+  </NextStep>
+</NextSteps>

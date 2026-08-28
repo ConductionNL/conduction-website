@@ -1,0 +1,260 @@
+---
+slug: workstation-tutorial-1-what-to-install
+title: "Workstation Setup tutorial series — Part 1: What do you install, and why?"
+contentType: tutorial
+heroIcon: terminal
+authors: [conduction]
+date: 2026-05-29
+summary: A new Conduction developer needs a specific combination of tools — Claude Code, Docker, Nextcloud locally, Playwright, a handful of global settings. Before we start clicking through installers, this part explains what's on the menu and which choices you make first. First of six short modules.
+tags: [Workstation, Setup, Onboarding, WSL2, Docker, Tutorial series]
+apps: []
+durationMinutes: 10
+series: workstation-tutorial
+partNumber: 1
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+A working Conduction workstation needs a specific combination of tools: Claude Code, Docker, Nextcloud running locally, Playwright, a handful of global Claude settings and hooks, and a working `gh` CLI. New developers often lose their first day (or two) to setup puzzles we've already solved internally. This six-part series gets you from a clean laptop to a working workstation in one evening. Part 1 — this one — answers the question *what do you install, and why* before you start clicking through installers.
+
+{/* truncate */}
+
+:::tip Already know the system? Skip to the cheat-sheet
+If you've set up a Conduction workstation before and just need the commands in order on a fresh machine, the **[Quick Setup cheat-sheet](https://github.com/ConductionNL/.github/blob/main/docs/claude/quick-setup.md)** in the `.github` repo has prerequisites (Windows + WSL, native Linux, **or** macOS), the repos to clone, the install commands in order, and a validation step — on one page. This series is the *narrative* walkthrough for first-timers; the cheat-sheet is the *condensed* recipe for re-setups.
+:::
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>Which OS + tooling combination Conduction recommends, and the trade-off behind that choice.</Outcome>
+  <Outcome>The full list of tools you'll install in parts 2–5, and what each one does.</Outcome>
+  <Outcome>How the six parts of this series chain together — what you do here, what you do later, and what you skip if you already have it.</Outcome>
+  <Outcome>How long the whole thing realistically takes (spoiler: one evening).</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>A laptop you're allowed to install software on. Work laptop with admin rights is ideal.</PrerequisiteItem>
+  <PrerequisiteItem>Around 30 GB free disk space — WSL, Docker images, Nextcloud volumes, and a few node_modules folders together pile up fast.</PrerequisiteItem>
+  <PrerequisiteItem>A working internet connection. Most of the install steps download things.</PrerequisiteItem>
+</Prerequisites>
+
+## The recommended combination
+
+Conduction's stack is opinionated for a reason: every tool below has been picked because the next tool in the chain depends on it. The default combination is:
+
+<HexCard title="Windows 11 + WSL2 + Ubuntu 24.04">
+  Your editor and browser run on Windows, your terminal and code on Linux. This is the combination the canonical workstation-setup doc covers end to end.
+</HexCard>
+
+<HexCard title="Docker Desktop (Windows-side)">
+  Nextcloud, the database, n8n, optional AI services — all containers. Docker Desktop integrates with WSL2 so you start containers from inside Ubuntu.
+</HexCard>
+
+<HexCard title="VS Code + Claude Code extension">
+  VS Code on Windows, connected to WSL via the Remote-WSL extension. Claude Code runs inside that VS Code as the AI coding assistant we build *with*, not just *next to*.
+</HexCard>
+
+<HexCard title="Node 20+, PHP 8.1+, Composer, gh, OpenSpec CLI">
+  The toolbelt for the actual code. All installed inside WSL — never on the Windows side, even when you're tempted.
+</HexCard>
+
+## Why this stack and not another?
+
+A few common questions from people who've used something else before:
+
+**"Can I use macOS instead?"** The canonical workstation-setup doc only covers Windows + WSL2. The concepts (Docker Desktop, VS Code + Claude Code, Node, PHP, Composer, `gh`, OpenSpec, Playwright) translate to macOS via Homebrew, but you'll be adapting install commands yourself.
+
+**"Can I use plain Linux instead?"** Same story — the canonical doc is Windows-first, so on native Linux you'll skip the WSL section and adapt the install commands to your distro. The concepts are the same.
+
+**"Why not native Windows without WSL?"** Because half of the stack is Linux-first: Nextcloud's official Docker images, PHP CLI tooling, bash hooks, and the `gh` CLI all behave better on Linux. WSL2 gives you a fast Linux VM that integrates with Windows so well that you usually forget it's a separate OS.
+
+**"Can I use VS Code's web version instead?"** No. We rely on local file access, the Claude Code extension, and MCP servers that need filesystem access — none of which work in the web build.
+
+**"Can I use a different editor — Cursor, JetBrains, Vim?"** In theory yes. In practice the canonical workstation-setup doc lists VS Code + the Claude Code extension as the default, and most internal docs assume it. Start with VS Code; switch later if you must.
+
+## What you'll install along the way
+
+A bird's-eye view of every tool, grouped by which part installs it. Use this as your shopping list:
+
+| Tool | What it does | Part |
+| --- | --- | --- |
+| WSL2 + Ubuntu 24.04 (Windows only) | Linux subsystem you actually run commands in | Part 2 |
+| Docker Desktop | Container runtime — runs Nextcloud, db, n8n | Part 2 |
+| VS Code | Editor, plus the Claude Code extension | Part 2 |
+| VS Code extensions (Claude Code, WSL, Docker, Vue, PHP Intelephense, ESLint) | Editor support for the languages and the AI assistant | Part 2 |
+| Node 20+ (via nvm) | Required by OpenSpec CLI and Vue tooling | Part 2 |
+| PHP 8.1+ and Composer | Backend language of every Nextcloud app | Part 2 |
+| Codeberg SSH key + `tea` CLI | Primary git auth at Conduction (Codeberg is the new canonical host) | Part 2 |
+| GitHub CLI (`gh`) | Secondary host — still needed for Hydra cron scripts and a handful of unmigrated repos | Part 2 |
+| OpenSpec CLI | Spec-first development tooling | Part 2 |
+| Playwright Chromium binary | Browser automation for the testing skills | Part 2 |
+| Claude Code (in VS Code) | Day-to-day AI pair programmer | Part 3 |
+| Global Claude settings + hooks | Mandatory safety policy at the user level | Part 3 |
+| Conduction MCP server | Live links to Conduction systems while you work | Part 4 |
+| Nextcloud (in Docker) | Local copy of the platform we build apps for | Part 5 |
+| Optional: Ollama + local LLM | Local AI for overnight batch jobs | Skipped here, see [local-llm.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/local-llm.md) |
+
+That's the complete menu. You won't touch each item every day, but every item shows up at least once in normal Conduction work.
+
+## What's in each part
+
+The series is intentionally split into short modules. Don't have time tonight? Stop after Part 2 — your machine is already a usable dev workstation, just without Claude Code wired up. The rest can wait until tomorrow.
+
+| Part | What you do | When you can skip it |
+| --- | --- | --- |
+| **1 — What do you install, and why?** | The overview you're reading now. Decisions before installs. | Never. Read it once. |
+| **[2 — Workstation basics](/academy/workstation-tutorial-2-base-setup)** | WSL2, Docker Desktop, VS Code + extensions, Node, PHP, Codeberg auth (SSH + `tea`), `gh`, OpenSpec, Playwright. | If you already have a working WSL + Docker + Node + PHP + git auth setup. |
+| **[3 — Install and configure Claude Code](/academy/workstation-tutorial-3-claude-code)** | Install Claude Code, sign in, install the **mandatory** global settings and safety hooks. | Never — the global settings are mandatory at Conduction. |
+| **[4 — Connect the MCP server](/academy/workstation-tutorial-4-mcp-server)** | Wire your Claude Code to Conduction's MCP server via `.mcp.json`. | If you'll only work outside Conduction projects. |
+| **[5 — Run Nextcloud locally](/academy/workstation-tutorial-5-nextcloud-locally)** | Run Nextcloud on `localhost:8080` to test against. | If you'll only do tooling work that doesn't need Nextcloud running. |
+| **[6 — Done — what now?](/academy/workstation-tutorial-6-done-what-next)** | A short map of the next tutorials: OpenSpec, Skills, Build an App. | Never — read it to know where to go next. |
+
+## How long does it really take?
+
+Plan for one evening on a clean Windows machine with a decent connection. A chunk of that is downloads and installer dialogs that run while you do something else; the hands-on portion is shorter.
+
+Things to plan around:
+
+1. **WSL2 install needs a reboot.** Don't start it five minutes before a meeting. Plan it for the end of the day.
+2. **`composer install` can fail because `vendor/` is owned by root** after the first Docker run. Part 2 walks through the fix (it's also documented in the canonical workstation-setup doc).
+3. **The Playwright Chromium download** is sizeable. Run it from a place with a stable connection, not from the train.
+
+If you hit any other issue, the [canonical workstation-setup doc](https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md) is the source of truth.
+
+## What this series follows
+
+This series is a guided walk through the canonical [`workstation-setup.md`](https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md) in the Conduction `.github` repo. That doc is Windows + WSL2 + Docker Desktop + VS Code. macOS and native Linux aren't covered there — if you go that route, you're adapting from the same concepts.
+
+## A note on order
+
+Don't be tempted to install Claude Code first and "do the global settings later". The global settings include a hook that blocks Claude from running destructive shell commands without approval — running Claude Code without those installed first means **any commands Claude suggests run with no safety net**. Part 3 deliberately installs Claude Code *and* the global settings together for that reason.
+
+## Test yourself
+
+Five short questions to check that this part landed. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. Which combination of OS + tooling does Conduction recommend, and what's the main reason?**
+
+<Details summary="Hint">
+
+Three words for the OS layer, one for the editor, one for the AI assistant. The reason is about the language behind Nextcloud and most of the tooling.
+
+</Details>
+
+<Details summary="Answer">
+
+**Windows 11 + WSL2 + Ubuntu 24.04 + Docker Desktop + VS Code + Claude Code extension** is the default. macOS and native Linux are both supported alternatives; Windows without WSL is **not** recommended.
+
+The main reason: half of the stack — Nextcloud images, PHP tooling, bash hooks, the `gh` CLI — runs more reliably on Linux than on native Windows. WSL2 gives you a fast Linux environment that integrates with Windows tightly enough that you usually forget it's a separate OS.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Why don't we just install Docker Desktop on Windows and skip WSL?**
+
+<Details summary="Hint">
+
+Docker isn't the only thing that needs Linux underneath.
+
+</Details>
+
+<Details summary="Answer">
+
+Because half of the workstation isn't Docker:
+
+- The **`gh` CLI** is happiest on Linux.
+- **PHP CLI tooling** (Composer, phpcs, phpstan) behaves more consistently on Linux.
+- **Bash hooks** (the global Claude settings hooks) only run on Linux/macOS.
+- Many internal scripts and skills assume a POSIX shell.
+
+You *could* run only Docker on Windows and skip WSL, but you'd then hit a wall the first time you have to run a bash hook or `composer install` directly.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Which step in the series shouldn't be started right before a meeting, and why?**
+
+<Details summary="Hint">
+
+Look at the time-sinks list. One specific step is unavoidable mid-process and can't be paused.
+
+</Details>
+
+<Details summary="Answer">
+
+The **WSL2 install** in Part 2. It needs a Windows reboot mid-process, and Ubuntu only finishes its first-time setup *after* the reboot. Start it five minutes before a meeting and you'll either join late or come back to a half-configured Ubuntu prompt that you've forgotten the context for.
+
+The other slow step to plan around is the **Playwright Chromium download** (~300 MB) — not a hard interruption, but noticeably slow on a train or coffee-shop wifi.
+
+Rule of thumb: schedule the WSL2 step for the start of an uninterrupted block, ideally the end of the workday so the reboot lands when nothing else is competing.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Which two parts of the series are technically optional, and why?**
+
+<Details summary="Hint">
+
+One of them is only optional if you'll never touch a Conduction project; the other is only optional if you'll never need a running Nextcloud.
+
+</Details>
+
+<Details summary="Answer">
+
+- **Part 4 — Connect the MCP server** — only optional if you'll work entirely outside Conduction projects. For anyone doing actual Conduction work, the MCP server is what gives Claude Code direct access to our systems while you work.
+- **Part 5 — Run Nextcloud locally** — only optional for pure tooling work (writing docs, working on the website, working on Hydra config). The moment you touch a Nextcloud app, you need a local Nextcloud to test against.
+
+Parts 1, 2, 3 and 6 are never optional. Especially Part 3 — the global Claude safety hooks — is **mandatory** for all Conduction work.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. Why does Part 3 install Claude Code *together with* the global safety hooks, rather than installing Claude Code first?**
+
+<Details summary="Hint">
+
+Think about what Claude Code can do the moment it's installed, and what the global hooks prevent.
+
+</Details>
+
+<Details summary="Answer">
+
+Because Claude Code can run shell commands from the moment it's installed. The global settings include a hook that blocks destructive shell commands without explicit approval — `rm -rf`, `git push --force`, `git reset --hard`, and so on.
+
+Installing Claude Code without those hooks means the very first commands Claude suggests run with no safety net. By installing them together, the safety net is in place before Claude ever touches your shell.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="With the overview done, it's time to install the actual tooling.">
+  <NextStep
+    title="Part 2 — Workstation basics"
+    href="/academy/workstation-tutorial-2-base-setup"
+    description="WSL2, Docker Desktop, VS Code, Node, PHP, gh, OpenSpec, Playwright. The one with the most installer commands."
+  />
+  <NextStep
+    title="The canonical workstation-setup.md"
+    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md"
+    description="The internal reference doc this series is based on. Useful if you ever need to look something up later."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Stuck before you've even started?"
+  body="Send us an email or grab your team lead. Setup problems are easier to debug fresh; don't lose an evening to one wrong installer."
+  cta={{ label: "Email us", href: "mailto:info@conduction.nl?subject=Workstation%20setup%20tutorial%20part%201" }}
+/>

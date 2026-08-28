@@ -1,0 +1,608 @@
+---
+slug: build-an-app-tutorial-5-advanced-manifest
+title: "Build a Nextcloud app on the Conduction stack — Part 5: Advanced manifest features"
+contentType: tutorial
+heroIcon: blocks
+authors: [conduction]
+date: 2026-05-21
+summary: Past the schema-driven CRUD basics, the v2.7.0 manifest schema gives you `actionToggles`, `fieldWidgets`, route-param sentinels, public-mode pages, and seven extra page types (form, wiki, search, roadmap, map, logs, settings). One tutorial that walks through each, using PetStore as the running example.
+tags: [App development, Manifest, OpenRegister, nextcloud-vue, Tutorial series, Advanced]
+apps: [openregister]
+durationMinutes: 40
+series: build-an-app-tutorial
+partNumber: 5
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+  Pill,
+  Eyebrow,
+} from '@conduction/docusaurus-preset/components';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Details from '@theme/Details';
+
+This is **Part 5** of the nine-part app-building tutorial series. Parts 1–4 got you a working app: scaffold, schemas + manifest, schema-driven Calendar integration, and a custom Care tab. Part 5 is the "now what": the v2.7.0 manifest features Parts 1–4 deliberately skipped so the learning curve stayed gentle. You don't need any of them to ship PetStore, but the moment your app needs a public form, a wiki, an admin-only listing, or a markdown editor inside a form, they save you from another round of hand-rolled Vue.
+
+:::tip Parts 5 and 6 are parallel
+This part deepens the *manifest* surface. [Part 6: Integrate](/academy/build-an-app-tutorial-6-integrate) widens the app to *other systems* (cross-register reads, Integriq sources, webhooks). Both build directly on Part 4. Take them in either order, or pick whichever your next app needs first.
+:::
+
+Three principles run through every feature in this part: **schema-driven** (no per-page Vue), **type-safe** (the manifest schema validates every shape before runtime), and **fleet-portable** (the same JSON works in every Conduction app and gets lib upgrades for free).
+
+{/* truncate */}
+
+<Outcomes title="What you'll have at the end of Part 5">
+  <Outcome>An admin-only pets listing using <code>config.actionToggles</code> instead of nine sibling boolean flags.</Outcome>
+  <Outcome>A pet-creation form with a markdown care-notes field, declared via <code>config.fieldWidgets</code>, no Vue file written.</Outcome>
+  <Outcome>A <strong>public order-confirmation page</strong> reachable via a token URL, using <code>config.mode: 'public'</code> + route-param sentinels.</Outcome>
+  <Outcome>A <code>type:'wiki'</code> care-guide surface fed by the same OpenRegister register that powers the rest of the app.</Outcome>
+  <Outcome>A <code>type:'search'</code> faceted cross-schema search page.</Outcome>
+  <Outcome>A <code>type:'dashboard'</code> page with KPI tiles, an orders-by-day chart, and a recent-activity feed, declared in manifest with no Vue file written, plus the side-by-side comparison with the hand-rolled Vue version so you know exactly what you gain by going manifest.</Outcome>
+  <Outcome>A working mental map of every v2.7.0 manifest feature so you can pick the right shape next time without re-reading docs.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Before you start">
+  <PrerequisiteItem>You've finished <a href="/academy/build-an-app-tutorial-2-schemas-manifest">Part 2</a> at minimum: you have a working manifest with index and detail pages.</PrerequisiteItem>
+  <PrerequisiteItem><code>@conduction/nextcloud-vue</code> at <code>^1.0.0-beta.65</code> or newer. The features in this part rely on schema 2.7.0 typed shapes.</PrerequisiteItem>
+  <PrerequisiteItem>Your <code>src/manifest.json</code> declares the v2 schema URL (<code>app-manifest-v2.schema.json</code>). Part 2 set this up.</PrerequisiteItem>
+</Prerequisites>
+
+## 1. `config.actionToggles`: read-only listings without nine flags
+
+The classic shape, before v2.7.0, for an admin-only or read-only `type:'index'` page meant nine sibling booleans:
+
+```json title="Old shape: works but reads poorly"
+"config": {
+  "register": "petstore", "schema": "pet", "columns": [...],
+  "showAdd": false, "showEdit": false, "showCopy": false, "showDelete": false,
+  "showMassImport": false, "showMassCopy": false, "showMassDelete": false,
+  "selectable": false, "showFormDialog": false
+}
+```
+
+`config.actionToggles` collapses all nine into one object. The renderer flattens it back to the underlying props at dispatch time, and explicit `config.<key>` still wins if you set both, so you can override a single flag without rewriting the toggle block.
+
+```json title="src/manifest.json: admin-only pets read-out"
+{"id": "pets-admin-readout",
+ "route": "/admin/pets",
+ "type": "index",
+ "title": "petstore.admin.pets",
+ "permission": "admin",
+ "config": {
+   "register": "petstore", "schema": "pet",
+   "columns": ["name","category","status","price","tag"],
+   "actionToggles": {
+     "showAdd": false, "showEdit": false, "showCopy": false,
+     "showDelete": false, "showMassImport": false, "showMassCopy": false,
+     "showMassDelete": false, "selectable": false, "showFormDialog": false
+   }
+ }}
+```
+
+There's a shorthand for the all-off case: `config.readOnly: true` expands to the same nine flags. Use it for genuinely read-only views: audit logs, archived snapshots, anything you want the user to read but not touch.
+
+```json
+"config": {"register": "petstore", "schema": "pet", "readOnly": true}
+```
+
+## 2. `config.fieldWidgets`: lib widgets inside a form, no Vue file
+
+PetStore's pet dialog has a free-text care-notes field. The schema-generated input gives you a `<textarea>`: fine, but not great. You want a markdown editor with a preview pane, syntax highlighting, and the standard toolbar. Pre-v2.7.0 that meant writing a custom Vue component, registering it, and overriding the field with a `#field-careNotes` slot.
+
+Schema 2.7.0 typed the `fieldWidgets[]` slot on `type:'form'` and `type:'detail'` pages: each entry mounts a lib `Cn*` component for a single field by id.
+
+```json title="src/manifest.json: pet creation form"
+{"id": "pets-create",
+ "route": "/pets/new",
+ "type": "form",
+ "title": "petstore.pets.createTitle",
+ "config": {
+   "register": "petstore", "schema": "pet",
+   "submitEndpoint": "/index.php/apps/openregister/api/objects/petstore/pet",
+   "submitMethod": "POST",
+   "mode": "create",
+   "fieldWidgets": [
+     {"id": "careNotes", "component": "CnMarkdownEditor"}
+   ]
+ }}
+```
+
+A few rules:
+
+- **The `component` value must match the lib `Cn*` pattern** (`^Cn[A-Z]\w+$`). Host-app SFCs go on `type:'custom'` pages, not in `fieldWidgets[]`.
+- **`id` matches a schema property name.** The widget replaces that field's auto-generated input; everything else in the form stays schema-driven.
+- **`props` is optional**: a serialisable object passed to the lib component at mount time (e.g. `{"id": "preview", "component": "CnCodeViewer", "props": {"language": "yaml"}}`).
+- **Multiple `fieldWidgets[]` entries are allowed.** Use them for whichever fields need richer editing; the rest of the form keeps its schema-driven inputs.
+
+## 3. Route-param sentinels: bind URL params to config
+
+The manifest can declare a route with `:` placeholders (`/orders/:id`) and the params reach the dispatched component automatically. v2.7.0 also lets the manifest *use* those params inside `config`, by writing `@route.<paramName>` as a string sentinel that the renderer resolves at dispatch time:
+
+```json title="A detail page that filters by route param"
+{"id": "pet-orders",
+ "route": "/pets/:petId/orders",
+ "type": "index",
+ "title": "petstore.pets.orders",
+ "config": {
+   "register": "petstore", "schema": "order",
+   "filter": {"pet": "@route.petId"},
+   "columns": ["customer","placedAt","status","total"]
+ }}
+```
+
+When the user visits `/pets/abc-123/orders`, the renderer resolves `"@route.petId"` → `"abc-123"` and `CnIndexPage` receives `filter: {pet: "abc-123"}`. The listing only shows orders on that pet. No Vue, no `mounted()` hook, no `watch` on `$route.params`.
+
+Unresolved sentinels become `null` (with a one-shot `console.warn` for the page id). They don't crash the page, they just produce no filter. Useful during incremental migrations where the route hasn't been declared yet.
+
+## 4. `config.mode: 'public'`: token-scoped unauthenticated pages
+
+Public order confirmation. The customer clicks a link in an email, lands on a page that confirms their order, sees a small form to optionally add a delivery note, no Nextcloud login required. The page is reachable by a one-shot token: anyone with the token sees it, no one without.
+
+```json title="src/manifest.json: public order confirmation"
+{"id": "order-confirm",
+ "route": "/public/orders/:token",
+ "type": "detail",
+ "title": "petstore.orders.confirmTitle",
+ "config": {
+   "register": "petstore", "schema": "order",
+   "mode": "public",
+   "objectId": "@route.token",
+   "sidebar": false,
+   "fieldWidgets": [
+     {"id": "customerNote", "component": "CnMarkdownEditor"}
+   ]
+ }}
+```
+
+What you get:
+
+- **`mode: "public"`** signals to the renderer and the backing API that this page is unauthenticated. The OR endpoint that serves it must accept the token query: that's wired in your `appinfo/routes.php` and a small public-mode handler in `lib/Controller/`.
+- **`objectId: "@route.token"`** uses the route sentinel to feed the token into the page's object lookup. The token is the object's external identifier in this flow.
+- **`sidebar: false`** explicitly turns off the audit/files/notes sidebar: public viewers shouldn't see the internal trail.
+- **`fieldWidgets[]`** works the same as on authenticated forms.
+
+The same shape works for `type:'form'` (a public submission form). The form's `submitEndpoint` resolves a token sentinel too.
+
+## 5. Other page types: `wiki`, `search`, `roadmap`, `map`, `logs`, `settings`
+
+Parts 2–4 used `index`, `detail`, `dashboard`, and `custom`. v2.7.0's 13-type enum gives you several more typed surfaces that drop in by manifest alone.
+
+### `type: 'wiki'`
+
+For markdown-article surfaces fed from an OR register. Useful for care guides, knowledge-base articles, internal policies, anything that's "an article rendered from a stored markdown blob".
+
+```json
+{"id": "care-guides",
+ "route": "/care/guides/:id",
+ "type": "wiki",
+ "title": "petstore.care.guideTitle",
+ "config": {
+   "register": "petstore", "schema": "careGuide",
+   "contentField": "body",
+   "titleField": "title",
+   "idParam": "id",
+   "sidebarSchema": "careGuide",
+   "treeField": "children"
+ }}
+```
+
+The `contentField` is the markdown property on the article record. `sidebarSchema` (optional) turns on an in-page tree sidebar fed from the same register, perfect when the wiki has a hierarchy.
+
+### `type: 'search'`
+
+A faceted cross-schema search page. One config block declares which registers + schemas to query and which fields are facets. `CnSearchPage` does the rest.
+
+```json
+{"id": "global-search",
+ "route": "/search",
+ "type": "search",
+ "title": "petstore.search.title",
+ "config": {
+   "scopes": [
+     {"register": "petstore", "schema": "pet"},
+     {"register": "petstore", "schema": "order"},
+     {"register": "petstore", "schema": "careGuide"}
+   ],
+   "facets": ["category","status","schema"]
+ }}
+```
+
+### `type: 'roadmap'`
+
+`CnFeaturesAndRoadmapPage` reads a manifest-declared roadmap and pulls live status from GitHub issues. Drops in for a `Features & Roadmap` menu entry in any app.
+
+```json
+{"id": "features-roadmap",
+ "route": "/roadmap",
+ "type": "roadmap",
+ "title": "petstore.roadmap.title",
+ "config": {
+   "repo": "Conduction/petstore",
+   "milestones": ["1.0", "1.1", "Future"]
+ }}
+```
+
+### `type: 'map'`
+
+`CnMapPage` mounts a Leaflet map with marker layers fed from a register, a static GeoJSON, or a tile source. Useful for asset locations, geo-tagged objects, or just "where on this map is supplier X".
+
+```json
+{"id": "suppliers-map",
+ "route": "/suppliers/map",
+ "type": "map",
+ "title": "petstore.suppliers.mapTitle",
+ "config": {
+   "center": [52.13, 5.29], "zoom": 6,
+   "layers": [{"type": "tile", "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png"}],
+   "markers": {"dataSource": {"register": "petstore", "schema": "pet"},
+               "latField": "lat", "lngField": "lng", "popupField": "name"}
+ }}
+```
+
+### `type: 'logs'` and `type: 'settings'`
+
+`logs` renders an audit/event log viewer (often points at an OR-managed `auditEntry` schema or an external `source`). `settings` mounts `CnSettingsPage` with a sections-or-tabs config that ships its own form rendering: the entire app's admin surface can be one `type:'settings'` page.
+
+```json
+"settings": {
+  "id": "petstore-settings",
+  "route": "/settings",
+  "type": "settings",
+  "title": "petstore.settings.title",
+  "config": {
+    "sections": [
+      {"id": "register-mapping", "label": "Register mapping",
+       "widgets": [{"type": "register-mapping"}]},
+      {"id": "version", "label": "Version",
+       "widgets": [{"type": "version-info"}]}
+    ]
+  }
+}
+```
+
+`CnSettingsPage` has its own widget vocabulary (`version-info`, `register-mapping`, `component` for a custom mount) that's thinner than the dashboard `widgetDef`. The reference page in the nc-vue docs has the full list.
+
+<Eyebrow>Dashboards in depth</Eyebrow>
+
+## 5b. `type:'dashboard'`: the manifest path vs hand-rolled Vue
+
+Parts 2–4 mentioned `type:'dashboard'` in the same breath as `index`, `detail`, and `custom`, but never sat with it. The dashboard is the surface most apps end up needing first, and it's the one where the manifest-vs-Vue trade-off shows clearest. This section walks through both routes for the same PetStore dashboard, three KPI tiles, one orders-by-day chart, one recent-orders feed, so you can pick the right path next time without re-deriving it.
+
+What you ship looks the same either way. What changes is how much code you write, how the data binding works, and what you give up.
+
+### The widgetDef vocabulary
+
+A dashboard is a `type:'dashboard'` page whose `config.widgets[]` array is a list of `widgetDef` objects. Each `widgetDef` declares a kind, a data source, a visual style, and a position. The renderer (`CnDashboardPage`) reads the array, mounts the right widget for each kind, wires up the data source, lays them out in a grid, and re-renders on data change. v2.7.0 typed every `widgetDef` shape so the schema catches malformed widgets before runtime.
+
+The three kinds you'll use most:
+
+<HexCard title="kpi-tile">
+  A single big number with a label and a colour. Backed by an aggregation query against a register (count of, sum of, percentage of). Goes in the top row of every dashboard.
+</HexCard>
+
+<HexCard title="chart">
+  A typed chart (line, bar, doughnut, area) over a register query that returns time-series or grouped data. Re-renders when the underlying data changes.
+</HexCard>
+
+<HexCard title="activity-feed">
+  A scrolling list of recent objects from a register (often filtered by date or author), each rendered as a row with a title, a timestamp, and an optional thumbnail.
+</HexCard>
+
+The full kind list also covers `status-rollup`, `map-tile`, `table-tile`, and `component` (a custom mount slot, the dashboard's own escape hatch, used the same way as `type:'custom'` at the page level).
+
+### The PetStore dashboard, two ways
+
+Compare. The Vue side is what most teams reach for first. The manifest side is what v2.7.0 makes possible.
+
+<Tabs groupId="dashboard-approach">
+  <TabItem value="manifest" label="Manifest (recommended)">
+
+    Add one page entry. Every widget is a `widgetDef`. No Vue file.
+
+    ```json title="src/manifest.json: PetStore dashboard"
+    {
+      "id": "petstore-dashboard",
+      "route": "/dashboard",
+      "type": "dashboard",
+      "title": "petstore.dashboard.title",
+      "config": {
+        "widgets": [
+          {
+            "kind": "kpi-tile",
+            "id": "pets-total",
+            "label": "petstore.dashboard.petsTotal",
+            "color": "var(--c-cobalt-700)",
+            "dataSource": {
+              "register": "petstore", "schema": "pet",
+              "aggregate": "count"
+            },
+            "position": { "row": 1, "col": 1, "w": 1, "h": 1 }
+          },
+          {
+            "kind": "kpi-tile",
+            "id": "orders-today",
+            "label": "petstore.dashboard.ordersToday",
+            "color": "var(--c-orange-knvb)",
+            "dataSource": {
+              "register": "petstore", "schema": "order",
+              "aggregate": "count",
+              "filter": { "placedAt": { "gte": "@today" } }
+            },
+            "position": { "row": 1, "col": 2, "w": 1, "h": 1 }
+          },
+          {
+            "kind": "kpi-tile",
+            "id": "occupancy-pct",
+            "label": "petstore.dashboard.occupancy",
+            "format": "percentage",
+            "dataSource": {
+              "register": "petstore", "schema": "pet",
+              "aggregate": "occupancy",
+              "numerator": { "filter": { "status": "sold" } },
+              "denominator": { "schema": "pet", "aggregate": "count" }
+            },
+            "position": { "row": 1, "col": 3, "w": 1, "h": 1 }
+          },
+          {
+            "kind": "chart",
+            "id": "orders-by-day",
+            "label": "petstore.dashboard.ordersLast14Days",
+            "chartType": "line",
+            "dataSource": {
+              "register": "petstore", "schema": "order",
+              "groupBy": "placedAt", "groupByGranularity": "day",
+              "range": { "days": 14 }
+            },
+            "position": { "row": 2, "col": 1, "w": 2, "h": 2 }
+          },
+          {
+            "kind": "activity-feed",
+            "id": "recent-orders",
+            "label": "petstore.dashboard.recentOrders",
+            "dataSource": {
+              "register": "petstore", "schema": "order",
+              "orderBy": "created", "direction": "desc",
+              "limit": 10
+            },
+            "rowConfig": {
+              "titleField": "petName",
+              "subtitleField": "customer",
+              "timestampField": "created"
+            },
+            "position": { "row": 2, "col": 3, "w": 1, "h": 2 }
+          }
+        ]
+      }
+    }
+    ```
+
+    Five widgets, one page entry, no `.vue` file. The renderer:
+
+    - Reads each `dataSource`, runs the OR query, caches the result
+    - Mounts the correct `Cn*` widget for each `kind`
+    - Lays them out via the `position` grid
+    - Re-renders any widget whose source data changes (push from OR's notification stream, or a polling tick if you set `config.refreshInterval`)
+    - Wires up the title (i18n key) + the colour token + the format
+
+    What you can override per-widget: `color`, `format` (`number`, `percentage`, `currency`, `bytes`), `icon`, `link` (make the tile clickable to a deeper route), and `tone` (the brand-status pill on a `status-rollup`).
+
+  </TabItem>
+  <TabItem value="vue" label="Hand-rolled Vue (the legacy path)">
+
+    The same five widgets as a Vue file. This is what most teams ship first.
+
+    ```vue title="src/pages/DashboardPage.vue"
+    <template>
+      <CnDashboardPage :title="$t('petstore.dashboard.title')">
+        <div class="kpi-row">
+          <CnKpiTile
+            :label="$t('petstore.dashboard.petsTotal')"
+            :value="kpis.petsTotal"
+            color="var(--c-cobalt-700)" />
+          <CnKpiTile
+            :label="$t('petstore.dashboard.ordersToday')"
+            :value="kpis.ordersToday"
+            color="var(--c-orange-knvb)" />
+          <CnKpiTile
+            :label="$t('petstore.dashboard.occupancy')"
+            :value="kpis.occupancyPct"
+            format="percentage" />
+        </div>
+        <div class="chart-row">
+          <CnChart
+            chart-type="line"
+            :label="$t('petstore.dashboard.ordersLast14Days')"
+            :data="ordersByDay" />
+          <CnActivityFeed
+            :label="$t('petstore.dashboard.recentOrders')"
+            :items="recentOrders"
+            title-field="petName"
+            subtitle-field="customer"
+            timestamp-field="created" />
+        </div>
+      </CnDashboardPage>
+    </template>
+
+    <script>
+    import { usePets, useOrders } from '@conduction/nextcloud-vue'
+
+    export default {
+      name: 'DashboardPage',
+      data() {
+        return {
+          kpis: { petsTotal: 0, ordersToday: 0, occupancyPct: 0 },
+          ordersByDay: [],
+          recentOrders: [],
+        }
+      },
+      async mounted() {
+        const pets = usePets('petstore', 'pet')
+        const orders = useOrders('petstore', 'order')
+
+        this.kpis.petsTotal = await pets.count()
+        this.kpis.ordersToday = await orders.count({
+          filter: { placedAt: { gte: this.todayIso() } },
+        })
+
+        const petsCount = this.kpis.petsTotal
+        const soldCount = await pets.count({ status: 'sold' })
+        this.kpis.occupancyPct = petsCount === 0 ? 0
+          : Math.round((soldCount / petsCount) * 100)
+
+        this.ordersByDay = await orders.aggregate({
+          groupBy: 'placedAt', granularity: 'day', range: { days: 14 },
+        })
+        this.recentOrders = await orders.list({
+          orderBy: 'created', direction: 'desc', limit: 10,
+        })
+      },
+      methods: {
+        todayIso() {
+          const d = new Date()
+          d.setHours(0, 0, 0, 0)
+          return d.toISOString()
+        },
+      },
+    }
+    </script>
+    ```
+
+    Plus the manifest entry that mounts it:
+
+    ```json
+    {
+      "id": "petstore-dashboard",
+      "route": "/dashboard",
+      "type": "custom",
+      "title": "petstore.dashboard.title",
+      "component": "DashboardPage",
+      "_note": "Dashboard with custom KPI binding logic."
+    }
+    ```
+
+    Real Vue, real data binding, real i18n. It works. But you're now maintaining:
+
+    - A `.vue` file with five hand-bound components
+    - The `mounted()` data fetch, including the `Promise.all` you'll inevitably refactor in
+    - The today-iso helper (and the next dev's copy of it in the next page)
+    - The push/poll wiring when you want live updates (which the manifest path gets for free)
+    - The schema-update break: when an `order` field renames, the manifest renderer notices on next load; the Vue file just shows stale data until someone reads the diff
+
+  </TabItem>
+</Tabs>
+
+### What to give up to choose manifest
+
+The manifest path doesn't fit every dashboard. Here's where it bites and what to do.
+
+<Pill bullet bulletColor="var(--c-cobalt-700)">SCHEMA-DRIVEN</Pill> KPIs over registers, aggregations, time-series. All native.
+<Pill bullet bulletColor="var(--c-cobalt-700)">SCHEMA-DRIVEN</Pill> Activity feeds against a register or schema with simple filter/order.
+<Pill bullet bulletColor="var(--c-orange-knvb)">PARTIAL</Pill> Charts: line/bar/area/doughnut/scatter native; custom annotations need `kind: 'component'`.
+<Pill bullet bulletColor="var(--c-orange-knvb)">PARTIAL</Pill> Cross-register joins inside one widget: wire them up via OR's GraphQL endpoint and a `dataSource.query` block, then bind a single `chart` or `activity-feed` to the joined view.
+<Pill bullet>NEEDS COMPONENT</Pill> Heavy interactivity inside a tile (drag-drop reorder, in-place edit, multi-step wizards): drop a `kind: 'component'` widget and mount a host SFC for that one tile. The other widgets stay manifest.
+
+In other words: the manifest path covers the boring 80%. The Vue/component widget covers the spicy 20%. You don't have to pick one path for the whole dashboard. Every widget chooses independently.
+
+### Quick worked example: adding one custom widget to a manifest dashboard
+
+You shipped the manifest dashboard above. Stakeholders ask for a sixth widget, a pet-inventory heatmap by category that's too bespoke for `chart` and too interactive for `activity-feed`. Don't rewrite the dashboard as Vue. Add one `kind: 'component'` widget to the existing array:
+
+```json title="One custom widget alongside the five typed ones"
+{
+  "kind": "component",
+  "id": "inventory-heatmap",
+  "label": "petstore.dashboard.inventoryHeatmap",
+  "component": "PetInventoryHeatmap",
+  "props": { "category": "@route.categoryId" },
+  "position": { "row": 3, "col": 1, "w": 3, "h": 2 }
+}
+```
+
+You write `PetInventoryHeatmap.vue` once, register it, and let the dashboard host it as a tile. The other five widgets stay declarative. Next year when a lib `CnHeatmap` lands, you swap the `kind: 'component'` for `kind: 'heatmap'` and delete the SFC.
+
+<Details summary="Where does the data source actually run?">
+  All `dataSource` blocks resolve to OpenRegister REST/GraphQL calls at render time. The renderer batches them: five widgets, five queries, one HTTP round-trip when possible. Caching follows the standard `useObjectStore` rules: cached per (register, schema, filter, orderBy) tuple, invalidated on local writes, refreshed on OR's notification stream. If you set `config.refreshInterval: 30000`, every widget also polls every 30 seconds as a fallback for environments without push.
+</Details>
+
+<Details summary="What happens at schema-update time?">
+  When an `order` field renames, the manifest renderer picks the new field name up on next page load: no rebuild, no redeploy. The Vue path doesn't: the `mounted()` hook references the old field name as a string, the build still passes, and the dashboard silently shows stale or empty data until someone reads the diff. This is the single biggest reason manifest dashboards outlive their Vue cousins. They age with the schema.
+</Details>
+
+### When to fall back to a custom Vue page
+
+There's a real threshold past which the manifest path costs more than it saves. Reach for `type:'custom'` if:
+
+- More than two of your widgets need `kind: 'component'`. At that point you're maintaining manifest plumbing for tiles that don't benefit from it.
+- The dashboard has a non-grid layout (free-positioned cards, drag-drop reordering, draggable splits) that the `position` grid can't express.
+- The dashboard is the app's hero screen with custom branding, transitions, and storytelling. Manifest dashboards are uniform across the fleet by design: that's a feature for admin surfaces, a constraint for hero pages.
+
+Otherwise: start manifest, drop a `component` widget where you need spice, watch the rest of the fleet's lib widgets catch up to your custom over the next few releases.
+
+## 6. The `_note` rule on `type:'custom'`, softened
+
+When you mount a host-app SFC via `type:'custom'`, the v2.7.0 schema asks you to document *why* the custom was necessary in a `_note` field. That's there to fight scope creep: every custom is a place the manifest path didn't fit, and writing the reason down forces an honest answer.
+
+```json title="A custom that needs _note"
+{"id": "pipeline-board",
+ "route": "/pipeline",
+ "type": "custom",
+ "title": "petstore.pipeline.title",
+ "component": "PipelineBoard",
+ "_note": "Bespoke kanban board with drag-drop column reorder + per-card status transitions. No lib analogue."}
+```
+
+2.7.0 *softens* the rule for one case: if `component` matches the lib `Cn*` pattern (`^Cn[A-Z]\w+$`), `_note` is optional because the component name already documents the choice. So:
+
+```json title="Lib Cn* custom: _note no longer required"
+{"id": "federation-status",
+ "route": "/directory",
+ "type": "custom",
+ "title": "petstore.directory.title",
+ "component": "CnFederationStatus"}
+```
+
+The rule still bites on host-app SFCs (no `Cn*` prefix), which is where it earns its keep.
+
+## 7. Choosing between fieldWidgets, custom pages, and registered components
+
+When you have a one-off UI need, you have three options. Picking the right one saves you a refactor later.
+
+| Need | Use | Why |
+|---|---|---|
+| A single rich field inside an otherwise schema-driven form | `config.fieldWidgets[]` with a lib `Cn*` component | Smallest scope. Form stays declarative. |
+| A whole page that doesn't fit any typed type | `type:'custom'` with `component: 'YourHostSfc'` + `_note` | Honest escape hatch. The rest of the manifest stays clean. |
+| A reusable surface (a widget or tab) that several pages want | Register an integration with `OCA.OpenRegister.integrations.register({...})` and use `useRegistry: true` | Cross-app reusable. Other Conduction apps can pick up your registration. |
+
+The bigger your `type:'custom'` count climbs, the more it's worth asking whether the underlying gap should be a lib feature instead. If you find yourself writing similar custom pages in two apps, file an issue on `nextcloud-vue`. That's how features like `CnWikiPage` and the typed `actionToggles` shape got promoted from "everyone's writing the same custom" to "first-class lib surface".
+
+## Where to go from here
+
+<NextSteps>
+  <NextStep
+    title="Part 6: Integrate"
+    href="/academy/build-an-app-tutorial-6-integrate"
+    description="Connect your app to the rest of the workspace. Cross-register reads, Integriq sources, and a two-way webhook sync: three integration patterns layered from least to most invasive."
+  />
+  <NextStep
+    title="Part 7: Living on nc-vue"
+    href="/academy/build-an-app-tutorial-7-nc-vue"
+    description="The library that powers the manifest path. How CnAppRoot, CnPageRenderer, and the Cn* component family stay in lockstep with your app as nc-vue ships new shapes."
+  />
+  <NextStep
+    title="Full manifest schema reference"
+    href="https://nextcloud-vue.conduction.nl/docs/architecture/manifest/"
+    description="Every field, every constraint, every $def: the schema URL your manifest.json points at, rendered as docs."
+  />
+  <NextStep
+    title="Pluggable integration registry (ADR-019)"
+    href="https://nextcloud-vue.conduction.nl/docs/architecture/integrations/"
+    description="When you outgrow per-app sidebars and want cross-app tabs (Calendar, Talk, Files) to flow into every app's detail page, this is the next step up."
+  />
+</NextSteps>

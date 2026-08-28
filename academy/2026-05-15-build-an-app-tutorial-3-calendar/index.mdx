@@ -1,0 +1,184 @@
+---
+slug: build-an-app-tutorial-3-calendar
+title: "Build a Nextcloud app on the Conduction stack — Part 3: Schema-driven integrations"
+contentType: tutorial
+heroIcon: blocks
+authors: [conduction]
+date: 2026-05-15
+summary: One calendarProvider block on the order schema. Order ship-dates appear in NC Calendar with no controller, no event listener, no per-app glue.
+tags: [App development, OpenRegister, NC Calendar, CalDAV, Schema integrations, Tutorial series]
+apps: [openregister]
+durationMinutes: 15
+series: build-an-app-tutorial
+partNumber: 3
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+} from '@conduction/docusaurus-preset/components';
+
+This is **Part 3 of the nine-part app-building tutorial series**. Part 2 wired the pet and order schemas. Part 3 makes those orders appear in every user's Nextcloud Calendar (*without writing a controller, an event listener, or any per-app calendar glue*).
+
+The trick: OpenRegister already ships an `ICalendarProvider` (`RegisterCalendarProvider`) that exposes any schema with a `calendarProvider` block as a virtual calendar. You declare the block on the order schema. NC Calendar shows the events. That's the whole story.
+
+{/* truncate */}
+
+<Outcomes title="What you'll have at the end of Part 3">
+  <Outcome>Every <code>order</code> object in PetStore shows up as a read-only event in the Nextcloud Calendar app, with the pet name + order id in the title and the cobalt brand colour.</Outcome>
+  <Outcome>A working understanding of OpenRegister's <strong>schema-driven integration providers</strong>: the same approach unlocks Activity, Mail Smart Picker, Contacts matching, and File actions, all without per-app code.</Outcome>
+  <Outcome>A pattern you can reuse on any future schema. Add a date field + a <code>calendarProvider</code> block. Done.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Where you should be">
+  <PrerequisiteItem>Part 2 done: <code>category</code>, <code>pet</code>, and <code>order</code> schemas live in OpenRegister and the app shows pets at <code>/apps/petstore/</code>.</PrerequisiteItem>
+  <PrerequisiteItem>NC Calendar enabled (Apps → search "Calendar" → Download). Out of the box it'll pick up new ICalendarProviders automatically, no extra wiring on your end.</PrerequisiteItem>
+</Prerequisites>
+
+## Why not Integriq or a custom listener?
+
+When you first hear "sync PetStore order ship-dates to Nextcloud Calendar" your instinct is probably one of:
+
+1. **Write an Integriq flow** that listens to `OrderCreatedEvent` and POSTs to the CalDAV endpoint
+2. **Subclass `IEventListener<OrderCreatedEvent>`** in PHP and create a CalDAV event by hand
+3. **Have the frontend `POST /remote.php/dav/...`** when the user clicks Place Order
+
+All three work. All three are wrong for this case, because they treat NC Calendar as a *destination* you push to. OpenRegister already exposes every schema as a calendar. You're not pushing anywhere; you're declaring that the order schema *is* a calendar source.
+
+The same pattern applies to:
+
+| Integration | Schema annotation | What you get |
+|---|---|---|
+| **NC Calendar** | `calendarProvider` block | Read-only virtual calendar per schema |
+| **NC Activity** | (automatic, free) | CRUD events in the activity stream + dashboard widget + email digest |
+| **NC Mail Smart Picker** | `linkedTypes: ["email"]` | Paste a pet URL into NC Mail and get a rich preview |
+| **NC Contacts** | `linkedTypes: ["contact"]` | `/api/contacts/match` returns matching pet owners |
+
+Anti-pattern: hand-coding `<App>CalendarSync.vue`, `<App>NotesService`, `<App>MailSidebar.vue`. Use the providers.
+
+## Step 1: Add the calendarProvider block
+
+Open `lib/Settings/petstore_register.json` and add a `configuration` block to the `order` schema:
+
+```json title="lib/Settings/petstore_register.json (excerpt): order schema"
+"order": {
+  "slug": "order",
+  "title": "Order",
+  /* ... existing properties ... */
+
+  "configuration": {
+    "calendarProvider": {
+      "enabled": true,
+      "dtstart": "shipDate",
+      "titleTemplate": "Order #{id} · {pet}",
+      "color": "#003a8c"
+    }
+  }
+}
+```
+
+The four fields:
+
+- `enabled`: `true` exposes the schema as a virtual calendar.
+- `dtstart`: name of the property that holds the event start. We use the `shipDate` property already on every order.
+- `dtend`: optional. When missing (as here), OpenRegister falls back to a sensible default (next-hour for date-time, end-of-day for date-only). Orders are point-in-time events, no end needed.
+- `titleTemplate`: string template for the event summary. Tokens in `{braces}` are resolved against the object's properties. We use `Order #{id} · {pet}`. To resolve relations (the `pet` property is a uuid pointing at a `pet` object), include `_extend=relations` when the calendar provider fetches. See the OpenRegister side.
+- `color`: hex colour of the calendar. We use cobalt-blue (`--c-blue-cobalt`).
+
+That's the whole change. No other file needs to be touched.
+
+## Step 2: Re-import the configuration
+
+Schemas in OpenRegister have a version. Bumping the schema version + re-running the import is the canonical way to update them in place. Bump the file's `info.version` (`0.2.0` → `0.3.0`) and the order schema's `version`:
+
+```json
+"info":  { "version": "0.3.0" },
+"order": { "version": "0.3.0", /* ... */ }
+```
+
+Then trigger the import the same way as Part 2:
+
+```bash
+docker exec nextcloud php occ app:disable petstore
+docker exec nextcloud php occ app:enable petstore
+```
+
+(Or hit `POST /api/settings/load` if you've wired admin settings yet.)
+
+## Step 3: Verify in NC Calendar
+
+Open `/apps/calendar/`. You should see a new entry in the calendar list:
+
+- **Order**: cobalt-blue colour, read-only badge, owned by your user
+
+Click it. The seed orders from Part 2 (the Monday ship-date for Order #1 'doggie', the Tuesday ship-date for Order #2 'tabby', the Wednesday ship-date for Order #3 'koi') appear as events. Click one. The popover shows the order id + pet title + the ship date.
+
+If you don't see the calendar:
+
+- Confirm OpenRegister registered its provider: `docker exec nextcloud php occ config:list | grep openregister`
+- Make sure your `order` schema has `configuration.calendarProvider.enabled: true` after the re-import
+- Check `nextcloud.log` for `RegisterCalendarProvider` messages
+
+## How it works under the hood
+
+OpenRegister's `RegisterCalendarProvider` implements Nextcloud's `ICalendarProvider` interface. On every Calendar API request, it:
+
+1. Lists every schema with `configuration.calendarProvider.enabled === true`
+2. For each, returns a `RegisterCalendar` (a lightweight `ICalendar` implementation)
+3. When the user opens that calendar, queries OpenRegister for objects where `dtstart` is in the requested range
+4. Transforms each object into an iCalendar VEVENT via `CalendarEventTransformer`, applying the `titleTemplate`
+
+Per-object ACLs gate event content. The provider bypasses multi-tenancy when listing schemas (so cross-tenant calendars work), but every individual event is still gated by RBAC.
+
+The same pattern is followed by [the spec](https://github.com/ConductionNL/openregister/blob/development/openspec/specs/calendar-provider/spec.md).
+
+## What you've now bought yourself
+
+Activity (`NC Activity`) is already wired. Browse `/apps/activity/` and you'll see your order creates / updates. The dashboard activity widget + email digest both show PetStore events. Zero code on your end.
+
+Mail Smart Picker too: in NC Mail, paste a pet URL (`/apps/petstore/pets/pet-doggie`) and the picker resolves it into a rich preview card with the pet name + category + status.
+
+You've effectively integrated PetStore into four Nextcloud apps with one JSON block. That's the schema-driven discipline paying off.
+
+## Troubleshooting
+
+<HexCard title="The Order calendar doesn't appear">
+  Confirm the order schema's <code>configuration.calendarProvider.enabled</code> is <code>true</code> after the re-import. Browse <code>/index.php/apps/openregister/api/schemas/order</code> and look for the configuration block in the response. If it's missing, the re-import didn't pick up the change. Bump the version and try again.
+</HexCard>
+
+<HexCard title="Events show but the title is the raw uuid, not the pet name">
+  The titleTemplate doesn't resolve relations by default. Add a <code>_extend=relations</code> via the schema's calendarProvider extras, or use the pet's slug instead of its uuid in the template (<code>"titleTemplate": "Order #&lbrace;id&rbrace; · &lbrace;petName&rbrace;"</code> when you've stored the pet name as a property).
+</HexCard>
+
+<HexCard title="Events appear at the wrong time">
+  Check the timezone on the order's <code>shipDate</code> value. It must be ISO 8601 with timezone info (e.g. <code>2026-05-12T09:00:00+02:00</code>). Naive datetimes are interpreted as UTC and may render shifted.
+</HexCard>
+
+<HexCard title="`Call to undefined method ...registerCalendarProvider()`">
+  The provider needs OpenRegister 0.2.x or newer. Older versions don't ship RegisterCalendarProvider. Upgrade OpenRegister via the app store.
+</HexCard>
+
+## What's next
+
+<NextSteps>
+  <NextStep
+    title="Part 4: External knowledge + ship"
+    href="/academy/build-an-app-tutorial-4-knowledge-and-ship"
+    description="Author the category care-guides in xWiki, wire Integriq to surface them per pet in CnObjectSidebar, package the app, publish to apps.conduction.nl."
+  />
+  <NextStep
+    title="OpenRegister platform capabilities"
+    href="https://openregister.conduction.nl/docs/platform-capabilities/"
+    description="The full integration matrix: Activity, Calendar, Contacts, Mail Smart Picker, File actions, Profile actions, and which are implemented vs deferred."
+  />
+  <NextStep
+    title="Schema annotations reference"
+    href="https://openregister.conduction.nl/docs/schema-annotations/"
+    description="Every x-openregister-* extension that lives on the schema: relations, lifecycle, aggregations, calculations, calendar."
+  />
+</NextSteps>

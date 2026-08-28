@@ -1,0 +1,274 @@
+---
+title: Filinq, Conduction
+description: Generate, sign and anonymise documents, without handing them to a third party. Contracts and letters fill themselves from your records, clients sign on their phone, personal data is blacked out for you.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+{/* Display-name rebrand 2026-08: DocuDesk → Filinq. The preset's
+    apps-registry may still carry the former name, so pin the display
+    name here; slug, URLs and repo stay `docudesk`. */}
+export const app = {...getApp('docudesk'), name: 'Filinq'};
+
+<DetailHero
+  background="cobalt"
+  appId="docudesk"
+  crumb={[{label: 'Apps', href: '/apps'}, app.name]}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.0.46"
+  locales="NL · EN"
+  title={app.name}
+  tagline={<>Generate, sign and anonymise documents, without handing them to a third party. On your own <span className="next-blue">Nextcloud</span>.</>}
+  intro={<>{app.name} (formerly DocuDesk) makes the paperwork of your business write itself. Contracts, letters and decisions fill themselves from the records you already keep. Clients sign from a link, on any device, and the signed copy lands where it belongs. Personal data in a file is blacked out for you before it goes out the door. Nothing goes off your own server. Open source, released under EUPL-1.2 and maintained by Conduction.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/filinq'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=docudesk'}}
+  tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/docudesk'}}
+  illustration={<AppMock app="docudesk" />}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="What it does"
+        title="Documents that write themselves, sign themselves, and keep their secrets."
+        align="stack"
+        lede="Letters and contracts come out of your own templates, filled from your own records. Signing happens on the phone. Personal data is blacked out before a file goes out the door. And every step is logged."
+      />
+      <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
+      title="The contract fills itself from the client record."
+    >
+      Today: someone copies the client's name, address and amount into the contract, and one day types the amount wrong. Instead: pick the client and the template. The name, address and amount are already in the contract. Nobody types them a second time, so nobody types them wrong. Your own house style, in Dutch or English, as a PDF or a Word file.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg>}
+      title="Personal data blacked out for you, on your own server."
+    >
+      Today: a resident's file has to go out under the Woo, the Dutch open government act. Someone sits down with a marker pen and a scanner. Instead: drop the file in. Names, addresses and personal numbers are found and blacked out for you. You check the result and confirm what stays hidden. Scanned pages and photos work too. The file stays on your own server.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>}
+      title="Signed on the phone. Filed on the record."
+    >
+      Today: print, sign, scan, mail, wait, and chase. Instead: the client gets a link and signs on their phone. Two or more signers, in turn or at once. The signed copy lands on the client record, and every step of the signing is in the log. Nothing to print, nothing to chase.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      title="The objection window is counted for you."
+    >
+      Before a document goes public, the people in it may object. Today: someone keeps a spreadsheet of dates. Instead: the four-week window starts the moment you record the decision, and the deadline is on the item. Nearing the date, the right colleague is reminded. The decision and its history are kept for the auditor.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
+      title="Every version kept, every change visible."
+    >
+      Two versions of a contract, and nobody remembers what changed? Put them side by side and the differences light up. Every letter, every signature and every blacked-out passage is logged with who did it and when. That is your answer at audit time, and it ships with the install.
+    </FeatureItem>
+  </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['docudesk']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<RotatingCards
+  eyebrow={`Four ways ${app.name} earns its place`}
+  title="It works the way you work. And it works for you."
+  lede="Four things you would normally pay extra for. Here they are built in."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automate',
+      title: 'The client signs. The rest happens by itself.',
+      summary: 'Today: you check your mailbox to see who signed, then update the client record by hand. Instead: you draw it once. The moment the contract is signed, the client record shows it and the kick-off task is on the right desk. Declined? A follow-up call lands on the account manager\'s list. Not signed after two weeks? The account manager gets a task to chase it. An objection arrives during the four-week window? Publication is put on hold and a task lands with the case officer. Nothing forgotten, no chasing, no coding.',
+      cta: {label: 'How automation works', href: '/apps/openregister'},
+      panel: <FlowMock />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Make it yours',
+      title: 'Your letters, your fields, your screens. Without a developer.',
+      summary: 'A notary needs a second signer on every deed. A housing corporation wants the complex number on every letter. A municipality wants the case number on the objection screen. Add the field, add the step, put the list you check first at the top, hide what you never use. In the running app, in minutes, and your changes stay with every update.',
+      cta: {label: 'How customising works', href: '/apps/buildiq'},
+      panel: <BuildMock />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Talk to it',
+      title: 'Say what you need. Approve before it goes out.',
+      summary: 'Type "draft the maintenance contract for Jansen from the standard template" and the draft is there, name, address and price filled in. Say "change the price in the Jansen offer to 4,200" and it changes that line, nothing else. Ask for a chart in the quarterly report and it is in the Word file. Every action here can be handed to an assistant. You decide what it may do, and it asks before anything goes out.',
+      cta: {label: 'Meet the assistant', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'you: draft the maintenance contract for Jansen BV from the standard template',
+        'assistant: draft ready, client details and price filled from the record',
+        'assistant: saved as a Word file on the Jansen BV record',
+        'assistant: convert it to PDF for signing?',
+        'you: yes',
+        'assistant: PDF ready, next to the Word file',
+      ]} cursor mode="asks before it changes anything" />,
+    },
+    {
+      tone: 'mint',
+      eyebrow: 'Let clients help themselves',
+      title: 'Clients find their own copy. Without asking you to resend it.',
+      summary: <>Give clients and suppliers their own door. Through <a href="/apps/portaliq">Portaliq</a> they log in and see the documents that concern them: the contract waiting for their signature, the quotation they can sign on the spot, and the signed copies they will otherwise ask you to resend. They sign there and the record updates itself. Nobody digs through sent mail for the latest version.</>,
+      cta: {label: 'See the client portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets we ship"
+  title="We ship the widgets you need"
+  lede={<>Install it and the home screen shows what waits for a signature, which files still hold personal data, and where an objection window is about to close. Want more? Design your own widgets with <a href="/apps/buildiq">Buildiq</a>, or build your own dashboard from all your data with <a href="/apps/launchpad">LaunchPad</a>.</>}
+  widgets={[
+    {
+      title: 'Anonymise here',
+      desc: 'Drop a file on the home screen. Personal data is found and blacked out, and the safe copy is ready to check.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'stretch'}}>
+          <div style={{height: 90, border: '2px dashed var(--c-cobalt-300)', borderRadius: 'var(--radius-md)', background: 'var(--c-cobalt-50)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8}}>
+            <span style={{width: 28, height: 32, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-terracotta-500)'}}></span>
+            <div style={{height: 4, width: 80, background: 'var(--c-cobalt-400)', borderRadius: 1}}></div>
+          </div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 8, height: 9, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{flex: 1, height: 3, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: 26, background: 'var(--c-cobalt-100)', borderRadius: 1}}></div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: 'Waiting for a signature',
+      desc: 'Documents that still need someone to sign, the oldest first. Yours at the top, one click to sign.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {accent: true,  l1: '70%'},
+            {accent: false, l1: '60%'},
+            {accent: false, l1: '55%'},
+            {accent: false, l1: '65%'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 12, height: 14, clipPath: 'var(--hex-pointy-top)', background: row.accent ? 'var(--c-orange-knvb)' : 'var(--c-cobalt-300)'}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 3}}>
+                <div style={{height: 4, width: row.l1, background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '40%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{height: 18, width: 18, borderRadius: 3, background: row.accent ? 'var(--c-orange-knvb)' : 'var(--c-cobalt-50)', border: row.accent ? 'none' : '1px solid var(--c-cobalt-200)'}}></div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Files with personal data',
+      desc: 'The files you processed, how much personal data each held, and whether the safe copy is done.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {n: '7',  done: true},
+            {n: '12', done: true},
+            {n: '3',  done: false},
+            {n: '0',  done: true},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.done ? 'var(--c-mint-500)' : 'var(--c-orange-knvb)', flexShrink: 0}}></span>
+              <div style={{flex: 1, height: 4, background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, color: 'var(--c-cobalt-700)', minWidth: 18, textAlign: 'right'}}>{row.n}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {title: 'Total consents', desc: 'Everyone whose consent you track, in one count.'},
+    {title: 'Pending consents', desc: 'Consent requests still waiting for an answer, before the window closes.'},
+    {title: 'Approved', desc: 'Consents given, with who gave them and when.'},
+    {title: 'Objected', desc: 'Who objected, so publication waits and the case officer knows.'},
+    {title: 'Pending list', desc: 'The open consent requests as a list you can work through and chase.'},
+  ]}
+/>
+
+<Showcase
+  eyebrow={`How ${app.name} plugs into the workspace`}
+  title="Your files, your mail, your client records. Already yours."
+  lede="It works on the files you already have, fills letters from the records you already keep, and hands the result to the apps and people who need it."
+  layout="side"
+  defaultOpen="files"
+  items={[
+    {
+      id: 'files',
+      title: 'It works on your files, where they are',
+      summary: 'Pick a file from your Files and anonymise it, or point it at a whole folder and let it work through the lot in the background. The safe copy sits next to the original. Every generated letter, signed contract and blacked-out file is a normal file in your Nextcloud: share it, version it, find it back with search. Nothing is copied to a second system.',
+      cta: {label: 'Read the docs', href: 'https://docudesk.conduction.nl'},
+      panel: <LeafMock leaf="files" />,
+    },
+    {
+      id: 'records',
+      title: 'Letters filled from the records you already keep',
+      summary: 'The client in your CRM, the case in your case system, the tenant in your housing file: pick the record and the template, and the letter is ready. When a permit is granted, the decision letter is ready to send, in your house style, with the case details already in it. Two hundred letters for two hundred residents? Same template, one run, and you are told when they are done.',
+      cta: {label: 'See the CRM', href: '/apps/pipelinq'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'mail',
+      title: 'Ready for your mailbox',
+      summary: 'A letter can come out as a PDF, a Word file, or as text ready to paste into an email. You send it from the mailbox you already use, so the reply lands where your team reads it. Someone who has to sign gets a notification and a reminder before the deadline. You are told the moment everyone has signed.',
+      cta: {label: 'Read the docs', href: 'https://docudesk.conduction.nl'},
+      panel: <LeafMock leaf="mail" />,
+    },
+    {
+      id: 'portal',
+      title: 'Outside signers sign through your portal',
+      summary: 'A client or supplier does not need an account on your Nextcloud. They open the link in your customer portal, read the document and sign or decline, on their phone. Who signed and when goes on the record. Two signers who each have to sign in turn? It waits for the first before it asks the second.',
+      cta: {label: 'See the portal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Pairs well with"
+    title="Three apps that make Filinq more yours."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/buildiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="Buildiq"
+      why="Change screens, fields and steps in the running app. A notary and a municipality run the same app, each their own way."
+    />
+    <PairCard
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 1 1-4-6.9"/><path d="M12 8v4l3 2"/></svg>}
+      name="Hermiq"
+      why="The assistant that drafts, converts and updates documents lives here. You decide what it may do."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Compose your own dashboard from the document widgets above, next to everything else your organisation runs."
+    />
+  </PairRow>
+</Section>
+
+<PartnersForApp slug="docudesk" />
+
+<CtaBanner
+  title="Your documents, on your own Nextcloud."
+  lede={<>Open source. Free to install. GDPR-compliant by default. Contracts, letters and signatures on the same <span className="next-blue">Nextcloud</span> where your team already works.</>}
+  primaryCta={{label: 'Install from the Nextcloud app store', href: 'https://apps.nextcloud.com/apps/filinq'}}
+  secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=docudesk'}}
+/>

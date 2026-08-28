@@ -1,98 +1,100 @@
 ---
 title: ZaakAfhandelApp, Conduction
-description: Burger-facing zaakstatus-portal op Nextcloud. ZGW-API's, archief-koppelvlakken, audit trail.
+description: Gemeentelijk zaakbeheer op Nextcloud. Wordt niet meer actief ontwikkeld. Nieuwe implementaties kijken naar Dossiq.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
+  background="cobalt"
   appId="zaakafhandelapp"
   crumb={[{label: 'Apps', href: '/apps'}, 'ZaakAfhandelApp']}
-  status={{label: 'Stable', color: 'var(--c-mint-500)'}}
-  version="v2.0"
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.2.11"
   locales="NL · EN"
   title="ZaakAfhandelApp"
-  tagline={<>De burger-facing zaakstatus-portal op je <span className="next-blue">Nextcloud</span>. Burgers volgen hun zaken, vragen status op, uploaden documenten. ZGW-API's, archief-koppelvlakken, audit trail. Geen aparte SaaS, geen tweede inlog voor medewerkers.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://docs.conduction.nl/zaakafhandelapp'}}
+  tagline={<>Gemeentelijk zaakbeheer op je <span className="next-blue">Nextcloud</span>. Burgers zien zelf de status van hun zaak, zonder dat ze hoeven te bellen.</>}
+  intro={<>ZaakAfhandelApp is onze eerste zaakbehandel-app voor Nederlandse gemeenten, onderhouden sinds 2019. Het brengt een zaak van intake tot formele afsluiting: zaaktypen, statussen, rollen, besluiten en resultaten, taken, vastlegging van klantcontact en een persoonlijk werkvoorraad-dashboard. Het spreekt de landelijke standaard voor zaakgericht werken (ZGW), zodat omliggende systemen ermee kunnen praten. Het wordt niet meer actief ontwikkeld. Nieuwe implementaties kijken naar <a href="/apps/dossiq">Dossiq</a>, de opvolger, die hetzelfde werk doet met instelbare workflows en termijnen. Open source, uitgebracht onder EUPL-1.2.</>}
+  primaryCta={{label: 'Bekijk liever Dossiq', href: '/apps/dossiq'}}
+  secondaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/zaakafhandelapp'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/zaakafhandelapp'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>}
+  illustration={<AppMock app="zaakafhandelapp" />}
 />
 
 <Section spacing="default">
-  <SectionHead
-    eyebrow="Wat het doet"
-    title="Eén portal voor burgers en medewerkers."
-    align="stack"
-    lede="Burgers landen op jouwgemeente.nl/zaken en zien hun lopende dossiers. Medewerkers werken in dezelfde Nextcloud waar ze documenten in opslaan. Beide kanten van de zaak zien dezelfde records, allebei met de juiste autorisatie."
-  />
-  <FeatureList>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>}
-      title="ZGW-API's uit de doos."
-    >
-      Zaken-, Documenten-, Catalogi-, Besluiten-, Klanten-API. Allemaal aanwezig zodra de app is geconfigureerd. Geen aparte koppelapplicaties.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      title="Archief-koppelvlakken (Nederland)."
-    >
-      Toepassingsprofiel Metagegevens (TMLO) en Archiefwet 2026 conform. DocuDesk archiveert automatisch volgens je bewaartermijnen.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
-      title="Burgerportaal op jouwgemeente.nl/zaken."
-    >
-      Burgers volgen hun lopende zaken, vragen status op, uploaden documenten. DigiD- of eIDAS-inlog via OpenConnector. Geen extra portaal-URL die ze moeten onthouden.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
-      title="Audit trail per zaak."
-    >
-      Elke statusverandering, elk document, elke medewerker-actie krijgt een tamper-evident spoor. Klaar voor inspectie, jaarverslag of bezwaarprocedure.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
-      title="Workflow-engine inbegrepen."
-    >
-      Standaard zaaktype-workflows voor de meest voorkomende processen. Aanpasbaar zonder code, en de configuratie blijft staan na upgrades.
-    </FeatureItem>
-  </FeatureList>
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="Een zaak van intake tot afsluiting, in één scherm."
+        align="stack"
+        lede="Voor gemeenten die het al draaien. Alles hieronder blijft werken; er komt niets nieuws bij."
+      />
+      <FeatureList>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg>}
+          title="Elke zaak volgt haar type."
+        >
+          Open een zaak, en de stappen, rollen en resultaatopties komen mee. Schort een lopende zaak op of verleng haar als de wet dat toestaat. Sluit haar af met een vastgelegd besluit.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>}
+          title="Je werkvoorraad, niet je inbox."
+        >
+          Elke behandelaar begint de dag met een eigen lijst: zaken en taken, gesorteerd op wat eraan komt. Niets leeft alleen in iemands mailbox.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 18a5 5 0 0 1 10 0"/></svg>}
+          title="Elk telefoontje en elke brief op de kaart van de burger."
+        >
+          Leg het telefoontje, het baliebezoek en de brief vast op de persoon of organisatie. De volgende collega ziet de hele geschiedenis voordat hij de telefoon pakt.
+        </FeatureItem>
+        <FeatureItem
+          icon={<svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7z"/></svg>}
+          title="Een dossier dat een bezwaar doorstaat."
+        >
+          Elke wijziging op een zaak wordt gelogd met wie en wanneer. Twee jaar later beantwoordt het dossier de vraag zonder reconstructie.
+        </FeatureItem>
+      </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['zaakafhandelapp']}
+      surface="product"
+    />
+  </div>
 </Section>
 
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Werkt goed met"
-    title="Drie apps die de install versterken."
+    eyebrow="Hoe nu verder"
+    title="Dossiq is de opvolger."
     align="stack"
+    lede="Hetzelfde werk, actief onderhouden: instelbare zaaktypen, wettelijke termijnen die vanzelf waarschuwen en escaleren, bezwaar en beroep, en een portaal voor inwoners."
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="Zaken, documenten en besluiten worden getypeerde registers. Audit log en citation-stable IDs uit de doos."
+      href="/apps/dossiq"
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      name="Dossiq"
+      why="Zaak- en procesbeheer voor gemeenten. Begin hier voor elke nieuwe implementatie."
     />
     <PairCard
-      href="/apps/openconnector"
-      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-      name="OpenConnector"
-      why="Bidirectionele koppeling met je bestaande zaaksysteem of DMS. DigiD- en eIDAS-inlog."
-    />
-    <PairCard
-      href="/apps/docudesk"
-      icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      name="DocuDesk"
-      why="Genereert beschikkingen en bezwaarbrieven uit zaakgegevens. Archiveert volgens TMLO."
+      href="/apps/pipelinq"
+      icon={<svg viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>}
+      name="Pipelinq"
+      why="Als je behoefte klantcontact en verzoeken is, in plaats van formele zaken."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="zaakafhandelapp" />
+
 <CtaBanner
-  title="Eén zaakportaal, twee perspectieven."
-  lede={<>ZaakAfhandelApp draait op je <span className="next-blue">Nextcloud</span>. Burgers volgen hun zaak, medewerkers handelen af. Hetzelfde audit trail voor beide kanten.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  title="Draai je ZaakAfhandelApp vandaag?"
+  lede={<>Het blijft werken op je <span className="next-blue">Nextcloud</span>. Ben je klaar om over te stappen, dan plant een partner samen met jou de stap naar <a href="/apps/dossiq">Dossiq</a>.</>}
+  primaryCta={{label: 'Bekijk Dossiq', href: '/apps/dossiq'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=zaakafhandelapp'}}
 />

@@ -1,5 +1,5 @@
 ---
-title: Solutions, Conduction
+title: Solutions
 description: Outcomes you can reach by installing one or two Conduction apps and configuring them.
 hide_table_of_contents: true
 ---
@@ -7,6 +7,7 @@ hide_table_of_contents: true
 import React, {useState, useMemo} from 'react';
 import {Section, SectionHead, SolutionCard, SolutionGrid, FacetedFilters, FilterChip} from '@conduction/docusaurus-preset/components';
 import {SOLUTIONS} from '@site/src/data/solutions-catalog';
+import PageHeading from '@site/src/components/PageHeading';
 
 export function FilterableSolutions() {
   const [selected, setSelected] = useState({});
@@ -23,9 +24,9 @@ export function FilterableSolutions() {
 
   const facets = useMemo(() => ([
     {key: 'sector', label: 'Sector', items: [
-      {value: 'public', label: 'Publieke sector', count: SOLUTIONS.filter(s => s.sector === 'public').length},
-      {value: 'mkb',    label: 'MKB',             count: SOLUTIONS.filter(s => s.sector === 'mkb').length},
-      {value: 'health', label: 'Zorg',            count: SOLUTIONS.filter(s => s.sector === 'health').length},
+      {value: 'public', label: 'Publieke sector', count: SOLUTIONS.filter(s => Array.isArray(s.sector) ? s.sector.includes('public') : s.sector === 'public').length},
+      {value: 'mkb',    label: 'MKB',             count: SOLUTIONS.filter(s => Array.isArray(s.sector) ? s.sector.includes('mkb')    : s.sector === 'mkb').length},
+      {value: 'health', label: 'Zorg',            count: SOLUTIONS.filter(s => Array.isArray(s.sector) ? s.sector.includes('health') : s.sector === 'health').length},
     ]},
     {key: 'goals', label: 'Doel', items: [
       {value: 'compliance',  label: 'Compliance',  count: SOLUTIONS.filter(s => (s.goals||[]).includes('compliance')).length},
@@ -88,6 +89,8 @@ export function FilterableSolutions() {
     </div>
   );
 }
+
+<PageHeading>What you achieve, not what we sell.</PageHeading>
 
 <Section spacing="default">
   <SectionHead

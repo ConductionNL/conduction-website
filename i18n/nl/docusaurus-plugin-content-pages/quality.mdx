@@ -1,0 +1,592 @@
+---
+title: Kwaliteit, certificeringen en beleidsverklaring
+description: Het kwaliteitsmanagementsysteem van Conduction. ISO 9001:2015 en ISO 27001:2022 gecertificeerd, doorlopende pentest-scans en een GitHub-native kwaliteitsworkflow. Volledige beleidsverklaring en bewijs op aanvraag.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, Showcase, WidgetShelf, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
+
+export const WORKFLOW_FILE = 'https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml';
+
+export function QualityPipelineFlow() {
+  const card = {background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 8, padding: '14px 14px 16px', boxShadow: '0 1px 3px rgba(33, 70, 139, 0.04)'};
+  const cardTitle = {fontSize: 12, fontWeight: 700, color: 'var(--c-cobalt-900)', marginBottom: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6};
+  const cardSubtitle = {fontSize: 10, fontFamily: 'var(--conduction-typography-font-family-code)', color: 'var(--c-cobalt-500, #6f7da3)', marginBottom: 10, letterSpacing: '0.04em'};
+  const stageWrap = {background: 'var(--c-cobalt-50)', border: '1px solid var(--c-cobalt-100)', borderRadius: 12, padding: '18px 18px 22px'};
+  const stageHead = {display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14, gap: 12, flexWrap: 'wrap'};
+  const stageLabel = {fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-orange-knvb)', fontFamily: 'var(--conduction-typography-font-family-code)'};
+  const stageTitle = {fontSize: 16, fontWeight: 700, color: 'var(--c-cobalt-900)'};
+  const stageNote = {fontSize: 12, color: 'var(--c-cobalt-700)'};
+  const arrowRow = {height: 24, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--c-cobalt-300)', fontSize: 20, fontWeight: 700};
+  const hex = (color) => ({width: 10, height: 12, clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)', background: color, flexShrink: 0});
+  const list = (items, color) => (
+    <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 5}}>
+      {items.map((it, i) => {
+        const [label, tip] = Array.isArray(it) ? it : [it, null];
+        return (
+          <li key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+            <span style={hex(color)} />
+            <code title={tip || undefined} style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'var(--c-cobalt-900)', cursor: tip ? 'help' : 'default', borderBottom: tip ? '1px dotted var(--c-cobalt-300)' : 'none'}}>{label}</code>
+          </li>
+        );
+      })}
+    </ul>
+  );
+  return (
+    <div style={{display: 'flex', flexDirection: 'column', gap: 0, margin: '32px 0 24px', maxWidth: 960}}>
+      <div style={stageWrap}>
+        <div style={stageHead}>
+          <div><div style={stageLabel}>Fase 1 · parallel</div><div style={stageTitle}>Kwaliteitsgates</div></div>
+          <span style={stageNote}>Vier matrix-jobs, fail-fast uit, bij elke PR.</span>
+        </div>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 12}}>
+          <div style={card}>
+            <div style={cardTitle}><span>PHP Quality</span><span style={cardSubtitle}>matrix</span></div>
+            <div style={cardSubtitle}>composer scripts</div>
+            {list([
+              ['lint', 'PHP -l syntax-lint via `composer lint`. Controleert dat elk PHP-bestand parseert voordat de zwaardere analyses draaien.'],
+              ['phpcs', 'squizlabs/php_codesniffer. Dwingt de coding standard uit phpcs.xml af (meestal PSR-12-basis plus de Nextcloud-ruleset).'],
+              ['phpmd', 'phpmd/phpmd. Mess Detector. Vindt problematische patronen: te lange methodes, hoge complexiteit, ongebruikte variabelen, naming-violations.'],
+              ['psalm', 'vimeo/psalm. Statische type-checker. Vangt type-mismatches, null-dereferences, dode code, ontbrekende return types.'],
+              ['phpstan', 'phpstan/phpstan. Statische analyser. Vindt type-fouten, ongedefinieerde methodes, onbereikbare branches; level per app in phpstan.neon.'],
+              ['phpmetrics', 'phpmetrics/phpmetrics. Genereert een code-metrics-rapport (maintainability index, cyclomatic complexity, LOC). Output als artifact.'],
+            ], 'var(--c-cobalt-700)')}
+          </div>
+          <div style={card}>
+            <div style={cardTitle}><span>Vue Quality</span><span style={cardSubtitle}>matrix</span></div>
+            <div style={cardSubtitle}>npm scripts</div>
+            {list([
+              ['eslint', 'eslint. JavaScript/TypeScript/Vue-linter. Project-regels in eslint.config.js (flat config) of .eslintrc.'],
+              ['stylelint', 'stylelint. CSS/SCSS-linter. Project-regels in stylelint.config.js. Dwingt token-gebruik af en verbiedt hardgecodeerde brand-kleuren.'],
+            ], 'var(--c-blue-cobalt)')}
+          </div>
+          <div style={card}>
+            <div style={cardTitle}><span>Security</span><span style={cardSubtitle}>matrix</span></div>
+            <div style={cardSubtitle}>audit</div>
+            {list([
+              ['composer audit', 'composer audit --format=plain --abandoned=report. Toetst geïnstalleerde packages aan de FriendsOfPHP/security-advisories-database.'],
+              ['npm audit', 'npm audit --audit-level=critical --omit=dev. Toetst productie-deps aan de GitHub Advisory Database; faalt op kritieke CVE\'s.'],
+            ], 'var(--c-orange-knvb)')}
+          </div>
+          <div style={card}>
+            <div style={cardTitle}><span>License</span><span style={cardSubtitle}>matrix</span></div>
+            <div style={cardSubtitle}>SPDX-allowlist</div>
+            {list([
+              ['composer', 'composer licenses --format=json door een SPDX-allowlist (EUPL-1.2 / AGPL-3.0 compatibel). Per-package uitzonderingen via .license-overrides.json. Levert markdown + JSON-rapport.'],
+              ['npm', 'npm-package license-checker. Zelfde SPDX-allowlist + .license-overrides.json als de composer-kant. Levert markdown + JSON-rapport als artifact.'],
+            ], 'var(--c-mint-500)')}
+          </div>
+        </div>
+      </div>
+
+      <div style={arrowRow}>↓</div>
+
+      <div style={stageWrap}>
+        <div style={stageHead}>
+          <div><div style={stageLabel}>Fase 2 · gated</div><div style={stageTitle}>Tests</div></div>
+          <span style={stageNote}>Pas zodra PHP Quality + Security groen zijn.</span>
+        </div>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12}}>
+          <div style={card}>
+            <div style={cardTitle}><span>PHPUnit</span><span style={cardSubtitle}>matrix</span></div>
+            <div style={cardSubtitle}>PHP × Nextcloud</div>
+            {list([
+              ['php 8.3 / 8.4', 'Twee PHP-versies in de test-matrix, opgezet via shivammathur/setup-php@v2. Beide versies moeten slagen.'],
+              ['nc stable31 / 32', 'Twee Nextcloud server-branches (stable31 + stable32) uitgechecked uit nextcloud/server. PHPUnit draait tegen beide; beide moeten slagen.'],
+              ['pgsql 16 service', 'Een echte Postgres 16-container als GitHub Actions-service (postgres:16 image, health-checked met pg_isready voor de tests draaien).'],
+            ], 'var(--c-lavender-300)')}
+          </div>
+          <div style={card}>
+            <div style={cardTitle}><span>Integratie</span><span style={cardSubtitle}>newman</span></div>
+            <div style={cardSubtitle}>Postman-collections</div>
+            {list([
+              ['newman run *.postman_collection.json', 'Newman 6 (postmanlabs/newman) — de Postman CLI test-runner. Draait elke *.postman_collection.json onder tests/integration tegen de Nextcloud built-in server op :8080.'],
+            ], 'var(--c-lavender-300)')}
+          </div>
+          <div style={card}>
+            <div style={cardTitle}><span>E2E</span><span style={cardSubtitle}>playwright</span></div>
+            <div style={cardSubtitle}>Chromium + V8-coverage</div>
+            {list([
+              ['npx playwright test', '@playwright/test op headless Chromium. Draait de *.spec.ts-bestanden onder tests/e2e tegen de actieve Nextcloud op http://localhost:8080.'],
+              ['spec-to-test ≥ 75%', 'Maatwerk coverage-gate. Loopt openspec/specs + openspec/changes door, telt scenarios (S1, S2, REQ-…) en matcht ze tegen test()-calls in de Playwright-suites. Waarschuwt onder 75%.'],
+            ], 'var(--c-lavender-300)')}
+          </div>
+        </div>
+      </div>
+
+      <div style={arrowRow}>↓</div>
+
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16}}>
+        <div style={stageWrap}>
+          <div style={stageHead}>
+            <div><div style={stageLabel}>Fase 3 · altijd</div><div style={stageTitle}>Rapportage</div></div>
+          </div>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 10}}>
+            <div style={card}>
+              <div style={cardTitle}><span>Kwaliteitsrapport</span></div>
+              <div style={cardSubtitle}>PDF + PR-comment + step summary</div>
+              {list([
+                ['aggregeert result-* artifacts', 'Gebruikt actions/download-artifact@v4 met pattern result-*. Elke matrix-job uploadt zijn job.status naar zo\'n artifact aan het einde van de run.'],
+                ['pandoc → wkhtmltopdf', 'pandoc zet de gegenereerde quality-report.md om naar PDF via de wkhtmltopdf-engine (op de runner geïnstalleerd via apt-get).'],
+                ['90 dagen bewaard', 'actions/upload-artifact@v4 met retention-days: 90. De PDF + Markdown blijven drie maanden lang downloadbaar vanuit de workflow-run.'],
+              ], 'var(--c-mint-500)')}
+            </div>
+            <div style={card}>
+              <div style={cardTitle}><span>Coverage-baseline</span></div>
+              <div style={cardSubtitle}>guard + auto-update</div>
+              {list([
+                ['PR: handmatige edits geblokt', 'baseline-protection-job: diffs de PR tegen de base-branch en faalt als .coverage-baseline in de gewijzigde bestanden staat. Voorkomt dat iemand de lat stilletjes verlaagt.'],
+                ['main / development: bijwerken als beter', 'update-baseline-job: draait php scripts/coverage-guard.php --update-baseline na PHPUnit; commit de nieuwe baseline alleen als coverage daadwerkelijk verbeterde.'],
+              ], 'var(--c-mint-500)')}
+            </div>
+          </div>
+        </div>
+
+        <div style={stageWrap}>
+          <div style={stageHead}>
+            <div><div style={stageLabel}>Fase 4 · beschermde branches</div><div style={stageTitle}>Bill of Materials</div></div>
+          </div>
+          <div style={card}>
+            <div style={cardTitle}><span>SBOM</span><span style={cardSubtitle}>CycloneDX</span></div>
+            <div style={cardSubtitle}>composer + npm, samengevoegd</div>
+            {list([
+              ['composer CycloneDX:make-sbom', 'cyclonedx/cyclonedx-php-composer-plugin. Genereert een CycloneDX 1.5 JSON-SBOM uit composer.lock (--omit=dev, --omit=plugin).'],
+              ['cyclonedx-npm', '@cyclonedx/cyclonedx-npm. Genereert een CycloneDX 1.5 JSON-SBOM uit package-lock.json (--package-lock-only, --omit dev). PHP- en npm-SBOMs worden samengevoegd met jq.'],
+              ['Grype CVE-scan (fail op critical)', 'anchore/grype, geïnstalleerd via anchore/scan-action/download-grype@v5. Scant de samengevoegde SBOM tegen de Grype-vulnerability-database; faalt op severity critical.'],
+              ['publiceer: artifact + release-asset', 'Geüpload als actions/upload-artifact@v4 (90 dagen retentie) bij elke push naar een beschermde branch, en als release-asset gehangen aan de GitHub Release via softprops/action-gh-release@v2 bij elke tag-push.'],
+            ], 'var(--c-forest-300)')}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export const QualityIcon = (
+  <svg viewBox="0 0 24 24">
+    <path d="M12 2 4 6v6c0 4.4 3.4 8.5 8 10 4.6-1.5 8-5.6 8-10V6l-8-4z" />
+    <path d="m9 12 2 2 4-4" />
+  </svg>
+);
+
+export function HandbookPanel({iconPath, title, lines, accent}) {
+  return (
+    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, padding: '24px 16px 8px', minHeight: 150}}>
+      <span aria-hidden="true" style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 56, height: 62,
+        background: accent || 'var(--c-blue-cobalt)',
+        color: 'white',
+        clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+      }}>
+        <svg viewBox="0 0 24 24" width={26} height={26} fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          {iconPath}
+        </svg>
+      </span>
+      <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)'}}>{title}</div>
+      <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center'}}>
+        {lines.map((l, i) => (
+          <li key={i} style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'var(--c-cobalt-700)'}}>{l}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export const HANDBOOK_ICONS = {
+  identity: <><circle cx="12" cy="9" r="3.2"/><path d="M5.5 19c1.2-3 3.7-4.5 6.5-4.5s5.3 1.5 6.5 4.5"/><path d="M4 4h3M17 4h3M4 20h3M17 20h3M4 4v3M20 4v3M4 17v3M20 17v3"/></>,
+  wayOfWork: <><path d="M5 4h11l3 3v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M8 9h8M8 13h8M8 17h5"/></>,
+  hydra: <><circle cx="5" cy="12" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 12h4l4-6h2M11 12h4l4 6h2"/></>,
+  claude: <><path d="M4 6h16M4 12h10M4 18h16"/><circle cx="18" cy="12" r="2" fill="currentColor"/></>,
+  iso: <><path d="M12 2l9 4v6c0 5-4 9-9 10-5-1-9-5-9-10V6z"/><path d="M9 12l2 2 4-4"/></>,
+  roadmap: <><path d="M4 7l5-2 6 2 5-2v12l-5 2-6-2-5 2z"/><path d="M9 5v14M15 7v14"/></>,
+};
+
+export const QualityHeroIllustration = (
+  <div style={{
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid rgba(255,255,255,0.15)',
+    borderRadius: 12,
+    padding: 24,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 16,
+    minHeight: 320,
+  }}>
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      fontFamily: 'var(--conduction-typography-font-family-code)',
+      fontSize: 10,
+      letterSpacing: '0.08em',
+      textTransform: 'uppercase',
+      color: 'rgba(255,255,255,0.65)',
+    }}>
+      <span>Certificaten · handboek · scans · workflow</span>
+      <span style={{color: 'var(--c-mint-300)'}}>● live</span>
+    </div>
+    <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12}}>
+      <div style={{background: 'white', borderRadius: 4, padding: 6, boxShadow: '0 4px 12px rgba(0,0,0,0.2)'}}>
+        <img src="/img/certificates/iso-9001-2015.png" alt="ISO 9001:2015 certificaat" style={{width: '100%', height: 'auto', display: 'block', borderRadius: 2}} />
+        <div style={{fontSize: 9, fontWeight: 700, color: 'var(--c-cobalt-900)', textAlign: 'center', marginTop: 4, letterSpacing: '0.04em'}}>ISO 9001:2015</div>
+      </div>
+      <div style={{background: 'white', borderRadius: 4, padding: 6, boxShadow: '0 4px 12px rgba(0,0,0,0.2)'}}>
+        <img src="/img/certificates/iso-27001-2022.png" alt="ISO 27001:2022 certificaat" style={{width: '100%', height: 'auto', display: 'block', borderRadius: 2}} />
+        <div style={{fontSize: 9, fontWeight: 700, color: 'var(--c-cobalt-900)', textAlign: 'center', marginTop: 4, letterSpacing: '0.04em'}}>ISO 27001:2022</div>
+      </div>
+    </div>
+    <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'rgba(255,255,255,0.85)'}}>
+        <span>docs.conduction.nl · operationeel handboek</span>
+        <span style={{background: 'var(--c-mint-500)', color: 'var(--c-cobalt-900)', padding: '2px 8px', borderRadius: 3, fontWeight: 700, fontSize: 9, letterSpacing: '0.05em'}}>LIVE</span>
+      </div>
+      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'rgba(255,255,255,0.85)'}}>
+        <span>pentest-tools.com · dagelijkse scan</span>
+        <span style={{background: 'var(--c-mint-500)', color: 'var(--c-cobalt-900)', padding: '2px 8px', borderRadius: 3, fontWeight: 700, fontSize: 9, letterSpacing: '0.05em'}}>SCHOON</span>
+      </div>
+      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'rgba(255,255,255,0.85)'}}>
+        <span>GitHub PR #482 · code- en security-review</span>
+        <span style={{background: 'var(--c-mint-500)', color: 'var(--c-cobalt-900)', padding: '2px 8px', borderRadius: 3, fontWeight: 700, fontSize: 9, letterSpacing: '0.05em'}}>GEMERGED</span>
+      </div>
+    </div>
+  </div>
+);
+
+<DetailHero
+  background="cobalt"
+  crumb={[{label: 'Over ons', href: '/about'}, 'Kwaliteit']}
+  locales="ISO 9001:2015 · ISO 27001:2022"
+  title={<>Kwaliteit,<br/>met een K.</>}
+  tagline={<>Eén managementsysteem, vijf tools die het waarmaken. ISO 9001:2015 en ISO 27001:2022 leggen vast hoe Conduction moet werken en wat we meten. Het <strong>How We Work</strong>-handboek op docs.conduction.nl vertaalt dat naar de uitvoering. pentest-tools.com en de GitHub-native kwaliteitsworkflow toetsen de uitkomst. Elke regel code, elke dienst — dezelfde voorspelbare kwaliteit.</>}
+  primaryCta={{label: 'Lees de beleidsverklaring', href: '#iso-certifications', tone: 'orange'}}
+  secondaryCta={{label: 'Compliance FAQ', href: '#compliance-faq'}}
+  iconColor="var(--c-orange-knvb)"
+  icon={QualityIcon}
+  illustration={QualityHeroIllustration}
+/>
+
+<div id="quality-tools" />
+<Showcase
+  eyebrow="Kwaliteitstools"
+  title="Waarmee we kwaliteit voorspelbaar houden."
+  lede="Vijf tools, gelaagd. ISO 9001 en 27001 leggen vast wat goed is en hoe we meten. Het How We Work-handboek vertaalt dat naar de dagelijkse uitvoering. pentest-tools.com en de GitHub-workflow toetsen de uitkomst — extern én intern — bij elke release."
+  layout="side"
+  defaultOpen="iso-9001"
+  items={[
+    {
+      id: 'iso-9001',
+      title: 'ISO 9001:2015 — Kwaliteitsmanagement.',
+      summary: "De internationale norm voor kwaliteitsmanagementsystemen. Bevestigt dat Conduction een gedocumenteerd KMS hanteert, interne audits uitvoert en directiebeoordelingen houdt. Scope: softwareontwikkeling, hosting en advieswerk voor publieke en MKB-klanten in Nederland. Jaarlijkse tussentijdse audit, hercertificering elke drie jaar. Volledige beleidsverklaring en scope hieronder.",
+      cta: {label: 'Lees het kwaliteitsbeleid', href: '#iso-certifications'},
+      panel: (
+        <div style={{padding: 24, display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280}}>
+          <img
+            src="/img/certificates/iso-9001-2015.png"
+            alt="ISO 9001:2015 certificaat, Conduction B.V."
+            style={{maxWidth: 220, width: '100%', height: 'auto', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', borderRadius: 4}}
+          />
+        </div>
+      ),
+    },
+    {
+      id: 'iso-27001',
+      title: 'ISO 27001:2022 — Informatiebeveiliging.',
+      summary: "De internationale norm voor informatiebeveiligingsmanagementsystemen. Bevestigt een gedocumenteerd ISMS dat aansluit op de 2022-controleset, met Annex A-controls geïmplementeerd en getoetst. Scope: alle systemen van Conduction, de apps die we ontwikkelen, de managed Common Ground-omgeving op commonground.nu en de ontwikkel- en operatieprocessen daaromheen. Verklaring van Toepasselijkheid op aanvraag.",
+      cta: {label: 'Lees het informatiebeveiligingsbeleid', href: '#iso-certifications'},
+      panel: (
+        <div style={{padding: 24, display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280}}>
+          <img
+            src="/img/certificates/iso-27001-2022.png"
+            alt="ISO 27001:2022 certificaat, Conduction B.V."
+            style={{maxWidth: 220, width: '100%', height: 'auto', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', borderRadius: 4}}
+          />
+        </div>
+      ),
+    },
+    {
+      id: 'how-we-work',
+      title: 'How We Work — operationeel handboek.',
+      summary: "docs.conduction.nl is de operationele laag onder het managementsysteem. Het vertaalt het ISO-beleid naar de dagelijkse procedures die elke (digitale) medewerker volgt: onboarding, rollen, software bouwen, klantondersteuning, de Hydra-pipeline en ISO-mapping clause voor clause. Publiek, in versiebeheer, en dezelfde bron die elke reviewer en auditor leest.",
+      cta: {label: 'Open het handboek', href: 'https://docs.conduction.nl/'},
+      panel: (
+        <div style={{padding: 20, background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'var(--c-cobalt-900)'}}>
+          <div style={{fontWeight: 700, marginBottom: 12, color: 'var(--c-cobalt-700)'}}>docs.conduction.nl — handboek-onderdelen</div>
+          <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8}}>
+            {[
+              {hex: 'var(--c-blue-cobalt)', label: 'Identity'},
+              {hex: 'var(--c-orange-knvb)', label: 'Way of Work'},
+              {hex: 'var(--c-mint-500)', label: 'Hydra-pipeline'},
+              {hex: 'var(--c-lavender-300)', label: 'Claude-workflow'},
+              {hex: 'var(--c-cobalt-700)', label: 'ISO-compliance'},
+              {hex: 'var(--c-forest-300)', label: 'Roadmap'},
+            ].map((s, i) => (
+              <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, background: 'white', padding: '8px 10px', borderRadius: 4, border: '1px solid var(--c-cobalt-100)'}}>
+                <span style={{width: 14, height: 16, clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)', background: s.hex, flexShrink: 0}} />
+                <span style={{fontWeight: 600}}>{s.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'pentest',
+      title: 'Pentest-tools.com — Doorlopende externe scans.',
+      summary: "Conduction draait dagelijks penetratietests tegen elke applicatie via het commerciële SaaS-scanplatform pentest-tools.com. De dekking beslaat de OWASP Top 10, bekende CVE's, TLS-hygiëne, netwerk-exposure en subdomain enumeration. Komt er een bevinding boven, dan triëren we hem en starten de opvolging binnen 8 werkuren.",
+      cta: {label: 'Bekijk hoe we scannen', href: '#pentest-tools'},
+      panel: (
+        <div style={{padding: 20, background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, color: 'var(--c-cobalt-900)'}}>
+          <div style={{fontWeight: 700, marginBottom: 12, color: 'var(--c-cobalt-700)'}}>pentest-tools.com — laatste scan</div>
+          {[
+            {label: 'Website scanner (OWASP Top 10)', state: 'schoon'},
+            {label: 'TLS-configuratie audit', state: 'schoon'},
+            {label: 'Netwerk vulnerability scan', state: 'schoon'},
+            {label: 'Subdomain enumeration', state: 'schoon'},
+            {label: 'CVE-check op actieve stack', state: 'schoon'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderTop: i > 0 ? '1px solid var(--c-cobalt-100)' : 'none'}}>
+              <span>{row.label}</span>
+              <span style={{background: 'var(--c-mint-300)', color: 'var(--c-cobalt-900)', padding: '2px 8px', borderRadius: 3, fontWeight: 700, fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5}}>{row.state}</span>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: 'github-workflow',
+      title: 'GitHub-native kwaliteitsworkflow.',
+      summary: "Elke Conduction-app staat publiek op GitHub onder de ConductionNL-organisatie. Drie organisatie-brede branch-protection rulesets dwingen elke wijziging door een pull request met verplichte review. Code-review en security-review worden gestart via labels op de PR, geauditeerd door Hydra-automatisering en gekoppeld aan de canonieke spec. Het spoor van feature request tot gemergde code is end-to-end te volgen, in het openbaar.",
+      cta: {label: 'Bekijk de workflow', href: '#github-workflow'},
+      panel: (
+        <div style={{padding: 20, background: 'var(--c-cobalt-50)', borderRadius: 8, minHeight: 280, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, color: 'var(--c-cobalt-900)'}}>
+          <div style={{fontWeight: 700, marginBottom: 12, color: 'var(--c-cobalt-700)'}}>Pull request #482 — feat: openregister/audit-log</div>
+          {[
+            {step: 'Branch protection', tag: 'afgedwongen'},
+            {step: 'Geautomatiseerde CI-gate (PHPCS, Psalm, PHPStan)', tag: 'geslaagd'},
+            {step: 'Code review (label: code-review:queued)', tag: 'akkoord'},
+            {step: 'Security review (label: security-review:queued)', tag: 'akkoord'},
+            {step: 'ADR + OpenSpec change gekoppeld', tag: 'gevolgd'},
+            {step: 'Gemerged naar development', tag: 'geaudit'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderTop: i > 0 ? '1px solid var(--c-cobalt-100)' : 'none'}}>
+              <span>{row.step}</span>
+              <span style={{background: 'var(--c-mint-300)', color: 'var(--c-cobalt-900)', padding: '2px 8px', borderRadius: 3, fontWeight: 700, fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5}}>{row.tag}</span>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<div id="iso-certifications" />
+<Section spacing="default" background="tinted">
+
+## ISO-certificeringen
+
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '32px', alignItems: 'start', marginTop: '8px', marginBottom: '32px'}}>
+  <figure style={{margin: 0, textAlign: 'center'}}>
+    <a href="/img/certificates/iso-9001-2015.png" target="_blank" rel="noopener">
+      <img
+        src="/img/certificates/iso-9001-2015.png"
+        alt="ISO 9001:2015 certificaat, Conduction B.V., kwaliteitsmanagementsysteem"
+        style={{maxWidth: 280, width: '100%', height: 'auto', boxShadow: '0 6px 24px rgba(0,0,0,0.12)', borderRadius: 4}}
+      />
+    </a>
+    <figcaption style={{marginTop: 12, fontWeight: 600}}>ISO 9001:2015 — Kwaliteitsmanagement</figcaption>
+  </figure>
+  <figure style={{margin: 0, textAlign: 'center'}}>
+    <a href="/img/certificates/iso-27001-2022.png" target="_blank" rel="noopener">
+      <img
+        src="/img/certificates/iso-27001-2022.png"
+        alt="ISO 27001:2022 certificaat, Conduction B.V., informatiebeveiligingsmanagementsysteem"
+        style={{maxWidth: 280, width: '100%', height: 'auto', boxShadow: '0 6px 24px rgba(0,0,0,0.12)', borderRadius: 4}}
+      />
+    </a>
+    <figcaption style={{marginTop: 12, fontWeight: 600}}>ISO 27001:2022 — Informatiebeveiliging</figcaption>
+  </figure>
+</div>
+
+<div style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 8, boxShadow: '0 2px 16px rgba(33, 70, 139, 0.06)', padding: '40px clamp(20px, 4vw, 56px)', maxWidth: 820, margin: '40px auto 0'}}>
+
+<div style={{borderBottom: '2px solid var(--c-cobalt-100)', paddingBottom: 24, marginBottom: 28}}>
+  <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-orange-knvb)', marginBottom: 6}}>Beleidsverklaring</div>
+  <h3 style={{margin: 0, marginBottom: 18, fontSize: 28}} id="beleidsverklaring">Kwaliteits- en informatieveiligheidsmanagementsysteem</h3>
+  <dl style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '14px 28px', margin: 0}}>
+    <div>
+      <dt style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)', marginBottom: 4}}>Norm</dt>
+      <dd style={{margin: 0, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 13, color: 'var(--c-cobalt-900)', fontWeight: 600}}>ISO 9001:2015 · ISO/IEC 27001:2022</dd>
+    </div>
+    <div>
+      <dt style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)', marginBottom: 4}}>Vastgesteld</dt>
+      <dd style={{margin: 0, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 13, color: 'var(--c-cobalt-900)', fontWeight: 600}}>januari 2026</dd>
+    </div>
+    <div>
+      <dt style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)', marginBottom: 4}}>Certificaten</dt>
+      <dd style={{margin: 0, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 13, color: 'var(--c-cobalt-900)', fontWeight: 600}}>24 jul 2025 – 21 jul 2028</dd>
+    </div>
+    <div>
+      <dt style={{fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-cobalt-500, #6f7da3)', marginBottom: 4}}>Volgende review</dt>
+      <dd style={{margin: 0, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 13, color: 'var(--c-cobalt-900)', fontWeight: 600}}>januari 2027</dd>
+    </div>
+  </dl>
+</div>
+
+Conduction is in 2018 opgericht met als doel bij te dragen aan een betere digitale wereld. Wij ontwikkelen en beheren democratische, inclusieve en transparante digitale oplossingen volgens de Common Ground-principes. Als Digital Socials werken wij aan maatschappelijke vraagstukken voor publieke organisaties en overheden, met de mens centraal en *Tech to serve people* als leidraad.
+
+Kwaliteit en informatiebeveiliging zijn essentieel voor het vertrouwen van onze klanten, partners en gebruikers. Conduction werkt volgens een geïntegreerd kwaliteits- en informatieveiligheidssysteem dat is ingericht conform ISO 9001:2015 en ISO/IEC 27001:2022. Dit systeem ondersteunt ons bij het beheersen van risico's, het oppakken van kansen en het continu verbeteren van onze dienstverlening volgens de Plan-Do-Check-Act-cyclus. Kwaliteits- en informatiebeveiligingsdoelstellingen stellen we jaarlijks vast en beoordelen we periodiek.
+
+Met ons kwaliteits- en informatieveiligheidssysteem borgen we dat:
+
+- processen en werkwijzen duidelijk zijn vastgelegd en worden nageleefd;
+- werkzaamheden doeltreffend en beheerst worden uitgevoerd, met aandacht voor risico's;
+- prestaties worden gemonitord, geëvalueerd en waar mogelijk verbeterd;
+- medewerkers inzicht hebben in hun verantwoordelijkheden en werkwijzen;
+- wordt voldaan aan toepasselijke wet- en regelgeving en contractuele verplichtingen.
+
+Het managementteam is verantwoordelijk voor en gecommit aan het vaststellen, uitvoeren en onderhouden van dit beleid en zorgt dat de organisatie beschikt over de benodigde mensen, middelen en informatie. We pakken kansen en mitigeren risico's. Dit delen we met onze medewerkers en laten hen hier zo veel mogelijk in meedenken. We maken tijd vrij voor onszelf, de interne auditors en medewerkers.
+
+Het toepassingsgebied van dit beleid en de certificering betreft de kwaliteit in informatieveiligheid gerelateerd aan advisering over, en het ontwikkelen en beheren van digitale oplossingen voor maatschappelijke vraagstukken.
+
+Kwaliteit, informatiebeveiliging, continue verbetering en klanttevredenheid staan centraal bij Conduction. De certificaten ISO 9001:2015 en ISO/IEC 27001:2022 zijn afgegeven op 24 juli 2025 en geldig tot en met 21 juli 2028.
+
+Voor meer informatie over ons kwaliteits- en informatieveiligheidssysteem kunt u contact met ons opnemen via [het contactformulier op onze website](/contact).
+
+<div style={{marginTop: 36, paddingTop: 20, borderTop: '2px solid var(--c-cobalt-100)', fontSize: 13, color: 'var(--c-cobalt-700)', fontStyle: 'italic'}}>
+  Vastgesteld door de directie van Conduction B.V. — Amsterdam. Tekst overgenomen uit de ondertekende beleidsverklaring van januari 2026.
+</div>
+
+</div>
+
+</Section>
+
+<div id="how-we-work" />
+
+<WidgetShelf
+  eyebrow="docs.conduction.nl"
+  title="How We Work — operationeel handboek."
+  lede="Het ISO-beleid zegt waartoe Conduction zich verbindt. Het handboek op docs.conduction.nl vertaalt die toezeggingen naar de procedures die elke (digitale) medewerker dagelijks volgt — onboarding, software bouwen, customer support, de Hydra-pipeline, de Claude-workflow. Elke procedure staat in versiebeheer op GitHub en loopt door hetzelfde PR-+-reviewproces dat hieronder onder Kwaliteitsworkflow op GitHub staat; auditors lezen dezelfde bron als elke medewerker."
+  widgets={[
+    {
+      title: 'Identity',
+      desc: 'Wie Conduction is. Merk, stem en visuele identiteit voor zowel onze cultuur als ons ontwerp.',
+      panel: <HandbookPanel iconPath={HANDBOOK_ICONS.identity} title="Brand & voice" lines={['logo · kleur · type', 'stem & toon', 'visuele diagrammen']} />,
+    },
+    {
+      title: 'Way of Work',
+      desc: 'Hoe Conduction dagelijks werkt — onboarding, rollen, software bouwen en klantondersteuning. Het handboek dat elke (digitale) medewerker volgt.',
+      panel: <HandbookPanel iconPath={HANDBOOK_ICONS.wayOfWork} title="Procedures" lines={['onboarding', 'rollen · verantwoordelijkheid', 'support & sla']} />,
+    },
+    {
+      title: 'Hydra',
+      desc: 'De spec-gedreven CI/CD-pipeline van Conduction. Van OpenSpec-wijziging tot gereviewde PR — Builder, parallelle code- + security-review, met een mens in de loop.',
+      panel: <HandbookPanel iconPath={HANDBOOK_ICONS.hydra} title="Pipeline" lines={['spec → builder', 'code- + security-review', 'mens approves → merge']} />,
+    },
+    {
+      title: 'Claude-workflow',
+      desc: 'Spec-gedreven ontwikkeling met OpenSpec, GitHub Issues en Claude Code. Skills, commands, conventies, parallelle agents.',
+      panel: <HandbookPanel iconPath={HANDBOOK_ICONS.claude} title="Conventies" lines={['skills · commands', 'parallelle agents', 'spec-gedreven']} />,
+    },
+    {
+      title: 'ISO-compliance',
+      desc: 'Engineering-pipeline gemapt op ISO/IEC 9001:2015 en 27001:2022 clause-by-clause, met gaten als first-class output.',
+      panel: <HandbookPanel iconPath={HANDBOOK_ICONS.iso} title="Clause-map" lines={['9001 §4–§10', '27001 §4–§10', 'annex a controls']} accent="var(--c-orange-knvb)" />,
+    },
+    {
+      title: 'Roadmap',
+      desc: 'Waar het Conduction-app-ecosysteem heen gaat — live op GitHub Projects. Wat volgt, wat loopt, wat is opgeleverd.',
+      panel: <HandbookPanel iconPath={HANDBOOK_ICONS.roadmap} title="GitHub Projects" lines={['volgende · loopt', 'opgeleverd', 'issues per spec']} />,
+    },
+  ]}
+/>
+
+<Section spacing="default">
+
+<div style={{display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 16}}>
+  <a href="https://docs.conduction.nl/" target="_blank" rel="noopener noreferrer" style={{padding: '10px 18px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Open het handboek →
+  </a>
+  <a href="https://docs.conduction.nl/WayOfWork/way-of-work/" target="_blank" rel="noopener noreferrer" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Start bij Way of Work →
+  </a>
+</div>
+
+</Section>
+
+<div id="pentest-tools" />
+<Section spacing="default" background="tinted">
+
+## Pentest-tools
+
+Conduction draait **dagelijks** penetratietests tegen elke applicatie via het commerciële SaaS-scanplatform **[pentest-tools.com](https://app.pentest-tools.com/)**. De dekking beslaat de OWASP Top 10, bekende CVE's, TLS-hygiëne, netwerk-exposure en subdomain enumeration — tegen onze apps, de managed Common Ground-omgeving op commonground.nu en de marketingvlakken onder conduction.nl.
+
+Komt er een bevinding boven, dan triëren we hem en starten de opvolging **binnen 8 werkuren**.
+
+</Section>
+
+<div id="github-workflow" />
+<Section spacing="default">
+
+## Kwaliteitsworkflow op GitHub
+
+Elke Conduction-app staat publiek op GitHub onder de [ConductionNL](https://github.com/ConductionNL)-organisatie. De herbruikbare [`Quality`-workflow](https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml) — één keer gedefinieerd in de `.github`-repo en aangeroepen door elke app — draait dezelfde gate-stack op elke pull request: vier parallelle kwaliteitsmatrices, daarna een gated test-fase, daarna rapportage + een Software Bill of Materials op beschermde branches.
+
+<QualityPipelineFlow />
+
+<div style={{display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 32}}>
+  <a href={WORKFLOW_FILE} target="_blank" rel="noopener noreferrer" style={{padding: '10px 18px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Bekijk quality.yml op GitHub →
+  </a>
+  <a href="https://github.com/ConductionNL/openregister/actions/runs/26099018560" target="_blank" rel="noopener noreferrer" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+    Bekijk een live run →
+  </a>
+</div>
+
+### Om de pipeline heen
+
+- **Branch protection** — drie organisatie-brede rulesets dwingen overal dezelfde regels af: ten minste één goedkeurende review om naar `development` te mergen, ten minste twee reviews om naar `main` te mergen. Directe pushes naar beschermde branches zijn geblokkeerd.
+- **Tweesporen-review** — pull requests krijgen de juiste reviewer via labels: `code-review:queued` start de code-review tegen PHPCS / PHPMD / Psalm / PHPStan (of `ruff` / `mypy` / ESLint per stack); `security-review:queued` start een informatiebeveiligingsreview tegen de relevante ISO 27001:2022 Annex A-controls.
+- **Hydra-automatisering** — routinematig review-werk loopt via Hydra, die naar PR-labels kijkt, review-jobs naar gespecialiseerde agents stuurt en bevindingen terugschrijft als PR-comments. Een menselijke reviewer keurt goed voor de merge.
+- **Spec-gedreven wijzigingen** — grotere wijzigingen dragen een OpenSpec change-folder en een ADR mee. Spec naast de code, ADR voor de architecturale beslissing, PR verwijst naar beide — de documentatiesporen die ISO 9001:2015 §7.5 vraagt, zonder een parallel kwaliteitshandboek bij te houden.
+
+</Section>
+
+<Section spacing="default">
+
+## Aanverwante compliance-signalen
+
+Naast de twee ISO-certificeringen, het operationele handboek, de pentest-scans en de GitHub-workflow ziet het inkooprelevante compliance-beeld voor Conduction er zo uit:
+
+- **ISAE 3402.** De managed hosting op commonground.nu draait op infrastructuur van [Cyso](https://www.cyso.nl/) onder ISAE 3402 Type II. Hun verklaring sturen we op verzoek toe.
+- **BIO.** De afstemming op de Baseline Informatiebeveiliging Overheid loopt. Statusupdates komen hier zodra die rond is.
+- **DigiD.** Buiten de scope van onze huidige portfolio. We integreren met DigiD-systemen, maar hebben zelf geen DigiD-assessment.
+
+</Section>
+
+<div id="compliance-faq" />
+<FAQ title="Compliance FAQ.">
+  <FAQItem question="Wat is het verschil tussen ISO 9001 en ISO 27001?" defaultOpen>
+    ISO 9001:2015 dekt kwaliteitsmanagement: hoe we ons werk plannen, bouwen, leveren en verbeteren. ISO 27001:2022 dekt informatiebeveiliging: hoe we risico's voor de data die we onder ons hebben identificeren, mitigeren en auditen. De meeste inkoopdossiers vragen om beide. Wij zijn voor beide gecertificeerd door dezelfde externe auditor, op dezelfde jaarcyclus.
+  </FAQItem>
+  <FAQItem question="Dekt het ISO 27001-certificaat van Conduction mijn data als ik de app zelf host?">
+    Nee. Zelf hosten betekent jouw Nextcloud-instance, jouw infrastructuur, jouw data. Ons ISO 27001-certificaat dekt de eigen systemen van Conduction en de apps die we ontwikkelen. De beveiliging van de data die je in OpenRegister op je eigen server zet, is jouw verantwoordelijkheid. Wil je dat onze certificering ook de hosting dekt, gebruik dan onze managed Common Ground-omgeving op commonground.nu.
+  </FAQItem>
+  <FAQItem question="Hoe vaak draaien jullie de pentests?">
+    Dagelijks, tegen elke applicatie. De pentest-tools.com-scans dekken de OWASP Top 10, bekende CVE's, TLS-hygiëne, netwerk-exposure en subdomain enumeration af. Komt er een bevinding boven, dan triëren we hem en starten de opvolging binnen 8 werkuren.
+  </FAQItem>
+  <FAQItem question="Is Conduction BIO-compliant?">
+    De afstemming op de Baseline Informatiebeveiliging Overheid loopt. We gebruiken de BIO-controleset als gap-analyse tegen onze bestaande ISO 27001-controls en publiceren hier een status­update zodra die rond is. ISO 27001:2022 dekt het grootste deel van de BIO-vereisten al af, daarom beschouwen de meeste overheidsklanten Conduction nu al als inkoop-klaar.
+  </FAQItem>
+  <FAQItem question="Hebben jullie een DigiD-assessment?">
+    Nee, DigiD valt buiten de scope van onze huidige portfolio. We bouwen apps die met DigiD-systemen integreren (via Integriq), maar we zijn zelf geen DigiD-dienstverlener. Als je aanbesteding een DigiD-assessment vraagt, ligt dat assessment bij de hostende partij of bij het systeem dat de DigiD-login aanbiedt.
+  </FAQItem>
+  <FAQItem question="Wat dekt het ISO 27001-certificaat op commonground.nu?">
+    De managed Common Ground-omgeving draait op infrastructuur van Cyso onder ISAE 3402 Type II. Het ISO 27001-certificaat van Conduction dekt de applicatielaag (de Conduction-apps, de ontwikkelpipeline, de operatieworkflows), de ISAE van Cyso dekt de hostinglaag (datacenters, netwerk, hypervisor). Samen dekken ze de volledige stack die een overheidsklant op commonground.nu afneemt.
+  </FAQItem>
+  <FAQItem question="Krijg ik een kopie van de Verklaring van Toepasselijkheid of een pentestrapport?">
+    De ISO 9001:2015- en ISO 27001:2022-certificaten zelf staan op deze pagina — klik op de afbeeldingen voor de scans in volle resolutie. Voor de VvT, het meest recente interne auditrapport of de relevante pentest-samenvatting kun je mailen naar info@conduction.nl met je contract- of aanbestedingsreferentie. Die stukken sturen we direct toe, omdat we willen vastleggen wie ze opvraagt.
+  </FAQItem>
+</FAQ>
