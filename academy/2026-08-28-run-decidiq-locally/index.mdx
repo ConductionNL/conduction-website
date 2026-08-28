@@ -1,0 +1,175 @@
+---
+slug: run-decidiq-locally
+title: Run Decidiq locally
+contentType: tutorial
+heroIcon: gavel
+authors: [conduction]
+date: 2026-08-28
+summary: One compose file and about ten minutes. You end with Decidiq running on your own machine on real Nextcloud, backed by OpenRegister, with a way to check that it actually worked rather than merely loaded.
+tags: [Demo, Docker, Local, Decidiq, OpenRegister]
+apps: [decidesk, openregister, nldesign, openconnector]
+durationMinutes: 10
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep} from '@conduction/docusaurus-preset/components';
+
+Decidiq is a Nextcloud app built on OpenRegister. Reading about what it does is not the same as clicking through it, and standing up a Nextcloud by hand to find out is more work than most people will do on a first look.
+
+This tutorial removes that step. One file, two commands, and you are looking at the real thing.
+
+<Outcomes>
+  <Outcome>Decidiq running locally on real Nextcloud, with OpenRegister behind it.</Outcome>
+  <Outcome>Secret ballots.</Outcome>
+  <Outcome>Voting engine.</Outcome>
+  <Outcome>Proxy and delegated voting.</Outcome>
+  <Outcome>A check that tells you it worked — which is not the same as a page loading.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>Docker, with Compose v2.23 or newer. Nothing else — no PHP, no Node, no checkout.</PrerequisiteItem>
+  <PrerequisiteItem>About 3 GB of free memory and 4 GB of disk.</PrerequisiteItem>
+  <PrerequisiteItem>An internet connection for the first run — it downloads the application archives.</PrerequisiteItem>
+</Prerequisites>
+
+> **This is a demo, not a development environment.** It runs the real software and behaves the same way, so what you learn here carries over to a real deployment. But nothing is backed up, and `docker compose down -v` deletes all of it. Explore freely; do not put real data in it.
+
+## Step 1: Check your Compose version
+
+```bash
+docker compose version
+```
+
+You need **v2.23 or newer**. This matters more than a version check usually does: the compose file declares its install scripts inline, using a feature older versions do not have — and they do not complain. They ignore the field, start Nextcloud with no applications installed, and leave nothing in the logs to explain why.
+
+## Step 2: Get the compose file
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/ConductionNL/decidiq/development/decidiq-compose.yaml
+```
+
+One self-contained file. Nothing else to fetch, nothing to edit.
+
+## Step 3: Start it
+
+```bash
+docker compose -f decidiq-compose.yaml up -d
+```
+
+The first run takes a few minutes — it pulls three images, then downloads and unpacks the application archives before Nextcloud starts at all. Watch it if you like:
+
+```bash
+docker compose -f decidiq-compose.yaml logs -f app-installer
+```
+
+It is ready when this returns `"installed":true`:
+
+```bash
+curl -s http://localhost:8614/status.php
+```
+
+## Step 4: Open it
+
+| What | Where |
+| --- | --- |
+| **Decidiq** | [http://localhost:8614/apps/decidiq/](http://localhost:8614/apps/decidiq/) |
+| Admin interface | [http://localhost:8614](http://localhost:8614) — `admin` / `admin` |
+
+## What is running, and why it is more than one app
+
+| App | Why |
+| --- | --- |
+| `openregister` | **Required.** Decidiq declares its registers and schemas against OpenRegister. |
+| `thematiq` | Optional. Government theming. Absent, the UI renders unthemed rather than wrong. |
+| `integriq` | Optional. The connector, for feeding in data from systems you do not control. |
+| `decidiq` | The app this tutorial is about. |
+
+That OpenRegister dependency is **not declared** in `appinfo/info.xml`. No app in the fleet declares an `<app>` dependency, so nothing stops the App Store installing Decidiq on its own — it would then load, find no register to attach to, and show you an empty app rather than an error. The compose file encodes the dependency the manifest does not.
+
+## Step 5: Check that it actually worked
+
+This is the step people skip, and it is the one worth doing.
+
+**A page loading is not a page working.** Nextcloud serves its page shell before an app decides whether it has anything to render, so an app URL returns HTTP 200 even when it resolves to nothing at all. A smoke test that checks for a 200 would call that a success.
+
+So check content instead:
+
+```bash
+# Registers exist. An empty list here does not mean "nothing configured yet" --
+# it means the register configuration was never imported, and those two states
+# look identical from the outside.
+curl -s -u admin:admin "http://localhost:8614/apps/openregister/api/registers" | head -c 300
+```
+
+## What to look at first
+
+Decidiq ships with more than fits in one sitting. These are the parts worth opening first:
+
+- **Secret ballots**
+- **Voting engine**
+- **Proxy and delegated voting**
+- **Preferential elections**
+- **Quorum verification**
+
+## Pinning versions
+
+Every app resolves to its newest release by default, pre-releases included, because most Connext apps do not yet publish a stable one. That is honest about what exists, but it is not reproducible. Pin whatever you need:
+
+```bash
+DECIDIQ_VERSION=1.2.3 \
+OPENREGISTER_VERSION=1.1.6 \
+DEMO_PORT=9000 \
+docker compose -f decidiq-compose.yaml up -d
+```
+
+## Removing it
+
+```bash
+# Stop, keep the data
+docker compose -f decidiq-compose.yaml down
+
+# Stop and delete everything, including the database
+docker compose -f decidiq-compose.yaml down -v
+```
+
+## Why nothing is mounted from a checkout
+
+You may notice this file downloads release archives rather than pointing at a repository, and that no volume maps to a directory on your machine. Both are deliberate.
+
+Nextcloud installs and updates an app by **deleting** the app directory and extracting a fresh archive over it. Point that at a git checkout and an app-store update will delete your working tree — measured on a development machine on 27 August 2026, where an updater fired on a container restart and removed every top-level file from a bind-mounted checkout, including its `.git` directory.
+
+There is a second reason, and it is the one that bites quietly. A release archive is a **complete** application: it carries its `vendor/` directory and its built JavaScript. A `git clone` carries neither — and a Nextcloud app with no `vendor/` does not fail loudly. It warns once and keeps loading, so the app appears installed while every service that needs a dependency is silently missing.
+
+To work *on* these apps rather than *with* them, use a development environment instead. This file cannot serve that purpose and does not try.
+
+<Troubleshooting lede="Something not behaving? Find the matching situation below.">
+
+<TroubleshootingItem symptom="`app-installer` exits and the app is missing">
+An archive could not be downloaded — usually a pinned version with no matching release. Check the log for the URL it tried, then run `up` again to retry.
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom="It stops with `openregister missing; aborting`">
+Deliberate. Every Connext app declares registers against OpenRegister, so a stack without it would start and then fail in a dozen confusing ways instead of one clear one.
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom="The interface renders unthemed">
+Thematiq is not installed or not enabled. Cosmetic, and expected — the theme resolver renders unthemed rather than wrong when it is absent.
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom="Everything returns 404 or a maintenance page after a restart">
+Nextcloud is waiting for an upgrade. Run `docker compose -f decidiq-compose.yaml exec -u www-data nextcloud php occ upgrade`.
+</TroubleshootingItem>
+
+<TroubleshootingItem symptom="The port is already in use">
+Set another one: `DEMO_PORT=9000 docker compose -f decidiq-compose.yaml up -d`. The port also has to appear in the trusted-domain list, which the compose file handles for you from the same variable.
+</TroubleshootingItem>
+
+</Troubleshooting>
+
+<NextSteps title="Next step" lede="A running app is the entry point, not the destination.">
+  <NextStep href="/academy/set-up-the-connext-ecosystem" title="Set up the whole Connext ecosystem" cta="Start tutorial">
+    The same idea, with eleven apps wired together instead of one.
+  </NextStep>
+  <NextStep href="/apps/decidesk" title="What Decidiq does" cta="Read more">
+    The feature list, in more depth than a tutorial can carry.
+  </NextStep>
+</NextSteps>
