@@ -1,0 +1,286 @@
+/**
+ * La Frankendesk — diagram motion.
+ *
+ * The three portal diagrams argue about direction (a launcher you
+ * leave, a switcher that rides along, a dashboard that pulls inward),
+ * and direction is the one thing a still picture cannot say. The
+ * fourth loop assembles La Frankendesk itself: the parts arrive from
+ * both bins, the hubs dock, the finish sweeps across all of it.
+ *
+ * Conventions are the preset's animated atomics (design-system
+ * docusaurus-preset, waves 1 to 5), so these loops behave like the
+ * ones on the product pages:
+ *
+ *   - Tokens and the diagram's own classes only. No new colours, and
+ *     never more than one accent per diagram.
+ *   - One duration custom property per diagram (--od-dur, --ls-dur,
+ *     --mb-dur, --fd-dur), so a timeline retunes without touching a
+ *     keyframe.
+ *   - Seamless loops. Each one ends where it started, and anything
+ *     that has to snap back does so while invisible.
+ *   - The static rendering is the meaningful end state, never a blank
+ *     frame. Everything below sits inside
+ *     `prefers-reduced-motion: no-preference`, so a reader who asks
+ *     for less motion gets the assembled diagram the post describes.
+ *
+ * SVG transforms need `transform-box: fill-box` to rotate and scale
+ * around their own centre rather than the viewBox origin.
+ */
+
+.hfaw-chart .hfaw-anim * {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Elements that only exist for the animation. Without motion they
+   stay out of the picture entirely, which is why they are hidden here
+   and revealed inside the motion query below. */
+.hfaw-chart .odGhost,
+.hfaw-chart .lsMenu,
+.hfaw-chart .mbDot,
+.hfaw-chart .fdSweep {
+  opacity: 0;
+}
+
+.hfaw-chart .odTile { fill: rgba(255, 255, 255, 0.55); }
+.hfaw-chart .lsMenuBg { fill: #fff; opacity: 0.92; }
+.hfaw-chart .lsMenuRow { fill: var(--chart-c2); opacity: 0.55; }
+.hfaw-chart .mbRow { fill: var(--ifm-color-emphasis-200); }
+.hfaw-chart .mbDotA { fill: var(--chart-c1); }
+.hfaw-chart .mbDotB { fill: var(--chart-c2); }
+.hfaw-chart .odGhost { fill: var(--chart-c3); }
+.hfaw-chart .fdSweepBar { fill: var(--chart-c2); opacity: 0.18; }
+
+@media (prefers-reduced-motion: no-preference) {
+
+  /* ==================================================================
+     openDesk · a launcher you leave
+     A tile is pressed, its service opens as its own window, and the
+     portal dims behind it. 7s.
+     ================================================================== */
+
+  .hfaw-chart .hfaw-od { --od-dur: 7s; }
+
+  .hfaw-chart .hfaw-od .odT2 {
+    animation: hfawOdPress var(--od-dur) ease-in-out infinite;
+  }
+  @keyframes hfawOdPress {
+    0%, 12%   { transform: scale(1);    fill: rgba(255, 255, 255, 0.55); }
+    18%       { transform: scale(0.82); fill: #fff; }
+    26%, 88%  { transform: scale(1);    fill: #fff; }
+    96%, 100% { transform: scale(1);    fill: rgba(255, 255, 255, 0.55); }
+  }
+
+  /* The pressed tile travels down to the application it opens, and
+     fades as that application lights up. It only translates: scaling
+     it up into the app's footprint turned it into a wash of colour
+     over the box rather than a tile arriving at one. Invisible at
+     both ends of the loop, so the return trip is never seen. */
+  .hfaw-chart .hfaw-od .odGhost {
+    animation: hfawOdGhost var(--od-dur) cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  @keyframes hfawOdGhost {
+    0%, 18%   { opacity: 0; transform: translate(0, 0); }
+    22%       { opacity: 0.95; transform: translate(0, 0); }
+    40%       { opacity: 0.95; transform: translate(2px, 36px); }
+    46%, 100% { opacity: 0; transform: translate(2px, 40px); }
+  }
+
+  .hfaw-chart .hfaw-od .odApp {
+    animation: hfawOdOpen var(--od-dur) ease-out infinite;
+  }
+  @keyframes hfawOdOpen {
+    0%, 38%   { opacity: 0.55; transform: scale(1); }
+    46%       { opacity: 1;    transform: scale(1.04); }
+    54%, 88%  { opacity: 1;    transform: scale(1); }
+    96%, 100% { opacity: 0.55; transform: scale(1); }
+  }
+
+  /* You landed here, then left: the portal recedes once the service
+     is open. */
+  .hfaw-chart .hfaw-od .odPortal {
+    animation: hfawOdDim var(--od-dur) ease-in-out infinite;
+  }
+  @keyframes hfawOdDim {
+    0%, 44%   { opacity: 1; }
+    62%, 86%  { opacity: 0.42; }
+    96%, 100% { opacity: 1; }
+  }
+
+  /* ==================================================================
+     La Suite · a switcher that rides along
+     The waffle opens inside the app you are in, you pick another, and
+     the waffle is already there in the new one. 8s.
+     ================================================================== */
+
+  .hfaw-chart .hfaw-ls { --ls-dur: 8s; }
+
+  .hfaw-chart .hfaw-ls .lsW1 { animation: hfawLsWaffleA var(--ls-dur) ease-in-out infinite; }
+  .hfaw-chart .hfaw-ls .lsW2 { animation: hfawLsWaffleB var(--ls-dur) ease-in-out infinite; }
+  @keyframes hfawLsWaffleA {
+    0%, 6%    { transform: scale(1);    opacity: 0.9; }
+    12%, 40%  { transform: scale(1.35); opacity: 1; }
+    48%, 100% { transform: scale(1);    opacity: 0.9; }
+  }
+  @keyframes hfawLsWaffleB {
+    0%, 52%   { transform: scale(1);    opacity: 0.9; }
+    60%, 86%  { transform: scale(1.35); opacity: 1; }
+    94%, 100% { transform: scale(1);    opacity: 0.9; }
+  }
+
+  /* The menu unfolds from the waffle, inside the application, rather
+     than replacing the page with a hub. */
+  .hfaw-chart .hfaw-ls .lsMenu1 { animation: hfawLsMenuA var(--ls-dur) cubic-bezier(0.2, 0.8, 0.3, 1) infinite; }
+  .hfaw-chart .hfaw-ls .lsMenu2 { animation: hfawLsMenuB var(--ls-dur) cubic-bezier(0.2, 0.8, 0.3, 1) infinite; }
+  @keyframes hfawLsMenuA {
+    0%, 8%    { opacity: 0; transform: scale(0.6); }
+    16%, 34%  { opacity: 1; transform: scale(1); }
+    42%, 100% { opacity: 0; transform: scale(0.6); }
+  }
+  @keyframes hfawLsMenuB {
+    0%, 56%   { opacity: 0; transform: scale(0.6); }
+    64%, 82%  { opacity: 1; transform: scale(1); }
+    90%, 100% { opacity: 0; transform: scale(0.6); }
+  }
+
+  /* Focus moves from the first application to the second. Nothing
+     about the waffle moves with it: that is the point. */
+  .hfaw-chart .hfaw-ls .lsA1 { animation: hfawLsFocusA var(--ls-dur) ease-in-out infinite; }
+  .hfaw-chart .hfaw-ls .lsA2 { animation: hfawLsFocusB var(--ls-dur) ease-in-out infinite; }
+  .hfaw-chart .hfaw-ls .lsA3,
+  .hfaw-chart .hfaw-ls .lsA4 { opacity: 0.55; }
+  @keyframes hfawLsFocusA {
+    0%, 42%   { opacity: 1; }
+    56%, 92%  { opacity: 0.55; }
+    100%      { opacity: 1; }
+  }
+  @keyframes hfawLsFocusB {
+    0%, 42%   { opacity: 0.55; }
+    56%, 92%  { opacity: 1; }
+    100%      { opacity: 0.55; }
+  }
+
+  /* ==================================================================
+     MijnBureau · a dashboard that pulls inward
+     A record leaves each component, travels the arrow, and lands as a
+     row in the dashboard. 6s.
+     ================================================================== */
+
+  .hfaw-chart .hfaw-mb { --mb-dur: 6s; }
+
+  .hfaw-chart .hfaw-mb .mbDotA { animation: hfawMbTravel var(--mb-dur) cubic-bezier(0.5, 0, 0.5, 1) infinite; }
+  .hfaw-chart .hfaw-mb .mbDotB {
+    animation: hfawMbTravel var(--mb-dur) cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    animation-delay: calc(var(--mb-dur) * 0.18);
+  }
+  @keyframes hfawMbTravel {
+    0%        { opacity: 0; transform: translateY(0); }
+    8%        { opacity: 1; transform: translateY(0); }
+    38%       { opacity: 1; transform: translateY(-38px); }
+    46%, 100% { opacity: 0; transform: translateY(-38px); }
+  }
+
+  .hfaw-chart .hfaw-mb .mbRow1 { animation: hfawMbRow var(--mb-dur) ease-out infinite; }
+  .hfaw-chart .hfaw-mb .mbRow2 {
+    animation: hfawMbRow var(--mb-dur) ease-out infinite;
+    animation-delay: calc(var(--mb-dur) * 0.18);
+  }
+  .hfaw-chart .hfaw-mb .mbRow3 {
+    animation: hfawMbRow var(--mb-dur) ease-out infinite;
+    animation-delay: calc(var(--mb-dur) * 0.36);
+  }
+  @keyframes hfawMbRow {
+    0%, 36%   { opacity: 0.35; transform: translateX(-6px); }
+    46%       { opacity: 1;    transform: translateX(0); }
+    90%       { opacity: 1;    transform: translateX(0); }
+    100%      { opacity: 0.35; transform: translateX(-6px); }
+  }
+
+  /* ==================================================================
+     La Frankendesk · the assembly
+     Parts arrive from both bins, the hubs dock underneath, and the
+     finish sweeps across everything. 12s.
+     ================================================================== */
+
+  .hfaw-chart .hfaw-fd { --fd-dur: 12s; }
+
+  .hfaw-chart .hfaw-fd .fdPart {
+    animation: hfawFdArrive var(--fd-dur) cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
+  }
+  .hfaw-chart .hfaw-fd .fdLeft  { --fd-from: -26px; }
+  .hfaw-chart .hfaw-fd .fdRight { --fd-from: 26px; }
+  .hfaw-chart .hfaw-fd .fdP1 { animation-delay: calc(var(--fd-dur) * 0.01); }
+  .hfaw-chart .hfaw-fd .fdP2 { animation-delay: calc(var(--fd-dur) * 0.03); }
+  .hfaw-chart .hfaw-fd .fdP3 { animation-delay: calc(var(--fd-dur) * 0.05); }
+  .hfaw-chart .hfaw-fd .fdP4 { animation-delay: calc(var(--fd-dur) * 0.07); }
+  .hfaw-chart .hfaw-fd .fdP5 { animation-delay: calc(var(--fd-dur) * 0.09); }
+  .hfaw-chart .hfaw-fd .fdP6 { animation-delay: calc(var(--fd-dur) * 0.11); }
+  .hfaw-chart .hfaw-fd .fdP7 { animation-delay: calc(var(--fd-dur) * 0.13); }
+  @keyframes hfawFdArrive {
+    0%        { opacity: 0; transform: translateX(var(--fd-from)) scale(0.96); }
+    10%       { opacity: 1; transform: translateX(0) scale(1.03); }
+    14%, 92%  { opacity: 1; transform: translateX(0) scale(1); }
+    100%      { opacity: 0; transform: translateX(var(--fd-from)) scale(0.96); }
+  }
+
+  /* The hubs dock last, from below: they sit above whatever you
+     already run. */
+  .hfaw-chart .hfaw-fd .fdHub {
+    animation: hfawFdDock var(--fd-dur) cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
+  }
+  .hfaw-chart .hfaw-fd .fdHub2 { animation-delay: calc(var(--fd-dur) * 0.03); }
+  @keyframes hfawFdDock {
+    0%, 22%   { opacity: 0; transform: translateY(10px); }
+    32%, 92%  { opacity: 1; transform: translateY(0); }
+    100%      { opacity: 0; transform: translateY(10px); }
+  }
+
+  /* The finish: the band lands, then draws itself across the parts
+     below it. */
+  .hfaw-chart .hfaw-fd .fdBand {
+    animation: hfawFdBand var(--fd-dur) ease-out infinite;
+  }
+  @keyframes hfawFdBand {
+    0%, 36%   { opacity: 0.25; }
+    46%, 92%  { opacity: 1; }
+    100%      { opacity: 0.25; }
+  }
+
+  .hfaw-chart .hfaw-fd .fdSweep {
+    transform-origin: left center;
+    animation: hfawFdSweep var(--fd-dur) cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  @keyframes hfawFdSweep {
+    0%, 40%   { opacity: 0; transform: scaleX(0); }
+    46%       { opacity: 1; transform: scaleX(0.04); }
+    62%       { opacity: 1; transform: scaleX(1); }
+    76%, 100% { opacity: 0; transform: scaleX(1); }
+  }
+
+  /* ==================================================================
+     The three architecture diagrams · a light entrance, once
+     These carry no argument about motion, so they get a scroll-driven
+     reveal rather than a loop: the rows land as the diagram comes
+     into view, and then it is a diagram again. Browsers without
+     scroll-driven animations show it assembled, which is the same
+     end state.
+     ================================================================== */
+
+  @supports (animation-timeline: view()) {
+    .hfaw-chart .hfaw-arch > rect {
+      animation: hfawArchLand 520ms ease-out both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 28%;
+    }
+    .hfaw-chart .hfaw-arch > rect:nth-of-type(2) { animation-delay: 40ms; }
+    .hfaw-chart .hfaw-arch > rect:nth-of-type(3) { animation-delay: 80ms; }
+    .hfaw-chart .hfaw-arch > rect:nth-of-type(4) { animation-delay: 120ms; }
+    .hfaw-chart .hfaw-arch > rect:nth-of-type(5) { animation-delay: 160ms; }
+    .hfaw-chart .hfaw-arch > rect:nth-of-type(6) { animation-delay: 200ms; }
+    .hfaw-chart .hfaw-arch > rect:nth-of-type(n + 7) { animation-delay: 240ms; }
+    @keyframes hfawArchLand {
+      from { opacity: 0; transform: translateY(6px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  }
+}
