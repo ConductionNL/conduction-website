@@ -61,6 +61,9 @@ module.exports = createConfig({
     {id: 'deadline-defender', label: {en: 'Deadline defender · Dossiq page', nl: 'Deadlineverdediger · Dossiq-pagina'}},
     {id: 'blueprint-rush', label: {en: 'Blueprint rush · Buildiq page', nl: 'Bouwtekeningrace · Buildiq-pagina'}},
     {id: 'record-run', label: {en: 'Record run · Connext page', nl: 'Recordrun · Connext-pagina'}},
+    {id: 'lock-pick', label: {en: 'Lock pick · Keepiq page', nl: 'Slot openen · Keepiq-pagina'}},
+    {id: 'paint-by-tokens', label: {en: 'Paint by tokens · Thematiq page', nl: 'Kleuren op token · Thematiq-pagina'}},
+    {id: 'redaction', label: {en: 'Black it out · Filinq page', nl: 'Zwart lakken · Filinq-pagina'}},
   ],
 
   minigamesShare: {

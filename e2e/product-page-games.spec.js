@@ -202,6 +202,122 @@ test.describe('record run, on the Connext page', () => {
   });
 });
 
+test.describe('lock pick, on the Keepiq page', () => {
+  test.beforeEach(async ({page}) => {
+    await clearScores(page);
+    await page.goto('/apps/keepiq/');
+  });
+
+  test('the dial reads hot and cold before you commit a turn', async ({page}) => {
+    const game = page.locator('section[class*="lp_"]');
+    await expect(game).toBeVisible();
+    await game.getByRole('button', {name: /take a pick/i}).click();
+
+    const dial = game.getByRole('slider');
+    const feel = game.locator('p[class*="feel"]');
+
+    /* Sweeping the dial has to change the feedback without turning:
+       that is the whole fix that made the game playable. */
+    const readings = new Set();
+    for (const value of ['5', '25', '50', '75', '95']) {
+      await dial.fill(value);
+      readings.add((await feel.innerText()).trim());
+    }
+    expect(readings.size, 'the dial felt the same everywhere').toBeGreaterThan(1);
+
+    /* And no turn was taken while sweeping. */
+    await expect(game.getByText(/Picks 3/)).toBeVisible();
+  });
+
+  test('a careful sweep opens a lock', async ({page}) => {
+    const game = page.locator('section[class*="lp_"]');
+    await game.getByRole('button', {name: /take a pick/i}).click();
+
+    const dial = game.getByRole('slider');
+    const feel = game.locator('p[class*="feel"]');
+    const rank = (text) => (/almost turns/.test(text) ? 4
+      : /good way/.test(text) ? 3
+      : /gives a little/.test(text) ? 2
+      : /Barely/.test(text) ? 1 : 0);
+
+    /* Sweep, then commit in the middle of the best-feeling band. The
+       first position that feels strongest sits at its edge, which is
+       often just outside the tolerance: exactly the mistake a player
+       makes on their first lock. */
+    let bestRank = -1;
+    let band = [];
+    for (let v = 2; v < 100; v += 2) {
+      await dial.fill(String(v));
+      const r = rank((await feel.innerText()).trim());
+      if (r > bestRank) { bestRank = r; band = [v]; }
+      else if (r === bestRank) band.push(v);
+    }
+    const best = band[Math.floor(band.length / 2)];
+    await dial.fill(String(best));
+    await game.getByRole('button', {name: /turn the cylinder/i}).click();
+    await expect(game.locator('p[class*="feedback"]')).toContainText(/Open, in/);
+  });
+});
+
+test.describe('black it out, on the Filinq page', () => {
+  test.beforeEach(async ({page}) => {
+    await clearScores(page);
+    await page.goto('/apps/filinq/');
+  });
+
+  test('redacting the personal data publishes clean', async ({page}) => {
+    const game = page.getByRole('region', {name: 'Black it out'});
+    await expect(game).toBeVisible();
+    await game.getByRole('button', {name: /open the stack/i}).click();
+
+    /* Every document deals a name, a number or an address. Black out
+       whatever matches, leave the sentence, and publish. */
+    const SECRET = /de Vries|Keizersgracht|BSN|NL91|@example|March|maart|06 12/;
+    const words = game.locator('button[class*="word"]');
+    const count = await words.count();
+    let blacked = 0;
+    for (let i = 0; i < count; i++) {
+      const text = await words.nth(i).innerText();
+      if (SECRET.test(text)) { await words.nth(i).click(); blacked++; }
+    }
+    expect(blacked, 'the document dealt nothing to redact').toBeGreaterThan(0);
+
+    await game.getByRole('button', {name: /publish it/i}).click();
+    await expect(game.locator('p[class*="hint"]')).toContainText(/Clean\./);
+    await expect(game.getByText(/Breaches left 3/)).toBeVisible();
+  });
+
+  test('publishing with a name still on it is a breach', async ({page}) => {
+    const game = page.getByRole('region', {name: 'Black it out'});
+    await game.getByRole('button', {name: /open the stack/i}).click();
+    await game.getByRole('button', {name: /publish it/i}).click();
+    await expect(game.locator('p[class*="hint"]')).toContainText(/should not have/);
+    await expect(game.getByText(/Breaches left 2/)).toBeVisible();
+  });
+});
+
+test.describe('paint by tokens, on the Thematiq page', () => {
+  test.beforeEach(async ({page}) => {
+    await clearScores(page);
+    await page.goto('/apps/thematiq/');
+  });
+
+  test('every cell says which token it wants, and the right one fills it', async ({page}) => {
+    const game = page.getByRole('region', {name: 'Paint by tokens'});
+    await expect(game).toBeVisible();
+    await game.getByRole('button', {name: /open a theme/i}).click();
+
+    const cells = game.locator('button[class*="cell"]');
+    await expect(cells).toHaveCount(48);
+
+    const wanted = await cells.first().getAttribute('aria-label');
+    const token = wanted.replace(/^Wants /, '').trim();
+    await game.getByRole('button', {name: new RegExp(`\\b${token}\\b`), exact: false}).first().click();
+    await cells.first().click();
+    await expect(cells.first()).toHaveAttribute('aria-label', new RegExp(`Filled with ${token}`));
+  });
+});
+
 test('the arcade page lists every game the site ships', async ({page}) => {
   await page.goto('/arcade/');
   /* The roster in docusaurus.config.js and this list have to agree, or
@@ -209,6 +325,7 @@ test('the arcade page lists every game the site ships', async ({page}) => {
   for (const name of [
     'Twelve apps', 'Sink the boats', 'Hex-vaders', 'Logo memory', 'Kade cyclist',
     'Stamp rush', 'Deadline defender', 'Blueprint rush', 'Record run',
+    'Lock pick', 'Paint by tokens', 'Black it out',
   ]) {
     await expect(page.getByText(name, {exact: false}).first()).toBeVisible();
   }
