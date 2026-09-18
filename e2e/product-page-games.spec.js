@@ -161,13 +161,54 @@ test.describe('blueprint rush, on the Buildiq page', () => {
   });
 });
 
+test.describe('record run, on the Connext page', () => {
+  test.beforeEach(async ({page}) => {
+    await clearScores(page);
+    await page.goto('/connext/');
+  });
+
+  test('runs a record down three lanes that say what is coming', async ({page}) => {
+    const game = page.locator('section[class*="rr_"]');
+    await expect(game).toBeVisible();
+    await game.getByRole('button', {name: /send a record/i}).click();
+
+    const lanes = game.getByRole('button', {name: /^Lane \d\. Coming next:/});
+    await expect(lanes).toHaveCount(3);
+
+    /* The record is in exactly one lane, and steering moves it. */
+    await expect(game.locator('button[aria-pressed="true"]')).toHaveCount(1);
+    await lanes.nth(2).click();
+    await expect(lanes.nth(2)).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('steering into what blocks a record ends the run and opens the dialog', async ({page}) => {
+    const game = page.locator('section[class*="rr_"]');
+    await game.getByRole('button', {name: /send a record/i}).click();
+
+    /* Always steer into whatever is about to stop the record. Three of
+       those and the run is over, whatever the board deals. */
+    await expect(async () => {
+      const labels = await game.getByRole('button', {name: /^Lane \d\. Coming next:/}).all();
+      for (const lane of labels) {
+        const what = await lane.getAttribute('aria-label');
+        if (/Format nothing reads|Permission nobody granted|Connector that is not there/.test(what)) {
+          await lane.click({timeout: 1000}).catch(() => {});
+        }
+      }
+      await expect(page.locator(MODAL)).toBeVisible({timeout: 400});
+    }).toPass({timeout: 40000});
+
+    await expect(page.locator(MODAL)).toContainText(/hops/);
+  });
+});
+
 test('the arcade page lists every game the site ships', async ({page}) => {
   await page.goto('/arcade/');
   /* The roster in docusaurus.config.js and this list have to agree, or
      the dialog counts a game the page never names. */
   for (const name of [
     'Twelve apps', 'Sink the boats', 'Hex-vaders', 'Logo memory', 'Kade cyclist',
-    'Stamp rush', 'Deadline defender', 'Blueprint rush',
+    'Stamp rush', 'Deadline defender', 'Blueprint rush', 'Record run',
   ]) {
     await expect(page.getByText(name, {exact: false}).first()).toBeVisible();
   }
