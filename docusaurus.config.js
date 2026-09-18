@@ -59,6 +59,7 @@ module.exports = createConfig({
     {id: 'kade-cyclist', label: {en: 'Kade cyclist · footer kade', nl: 'Kadefietser · kade in de footer'}},
     {id: 'stamp-rush', label: {en: 'Stamp rush · Decidiq page', nl: 'Stempelrace · Decidiq-pagina'}},
     {id: 'deadline-defender', label: {en: 'Deadline defender · Dossiq page', nl: 'Deadlineverdediger · Dossiq-pagina'}},
+    {id: 'blueprint-rush', label: {en: 'Blueprint rush · Buildiq page', nl: 'Bouwtekeningrace · Buildiq-pagina'}},
   ],
 
   minigamesShare: {
