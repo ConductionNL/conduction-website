@@ -47,6 +47,19 @@ module.exports = createConfig({
      buttons. It is time-bound (Nextcloud Contributor Week, closing
      Friday 25 September 2026 at 17:00 CEST), so when the giveaway ends
      the prize lines come out and the share buttons stay. */
+  /* The games this site ships. The dialog counts "found" and the total
+     against this list, so a game added here must actually exist on a
+     page, and a game removed from the site must come out. Labels are
+     per locale because themeConfig is never translated. */
+  minigamesRoster: [
+    {id: 'hexrain', label: {en: 'Twelve apps · hex rain', nl: 'Twaalf apps · hexregen'}},
+    {id: 'boats', label: {en: 'Sink the boats · footer canal', nl: 'Boten kelderen · gracht in de footer'}},
+    {id: 'invaders', label: {en: 'Hex-vaders · cookie CLI', nl: 'Hex-vaders · cookieconsole'}},
+    {id: 'logo-memory', label: {en: 'Logo memory · clients marquee', nl: 'Logomemory · klantenmarquee'}},
+    {id: 'kade-cyclist', label: {en: 'Kade cyclist · footer kade', nl: 'Kadefietser · kade in de footer'}},
+    {id: 'stamp-rush', label: {en: 'Stamp rush · Decidiq page', nl: 'Stempelrace · Decidiq-pagina'}},
+  ],
+
   minigamesShare: {
     hashtag: '#IReadTheKit',
     /* themeConfig is not translated by Docusaurus, so campaign copy is
