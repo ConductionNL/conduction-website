@@ -60,6 +60,7 @@ const AI_MARK_COPY = {
 
 import WebinarHero from '@site/src/components/WebinarHero/WebinarHero';
 import {glyphFor} from './heroGlyphs';
+import {visualFor, isKnownVisual} from './heroVisuals';
 import styles from './styles.module.css';
 
 /**
@@ -162,6 +163,8 @@ function panelToneFor(contentType) {
  *                 tutorial | blog)
  *   heroImage:    site-absolute path or absolute URL; replaces the hex icon
  *   heroImageAlt: alt text for heroImage (decorative when omitted)
+ *   heroVisual:   a name from ./heroVisuals; renders that component in
+ *                 the `featured` hero's visual column instead of the hex
  *   heroEyebrow:  overrides the eyebrow label on the `featured` variant
  *   heroAccent:   orange | cobalt — `featured` variant only
  *
@@ -308,6 +311,13 @@ function BlogPostPageContent({children}) {
       tone: heroTone,
     };
 
+  /* An unknown heroVisual warns and falls back to the hex, the same
+     contract heroIcon follows. */
+  if (frontMatter.heroVisual && !isKnownVisual(frontMatter.heroVisual)) {
+    warnUnknown('heroVisual', frontMatter.heroVisual, metadata.permalink, 'the hero glyph');
+  }
+  const heroVisualNode = visualFor(frontMatter.heroVisual);
+
   const author = metadata.authors && metadata.authors[0];
   const heroProps = {
     crumb: [
@@ -359,6 +369,7 @@ function BlogPostPageContent({children}) {
           contentType={frontMatter.contentType}
           durationMinutes={frontMatter.durationMinutes}
           thumbnail={heroProps.cover}
+          visual={heroVisualNode}
           accent={heroAccent}
         />
       )}
