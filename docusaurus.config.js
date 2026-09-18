@@ -40,6 +40,25 @@ module.exports = createConfig({
   organizationName: 'ConductionNL',
   projectName: 'conduction-website',
 
+  /* The hidden mini-games keep their scores in the player's own
+     browser: there is no leaderboard to submit to and no account to
+     make, so a run is only worth something once it is posted. This is
+     the campaign copy the game-over dialog shows under its share
+     buttons. It is time-bound (Nextcloud Contributor Week, closing
+     Friday 25 September 2026 at 17:00 CEST), so when the giveaway ends
+     the prize lines come out and the share buttons stay. */
+  minigamesShare: {
+    hashtag: '#IReadTheKit',
+    /* themeConfig is not translated by Docusaurus, so campaign copy is
+       given per locale and the dialog picks the active one. */
+    prize: {
+      en: 'Best total score on Friday 25 September at 17:00 wins a box of Amsterdam beer.',
+      nl: 'De hoogste totaalscore op vrijdag 25 september om 17:00 wint een doos Amsterdams bier.',
+    },
+    prizeHref: '/arcade',
+    prizeLinkLabel: {en: 'How the giveaway works', nl: 'Zo werkt de actie'},
+  },
+
   /* Public lead-intake endpoint. The support + partner forms POST here to
      create a `lead` object in the Pipelinq CRM (OpenRegister, public-create
      schema, anonymous rate-limited). Set PIPELINQ_LEAD_ENDPOINT at build time
