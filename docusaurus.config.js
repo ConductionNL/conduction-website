@@ -58,6 +58,7 @@ module.exports = createConfig({
     {id: 'logo-memory', label: {en: 'Logo memory · clients marquee', nl: 'Logomemory · klantenmarquee'}},
     {id: 'kade-cyclist', label: {en: 'Kade cyclist · footer kade', nl: 'Kadefietser · kade in de footer'}},
     {id: 'stamp-rush', label: {en: 'Stamp rush · Decidiq page', nl: 'Stempelrace · Decidiq-pagina'}},
+    {id: 'deadline-defender', label: {en: 'Deadline defender · Dossiq page', nl: 'Deadlineverdediger · Dossiq-pagina'}},
   ],
 
   minigamesShare: {
