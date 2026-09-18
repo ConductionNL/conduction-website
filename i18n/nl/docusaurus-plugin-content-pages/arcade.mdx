@@ -1,0 +1,122 @@
+---
+title: De arcade
+description: Er zijn twaalf mini-games verstopt op deze site. Je scores blijven in je eigen browser, dus een run telt pas als je hem post. De hoogste totaalscore op vrijdag 25 september om 17:00 wint een doos Amsterdams bier.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
+
+{/* Een kast, geen controller: de spellen staan op deze site en niet op
+    een console. Alleen lijnen, 24x24, net als de andere pagina-iconen. */}
+export const ArcadeIcon = (
+  <svg viewBox="0 0 24 24">
+    <rect x="4" y="3" width="16" height="13" rx="2" />
+    <path d="M8 20h8M10 16v4M14 16v4" />
+    <path d="M9 8h2M10 7v2M14 9h.01" />
+  </svg>
+);
+
+<DetailHero
+  icon={ArcadeIcon}
+  crumb={[{label: 'Over ons', href: '/nl/about'}, 'Arcade']}
+  locales="Contributor Week"
+  title="De arcade"
+  tagline={<>Er zijn twaalf mini-games verstopt op deze site. Niemand houdt je score bij behalve je eigen browser, dus een run telt pas als je hem post.</>}
+  primaryCta={{label: 'Begin op de Connext-pagina', href: '/nl/connext'}}
+  secondaryCta={{label: 'Zeg wat we hierna moeten gamificeren', href: 'https://github.com/ConductionNL/conduction-website/issues/new'}}
+/>
+
+{/* Docusaurus geeft alleen directe kinderen marges, dus markdown binnen
+    <Section> erft er geen. Eén set regels hier is minder onderhoud dan
+    inline stijlen per blok, zoals de andere pagina's doen. */}
+<style>{`
+.arcade-prose { max-width: 760px; }
+.arcade-prose h2 { margin: 2.5rem 0 0.75rem; }
+.arcade-prose h2:first-child { margin-top: 0; }
+.arcade-prose p { margin: 0 0 1rem; line-height: 1.6; }
+.arcade-prose ul, .arcade-prose ol { margin: 0 0 1.25rem; padding-left: 1.25rem; }
+.arcade-prose li { margin: 0 0 0.4rem; line-height: 1.55; }
+.arcade-prose li:last-child { margin-bottom: 0; }
+.arcade-prose .hashtag {
+  font-family: var(--conduction-typography-font-family-code);
+  color: var(--c-blue-cobalt);
+}
+`}</style>
+
+<Section spacing="default">
+<div className="arcade-prose">
+
+## Waar de spellen zitten
+
+Elk spel zit in iets dat op deze site al werk doet. De cookieconsole is een echte console. De gracht in de footer is de footer.
+
+- **Twaalf apps**, in de hexregen op de homepage
+- **Boten kelderen**, in de gracht onderaan de pagina
+- **Hex-vaders**, in de cookieconsole
+- **Logomemory**, in de klantenmarquee
+- **Kadefietser**, op de kade in de footer
+- **Stempelrace**, op de productpagina van Decidiq
+- **Deadlineverdediger**, op de productpagina van Dossiq
+- **Bouwtekeningrace**, op de productpagina van Buildiq
+- **Recordrun**, op de Connext-pagina
+- **Slot openen**, op de productpagina van Keepiq
+- **Kleuren op token**, op de productpagina van Thematiq
+- **Zwart lakken**, op de productpagina van Filinq
+
+Ze vinden is het halve werk. De game-overkaart onthoudt welke je hebt gevonden, en de laatste regel zegt hoeveel er nog liggen.
+
+## Hoe de score werkt
+
+Elk spel bewaart je beste run. Je totaal is die bests bij elkaar opgeteld.
+
+De spellen tellen verschillende dingen, dus het totaal is een optelsom en geen rangorde. Hex-vaders deelt punten per honderd uit en de gracht telt boten één voor één, dus een goede run op de shooter weegt zwaarder. Dat is expres: een score die je niet in één regel kunt uitleggen is niet leuk om te posten.
+
+Alles staat in je eigen browser, onder één sleutel in local storage. Wij zien het nooit. Wis je sitegegevens en je scores gaan mee, dus post de schermafbeelding voordat je opruimt.
+
+## Hoe je meedoet
+
+1. Speel, tot je een game-overkaart hebt waar je blij mee bent.
+2. Maak een schermafbeelding van die kaart. De kaart is het bewijs, want er is geen scorebord om tegen te controleren.
+3. Post hem op Mastodon of LinkedIn met <span className="hashtag">#IReadTheKit</span>. De deelknoppen op de kaart schrijven de post voor je.
+
+Post wat je ook scoort. Een lage score met een goed verhaal is meer waard dan een lege tijdlijn, en wie bovenaan staat neemt je niets af behalve het bier.
+
+Zeg er meteen bij wat we hierna moeten gamificeren. Dat is het deel dat we over een maand nog teruglezen.
+
+</div>
+</Section>
+
+<Section spacing="default" background="tinted">
+<div className="arcade-prose">
+
+## De spelregels
+
+<FAQ>
+  <FAQItem question="Wanneer sluit het?">
+    Vrijdag 25 september 2026 om 17:00 CEST, het einde van Nextcloud Contributor Week. Posts daarna maken ons nog steeds blij, maar winnen geen bier.
+  </FAQItem>
+  <FAQItem question="Wie wint?">
+    De hoogste totaalscore in een openbare post met een schermafbeelding van de game-overkaart en de hashtag. Bij een gelijke stand wint de vroegste post. We reageren in de thread van de winnaar.
+  </FAQItem>
+  <FAQItem question="Wat win je?">
+    Een doos Amsterdams bier, verstuurd naar elk adres binnen Europa waar we het heen kunnen sturen. Je moet 18 of ouder zijn. Ben je dat niet, of wil je liever geen bier, zeg het en we sturen stroopwafels.
+  </FAQItem>
+  <FAQItem question="Wat verzamelen jullie over mij?">
+    Niets. Er is geen account, geen scorebord en geen score-endpoint. We lezen je post zoals iedereen, en alleen van de winnaar hebben we een adres nodig.
+  </FAQItem>
+  <FAQItem question="Kan ik vals spelen?">
+    Natuurlijk. Het is jouw browser en de score is een getal in local storage. Dan heb je een doos bier gewonnen door een JSON-waarde aan te passen, en dat kon je thuis ook al.
+  </FAQItem>
+  <FAQItem question="Doen jullie dit nog een keer?">
+    Als er gespeeld wordt, ja. Daar is die feedback deels voor.
+  </FAQItem>
+</FAQ>
+
+Mastodon en LinkedIn hebben niets met deze actie te maken, en het bier komt van ons, niet van hen.
+
+## Begin ergens
+
+De cookieconsole is expres de makkelijkste om te vinden: open hem, typ `help` en lees wat er staat. Ga daarna de andere elf zoeken.
+
+</div>
+</Section>

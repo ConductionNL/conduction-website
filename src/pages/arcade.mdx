@@ -1,0 +1,126 @@
+---
+title: The arcade
+description: Twelve mini-games are hidden on this site. Your scores stay in your own browser, so a run only counts once you post it. Best total score on Friday 25 September at 17:00 wins a box of Amsterdam beer.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
+
+{/* A cabinet, not a controller: the games live on this site rather than
+    on a console. Stroke-only 24x24 to match the other page icons (see
+    AiIcon in ai.mdx). */}
+export const ArcadeIcon = (
+  <svg viewBox="0 0 24 24">
+    <rect x="4" y="3" width="16" height="13" rx="2" />
+    <path d="M8 20h8M10 16v4M14 16v4" />
+    <path d="M9 8h2M10 7v2M14 9h.01" />
+  </svg>
+);
+
+<DetailHero
+  icon={ArcadeIcon}
+  crumb={[{label: 'About', href: '/about'}, 'Arcade']}
+  locales="Contributor Week"
+  title="The arcade"
+  tagline={<>Twelve mini-games are hidden on this site. Nobody keeps your score but your own browser, so a run only counts once you post it.</>}
+  primaryCta={{label: 'Start on the Connext page', href: '/connext'}}
+  secondaryCta={{label: 'Tell us what to gamify next', href: 'https://github.com/ConductionNL/conduction-website/issues/new'}}
+/>
+
+
+{/* Docusaurus styles page bodies with a direct-child selector, so
+    markdown nested inside <Section> inherits no margins at all: the
+    heading, its paragraph and the list run together. Other pages work
+    around this with inline styles per block; one scoped rule set is
+    less to keep in step. */}
+<style>{`
+.arcade-prose { max-width: 760px; }
+.arcade-prose h2 { margin: 2.5rem 0 0.75rem; }
+.arcade-prose h2:first-child { margin-top: 0; }
+.arcade-prose p { margin: 0 0 1rem; line-height: 1.6; }
+.arcade-prose ul, .arcade-prose ol { margin: 0 0 1.25rem; padding-left: 1.25rem; }
+.arcade-prose li { margin: 0 0 0.4rem; line-height: 1.55; }
+.arcade-prose li:last-child { margin-bottom: 0; }
+.arcade-prose .hashtag {
+  font-family: var(--conduction-typography-font-family-code);
+  color: var(--c-blue-cobalt);
+}
+`}</style>
+
+<Section spacing="default">
+<div className="arcade-prose">
+
+## Where the games are
+
+Every game sits inside something that already does a job on this site. The cookie console is a real console. The canal in the footer is the footer.
+
+- **Twelve apps**, in the hex rain on the home page
+- **Sink the boats**, in the canal at the bottom of the page
+- **Hex-vaders**, in the cookie console
+- **Logo memory**, in the client marquee
+- **Kade cyclist**, on the quay in the footer
+- **Stamp rush**, on the Decidiq product page
+- **Deadline defender**, on the Dossiq product page
+- **Blueprint rush**, on the Buildiq product page
+- **Record run**, on the Connext page
+- **Lock pick**, on the Keepiq product page
+- **Paint by tokens**, on the Thematiq product page
+- **Black it out**, on the Filinq product page
+
+Finding them is half of it. The game-over card keeps track of which ones you have found, and the last line tells you how many are left.
+
+## How scoring works
+
+Each game keeps your best run. Your total is those bests added up.
+
+The games count different things, so the total is a tally and not a rating. Hex-vaders hands out points by the hundred and the canal counts boats one at a time, which means a good run at the shooter is worth more than a good run at the canal. That is on purpose: a score you cannot explain in one line is no fun to post.
+
+Everything lives in your own browser, under one key in local storage. We never see it. Clear your site data and the scores go with it, so post the screenshot before you tidy up.
+
+## How to enter
+
+1. Play, and get a game-over card you are happy with.
+2. Screenshot the card. The card is the proof, since we have no leaderboard to check against.
+3. Post it on Mastodon or LinkedIn with <span className="hashtag">#IReadTheKit</span>. The card's own share buttons write the post for you.
+
+Post whatever you scored. A low score with a good story beats an empty thread, and the person sitting on the high score is not competing with you for anything except the beer.
+
+While you are there, tell us what to gamify next. That is the part we will still be reading in a month.
+
+</div>
+</Section>
+
+<Section spacing="default" background="tinted">
+<div className="arcade-prose">
+
+## The rules
+
+<FAQ>
+  <FAQItem question="When does it close?">
+    Friday 25 September 2026 at 17:00 CEST, the end of Nextcloud Contributor Week. Posts after that still make us happy, but they do not win beer.
+  </FAQItem>
+  <FAQItem question="Who wins?">
+    The highest total score in a public post that carries a screenshot of the game-over card and the hashtag. On a tie, the earliest post wins. We reply to the winner in their own thread.
+  </FAQItem>
+  <FAQItem question="What is the prize?">
+    A box of Amsterdam beer, shipped anywhere we can send it inside Europe. You must be 18 or over. If you are not, or you would rather not have beer, say so and we will send stroopwafels instead.
+  </FAQItem>
+  <FAQItem question="What do you collect about me?">
+    Nothing. There is no account, no leaderboard and no score endpoint. We read your post like everyone else does, and we need a shipping address only from the winner.
+  </FAQItem>
+  <FAQItem question="Can I cheat?">
+    Of course. It is your browser, and the score is a number in local storage. Then you would have won a box of beer by editing a JSON value, which is a thing you can already do at home.
+  </FAQItem>
+  <FAQItem question="Will you do this again?">
+    If people play, yes. That is partly what the feedback is for.
+  </FAQItem>
+</FAQ>
+
+Mastodon and LinkedIn have nothing to do with this giveaway, and the beer comes from us, not from them.
+
+## Start somewhere
+
+The cookie console is the easiest one to find on purpose: open it, type `help`, and read what it offers. Then go and find the other eleven.
+
+</div>
+</Section>

@@ -40,6 +40,44 @@ module.exports = createConfig({
   organizationName: 'ConductionNL',
   projectName: 'conduction-website',
 
+  /* The hidden mini-games keep their scores in the player's own
+     browser: there is no leaderboard to submit to and no account to
+     make, so a run is only worth something once it is posted. This is
+     the campaign copy the game-over dialog shows under its share
+     buttons. It is time-bound (Nextcloud Contributor Week, closing
+     Friday 25 September 2026 at 17:00 CEST), so when the giveaway ends
+     the prize lines come out and the share buttons stay. */
+  /* The games this site ships. The dialog counts "found" and the total
+     against this list, so a game added here must actually exist on a
+     page, and a game removed from the site must come out. Labels are
+     per locale because themeConfig is never translated. */
+  minigamesRoster: [
+    {id: 'hexrain', label: {en: 'Twelve apps · hex rain', nl: 'Twaalf apps · hexregen'}},
+    {id: 'boats', label: {en: 'Sink the boats · footer canal', nl: 'Boten kelderen · gracht in de footer'}},
+    {id: 'invaders', label: {en: 'Hex-vaders · cookie CLI', nl: 'Hex-vaders · cookieconsole'}},
+    {id: 'logo-memory', label: {en: 'Logo memory · clients marquee', nl: 'Logomemory · klantenmarquee'}},
+    {id: 'kade-cyclist', label: {en: 'Kade cyclist · footer kade', nl: 'Kadefietser · kade in de footer'}},
+    {id: 'stamp-rush', label: {en: 'Stamp rush · Decidiq page', nl: 'Stempelrace · Decidiq-pagina'}},
+    {id: 'deadline-defender', label: {en: 'Deadline defender · Dossiq page', nl: 'Deadlineverdediger · Dossiq-pagina'}},
+    {id: 'blueprint-rush', label: {en: 'Blueprint rush · Buildiq page', nl: 'Bouwtekeningrace · Buildiq-pagina'}},
+    {id: 'record-run', label: {en: 'Record run · Connext page', nl: 'Recordrun · Connext-pagina'}},
+    {id: 'lock-pick', label: {en: 'Lock pick · Keepiq page', nl: 'Slot openen · Keepiq-pagina'}},
+    {id: 'paint-by-tokens', label: {en: 'Paint by tokens · Thematiq page', nl: 'Kleuren op token · Thematiq-pagina'}},
+    {id: 'redaction', label: {en: 'Black it out · Filinq page', nl: 'Zwart lakken · Filinq-pagina'}},
+  ],
+
+  minigamesShare: {
+    hashtag: '#IReadTheKit',
+    /* themeConfig is not translated by Docusaurus, so campaign copy is
+       given per locale and the dialog picks the active one. */
+    prize: {
+      en: 'Best total score on Friday 25 September at 17:00 wins a box of Amsterdam beer.',
+      nl: 'De hoogste totaalscore op vrijdag 25 september om 17:00 wint een doos Amsterdams bier.',
+    },
+    prizeHref: '/arcade',
+    prizeLinkLabel: {en: 'How the giveaway works', nl: 'Zo werkt de actie'},
+  },
+
   /* Public lead-intake endpoint. The support + partner forms POST here to
      create a `lead` object in the Pipelinq CRM (OpenRegister, public-create
      schema, anonymous rate-limited). Set PIPELINQ_LEAD_ENDPOINT at build time
