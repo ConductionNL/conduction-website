@@ -4,6 +4,7 @@ title: "La Frankendesk"
 contentType: blog
 hero: featured
 heroIcon: puzzle
+heroVisual: theme-seam-lasuite
 authors: [ruben]
 date: 2026-08-11
 summary: |-
@@ -13,7 +14,7 @@ summary: |-
 
   No repositories were harmed in the making of it.
 tags: [Opinion, Digital Sovereignty, Open Source, Nextcloud, Europe, EuroStack]
-durationMinutes: 15
+durationMinutes: 20
 ai: assisted
 apps: [nldesign, openregister, openbuild, hermiq]
 appsCta: inline
@@ -23,6 +24,7 @@ import {
   PullQuote,
   AppCrossLinks,
 } from '@conduction/docusaurus-preset/components';
+import './motion.css';
 
 <style>{`
 .hfaw-chart { --chart-c1:#3560B2; --chart-c2:#6E5FD6; --chart-c3:#0082C9; margin: 2rem 0; }
@@ -87,7 +89,7 @@ Introducing La Frankendesk: a best-of-breed open workspace that adds no new port
 
 The screenshot above is Nextcloud. So far nobody has guessed that on the first try.
 
-The typography is La Suite's. So are the violet, the flat surfaces, the four-pixel corners, and the active rows with no coloured rail down the left. Underneath it is a stock Nextcloud 34 with one extra app switched on. No fork. No patch set. No new applications.
+The typography is La Suite's. So are the violet, the flat surfaces, the four-pixel corners, and the active rows with no coloured rail down the left. Underneath it is a stock Nextcloud 34 with one extra app switched on.
 
 That took one working session. The useful part is which half was hard, and it was not the half I expected.
 
@@ -102,25 +104,25 @@ The French have La Suite numérique, run by DINUM. Its total cost for 2026 is es
 
 The Dutch have MijnBureau, from BZK.
 
-Three programmes. Three roadmaps. Three of everything.
+Three programmes, three islands, each with its own roadmap and its own budget line.
 
-Except they are not three, and that is the part worth writing about. Open the component lists side by side and the same names keep coming back. Nextcloud. Element. Collabora. OpenProject. The parts bin is already shared. What is not shared is the finish.
+Except they are not islands, and that is the part worth writing about. Open the German and Dutch component lists side by side and the same names keep coming back: Nextcloud, Element, Collabora, OpenProject. France builds its own applications, and still runs Keycloak and Matrix underneath them. The parts bin is already shared. What is not shared is the finish.
 
 </div>
 <div className="hfaw-well">
 
 **Why now, and why the ICC matters.** The Court's move followed a period in which its Chief Prosecutor, Karim Khan, reportedly lost access to his Microsoft email account after the February 2025 executive order. Microsoft's president Brad Smith denied the company had cut anything off, stating that at no point did Microsoft cease or suspend its services to the ICC.
 
-Both of those things can be true at once, and that is exactly the point. The dependency does not have to be exercised to be felt. An institution that cannot answer the question "what happens if" has already learned something about where it stands.
+Both of those things can be true at once, and that is the point. The dependency does not have to be exercised to be felt. An institution that cannot answer the question "what happens if" has already learned something about where it stands.
 
 </div>
 </div>
 
 ## Three answers to the same question
 
-Three programmes, three engineering strategies, and all three are defensible.
+Three programmes, three engineering strategies, each bought with something else given up.
 
-### The Germans: openDesk
+### openDesk, the German answer
 
 <div className="hfaw-split">
 <div>
@@ -133,13 +135,13 @@ Buy the ecosystem instead of building it. ZenDiS, a state-owned company working 
 
 Nextcloud for files, OpenProject for projects, XWiki for knowledge, Open-Xchange for mail, Element for chat, Collabora for documents, Univention for identity. Ten companies build the parts. ZenDiS integrates them and carries the distribution, under Apache-2.0, now at version 1.14.1, deployed as Kubernetes and Helm charts in the open on the Germans' own public code platform.
 
-The reach is remarkable. You get project management and a wiki, which no office suite gives you. Seven upstreams also means seven release trains and seven design languages, so a shared interface is the one thing this model cannot hand you for free.
+You get project management and a wiki, which no office suite gives you. Seven upstreams also means seven release trains and seven design languages, so a shared interface is the one thing this model cannot hand you for free.
 
-There is something very German about the result, and I mean that as the compliment it plainly is. The integration is the engineering. It is specified, versioned, and written down, and you get the distinct feeling that somebody has already thought about what happens when it breaks at three in the morning.
+There is something German about the result, and I mean that as the compliment it is. The integration is the engineering. It is specified and versioned, and you get the distinct feeling that somebody has already thought about what happens when it breaks at three in the morning.
 
 </div>
 <figure className="hfaw-chart">
-<svg viewBox="0 0 400 240" role="img" aria-label="Diagram: openDesk with the Nubus portal above six components from existing projects, over a Nubus identity layer">
+<svg viewBox="0 0 400 240" role="img" aria-label="Diagram: openDesk with the Nubus portal above six components from existing projects, over a Nubus identity layer" className="hfaw-anim hfaw-arch">
   <text x="6" y="14" className="lbl">openDesk · ZenDiS</text>
   <text x="6" y="30" className="lbl2">integrates what already exists</text>
   <rect x="6" y="40" width="386" height="28" rx="4" className="bxn" /><text x="199" y="59" textAnchor="middle" className="bxl">Nubus portal · one tile per app</text>
@@ -161,13 +163,13 @@ There is something very German about the result, and I mean that as the complime
 
 #### Portal
 
-The [Nubus portal](https://www.univention.com/references/zentrum-fuer-digitale-souveraenitaet/), also from Univention, is the page you meet after signing in: a grid of tiles showing only the applications you have rights to. It is a good portal, and it is honest about what it is in a way that turns out to matter. In openDesk's own description, clicking a tile opens that service in a new tab.
+The [Nubus portal](https://www.univention.com/references/zentrum-fuer-digitale-souveraenitaet/), also from Univention, is the page you meet after signing in: a grid of tiles showing only the applications you have rights to. It is honest about what it is in a way that turns out to matter. In openDesk's own description, clicking a tile opens that service in a new tab.
 
 So the portal is a place you leave. You land there, choose, and depart into an application that looks like itself rather than like the suite.
 
 </div>
 <figure className="hfaw-chart">
-<svg viewBox="0 0 240 175" role="img" aria-label="openDesk's Nubus portal: a bar of tiles above four apps, with an arrow leaving a tile to open a new tab">
+<svg viewBox="0 0 240 175" role="img" aria-label="openDesk's Nubus portal: a bar of tiles above four apps. A tile is pressed, the service opens beside it, and the portal dims behind you" className="hfaw-anim hfaw-od">
   <defs>
     <marker id="ahD" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
       <path d="M0,0 L6,3 L0,6 z" fill="var(--ifm-color-emphasis-600)" />
@@ -175,11 +177,19 @@ So the portal is a place you leave. You land there, choose, and depart into an a
   </defs>
   <text x="6" y="14" className="pnl">openDesk</text>
   <text x="6" y="28" className="pnl2">you land, then leave</text>
-  <rect x="6" y="36" width="228" height="26" rx="3" className="bxn" /><text x="120" y="53" textAnchor="middle" className="bxs">Nubus portal</text>
+  <g className="odPortal">
+    <rect x="6" y="36" width="228" height="26" rx="3" className="bxn" /><text x="60" y="53" textAnchor="middle" className="bxs">Nubus portal</text>
+    <rect x="150" y="42" width="14" height="14" rx="2" className="odTile odT1" />
+    <rect x="170" y="42" width="14" height="14" rx="2" className="odTile odT2" />
+    <rect x="190" y="42" width="14" height="14" rx="2" className="odTile odT3" />
+    <rect x="210" y="42" width="14" height="14" rx="2" className="odTile odT4" />
+  </g>
   <rect x="6" y="74" width="110" height="28" rx="3" className="bx" /><text x="61" y="92" textAnchor="middle" className="bxs">app</text>
-  <rect x="124" y="74" width="110" height="28" rx="3" className="bx" /><text x="179" y="92" textAnchor="middle" className="bxs">app</text>
+  <rect x="124" y="74" width="110" height="28" rx="3" className="bx odApp" /><text x="179" y="92" textAnchor="middle" className="bxs">app</text>
   <rect x="6" y="110" width="110" height="28" rx="3" className="bx" /><text x="61" y="128" textAnchor="middle" className="bxs">app</text>
   <rect x="124" y="110" width="110" height="28" rx="3" className="bx" /><text x="179" y="128" textAnchor="middle" className="bxs">app</text>
+  {/* The travelling ghost: the pressed tile becoming its own window. */}
+  <rect x="170" y="42" width="14" height="14" rx="2" className="odGhost" />
   <path d="M179 110 L179 68" className="arw" markerEnd="url(#ahD)" />
   <text x="6" y="160" className="pnl2">a tile opens its service in a new tab</text>
 </svg>
@@ -187,7 +197,7 @@ So the portal is a place you leave. You land there, choose, and depart into an a
 </figure>
 </div>
 
-### The French: La Suite
+### La Suite, the French answer
 
 <div className="hfaw-split">
 <div>
@@ -200,13 +210,13 @@ Own the product, not just the licence. DINUM builds its own applications rather 
 
 Docs, Messages, Visio, Drive, and Tchap, the state's secure messaging platform, which is used by more than 600,000 agents. All of it on DINUM's own design system, called Cunningham.
 
-Note where that design system sits in the diagram. It is not a component alongside the others. It is the layer they are all drawn on, which is precisely why the result feels coherent and why it is the thing worth borrowing. Fewer parts, and every one of them wearing the same face. Writing everything yourself also means the shelf holds only what you have written, so a wiki and project tooling are not on it.
+That design system is not a component alongside the others. It is the layer they are all drawn on, which is why the result feels coherent and why it is the thing worth borrowing. Fewer parts, and every one of them wearing the same face. Writing everything yourself also means the shelf holds only what you have written, so a wiki and project tooling are not on it.
 
 And it is, unmistakably, French. It is beautiful, and it is beautiful on purpose, which is the part engineers tend to underrate. Somebody sat down and decided what the spacing should be. That is why we spent a session porting their design language rather than the other way round.
 
 </div>
 <figure className="hfaw-chart">
-<svg viewBox="0 0 400 210" role="img" aria-label="Diagram: La Suite with the Cunningham design system above four components DINUM built itself, the Gaufre waffle embedded in each, over a Keycloak identity layer">
+<svg viewBox="0 0 400 210" role="img" aria-label="Diagram: La Suite with the Cunningham design system above four components DINUM built itself, the Gaufre waffle embedded in each, over a Keycloak identity layer" className="hfaw-anim hfaw-arch">
   <text x="6" y="14" className="lbl">La Suite numérique · DINUM</text>
   <text x="6" y="30" className="lbl2">builds its own</text>
   <rect x="6" y="40" width="386" height="30" rx="4" className="bx2" /><text x="199" y="60" textAnchor="middle" className="bxl">Cunningham design system</text>
@@ -237,17 +247,31 @@ You never land on a hub, because the hub travels with you. It is the closest of 
 
 </div>
 <figure className="hfaw-chart">
-<svg viewBox="0 0 240 175" role="img" aria-label="La Suite's Gaufre: a waffle button embedded inside each of four applications rather than a separate portal">
+<svg viewBox="0 0 240 175" role="img" aria-label="La Suite's Gaufre: a waffle button embedded inside each of four applications rather than a separate portal. The waffle opens, and the active application changes while the waffle stays in place" className="hfaw-anim hfaw-ls">
   <text x="6" y="14" className="pnl">La Suite</text>
   <text x="6" y="28" className="pnl2">it travels with you</text>
-  <rect x="6" y="40" width="110" height="44" rx="3" className="bx2" /><text x="61" y="66" textAnchor="middle" className="bxs">app</text>
-  <rect x="100" y="46" width="10" height="10" rx="2" fill="#fff" opacity="0.9" />
-  <rect x="124" y="40" width="110" height="44" rx="3" className="bx2" /><text x="179" y="66" textAnchor="middle" className="bxs">app</text>
-  <rect x="218" y="46" width="10" height="10" rx="2" fill="#fff" opacity="0.9" />
-  <rect x="6" y="92" width="110" height="44" rx="3" className="bx2" /><text x="61" y="118" textAnchor="middle" className="bxs">app</text>
-  <rect x="100" y="98" width="10" height="10" rx="2" fill="#fff" opacity="0.9" />
-  <rect x="124" y="92" width="110" height="44" rx="3" className="bx2" /><text x="179" y="118" textAnchor="middle" className="bxs">app</text>
-  <rect x="218" y="98" width="10" height="10" rx="2" fill="#fff" opacity="0.9" />
+  <rect x="6" y="40" width="110" height="44" rx="3" className="bx2 lsApp lsA1" /><text x="61" y="66" textAnchor="middle" className="bxs">app</text>
+  <rect x="100" y="46" width="10" height="10" rx="2" fill="#fff" opacity="0.9" className="lsW lsW1" />
+  <rect x="124" y="40" width="110" height="44" rx="3" className="bx2 lsApp lsA2" /><text x="179" y="66" textAnchor="middle" className="bxs">app</text>
+  <rect x="218" y="46" width="10" height="10" rx="2" fill="#fff" opacity="0.9" className="lsW lsW2" />
+  <rect x="6" y="92" width="110" height="44" rx="3" className="bx2 lsApp lsA3" /><text x="61" y="118" textAnchor="middle" className="bxs">app</text>
+  <rect x="100" y="98" width="10" height="10" rx="2" fill="#fff" opacity="0.9" className="lsW lsW3" />
+  <rect x="124" y="92" width="110" height="44" rx="3" className="bx2 lsApp lsA4" /><text x="179" y="118" textAnchor="middle" className="bxs">app</text>
+  <rect x="218" y="98" width="10" height="10" rx="2" fill="#fff" opacity="0.9" className="lsW lsW4" />
+  {/* The menu the waffle opens: four service rows, unfolding in place
+      inside whichever app currently holds focus. */}
+  <g className="lsMenu lsMenu1">
+    <rect x="62" y="58" width="46" height="34" rx="3" className="lsMenuBg" />
+    <rect x="66" y="62" width="38" height="4" rx="1" className="lsMenuRow" />
+    <rect x="66" y="70" width="38" height="4" rx="1" className="lsMenuRow" />
+    <rect x="66" y="78" width="38" height="4" rx="1" className="lsMenuRow" />
+  </g>
+  <g className="lsMenu lsMenu2">
+    <rect x="180" y="58" width="46" height="34" rx="3" className="lsMenuBg" />
+    <rect x="184" y="62" width="38" height="4" rx="1" className="lsMenuRow" />
+    <rect x="184" y="70" width="38" height="4" rx="1" className="lsMenuRow" />
+    <rect x="184" y="78" width="38" height="4" rx="1" className="lsMenuRow" />
+  </g>
   <text x="6" y="158" className="pnl2">the waffle sits inside each app,</text>
   <text x="6" y="170" className="pnl2">walled off by Shadow DOM</text>
 </svg>
@@ -255,26 +279,26 @@ You never land on a hub, because the hub travels with you. It is the closest of 
 </figure>
 </div>
 
-### The Dutch: MijnBureau
+### MijnBureau, the Dutch answer
 
 <div className="hfaw-split">
 <div>
 
 #### Vision
 
-Faced with two excellent options, the Dutch declined to pick one. It took both, put a dashboard on top, and went looking for the middle ground, which is the most Dutch response available and, this time, exactly the right one. We [polder](https://en.wikipedia.org/wiki/Polder_model) our architecture the way we polder everything else: get everyone around the table and keep talking until nobody has to lose. Usually that produces a compromise nobody loves. Occasionally it produces MijnBureau.
+Faced with two excellent options, the Dutch declined to pick one. It took both, put a dashboard on top, and went looking for the middle ground, which is the most Dutch response available and, this time, the right one. We [polder](https://en.wikipedia.org/wiki/Polder_model) our architecture the way we polder everything else: get everyone around the table and keep talking until nobody has to lose. Usually that produces a compromise nobody loves. Occasionally it produces MijnBureau.
 
 #### Architecture
 
-Read its component list. Keycloak, Element, Nextcloud, Collabora, OpenProject. Then Docs, Visio, Conversations, Drive. The first group is openDesk's parts bin. The second group is La Suite's. One deployment, both bins, and BZK writing very little proprietary code of its own. Its own repository describes it plainly as an integration layer, inspired by openDesk and La Suite.
+Read its component list. Keycloak, Element, Nextcloud, Collabora, OpenProject. Then Docs, Visio, Conversations, Drive. The first group is openDesk's parts bin. The second group is La Suite's. One deployment, both bins, and BZK writing very little proprietary code of its own. Its own repository describes it as an integration layer, inspired by openDesk and La Suite.
 
 That is Common Ground applied to the workplace, and it works. It is also the quiet refutation of the whole islands framing. You cannot be looking at three isolated programmes when one of them runs the other two's components in production.
 
-It is worth being precise about what the three programmes say themselves, because a lot gets said on their behalf. MijnBureau describes close collaboration with France around La Suite and alignment with Germany's openDesk. That is knowledge exchange between teams who talk to each other, and it is genuinely valuable. The stronger claim you will read in write-ups, that a German civil servant on openDesk can already co-edit a document with a French colleague on La Suite, does not appear in any of the three programmes' own sources. It is a story told about these programmes more than by them.
+A lot gets said on these programmes' behalf, so it is worth reading what they say themselves. MijnBureau describes close collaboration with France around La Suite and alignment with Germany's openDesk. That is knowledge exchange between teams who talk to each other, and it is worth having. The stronger claim you will read in write-ups, that a German civil servant on openDesk can already co-edit a document with a French colleague on La Suite, does not appear in any of the three programmes' own sources. It is a story told about these programmes more than by them.
 
 </div>
 <figure className="hfaw-chart">
-<svg viewBox="0 0 400 250" role="img" aria-label="Diagram: MijnBureau as a portal over components from both openDesk and La Suite, with Keycloak identity underneath">
+<svg viewBox="0 0 400 250" role="img" aria-label="Diagram: MijnBureau as a portal over components from both openDesk and La Suite, with Keycloak identity underneath" className="hfaw-anim hfaw-arch">
   <text x="6" y="14" className="lbl">MijnBureau · BZK</text>
   <text x="6" y="30" className="lbl2">combines both parts bins</text>
   <rect x="6" y="40" width="386" height="30" rx="4" className="bxn" /><text x="199" y="60" textAnchor="middle" className="bxl">Bureaublad · dashboard that aggregates the parts</text>
@@ -301,11 +325,11 @@ It is worth being precise about what the three programmes say themselves, becaus
 
 [Bureaublad](https://minbzk.github.io/mijn-bureau-infra/docs/components/bureaublad) is the most ambitious of the three, because it is not a launcher. A FastAPI backend and a React frontend *aggregate information out of the underlying components* into one interface, so you can reach tools and data without switching applications at all. There is a [separate portal repository](https://github.com/MinBZK/mijn-bureau-portal) alongside it.
 
-Note the direction of the arrows. Everywhere else the portal sends you somewhere; here the work is pulled toward you. This one tries to dissolve the boundary rather than decorate it.
+Everywhere else the portal sends you somewhere. Here the work is pulled toward you, which is an attempt to dissolve the boundary rather than decorate it.
 
 </div>
 <figure className="hfaw-chart">
-<svg viewBox="0 0 240 175" role="img" aria-label="MijnBureau's Bureaublad: a dashboard that aggregates information inward from components of both origins">
+<svg viewBox="0 0 240 175" role="img" aria-label="MijnBureau's Bureaublad: a dashboard that aggregates information inward from components of both origins. Records travel up from each component and land as rows in the dashboard" className="hfaw-anim hfaw-mb">
   <defs>
     <marker id="ahN" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
       <path d="M0,0 L6,3 L0,6 z" fill="var(--ifm-color-emphasis-600)" />
@@ -313,11 +337,18 @@ Note the direction of the arrows. Everywhere else the portal sends you somewhere
   </defs>
   <text x="6" y="14" className="pnl">MijnBureau</text>
   <text x="6" y="28" className="pnl2">the work comes to you</text>
-  <rect x="6" y="36" width="228" height="42" rx="3" className="bxn" /><text x="120" y="61" textAnchor="middle" className="bxs">Bureaublad</text>
+  <rect x="6" y="36" width="228" height="42" rx="3" className="bxn" /><text x="46" y="52" textAnchor="middle" className="bxs">Bureaublad</text>
+  {/* The rows the dashboard aggregates: one per arriving record. */}
+  <rect x="96" y="43" width="130" height="6" rx="1" className="mbRow mbRow1" />
+  <rect x="96" y="53" width="130" height="6" rx="1" className="mbRow mbRow2" />
+  <rect x="96" y="63" width="130" height="6" rx="1" className="mbRow mbRow3" />
   <rect x="6" y="112" width="110" height="28" rx="3" className="bx" /><text x="61" y="130" textAnchor="middle" className="bxs">component</text>
   <rect x="124" y="112" width="110" height="28" rx="3" className="bx2" /><text x="179" y="130" textAnchor="middle" className="bxs">component</text>
   <path d="M61 110 L61 84" className="arw" markerEnd="url(#ahN)" />
   <path d="M179 110 L179 84" className="arw" markerEnd="url(#ahN)" />
+  {/* Two records in flight, one from each parts bin. */}
+  <circle cx="61" cy="108" r="3.5" className="mbDot mbDotA" />
+  <circle cx="179" cy="108" r="3.5" className="mbDot mbDotB" />
   <text x="6" y="162" className="pnl2">data is aggregated into one interface</text>
 </svg>
 <figcaption>A dashboard that pulls inward.</figcaption>
@@ -331,20 +362,20 @@ Each choice bought something real, and each left something on the table that ano
 All three hit the same wall. Once a suite is assembled from separate applications, something has to tie them together for the person using them, and the three answers above are a map of the whole problem: a launcher you leave, a dashboard that pulls inward, and a switcher that rides along.
 
 
-Read that Shadow DOM clause again, because it is the whole post in one engineering decision. La Gaufre has to defend itself from the host page's CSS. It cannot assume the application it is sitting inside looks anything like La Suite, so it builds a wall around its own appearance. The widget that exists to make a suite feel like one product has to be isolated from the products it connects.
+That Shadow DOM clause is the whole post in one engineering decision. La Gaufre has to defend itself from the host page's CSS. It cannot assume the application it is sitting inside looks anything like La Suite, so it builds a wall around its own appearance. The widget that exists to make a suite feel like one product has to be isolated from the products it connects.
 
-None of the three is wrong. Each is a sensible answer to a real problem, and Bureaublad in particular is doing something genuinely harder than the others. But notice what none of them can do. A portal, a dashboard and a waffle all make the border easier to cross. The border is still there, because each application still arrives wearing its own face. The parts bin is shared. The finish is still three finishes.
+Each is a sensible answer to a real problem, and Bureaublad in particular is doing something harder than the others. None of them can do the one thing that would end the problem. A portal, a dashboard and a waffle all make the border easier to cross. The border is still there, because each application still arrives wearing its own face. The parts bin is shared. The finish is still three finishes.
 
 <PullQuote>The parts bin is already shared. The only thing still built three times is the part you can see.</PullQuote>
 
 ## The merge is one app, and nothing is forked
 
-So we went one rung further. Not a layer that combines applications, but an integration. Take La Suite's design language and port it onto the components. No new applications at all.
+So we went one rung further. Not a layer that combines applications. An integration: take La Suite's design language and port it onto the components, with no new applications at all.
 
 <div className="hfaw-split">
 <div>
 
-The work lives in a single Nextcloud app, nldesign, as a token set called lasuite. Installing the app is the whole deployment. Four stylesheets load in order, and each has exactly one job.
+The work lives in a single Nextcloud app, Thematiq, as a token set called lasuite. Installing the app is the whole deployment. Four stylesheets load in order, and each has one job.
 
 The first is generated directly from `@openfun/cunningham-tokens`, which is La Suite's own published design system. We do not copy their values by hand. We build from the same package they build from, so when they move, we move.
 
@@ -354,30 +385,56 @@ The third is the actual translation layer, and it is the interesting one. It map
 
 The fourth reaches Nextcloud's own selectors for the handful of things a variable cannot express. Whether an active row carries a coloured rail down its left edge is not a colour. It is a shape.
 
-That is it. No fork, no patch set, no new applications. The reason this matters is not elegance. A fork is a permanent maintenance bill and a theme is not. Nextcloud ships a release and the theme keeps working.
+That is it. No fork, no patch set, no new applications. This matters because a fork is a permanent maintenance bill and a theme is not. Nextcloud ships a release and the theme keeps working.
 
 </div>
 <figure className="hfaw-chart">
-<svg viewBox="0 0 400 280" role="img" aria-label="Diagram: La Frankendesk, one finish drawn over components from both ecosystems, with an OpenConext federation hub above Keycloak and Entra, and OpenRegister federation">
+<svg viewBox="0 0 400 280" role="img" aria-label="Diagram: La Frankendesk, one finish drawn over components from both ecosystems, with an OpenConext federation hub above Keycloak and Entra, and OpenRegister federation. The parts arrive from both bins, the hubs dock, and the finish sweeps across all of it" className="hfaw-anim hfaw-fd">
   <text x="6" y="14" className="lbl">La Frankendesk</text>
   <text x="6" y="30" className="lbl2">one finish, mixed parts, no new apps</text>
-  <rect x="6" y="40" width="386" height="30" rx="4" className="bx2" /><text x="199" y="60" textAnchor="middle" className="bxl">La Suite design language · one finish for all of it</text>
-  <rect x="6" y="78" width="92" height="40" rx="4" className="bx" /><text x="52" y="102" textAnchor="middle" className="bxl">Nextcloud</text>
-  <rect x="104" y="78" width="92" height="40" rx="4" className="bx" /><text x="150" y="102" textAnchor="middle" className="bxl">OpenProject</text>
-  <rect x="202" y="78" width="92" height="40" rx="4" className="bx" /><text x="248" y="102" textAnchor="middle" className="bxl">Matrix</text>
-  <rect x="300" y="78" width="92" height="40" rx="4" className="bx" /><text x="346" y="102" textAnchor="middle" className="bxl">Euro-Office</text>
-  <rect x="6" y="126" width="92" height="40" rx="4" className="bx" /><text x="52" y="150" textAnchor="middle" className="bxl">XWiki</text>
-  <rect x="104" y="126" width="190" height="40" rx="4" className="bx2" /><text x="199" y="150" textAnchor="middle" className="bxl">La Suite Messages</text>
-  <rect x="300" y="126" width="92" height="40" rx="4" className="bx2" /><text x="346" y="150" textAnchor="middle" className="bxl">Docs</text>
-  <rect x="6" y="174" width="190" height="28" rx="4" className="bxn" /><text x="101" y="193" textAnchor="middle" className="bxl">OpenConext · federation hub</text>
-  <rect x="202" y="174" width="190" height="28" rx="4" className="bxn" /><text x="297" y="193" textAnchor="middle" className="bxl">OpenRegister · OCM</text>
+  <g className="fdBand">
+    <rect x="6" y="40" width="386" height="30" rx="4" className="bx2" /><text x="199" y="60" textAnchor="middle" className="bxl">La Suite design language · one finish for all of it</text>
+  </g>
+  {/* Blue parts come in from the openDesk bin on the left, violet ones
+      from La Suite's on the right. The stagger is set in the CSS. */}
+  <g className="fdPart fdLeft fdP1">
+    <rect x="6" y="78" width="92" height="40" rx="4" className="bx" /><text x="52" y="102" textAnchor="middle" className="bxl">Nextcloud</text>
+  </g>
+  <g className="fdPart fdLeft fdP2">
+    <rect x="104" y="78" width="92" height="40" rx="4" className="bx" /><text x="150" y="102" textAnchor="middle" className="bxl">OpenProject</text>
+  </g>
+  <g className="fdPart fdLeft fdP3">
+    <rect x="202" y="78" width="92" height="40" rx="4" className="bx" /><text x="248" y="102" textAnchor="middle" className="bxl">Matrix</text>
+  </g>
+  <g className="fdPart fdLeft fdP4">
+    <rect x="300" y="78" width="92" height="40" rx="4" className="bx" /><text x="346" y="102" textAnchor="middle" className="bxl">Euro-Office</text>
+  </g>
+  <g className="fdPart fdLeft fdP5">
+    <rect x="6" y="126" width="92" height="40" rx="4" className="bx" /><text x="52" y="150" textAnchor="middle" className="bxl">XWiki</text>
+  </g>
+  <g className="fdPart fdRight fdP6">
+    <rect x="104" y="126" width="190" height="40" rx="4" className="bx2" /><text x="199" y="150" textAnchor="middle" className="bxl">La Suite Messages</text>
+  </g>
+  <g className="fdPart fdRight fdP7">
+    <rect x="300" y="126" width="92" height="40" rx="4" className="bx2" /><text x="346" y="150" textAnchor="middle" className="bxl">Docs</text>
+  </g>
+  {/* The finish, sweeping left to right across the assembled parts. */}
+  <g className="fdSweep">
+    <rect x="6" y="74" width="386" height="96" className="fdSweepBar" />
+  </g>
+  <g className="fdHub fdHub1">
+    <rect x="6" y="174" width="190" height="28" rx="4" className="bxn" /><text x="101" y="193" textAnchor="middle" className="bxl">OpenConext · federation hub</text>
+  </g>
+  <g className="fdHub fdHub2">
+    <rect x="202" y="174" width="190" height="28" rx="4" className="bxn" /><text x="297" y="193" textAnchor="middle" className="bxl">OpenRegister · OCM</text>
+  </g>
   <rect x="6" y="208" width="92" height="24" rx="4" className="bxg" /><text x="52" y="224" textAnchor="middle" className="bxgl">Keycloak</text>
   <rect x="104" y="208" width="92" height="24" rx="4" className="bxg" /><text x="150" y="224" textAnchor="middle" className="bxgl">Entra ID</text>
   <text x="202" y="224" className="lbl2">files · data · configuration</text>
   <text x="6" y="254" className="lbl2">the hub sits above whatever you run today</text>
   <text x="6" y="270" className="lbl2">both parts bins, both colours, one finish</text>
 </svg>
-<figcaption>Not a portal over the parts. One finish drawn across them.</figcaption>
+<figcaption>One finish drawn across the parts, instead of a portal over them.</figcaption>
 </figure>
 </div>
 
@@ -387,21 +444,21 @@ That is it. No fork, no patch set, no new applications. The reason this matters 
 
 </div>
 
-### The one box we added
+### The two boxes we added
 
-Put the four diagrams side by side and notice how little actually changed. Nextcloud, OpenProject, Matrix, XWiki, Collabora, Docs, Messages: every component came out of one of the three programmes. We wrote no applications.
+Put the four diagrams side by side and almost nothing changed. Nextcloud, OpenProject, Matrix, XWiki, Docs, Messages: every component came out of one of the three programmes, except the office slot, where the diagram shows Euro-Office (the Nextcloud and Ionos build) in place of Collabora. We wrote no applications.
 
-There is exactly one box we added, and it is the identity layer. openDesk fronts its stack with Univention. La Suite uses Keycloak, and so does MijnBureau. We put OpenConext above ours. That is the only choice in this whole architecture that differs from what openDesk, La Suite and MijnBureau do between them.
+Two boxes are ours. The first is the identity layer. openDesk fronts its stack with Univention, La Suite uses Keycloak, and so does MijnBureau. We put OpenConext above ours. The second is OpenRegister, which carries data and configuration between instances, and it comes back at the end of this post. Those two are the only choices in this architecture that differ from what openDesk, La Suite and MijnBureau do between them.
 
 The word above is doing the work. OpenConext is a federation hub, not an identity store, so it does not replace anything. It brokers over open standards, which means one connection can front a Keycloak realm and a Microsoft Entra tenant at the same time. Keycloak stays. Entra stays, for now. The applications stop caring which is which.
 
-That is what makes the stack independent of its auth provider, and independence here is not a slogan. Today most Dutch public bodies sign in through Entra. Telling them to rip it out is how a sovereignty project dies in its first meeting. Put a hub in front and the question changes shape: the migration happens behind the door rather than at it, one directory at a time, with nothing above the hub needing to know it happened. A vision of leaving Entra is worth very little without a route that does not begin with a big bang. This is that route.
+That is what makes the stack independent of its auth provider, and the independence is worth exactly what the migration route is worth. Today most Dutch public bodies sign in through Entra. Telling them to rip it out is how a sovereignty project dies in its first meeting. Put a hub in front and the question changes shape: the migration happens behind the door rather than at it, one directory at a time, with nothing above the hub needing to know it happened. A vision of leaving Entra is worth very little without a route that does not begin with a big bang. This is that route.
 
 The software is not exotic either. OpenConext is open source, built by SURF, the ICT cooperative of Dutch education and research. SURF runs it for education as SURFconext, connecting around 130 institutions and nearly two thousand service providers at roughly 2.5 million authentications a day. The same software runs government's own federation: central government uses it as Single Sign-On Rijk for some 240,000 users across the ministries, and the wider public sector reaches it as GovConext, where municipalities, safety regions and health organisations connect. It is the rare case where the sovereign option is also the incumbent one.
 
-And this is where the identity layer stops being plumbing and starts being the point. Remember the federation story from earlier, the one told about these programmes more than by them. A hub is how that story gets built. If each country fronts its own stack with a broker that speaks open standards, then a Dutch civil servant reaching a German service is a trust relationship between two hubs, not a migration, not a shared user directory, and not a single European login anybody has to own. Each country keeps its own identity provider and its own rules about who is in it.
+And this is where the identity layer stops being plumbing and starts being the point. That federation story, the one told about these programmes more than by them, is what a hub builds. If each country fronts its own stack with a broker that speaks open standards, then a Dutch civil servant reaching a German service is a trust relationship between two hubs, not a migration, not a shared user directory, and not a single European login anybody has to own. Each country keeps its own identity provider and its own rules about who is in it.
 
-That is the same shape as everything else in this post. Not one system. A shared way of connecting the ones that exist. A shared shelf needs a shared front door, and the front door turns out to be the easier half.
+That is the same shape as everything else in this post: a shared way of connecting the systems that exist. A shared shelf needs a shared front door.
 
 <div className="hfaw-well">
 
@@ -411,7 +468,7 @@ That is the same shape as everything else in this post. Not one system. A shared
 - **La Suite**. [github.com/suitenumerique](https://github.com/suitenumerique), including Docs, Messages, Visio and Drive
 - **MijnBureau**. [MinBZK/mijn-bureau](https://github.com/MinBZK/mijn-bureau) for the process and [MinBZK/mijn-bureau-infra](https://github.com/MinBZK/mijn-bureau-infra) for the deployment
 - **Components**. [Nextcloud](https://github.com/nextcloud), [OpenProject](https://github.com/opf/openproject), [XWiki](https://github.com/xwiki), [Element](https://github.com/element-hq), [Collabora Online](https://github.com/CollaboraOnline), [OpenConext](https://github.com/OpenConext)
-- **This merge**. [nldesign](https://github.com/ConductionNL/nldesign) and [openregister](https://github.com/ConductionNL/openregister)
+- **This merge**. [Thematiq](https://github.com/ConductionNL/thematiq) and [OpenRegister](https://github.com/ConductionNL/openregister)
 
 </div>
 
@@ -429,7 +486,7 @@ The fifth one is the one I would put on a slide. It was inside our own parity te
 
 None of these fail loudly. That is the whole problem. A rule that matches nothing looks exactly like a rule that matches something and agrees with the default.
 
-So we built the check. It walks every selector the stylesheet ships, loads six real surfaces, and asserts that each selector matches at least one element somewhere across them. Union semantics, because a rule for the Files grid is legitimately absent on Calendar. Anything that genuinely cannot match has to be listed with a written reason, so a dead selector becomes a decision somebody made on purpose instead of something nobody noticed. It found the sixty-buttons defect on its first capable run.
+So we built the check. It walks every selector the stylesheet ships, loads six real surfaces, and asserts that each selector matches at least one element somewhere across them. Union semantics, because a rule for the Files grid is legitimately absent on Calendar. Anything that cannot match has to be listed with a written reason, so a dead selector becomes a decision somebody made on purpose instead of something nobody noticed. It found the sixty-buttons defect on its first capable run.
 
 It also caught rules written that same day, by the person who built it.
 
@@ -467,7 +524,7 @@ And it survives contact with the two things that usually break a theme. Real dar
 
 ## What this unlocks
 
-Start with the obvious half. Every Nextcloud app now inherits the finish. Calendar, Contacts, Talk, Deck and everything else in a very large app store arrive already wearing La Suite's design language, because they were never themed individually. They read variables, and we changed the variables. That is the ecosystem La Suite wants, available without writing any of it.
+Start with the obvious half. Every Nextcloud app now inherits the finish. Calendar, Contacts, Talk, Deck and everything else in the app store arrive already wearing La Suite's design language, because they were never themed individually. They read variables, and we changed the variables. That is the ecosystem La Suite wants, available without writing any of it.
 
 The other half is federation, and this is where I want to be careful, because the strongest argument against merging anything is a good one. Merging components creates a shared dependency nobody owns, and in government systems a monoculture is a security problem, not just an architectural preference. Sovereignty falls as your dependence on components you cannot control rises. That argument is correct.
 
@@ -477,27 +534,27 @@ Nextcloud already federates natively, server to server, over Open Cloud Mesh. Op
 
 Which means the theme itself federates. You do not have to merge the components at all. You can federate the finish. An instance installs it from a source it chose, verifies the signature, and forks it the moment it disagrees with a single decision inside it. Autonomy intact, duplication gone. That is the opposite of a monoculture, because the exit is built into the distribution method.
 
-There is one more thing worth naming, because it runs the other way. La Suite's mail is not a nicer webmail. Its unit is the thread rather than the message, and a thread can be granted to a mailbox as viewer or editor. That is a genuinely new idea, and IMAP has no way to express it. It is the sort of thing that should travel from France into the wider ecosystem, not be flattened on the way in. Which is an argument for meeting it on its own API rather than translating it down to a protocol that cannot hold it.
+One thing runs the other way. La Suite's mail moves an idea we do not have: its unit is the thread rather than the message, and a thread can be granted to a mailbox as viewer or editor. IMAP has no way to express it. It is the sort of thing that should travel from France into the wider ecosystem, not be flattened on the way in. Which is an argument for meeting it on its own API rather than translating it down to a protocol that cannot hold it.
 
 The two ecosystems are converging on their own, too. Nextcloud's Files High Performance Back-end closed the sync-speed gap that used to be a real reason to prefer one stack over another. Euro-Office, which Nextcloud and Ionos are building, is a candidate for the office slot inside openDesk that Collabora Online fills today. The parts keep moving between the bins.
 
 ## The app store is the whole game
 
-Microsoft is not hard to leave because Word is good. It is hard to leave because tens of thousands of other companies build for it, and every one of them makes staying a little cheaper than going. The suite is the floor. The ecosystem is the building.
+Microsoft is not hard to leave because Word is good. It is hard to leave because tens of thousands of other companies build for it, and every one of them makes staying a little cheaper than going.
 
 Every sovereign workplace programme so far has built a product. A product competes on features, and on features you can win the argument and still lose the decade. A platform competes on gravity.
 
 So the question worth asking is not whether openDesk matches Microsoft 365 feature for feature. It is simpler, and harder. When a European vendor writes something good, where do they publish it?
 
-Right now that question has no single answer, and that is the real distance between EuroStack and Azure. Not compute. Not features. Distribution. Azure's advantage is that the long tail has an address, and a route to getting paid for arriving at it. Europe has excellent components and no shelf to put them on.
+Right now that question has no single answer, and the distance between EuroStack and Azure is measured there rather than in compute or features. Azure's advantage is that the long tail has an address, and a route to getting paid for arriving at it. Europe has excellent components and no shelf to put them on.
 
-Nextcloud's app store is the closest thing that exists to that address, and it is already inside more than one national suite. That is a genuine strategic asset, and it is sitting there being thought of as a Nextcloud feature rather than as European distribution infrastructure.
+Nextcloud's app store is the closest thing that exists to that address, and it is already inside more than one national suite. That is a strategic asset, and it is sitting there being thought of as a Nextcloud feature rather than as European distribution infrastructure.
 
-Which is where the finish stops being cosmetic. An app store only works if an app installs once and looks right everywhere. If every national suite carries its own design language, a small vendor has to re-skin per country, and the economics collapse at exactly the scale where the interesting software gets written. Nobody is going to maintain four themes to sell to four ministries. A shared finish is not a nicety. It is the precondition for a shared shelf.
+Which is where the finish stops being cosmetic. An app store only works if an app installs once and looks right everywhere. If every national suite carries its own design language, a small vendor has to re-skin per country, and the economics collapse at the scale where the interesting software gets written. Nobody is going to maintain four themes to sell to four ministries. A shared finish is the precondition for a shared shelf.
 
-And the shelf runs both ways, which is the part that has no equivalent in Redmond. A vendor publishes to sell. A public body publishes because it already paid, and because the municipality one border over has the same problem and no budget for it. Our own apps ride that rail already, openbuild for assembling applications and hermiq for running models on your own hardware. The Germans built openCode for precisely this reason, and the Danes' OS2 community has been proving the model for years, with 57 of the country's 98 municipalities sharing a portfolio they own together.
+And the shelf runs both ways, which is the part that has no equivalent in Redmond. A vendor publishes to sell. A public body publishes because it already paid, and because the municipality one border over has the same problem and no budget for it. Our own apps ride that rail already: Buildiq for assembling applications, Hermiq for running models on your own hardware. The Germans built openCode for this reason, and the Danes' OS2 community has been proving the model for years, with 57 of the country's 98 municipalities sharing a portfolio they own together.
 
-That is the thing worth building toward. Not a European Azure, which would be a strange goal. A European shelf, where a good idea written in one municipality is installable in a thousand others by the end of the week.
+That is the thing worth building toward. Not a European Azure, which would be a strange goal, but a European shelf, where a good idea written in one municipality is installable in a thousand others by the end of the week.
 
 ## The finish is the last thing
 
@@ -507,9 +564,7 @@ What is still being built three times is the layer closest to the user, and it i
 
 We proved that layer merges in a working session. Everything hard about it was a seam we made ourselves, and every one of those is now a test.
 
-The components are shared. The protocols are shared. The finish can be too, and the shelf comes with it.
-
-Start with the theme. It is one app.
+So do not take the screenshots on trust, because the point of a finish that ships as one app is that checking it costs you a coffee instead of a project. Install [Thematiq](/apps/thematiq) from the Nextcloud app store, set the token set to lasuite, and look at your own instance wearing someone else's finish. Then open an issue for the first selector we missed.
 
 <div style={{margin: '64px 0'}}>
   <AppCrossLinks
@@ -527,16 +582,16 @@ Start with the theme. It is one app.
 3. **openDesk on openCode**. [gitlab.opencode.de/bmi/opendesk](https://gitlab.opencode.de/bmi/opendesk). The deployment repository, Helm charts and architecture documentation, published by BMI.
 4. **Interoperable Europe Portal**. [openDesk in the EU open source catalogue](https://interoperable-europe.ec.europa.eu/eu-oss-catalogue/solutions/opendesk-3). Apache-2.0 licensing and the current release, version 1.14.1 of 28 April 2026.
 5. **Univention**. [ZenDiS and openDesk](https://www.univention.com/references/zentrum-fuer-digitale-souveraenitaet/). Nubus as openDesk's portal and identity layer, and the description of a tile opening its service in a new tab.
-5. **La Suite numérique**. [github.com/suitenumerique](https://github.com/suitenumerique). The source for Docs, Messages, Visio and Drive, and the org readme describing Tchap's 600,000 agents.
-6. **MijnBureau**. [MinBZK/mijn-bureau-infra](https://github.com/MinBZK/mijn-bureau-infra) and [its documentation site](https://minbzk.github.io/mijn-bureau-infra/). The component list this article reads, its description of itself as an integration layer, and its own wording on collaboration with France and alignment with Germany.
-7. **Bureaublad**. [The Mijn Bureau dashboard component](https://minbzk.github.io/mijn-bureau-infra/docs/components/bureaublad), with [MinBZK/bureaublad](https://github.com/MinBZK/bureaublad) and [MinBZK/mijn-bureau-portal](https://github.com/MinBZK/mijn-bureau-portal). The FastAPI and React dashboard that aggregates the underlying components into one interface.
-8. **La Gaufre**. [La Suite's integration guide for the waffle, version two](https://integration.lasuite.numerique.gouv.fr/guides/gaufre-v2/). Dynamic service loading, UI Kit alignment, and the Shadow DOM isolation this article dwells on.
-7. **Acteurs Publics**. [DINUM asks ministries to help fund La Suite numérique](https://acteurspublics.fr/articles/la-dinum-demande-aux-ministeres-de-mettre-la-main-au-portefeuille-pour-developper-sa-suite-numerique/), 16 February 2026. The twelve million euro 2026 figure and the four million billed to ministries.
-8. **SURF**. [The open source success of OpenConext](https://communities.surf.nl/trust-en-identity/artikel/het-open-source-succes-van-openconext). SURFconext's scale, and central government's 240,000 users on the same software.
-9. **Govconext**. [Single sign-on for the Dutch public sector](https://govroam.nl/diensten-govconext/govconext/). GovConext as an OpenConext instance, alongside Single Sign-On Rijk.
-10. **Cunningham**. [La Suite's design tokens on npm](https://www.npmjs.com/package/@openfun/cunningham-tokens). The package this theme generates from, rather than copying values by hand.
-11. **heise online**. [Nextcloud and Ionos develop open-source Euro-Office](https://www.heise.de/en/news/Microsoft-alternative-Nextcloud-and-Ionos-develop-open-source-Euro-Office-11228123.html). The office component being built for the European stack, and a candidate for openDesk's office slot.
-12. **Nextcloud**. [Files High Performance Back-end](https://nextcloud.com/blog/nextcloud-faster-than-ever-introducing-files-high-performance-back-end/). The change that closed the file-sync gap, distinct from Talk's high performance backend.
-13. **All Things Open**. [ZenDiS, openDesk and openCode: how Germany is transforming its public sector with open source](https://allthingsopen.org/articles/zendis-opendesk-opencode-public-sector-open-source). openCode as the publishing route for public bodies, alongside openDesk.
-14. **OS2**. [Denmark's public digitalisation community](https://www.os2.eu/in-english). Fifty-seven of Denmark's ninety-eight municipalities sharing a jointly owned portfolio, which is the shelf model already working.
-15. **Lawfare**. [The cyber monoculture risk](https://www.lawfaremedia.org/article/cyber-monoculture-risk). The counterargument, stated by someone who means it.
+6. **La Suite numérique**. [github.com/suitenumerique](https://github.com/suitenumerique). The source for Docs, Messages, Visio and Drive, and the org readme describing Tchap's 600,000 agents.
+7. **MijnBureau**. [MinBZK/mijn-bureau-infra](https://github.com/MinBZK/mijn-bureau-infra) and [its documentation site](https://minbzk.github.io/mijn-bureau-infra/). The component list this article reads, its description of itself as an integration layer, and its own wording on collaboration with France and alignment with Germany.
+8. **Bureaublad**. [The Mijn Bureau dashboard component](https://minbzk.github.io/mijn-bureau-infra/docs/components/bureaublad), with [MinBZK/bureaublad](https://github.com/MinBZK/bureaublad) and [MinBZK/mijn-bureau-portal](https://github.com/MinBZK/mijn-bureau-portal). The FastAPI and React dashboard that aggregates the underlying components into one interface.
+9. **La Gaufre**. [La Suite's integration guide for the waffle, version two](https://integration.lasuite.numerique.gouv.fr/guides/gaufre-v2/). Dynamic service loading, UI Kit alignment, and the Shadow DOM isolation this article dwells on.
+10. **Acteurs Publics**. [DINUM asks ministries to help fund La Suite numérique](https://acteurspublics.fr/articles/la-dinum-demande-aux-ministeres-de-mettre-la-main-au-portefeuille-pour-developper-sa-suite-numerique/), 16 February 2026. The twelve million euro 2026 figure and the four million billed to ministries.
+11. **SURF**. [The open source success of OpenConext](https://communities.surf.nl/trust-en-identity/artikel/het-open-source-succes-van-openconext). SURFconext's scale, and central government's 240,000 users on the same software.
+12. **Govconext**. [Single sign-on for the Dutch public sector](https://govroam.nl/diensten-govconext/govconext/). GovConext as an OpenConext instance, alongside Single Sign-On Rijk.
+13. **Cunningham**. [La Suite's design tokens on npm](https://www.npmjs.com/package/@openfun/cunningham-tokens). The package this theme generates from, rather than copying values by hand.
+14. **heise online**. [Nextcloud and Ionos develop open-source Euro-Office](https://www.heise.de/en/news/Microsoft-alternative-Nextcloud-and-Ionos-develop-open-source-Euro-Office-11228123.html). The office component being built for the European stack, and a candidate for openDesk's office slot.
+15. **Nextcloud**. [Files High Performance Back-end](https://nextcloud.com/blog/nextcloud-faster-than-ever-introducing-files-high-performance-back-end/). The change that closed the file-sync gap, distinct from Talk's high performance backend.
+16. **All Things Open**. [ZenDiS, openDesk and openCode: how Germany is transforming its public sector with open source](https://allthingsopen.org/articles/zendis-opendesk-opencode-public-sector-open-source). openCode as the publishing route for public bodies, alongside openDesk.
+17. **OS2**. [Denmark's public digitalisation community](https://www.os2.eu/in-english). Fifty-seven of Denmark's ninety-eight municipalities sharing a jointly owned portfolio, which is the shelf model already working.
+18. **Lawfare**. [The cyber monoculture risk](https://www.lawfaremedia.org/article/cyber-monoculture-risk). The counterargument, stated by someone who means it.
