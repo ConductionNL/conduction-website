@@ -45,10 +45,24 @@ const PAGES = [
 ];
 
 /**
- * Every interactive element whose box is not fully inside the
- * viewport. Zero-sized and `visibility: hidden` elements are skipped,
- * as is anything inside a closed navbar drawer, which is correctly
- * out of view until opened.
+ * Controls that a visitor cannot get to.
+ *
+ * Lying outside the viewport is not by itself a fault, so the test
+ * asks what is doing the clipping before it complains:
+ *
+ *   - nearest overflow ancestor is `auto` or `scroll`: the control is
+ *     inside its own scrollable region (a code block, a wide table,
+ *     the platform diagram). Reachable, so allowed.
+ *   - nearest overflow ancestor is `hidden` or `clip` on some
+ *     component: that component is deliberately masking, which is how
+ *     the logo marquee and the app-card track work. Allowed.
+ *   - nothing clips it until html or body: the only thing holding it
+ *     is the site-wide `overflow-x: clip`. Nothing can scroll to it
+ *     and nothing will ever reveal it. That is the failure.
+ *
+ * Skipped: zero-sized and hidden elements, the closed navbar drawer,
+ * and the skip-to-content link, which is parked off-screen on purpose
+ * and moves into view when focused.
  */
 async function offscreenControls(page) {
   return page.evaluate(() => {
@@ -57,21 +71,35 @@ async function offscreenControls(page) {
     const selector = 'a[href], button, input, select, textarea, [role="button"]';
     for (const el of document.querySelectorAll(selector)) {
       if (el.closest('#navbar-drawer[hidden]')) continue;
+      if ((el.textContent || '').trim() === 'Skip to main content') continue;
       const style = getComputedStyle(el);
       if (style.visibility === 'hidden' || style.display === 'none') continue;
       const r = el.getBoundingClientRect();
       if (r.width === 0 && r.height === 0) continue;
       /* A 1px tolerance absorbs sub-pixel rounding on fractional
          layouts; anything beyond that is a real miss. */
-      if (r.right > vw + 1 || r.left < -1) {
-        out.push({
-          tag: el.tagName.toLowerCase(),
-          text: (el.textContent || '').trim().slice(0, 40) || el.getAttribute('aria-label') || '(no label)',
-          left: Math.round(r.left),
-          right: Math.round(r.right),
-          viewportWidth: vw,
-        });
+      if (r.right <= vw + 1 && r.left >= -1) continue;
+
+      let node = el.parentElement;
+      let clippedByPage = true;
+      while (node && node !== document.documentElement) {
+        const overflowX = getComputedStyle(node).overflowX;
+        if (overflowX !== 'visible') {
+          /* Some component owns the clipping, so it is intentional. */
+          clippedByPage = node === document.body;
+          break;
+        }
+        node = node.parentElement;
       }
+      if (!clippedByPage) continue;
+
+      out.push({
+        tag: el.tagName.toLowerCase(),
+        text: (el.textContent || '').trim().slice(0, 40) || el.getAttribute('aria-label') || '(no label)',
+        left: Math.round(r.left),
+        right: Math.round(r.right),
+        viewportWidth: vw,
+      });
     }
     return out;
   });
@@ -151,32 +179,44 @@ test('every footer link sits inside the viewport', async ({page}) => {
 });
 
 /**
- * WCAG 2.2 AA, 2.5.8. Inline links inside running prose are exempt, so
- * they are filtered out here; what is left is the controls a visitor
- * aims a thumb at.
+ * Touch target size.
+ *
+ * The gate is WCAG 2.2 SC 2.5.8 (AA), which requires 24x24 CSS px.
+ * It is deliberately not 44px: 44 is SC 2.5.5 (AAA) and the size the
+ * primary controls here aim for, but tag chips and inline badges sit
+ * legitimately between the two, and a suite that failed on those would
+ * be reporting a preference rather than a defect.
+ *
+ * Inline links inside running prose are exempt under 2.5.8 itself.
  */
-test('controls meet the 44px touch target minimum', async ({page}) => {
-  await page.goto('/apps/');
-  await page.waitForLoadState('networkidle');
+const AA_MIN_TARGET_PX = 24;
 
-  const small = await page.evaluate(() => {
-    const out = [];
-    for (const el of document.querySelectorAll('a[href], button, input, [role="button"]')) {
-      const style = getComputedStyle(el);
-      if (style.visibility === 'hidden' || style.display === 'none') continue;
-      if (style.display === 'inline' && el.closest('p, li')) continue;
-      const r = el.getBoundingClientRect();
-      if (r.width === 0 && r.height === 0) continue;
-      /* A checkbox is allowed to stay small when its label makes the
-         whole row tappable, so measure the row a visitor hits. */
-      const target = el.type === 'checkbox' ? el.closest('li') || el : el;
-      const tr = target.getBoundingClientRect();
-      if (tr.height < 44) {
-        out.push(`${el.tagName.toLowerCase()} "${(el.textContent || '').trim().slice(0, 24)}" ${Math.round(tr.height)}px`);
+for (const path of ['/apps/', '/support/', '/']) {
+  test(`${path}: controls meet the ${AA_MIN_TARGET_PX}px AA target size`, async ({page}) => {
+    await page.goto(path);
+    await page.waitForLoadState('networkidle');
+
+    const small = await page.evaluate((min) => {
+      const out = [];
+      for (const el of document.querySelectorAll('a[href], button, input, select, [role="button"]')) {
+        if (el.closest('#navbar-drawer[hidden]')) continue;
+        if ((el.textContent || '').trim() === 'Skip to main content') continue;
+        const style = getComputedStyle(el);
+        if (style.visibility === 'hidden' || style.display === 'none') continue;
+        if (style.display === 'inline' && el.closest('p, li')) continue;
+        const r = el.getBoundingClientRect();
+        if (r.width === 0 && r.height === 0) continue;
+        /* A checkbox stays small by design; its row is the target the
+           visitor actually hits, so measure that instead. */
+        const target = el.type === 'checkbox' || el.type === 'radio' ? el.closest('li') || el : el;
+        const tr = target.getBoundingClientRect();
+        if (tr.height < min || tr.width < min) {
+          out.push(`${el.tagName.toLowerCase()} "${(el.textContent || '').trim().slice(0, 24)}" ${Math.round(tr.width)}x${Math.round(tr.height)}`);
+        }
       }
-    }
-    return out;
-  });
+      return out;
+    }, AA_MIN_TARGET_PX);
 
-  expect(small, `controls under 44px tall: ${small.join(' | ')}`).toEqual([]);
-});
+    expect(small, `controls under ${AA_MIN_TARGET_PX}px: ${small.join(' | ')}`).toEqual([]);
+  });
+}

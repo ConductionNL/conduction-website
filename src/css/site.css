@@ -601,3 +601,33 @@ body {
 .content-detail-body a {
   overflow-wrap: anywhere;
 }
+
+/**
+ * Form fields on a phone.
+ *
+ * Two problems, both from inline styles on the /support/ forms.
+ *
+ * `font-size: 14px` is the important one. Mobile Safari zooms the page
+ * in when a field smaller than 16px takes focus, and it does not zoom
+ * back out afterwards, so filling in one field leaves the visitor
+ * stranded at 1.3x with the layout off-screen. 16px is the threshold
+ * that stops it.
+ *
+ * The fields were also 41px tall, just under a comfortable thumb.
+ * Checkboxes and radios are excluded: they stay small by design and
+ * their surrounding row carries the target instead.
+ *
+ * `!important` because the declarations being corrected are inline.
+ */
+@media (max-width: 700px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+    min-height: 44px;
+  }
+
+  button[type="submit"] {
+    min-height: 44px;
+  }
+}
