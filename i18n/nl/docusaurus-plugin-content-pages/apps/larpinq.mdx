@@ -21,6 +21,11 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=larpingapp'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/larpingapp'}}
   illustration={<AppMock app="larpingapp" />}
+  game={
+    <HiddenGame id="dice-duel" unlock={{kind: 'type', word: 'nat20'}}>
+      <DiceDuel />
+    </HiddenGame>
+  }
 />
 
 <Section spacing="default">
@@ -277,13 +282,6 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       why="Een persoonlijk dashboard per speler: zijn personages, het volgende evenement, wat er veranderde sinds hij voor het laatst keek."
     />
   </PairRow>
-</Section>
-
-{/* The app's own mini-game, hidden like the rest. */}
-<Section spacing="default">
-  <HiddenGame id="dice-duel" unlock={{kind: 'type', word: 'nat20'}}>
-    <DiceDuel />
-  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="larpingapp" />

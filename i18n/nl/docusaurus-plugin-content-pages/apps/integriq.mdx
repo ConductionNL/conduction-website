@@ -26,6 +26,11 @@ export const app = {...getApp('openconnector'), name: 'Integriq'};
   secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=openconnector'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/openconnector'}}
   illustration={<AppMock app="openconnector" />}
+  game={
+    <HiddenGame id="pipe-fit" unlock={{kind: 'link'}}>
+      <PipeFit />
+    </HiddenGame>
+  }
 />
 
 <Section spacing="default">
@@ -282,13 +287,6 @@ export const app = {...getApp('openconnector'), name: 'Integriq'};
       why="Stel je eigen dashboard samen uit de koppelwidgets hierboven, naast alles wat je organisatie verder draait."
     />
   </PairRow>
-</Section>
-
-{/* The app's own mini-game, hidden like the rest. */}
-<Section spacing="default">
-  <HiddenGame id="pipe-fit" unlock={{kind: 'link'}}>
-    <PipeFit />
-  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="openconnector" />

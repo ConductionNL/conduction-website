@@ -26,6 +26,11 @@ export const app = {...getApp('openbuild'), name: 'Buildiq'};
   secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=openbuild'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/openbuild'}}
   illustration={<AppMock app="openbuild" />}
+  game={
+    <HiddenGame id="blueprint-rush" unlock={{kind: 'type', word: 'build'}}>
+      <BlueprintRush />
+    </HiddenGame>
+  }
 />
 
 <Section spacing="default">
@@ -254,14 +259,6 @@ export const app = {...getApp('openbuild'), name: 'Buildiq'};
       why="Een klantportaal op de dossiers achter je apps. Klanten helpen zichzelf, in jouw huisstijl."
     />
   </PairRow>
-</Section>
-
-{/* Het eigen mini-game van de app, op dezelfde plek als op de andere
-    productpagina's: na het verhaal en voor de partners. */}
-<Section spacing="default">
-  <HiddenGame id="blueprint-rush" unlock={{kind: 'type', word: 'build'}}>
-    <BlueprintRush />
-  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="openbuild" />

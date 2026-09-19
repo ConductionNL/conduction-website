@@ -21,6 +21,11 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=procest'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/procest'}}
   illustration={<AppMock app="procest" />}
+  game={
+    <HiddenGame id="deadline-defender" unlock={{kind: 'konami'}}>
+      <DeadlineDefender />
+    </HiddenGame>
+  }
 />
 
 <Section spacing="default">
@@ -271,14 +276,6 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       why="Stel je eigen dashboard samen uit de zaakwidgets hierboven, naast alles wat je organisatie verder draait."
     />
   </PairRow>
-</Section>
-
-{/* Het eigen mini-game van de app, op dezelfde plek als dat van
-    Decidiq: na het verhaal en voor de partners. */}
-<Section spacing="default">
-  <HiddenGame id="deadline-defender" unlock={{kind: 'konami'}}>
-    <DeadlineDefender />
-  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="procest" />

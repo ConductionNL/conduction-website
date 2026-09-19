@@ -107,6 +107,17 @@ test.describe('stamp rush, on the Decidiq page', () => {
   test('stays hidden until the logo is knocked on, then deals decisions', async ({page}) => {
     const game = page.locator('section[class*="rush"]');
     await findGame(page, 'stamp-rush', game);
+
+    /* In the hero, not somewhere down the page: the way in is the logo
+       at the top, so the reward cannot be a screen you have to go
+       looking for. `withIllustration` is the product hero's own class;
+       the games carry a `head` of their own, so matching on that would
+       find the game inside itself. */
+    await expect(
+      page.locator('section[class*="withIllustration"] section[class*="rush"]'),
+      'the game opened somewhere other than the hero',
+    ).toBeVisible();
+
     await game.getByRole('button', {name: /take the pen/i}).click();
 
     /* A desk holding a decision, whichever kind it is. */
@@ -600,5 +611,68 @@ test.describe('the monster goes for a run, in the La Frankendesk post', () => {
 
     await page.waitForTimeout(1200);
     await expect(game.getByText(/Stitches 3/)).toBeVisible();
+  });
+});
+
+test.describe('the game-over card', () => {
+  /* The card is the thing people screenshot and the only place the
+     total and the share buttons live, so it has to fit in the window
+     it opens in. With sixteen games in one column it did not: on a
+     laptop the roster ran past the bottom and took Play again with it.
+     Both tests below fail if the two-column layout is dropped. */
+
+  /** Open the card without playing: the modal listens for this event. */
+  async function showCard(page) {
+    await page.goto('/connext/');
+    /* The listener is attached from the client, so an event dispatched
+       before hydration reaches nobody. Wait for something only the
+       hydrated page has. */
+    await page.getByRole('button', {name: /take a break/i}).waitFor();
+    const fire = () => page.evaluate(() => {
+      window.dispatchEvent(new CustomEvent('connext:gameend', {detail: {
+        id: 'record-run',
+        won: false,
+        score: 102,
+        summary: '39 hops · 5 apps picked up',
+        title: 'The record got stuck.',
+      }}));
+    });
+    const panel = page.locator('div[class*="modal"] > div[class*="panel"]');
+    await expect(async () => {
+      await fire();
+      await expect(panel).toBeVisible({timeout: 1500});
+    }).toPass({timeout: 20000});
+    return panel;
+  }
+
+  test('fits in a laptop window, with the buttons in it', async ({page}) => {
+    await clearScores(page);
+    await page.setViewportSize({width: 1440, height: 800});
+    const panel = await showCard(page);
+
+    /* Not a height in pixels: the card carries its own scrollbar as a
+       last resort, so "shorter than 760" would pass on a card that is
+       scrolling. Ask the card whether it had to. */
+    const overflow = await panel.evaluate((el) => el.scrollHeight - el.clientHeight);
+    expect(overflow, 'the card has to scroll to show itself').toBeLessThanOrEqual(1);
+
+    /* Not merely rendered: on screen. A button below the fold of a card
+       that cannot scroll is the same as no button. */
+    await expect(page.getByRole('button', {name: /play again/i})).toBeInViewport();
+  });
+
+  test('lays the sixteen games out in two columns when there is room', async ({page}) => {
+    await clearScores(page);
+    await page.setViewportSize({width: 1440, height: 800});
+    const panel = await showCard(page);
+
+    const items = panel.locator('li[class*="gridItem"]');
+    await expect(items).toHaveCount(16);
+
+    const first = await items.first().boundingBox();
+    const ninth = await items.nth(8).boundingBox();
+    expect(ninth.x, 'the roster is still one column').toBeGreaterThan(first.x + 40);
+    expect(Math.abs(ninth.y - first.y), 'the second column does not start at the top')
+      .toBeLessThan(8);
   });
 });

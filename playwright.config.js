@@ -16,7 +16,13 @@
 
 import {defineConfig, devices} from '@playwright/test';
 
-const PORT = 4173;
+/* 4173 by default, overridable because it does collide. `reuseExistingServer`
+ * takes whatever is already on the port, and another project's `docusaurus
+ * serve` sitting there is indistinguishable from our own: the suite then runs
+ * green or red against a different site entirely. Seen 2026-09-19, where it
+ * produced 20 confident failures against a site that was not this one.
+ * Set E2E_PORT to move out of the way. */
+const PORT = Number(process.env.E2E_PORT) || 4173;
 
 /* Point the same suite at a deployed site instead of a local build:
  *
@@ -56,7 +62,29 @@ export default defineConfig({
   },
 
   projects: [
-    {name: 'chromium', use: {...devices['Desktop Chrome']}},
+    /* The desktop suite skips the mobile spec: its assertions are about
+       a 390px viewport and would be meaningless at 1280px. */
+    {
+      name: 'chromium',
+      use: {...devices['Desktop Chrome']},
+      testIgnore: /mobile-layout\.spec\.js/,
+    },
+    /* Mobile layout regressions. iPhone 13 is 390x844, the viewport the
+       September 2026 audit measured, so the numbers in that spec and
+       the ones in the report refer to the same thing.
+
+       `browserName` is overridden because the iPhone descriptor brings
+       `defaultBrowserType: 'webkit'` with it, and nothing else in this
+       repo installs WebKit: the suite would fail on a missing binary
+       rather than on the page. The assertions here are about layout and
+       reachability, which are engine-agnostic, so Chromium at the same
+       viewport, device scale and touch settings answers the same
+       question and runs wherever the chromium project already runs. */
+    {
+      name: 'mobile',
+      use: {...devices['iPhone 13'], browserName: 'chromium'},
+      testMatch: /mobile-layout\.spec\.js/,
+    },
   ],
 
   ...(REMOTE ? {} : {

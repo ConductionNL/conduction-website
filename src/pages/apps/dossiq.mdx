@@ -21,10 +21,15 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=procest'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/procest'}}
   illustration={<AppMock app="procest" />}
+  game={
+    <HiddenGame id="deadline-defender" unlock={{kind: 'konami'}}>
+      <DeadlineDefender />
+    </HiddenGame>
+  }
 />
 
 <Section spacing="default">
-  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+  <div className="cn-split-main-aside">
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="What it does"
@@ -125,13 +130,13 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
         <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
           <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
             <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-orange-knvb)'}}>3</div>
-            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>this week</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)'}}>this week</div>
           </div>
           {[{w: '70%', accent: true}, {w: '60%'}, {w: '55%'}].map((row, i) => (
             <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
               <span style={{width: 8, height: 9, clipPath: 'var(--hex-pointy-top)', background: row.accent ? 'var(--c-orange-knvb)' : 'var(--c-cobalt-300)'}}></span>
               <div style={{flex: 1, height: 4, background: 'var(--c-cobalt-200)', borderRadius: 1, width: row.w}}></div>
-              <div style={{height: 4, width: 30, background: 'var(--c-cobalt-100)', borderRadius: 1}}></div>
+              <div style={{height: 4, width: 30, background: 'var(--conduction-color-surface-sunken)', borderRadius: 1}}></div>
             </div>
           ))}
         </div>
@@ -271,15 +276,6 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       why="Compose your own dashboard from the case widgets above, next to everything else your organisation runs."
     />
   </PairRow>
-</Section>
-
-{/* The app's own mini-game, after the feature story and before the
-    partners: the same slot Decidiq's game uses, so a reader who finds
-    one knows where to look on the next product page. */}
-<Section spacing="default">
-  <HiddenGame id="deadline-defender" unlock={{kind: 'konami'}}>
-    <DeadlineDefender />
-  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="procest" />

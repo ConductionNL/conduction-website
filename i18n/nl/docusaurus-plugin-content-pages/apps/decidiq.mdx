@@ -21,6 +21,11 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=decidesk'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/decidesk'}}
   illustration={<AppMock app="decidesk" />}
+  game={
+    <HiddenGame id="stamp-rush" unlock={{kind: 'clicks', target: 'app-glyph', count: 3}}>
+      <StampRush />
+    </HiddenGame>
+  }
 />
 
 <Section spacing="default">
@@ -298,15 +303,6 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       why="Stel je eigen dashboard samen uit de vergaderwidgets hierboven, naast alles wat je organisatie verder draait."
     />
   </PairRow>
-</Section>
-
-{/* Het eigen mini-game van de app. Staat na het verhaal over wat de
-    app doet en voor de partners, zodat wie kwam kijken eerst leest en
-    wie kwam spelen één ding hoeft te vinden. */}
-<Section spacing="default">
-  <HiddenGame id="stamp-rush" unlock={{kind: 'clicks', target: 'app-glyph', count: 3}}>
-    <StampRush />
-  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="decidesk" />
