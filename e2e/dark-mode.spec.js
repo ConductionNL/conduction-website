@@ -63,13 +63,24 @@ const INVISIBLE_BELOW = 1.5;
 async function lowContrastText(page, theme, threshold) {
   return page.evaluate(
     async ({theme, threshold}) => {
+      /* Cards animate `background` over 160ms, so a colour read while the
+         theme swap is still easing is a blend of the two themes and
+         belongs to neither. One run reported white on rgb(231,233,236),
+         a grey that appears nowhere in the palette because it was a
+         half-finished transition. Kill transitions and animations first
+         so every value read is a settled one. */
+      const freeze = document.createElement('style');
+      freeze.textContent =
+        '*,*::before,*::after{transition:none!important;animation:none!important}';
+      document.head.appendChild(freeze);
+
       document.documentElement.setAttribute('data-theme', theme);
+
       /* Let the switch actually land before reading anything back.
          Measuring in the same tick reported the PRE-switch colours on
          busy pages: /academy/ came back with 197 findings whose cards
-         were still light, while the same cards read correctly dark once
-         given a moment. Two frames plus a short settle, so the value
-         read is the value painted. */
+         were already correct. Two frames plus a short settle, so the
+         value read is the value painted. */
       await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       await new Promise((resolve) => setTimeout(resolve, 250));
 
