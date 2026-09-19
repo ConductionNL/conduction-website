@@ -22,6 +22,33 @@
 
 import {test, expect} from '@playwright/test';
 
+/**
+ * Wait until the footer's stylesheet has actually applied.
+ *
+ * `canal-footer.css` is injected lazily by the preset, so `load` and even
+ * `networkidle` can both be reached while the footer is still unstyled.
+ * Measured that way it reports its pre-CSS metrics: every link 19px tall,
+ * the social row a full 390px wide. One run read that as ten target-size
+ * violations that did not exist.
+ *
+ * The condition is the stylesheet being parsed, not anything the
+ * assertions are about, so this waits for a precondition rather than
+ * waiting for the test to pass.
+ */
+async function footerStylesApplied(page) {
+  await page.waitForFunction(() => {
+    const link = [...document.querySelectorAll('link[rel="stylesheet"]')].find((l) =>
+      l.href.includes('canal-footer'),
+    );
+    if (!link) return true; // page does not use the canal footer
+    try {
+      return !!link.sheet && link.sheet.cssRules.length > 0;
+    } catch {
+      return !!link.sheet;
+    }
+  });
+}
+
 /* One page per layout archetype rather than all 163: the navbar and
    footer are shared by every page, and these cover each distinct body
    layout that carries its own column rules. */
@@ -111,11 +138,17 @@ for (const [name, path] of PAGES) {
     /* The footer illustration and the app-page marquee are built by
        script after load and shift layout as they mount. */
     await page.waitForLoadState('networkidle');
+    await footerStylesApplied(page);
 
     const offscreen = await offscreenControls(page);
+    /* Report the measured viewport, never a literal. A hardcoded "390px"
+       in this message would keep reading 390 if the project's device
+       descriptor ever changed, and the number is the first thing anyone
+       reads when diagnosing a failure. */
+    const measured = offscreen.length ? offscreen[0].viewportWidth : null;
     expect(
       offscreen,
-      `${offscreen.length} control(s) lie outside the 390px viewport on ${path}:\n` +
+      `${offscreen.length} control(s) lie outside the ${measured}px viewport on ${path}:\n` +
         offscreen.map((o) => `  ${o.tag} "${o.text}" at x=${o.left}..${o.right}`).join('\n'),
     ).toEqual([]);
   });
@@ -162,6 +195,7 @@ test('the drawer closes when a link inside it is followed', async ({page}) => {
 test('every footer link sits inside the viewport', async ({page}) => {
   await page.goto('/');
   await page.waitForLoadState('networkidle');
+  await footerStylesApplied(page);
 
   const strays = await page.evaluate(() => {
     const vw = document.documentElement.clientWidth;
@@ -176,6 +210,37 @@ test('every footer link sits inside the viewport', async ({page}) => {
   });
 
   expect(strays, `footer links outside the viewport: ${strays.join(', ')}`).toEqual([]);
+});
+
+/**
+ * Form fields must not be under 16px.
+ *
+ * Mobile Safari zooms the page in when a field smaller than 16px takes
+ * focus, and does not zoom back out, so one tap leaves the visitor
+ * stranded mid-form at 1.3x. This project runs on Chromium, which does
+ * not reproduce that behaviour, so asserting the zoom itself would
+ * assert nothing. The computed font size is the condition that causes
+ * it, is engine-agnostic, and is exactly what the fix changed.
+ */
+test('form fields are at least 16px, so iOS does not zoom on focus', async ({page}) => {
+  await page.goto('/support/');
+  await page.waitForLoadState('networkidle');
+
+  const tooSmall = await page.evaluate(() => {
+    const out = [];
+    for (const el of document.querySelectorAll('input, select, textarea')) {
+      if (el.type === 'checkbox' || el.type === 'radio' || el.type === 'hidden') continue;
+      const style = getComputedStyle(el);
+      if (style.visibility === 'hidden' || style.display === 'none') continue;
+      const size = parseFloat(style.fontSize);
+      if (size < 16) {
+        out.push(`${el.tagName.toLowerCase()}[name=${el.name || '?'}] ${size}px`);
+      }
+    }
+    return out;
+  });
+
+  expect(tooSmall, `fields under 16px: ${tooSmall.join(', ')}`).toEqual([]);
 });
 
 /**
@@ -195,6 +260,7 @@ for (const path of ['/apps/', '/support/', '/']) {
   test(`${path}: controls meet the ${AA_MIN_TARGET_PX}px AA target size`, async ({page}) => {
     await page.goto(path);
     await page.waitForLoadState('networkidle');
+    await footerStylesApplied(page);
 
     const small = await page.evaluate((min) => {
       const out = [];
