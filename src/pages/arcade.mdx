@@ -41,6 +41,20 @@ export const ArcadeIcon = (
 .arcade-prose ul, .arcade-prose ol { margin: 0 0 1.25rem; padding-left: 1.25rem; }
 .arcade-prose li { margin: 0 0 0.4rem; line-height: 1.55; }
 .arcade-prose li:last-child { margin-bottom: 0; }
+/* The game table carries four columns of prose, which is more than the
+   reading column holds on a phone. Let it scroll sideways inside its
+   own wrapper rather than squashing the hints into single words. */
+.arcade-prose .arcade-table { overflow-x: auto; margin: 0 0 1.5rem; }
+.arcade-prose .arcade-table table {
+  display: table;
+  width: 100%;
+  min-width: 660px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.arcade-prose .arcade-table th { text-align: left; vertical-align: bottom; white-space: nowrap; }
+.arcade-prose .arcade-table td { vertical-align: top; }
+.arcade-prose .arcade-table td:first-child { white-space: nowrap; }
 .arcade-prose .hashtag {
   font-family: var(--conduction-typography-font-family-code);
   color: var(--c-blue-cobalt);
@@ -54,24 +68,30 @@ export const ArcadeIcon = (
 
 Every game sits inside something that already does a job on this site. The cookie console is a real console. The canal in the footer is the footer.
 
-None of them announce themselves, and no two open the same way. That part is the game around the games, so what follows is the page each one hides on and a nudge, not a manual.
+None of them announce themselves, and no two open the same way. That part is the game around the games, so the last column is a nudge and not a manual.
 
-- **Twelve apps**, in the hex rain on the home page
-- **Sink the boats**, in the canal at the bottom of the page
-- **Hex-vaders**, in the cookie console. Ask it what it can do
-- **Logo memory**, in the client marquee
-- **Kade cyclist**, on the quay in the footer
-- **Stamp rush**, on the Decidiq page. Knock on the logo. Three times, briskly
-- **Deadline defender**, on the Dossiq page. Anyone who owned a console in the eighties already knows this one
-- **Blueprint rush**, on the Buildiq page. Type what the app does to you
-- **Lock pick**, on the Keepiq page. Picking a lock is a matter of patience: press, and keep pressing
-- **Black it out**, on the Filinq page. Select a sentence, as if you were about to take a marker to it
-- **Paint by tokens**, on the Thematiq page. Type what you do to a wall
-- **Record run**, on the Connext page. It offers you a break. Take it
-- **Monster run**, in the La Frankendesk post. Type what Victor shouts when it works
-- **Dice duel**, on the Larpinq page. Type the roll every player wants
-- **Match the bank**, on the Shillinq page. Knock on the logo, and keep knocking
-- **Make the connection**, on the Integriq page. It offers you a break too
+<div className="arcade-table">
+
+| Game | What you play | Where it is | How to find it |
+| --- | --- | --- | --- |
+| **Twelve apps** | Collect all twelve apps out of the hex rain inside a minute. Click one you already have and it goes back. | [Home page](/) | Click a falling hex |
+| **Sink the boats** | Everything on the canal, counting down from a hundred, until the battleship turns up. | Footer, on every page | Click a boat |
+| **Hex-vaders** | The shooter, played in a terminal that is really the cookie console. | Cookie console | Ask it what it can do |
+| **Logo memory** | The client logos stop scrolling and turn into twenty-four memory tiles. | [Home page](/) | Click a logo |
+| **Kade cyclist** | Two lanes on the quay, and traffic that works its way up from bikes to trams. | Footer, on every page | Click a bike on the quay |
+| **Stamp rush** | Adopt what has quorum, hold back what does not. Three bad stamps and the chair takes the pen back. | [Decidiq](/apps/decidiq) | Knock on the logo. Three times, briskly |
+| **Deadline defender** | Every case arrives with its clock already running. Send it to the right step before the time is gone. | [Dossiq](/apps/dossiq) | Anyone who owned a console in the eighties already knows this one |
+| **Blueprint rush** | Pick the parts every app needs off the shelf, and skip the ones that belong to somebody else's app. | [Buildiq](/apps/buildiq) | Type what the app does to you |
+| **Record run** | One record on its way through the stack. Steer around the three things that always stop one. | [Connext](/connext) | It offers you a break. Take it |
+| **Lock pick** | Set the pick, turn the cylinder, feel how far it gives. Three picks, and each lock is tighter than the last. | [Keepiq](/apps/keepiq) | Picking a lock is a matter of patience: press, and keep pressing |
+| **Paint by tokens** | Paint by numbers, except the numbers are tokens and the theme decides what colour they are. | [Thematiq](/apps/thematiq) | Type what you do to a wall |
+| **Black it out** | Black out what may not be published, then send it. Leave one thing in and it is a breach. | [Filinq](/apps/filinq) | Select a sentence, as if you were about to take a marker to it |
+| **Monster run** | Jump the forks, duck the patch sets, and pick up the parts it was stitched together from. | [La Frankendesk](/academy/blog/la-frankendesk) | Type what Victor shouts when it works |
+| **Dice duel** | Swing with what you rolled, or hold the good dice and throw the rest again. Roll worse than you had and it bites. | [Larpinq](/apps/larpinq) | Type the roll every player wants |
+| **Match the bank** | Every payment belongs to an invoice, except the one that belongs to nobody. Match them before the month closes. | [Shillinq](/apps/shillinq) | Knock on the logo, and keep knocking |
+| **Make the connection** | Turn the connectors until the line runs end to end. Turning one moves both its openings, which is the whole problem. | [Integriq](/apps/integriq) | It offers you a break too |
+
+</div>
 
 Finding them is half of it. The game-over card keeps track of which ones you have found, and the last line tells you how many are left.
 
