@@ -21,6 +21,11 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=shillinq'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/shillinq'}}
   illustration={<AppMock app="shillinq" />}
+  game={
+    <HiddenGame id="reconcile" unlock={{kind: 'clicks', target: 'app-glyph', count: 5}}>
+      <Reconcile />
+    </HiddenGame>
+  }
 />
 
 <Section spacing="default">
@@ -285,13 +290,6 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       why="Je kas, debiteuren en omzet op het startscherm dat het hele team opent."
     />
   </PairRow>
-</Section>
-
-{/* The app's own mini-game, hidden like the rest. */}
-<Section spacing="default">
-  <HiddenGame id="reconcile" unlock={{kind: 'clicks', target: 'app-glyph', count: 5}}>
-    <Reconcile />
-  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="shillinq" />

@@ -21,6 +21,11 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=doriath'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/doriath'}}
   illustration={<AppMock app="doriath" />}
+  game={
+    <HiddenGame id="lock-pick" unlock={{kind: 'hold', target: 'app-glyph', holdMs: 1400}}>
+      <LockPick />
+    </HiddenGame>
+  }
 />
 
 <Section spacing="default">
@@ -265,14 +270,6 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       why="Je eigen dashboard over al je apps. De wisselwaarschuwingen van Keepiq staan er direct op, naast de rest van je dag."
     />
   </PairRow>
-</Section>
-
-{/* Het eigen mini-game van de app, op dezelfde plek als op de andere
-    productpagina's. */}
-<Section spacing="default">
-  <HiddenGame id="lock-pick" unlock={{kind: 'hold', target: 'app-glyph', holdMs: 1400}}>
-    <LockPick />
-  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="doriath" />

@@ -21,6 +21,11 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=doriath'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/doriath'}}
   illustration={<AppMock app="doriath" />}
+  game={
+    <HiddenGame id="lock-pick" unlock={{kind: 'hold', target: 'app-glyph', holdMs: 1400}}>
+      <LockPick />
+    </HiddenGame>
+  }
 />
 
 <Section spacing="default">
@@ -265,13 +270,6 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       why="Your own dashboard across all your apps. Keepiq's rotation warnings sit right on it, next to the rest of your day."
     />
   </PairRow>
-</Section>
-
-{/* The app's own mini-game, in the slot the other product pages use. */}
-<Section spacing="default">
-  <HiddenGame id="lock-pick" unlock={{kind: 'hold', target: 'app-glyph', holdMs: 1400}}>
-    <LockPick />
-  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="doriath" />

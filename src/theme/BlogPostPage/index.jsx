@@ -61,6 +61,7 @@ const AI_MARK_COPY = {
 import WebinarHero from '@site/src/components/WebinarHero/WebinarHero';
 import {glyphFor} from './heroGlyphs';
 import {visualFor, isKnownVisual} from './heroVisuals';
+import {gameFor, isKnownGame} from './heroGames';
 import styles from './styles.module.css';
 
 /**
@@ -163,6 +164,9 @@ function panelToneFor(contentType) {
  *                 tutorial | blog)
  *   heroImage:    site-absolute path or absolute URL; replaces the hex icon
  *   heroImageAlt: alt text for heroImage (decorative when omitted)
+ *   heroGame:     a name from ./heroGames; hangs that hidden mini-game
+ *                 off the featured hero. Renders nothing until the
+ *                 reader finds it.
  *   heroVisual:   a name from ./heroVisuals; renders that component in
  *                 the `featured` hero's visual column instead of the hex
  *   heroEyebrow:  overrides the eyebrow label on the `featured` variant
@@ -318,6 +322,13 @@ function BlogPostPageContent({children}) {
   }
   const heroVisualNode = visualFor(frontMatter.heroVisual);
 
+  /* Same contract as heroVisual: an unknown name warns and the hero
+     simply has no game, rather than failing the build. */
+  if (frontMatter.heroGame && !isKnownGame(frontMatter.heroGame)) {
+    warnUnknown('heroGame', frontMatter.heroGame, metadata.permalink, 'no hero game');
+  }
+  const heroGameNode = gameFor(frontMatter.heroGame);
+
   const author = metadata.authors && metadata.authors[0];
   const heroProps = {
     crumb: [
@@ -370,6 +381,7 @@ function BlogPostPageContent({children}) {
           durationMinutes={frontMatter.durationMinutes}
           thumbnail={heroProps.cover}
           visual={heroVisualNode}
+          game={heroGameNode}
           accent={heroAccent}
         />
       )}
