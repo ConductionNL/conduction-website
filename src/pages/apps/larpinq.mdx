@@ -4,7 +4,7 @@ description: Characters, rules and events for live-action role-play groups. A pl
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock, DiceDuel, HiddenGame} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -277,6 +277,13 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       why="A personal dashboard per player: their characters, the next event, what changed since they last looked."
     />
   </PairRow>
+</Section>
+
+{/* The app's own mini-game, hidden like the rest. */}
+<Section spacing="default">
+  <HiddenGame id="dice-duel" unlock={{kind: 'type', word: 'nat20'}}>
+    <DiceDuel />
+  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="larpingapp" />

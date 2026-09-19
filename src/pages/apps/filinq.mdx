@@ -4,7 +4,7 @@ description: Generate, sign and anonymise documents, without handing them to a t
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp, FlowMock, BuildMock, LeafMock, Redaction} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, getApp, FlowMock, BuildMock, LeafMock, Redaction, HiddenGame} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 {/* Display-name rebrand 2026-08: DocuDesk → Filinq. The preset's
@@ -266,7 +266,9 @@ export const app = {...getApp('docudesk'), name: 'Filinq'};
 
 {/* The app's own mini-game, in the slot the other product pages use. */}
 <Section spacing="default">
-  <Redaction />
+  <HiddenGame id="redaction" unlock={{kind: 'select', minLength: 14}}>
+    <Redaction />
+  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="docudesk" />

@@ -4,7 +4,7 @@ description: Personages, regels en evenementen voor live-action role-playing gro
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock, DiceDuel, HiddenGame} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -277,6 +277,13 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       why="Een persoonlijk dashboard per speler: zijn personages, het volgende evenement, wat er veranderde sinds hij voor het laatst keek."
     />
   </PairRow>
+</Section>
+
+{/* The app's own mini-game, hidden like the rest. */}
+<Section spacing="default">
+  <HiddenGame id="dice-duel" unlock={{kind: 'type', word: 'nat20'}}>
+    <DiceDuel />
+  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="larpingapp" />

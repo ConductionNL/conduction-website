@@ -1,29 +1,101 @@
 /**
- * The three mini-games on the product pages.
+ * The mini-games on the product pages, and the way in to each.
  *
  * Each game's rules have their own unit tests upstream in the design
- * system, and those are the tests that say the scoring is right. This
- * suite covers the half they cannot see: that the game is actually
- * mounted on the page it belongs to, that it starts, and that a
- * finished run reaches the shared game-over dialog with a score.
+ * system, and the unlock matchers have theirs. This suite covers the
+ * half neither can see: that a game is mounted on the page it belongs
+ * to, that it stays hidden until somebody finds it, that its own way
+ * in works through a real browser, and that a finished run reaches the
+ * shared game-over dialog with a score.
  *
- * That is the failure worth catching before Contributor Week. A game
- * that is never mounted, or one whose end event nobody hears, looks
- * exactly like a game nobody found.
+ * Two failures are worth catching before Contributor Week, and they
+ * look identical from the outside: a game nobody can reach, and a game
+ * sitting in plain sight on a product page.
  */
 
 import {test, expect} from '@playwright/test';
 
 const MODAL = 'div[class*="modal"] div[class*="panel"]';
 
-/** Clear the cross-game score table, so a run starts from nothing. */
+/** Clear the score table and the found-games list, so a visit is a first visit. */
 async function clearScores(page) {
   await page.addInitScript(() => {
     try {
       window.localStorage.removeItem('conduction:minigames');
+      window.localStorage.removeItem('conduction:minigames-found');
       window.localStorage.removeItem('conduction:mastodon-instance');
     } catch (e) {/* private mode: the game copes, so must the test */}
   });
+}
+
+/* How each game is found. The same riddles the arcade page hints at,
+   written out once so a test never has to know a game's own way in. */
+const UNLOCK = {
+  'stamp-rush': async (page) => {
+    const glyph = page.locator('[data-hidden-target="app-glyph"]').first();
+    for (let i = 0; i < 3; i++) await glyph.click({force: true});
+  },
+  'deadline-defender': async (page) => {
+    for (const key of ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+      'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a']) {
+      await page.keyboard.press(key);
+    }
+  },
+  'blueprint-rush': async (page) => { await page.keyboard.type('build'); },
+  'paint-by-tokens': async (page) => { await page.keyboard.type('paint'); },
+  'lock-pick': async (page) => {
+    const glyph = page.locator('[data-hidden-target="app-glyph"]').first();
+    await glyph.hover();
+    await page.mouse.down();
+    await page.waitForTimeout(1800);
+    await page.mouse.up();
+  },
+  redaction: async (page) => {
+    /* Select a paragraph and leave it selected, as if reaching for a
+       marker. The watcher waits for the selection to settle. */
+    await page.evaluate(() => {
+      const p = [...document.querySelectorAll('p')].find((el) => el.textContent.trim().length > 60);
+      const range = document.createRange();
+      range.selectNodeContents(p);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    });
+    await page.waitForTimeout(1500);
+  },
+  'record-run': async (page) => {
+    await page.getByRole('button', {name: /take a break/i}).click();
+  },
+  'pipe-fit': async (page) => {
+    /* Integriq's game hides behind the same quiet opener: the one way
+       in that shows itself, for a page with nothing else to poke at. */
+    await page.getByRole('button', {name: /take a break/i}).click();
+  },
+  'dice-duel': async (page) => { await page.keyboard.type('nat20'); },
+  'monster-run': async (page) => { await page.keyboard.type('alive'); },
+  reconcile: async (page) => {
+    /* Five knocks, not three: Shillinq's logo wants more patience than
+       Decidiq's, so that one page's riddle cannot open another's. */
+    const glyph = page.locator('[data-hidden-target="app-glyph"]').first();
+    for (let i = 0; i < 5; i++) await glyph.click({force: true});
+  },
+};
+
+/**
+ * Open a game the way a player would, then wait for it to arrive.
+ *
+ * The unlock is retried rather than tried once. Every trigger listens
+ * from the client, so a test that types the instant `goto` resolves
+ * can beat hydration to it and find nothing: under parallel load that
+ * turned four solid tests into flakes. A person who types and sees
+ * nothing types again, and so does this.
+ */
+async function findGame(page, id, locator) {
+  await expect(locator, 'the game was on the page before anyone found it').toHaveCount(0);
+  await expect(async () => {
+    await UNLOCK[id](page);
+    await expect(locator).toBeVisible({timeout: 1500});
+  }).toPass({timeout: 25000});
 }
 
 test.describe('stamp rush, on the Decidiq page', () => {
@@ -32,9 +104,9 @@ test.describe('stamp rush, on the Decidiq page', () => {
     await page.goto('/apps/decidiq/');
   });
 
-  test('is on the page, and deals decisions once started', async ({page}) => {
+  test('stays hidden until the logo is knocked on, then deals decisions', async ({page}) => {
     const game = page.locator('section[class*="rush"]');
-    await expect(game).toBeVisible();
+    await findGame(page, 'stamp-rush', game);
     await game.getByRole('button', {name: /take the pen/i}).click();
 
     /* A desk holding a decision, whichever kind it is. */
@@ -44,6 +116,7 @@ test.describe('stamp rush, on the Decidiq page', () => {
 
   test('three bad stamps end the run and open the dialog with a score', async ({page}) => {
     const game = page.locator('section[class*="rush"]');
+    await findGame(page, 'stamp-rush', game);
     await game.getByRole('button', {name: /take the pen/i}).click();
 
     /* Stamp only what should have been held back. Three of those end
@@ -66,9 +139,9 @@ test.describe('deadline defender, on the Dossiq page', () => {
     await page.goto('/apps/dossiq/');
   });
 
-  test('deals a case with a deadline, and routes it to a step', async ({page}) => {
+  test('stays hidden until the old code is typed, then deals a case', async ({page}) => {
     const game = page.locator('section[class*="dd_"]');
-    await expect(game).toBeVisible();
+    await findGame(page, 'deadline-defender', game);
     await game.getByRole('button', {name: /open the queue/i}).click();
 
     await expect(game.locator('p[class*="fileText"]')).toBeVisible({timeout: 5000});
@@ -99,6 +172,7 @@ test.describe('deadline defender, on the Dossiq page', () => {
 
   test('a run that goes wrong reaches the dialog', async ({page}) => {
     const game = page.locator('section[class*="dd_"]');
+    await findGame(page, 'deadline-defender', game);
     await game.getByRole('button', {name: /open the queue/i}).click();
 
     /* Send everything to intake. Most cases do not belong there, so the
@@ -118,9 +192,9 @@ test.describe('blueprint rush, on the Buildiq page', () => {
     await page.goto('/apps/buildiq/');
   });
 
-  test('deals a blueprint whose parts are all on the shelf', async ({page}) => {
+  test('stays hidden until the word is typed, then deals a blueprint', async ({page}) => {
     const game = page.locator('section[class*="br_"]');
-    await expect(game).toBeVisible();
+    await findGame(page, 'blueprint-rush', game);
     await game.getByRole('button', {name: /open a blueprint/i}).click();
 
     const slots = game.locator('li[class*="slot"] span[class*="slotText"]');
@@ -133,6 +207,7 @@ test.describe('blueprint rush, on the Buildiq page', () => {
 
   test('completing a blueprint scores and buys time', async ({page}) => {
     const game = page.locator('section[class*="br_"]');
+    await findGame(page, 'blueprint-rush', game);
     await game.getByRole('button', {name: /open a blueprint/i}).click();
 
     const SLOT_TO_PART = {
@@ -167,9 +242,9 @@ test.describe('record run, on the Connext page', () => {
     await page.goto('/connext/');
   });
 
-  test('runs a record down three lanes that say what is coming', async ({page}) => {
+  test('stays hidden behind a quiet break, then runs a record down three lanes', async ({page}) => {
     const game = page.locator('section[class*="rr_"]');
-    await expect(game).toBeVisible();
+    await findGame(page, 'record-run', game);
     await game.getByRole('button', {name: /send a record/i}).click();
 
     const lanes = game.getByRole('button', {name: /^Lane \d\. Coming next:/});
@@ -183,6 +258,7 @@ test.describe('record run, on the Connext page', () => {
 
   test('steering into what blocks a record ends the run and opens the dialog', async ({page}) => {
     const game = page.locator('section[class*="rr_"]');
+    await findGame(page, 'record-run', game);
     await game.getByRole('button', {name: /send a record/i}).click();
 
     /* Always steer into whatever is about to stop the record. Three of
@@ -208,9 +284,9 @@ test.describe('lock pick, on the Keepiq page', () => {
     await page.goto('/apps/keepiq/');
   });
 
-  test('the dial reads hot and cold before you commit a turn', async ({page}) => {
+  test('stays hidden until the logo is held down, then reads hot and cold', async ({page}) => {
     const game = page.locator('section[class*="lp_"]');
-    await expect(game).toBeVisible();
+    await findGame(page, 'lock-pick', game);
     await game.getByRole('button', {name: /take a pick/i}).click();
 
     const dial = game.getByRole('slider');
@@ -231,6 +307,7 @@ test.describe('lock pick, on the Keepiq page', () => {
 
   test('a careful sweep opens a lock', async ({page}) => {
     const game = page.locator('section[class*="lp_"]');
+    await findGame(page, 'lock-pick', game);
     await game.getByRole('button', {name: /take a pick/i}).click();
 
     const dial = game.getByRole('slider');
@@ -265,9 +342,9 @@ test.describe('black it out, on the Filinq page', () => {
     await page.goto('/apps/filinq/');
   });
 
-  test('redacting the personal data publishes clean', async ({page}) => {
+  test('stays hidden until a sentence is selected, then publishes clean', async ({page}) => {
     const game = page.getByRole('region', {name: 'Black it out'});
-    await expect(game).toBeVisible();
+    await findGame(page, 'redaction', game);
     await game.getByRole('button', {name: /open the stack/i}).click();
 
     /* Every document deals a name, a number or an address. Black out
@@ -289,6 +366,7 @@ test.describe('black it out, on the Filinq page', () => {
 
   test('publishing with a name still on it is a breach', async ({page}) => {
     const game = page.getByRole('region', {name: 'Black it out'});
+    await findGame(page, 'redaction', game);
     await game.getByRole('button', {name: /open the stack/i}).click();
     await game.getByRole('button', {name: /publish it/i}).click();
     await expect(game.locator('p[class*="hint"]')).toContainText(/should not have/);
@@ -302,9 +380,9 @@ test.describe('paint by tokens, on the Thematiq page', () => {
     await page.goto('/apps/thematiq/');
   });
 
-  test('every cell says which token it wants, and the right one fills it', async ({page}) => {
+  test('stays hidden until the word is typed, then every cell says its token', async ({page}) => {
     const game = page.getByRole('region', {name: 'Paint by tokens'});
-    await expect(game).toBeVisible();
+    await findGame(page, 'paint-by-tokens', game);
     await game.getByRole('button', {name: /open a theme/i}).click();
 
     const cells = game.locator('button[class*="cell"]');
@@ -318,6 +396,49 @@ test.describe('paint by tokens, on the Thematiq page', () => {
   });
 });
 
+test('a game found once stays found in that browser', async ({page}) => {
+  /* Hiding a game again from the person who already solved it would be
+     a punishment for playing.
+
+     Deliberately without clearScores(): that helper runs as an init
+     script on every navigation, so it would wipe the found-games list
+     during the reload and the test would be checking its own cleanup
+     rather than the feature. Storage is cleared once, by hand. */
+  await page.goto('/apps/decidiq/');
+  await page.evaluate(() => {
+    try {
+      window.localStorage.removeItem('conduction:minigames');
+      window.localStorage.removeItem('conduction:minigames-found');
+    } catch (e) {/* private mode */}
+  });
+  await page.reload();
+
+  const game = page.locator('section[class*="rush"]');
+  await findGame(page, 'stamp-rush', game);
+
+  await page.reload();
+  await expect(game, 'the game hid itself again after being found').toBeVisible({timeout: 8000});
+});
+
+test('a direct play link opens a game without solving its riddle', async ({page}) => {
+  /* The way out for anyone stuck, and the way in for a link in a post. */
+  await clearScores(page);
+  await page.goto('/apps/thematiq/#play-paint-by-tokens');
+  await expect(page.getByRole('region', {name: 'Paint by tokens'})).toBeVisible({timeout: 5000});
+});
+
+test('one riddle does not open another page game', async ({page}) => {
+  await clearScores(page);
+  await page.goto('/apps/buildiq/');
+  /* Buildiq answers to a typed word, not to the Konami code. */
+  await UNLOCK['deadline-defender'](page);
+  await page.waitForTimeout(600);
+  await expect(page.locator('section[class*="br_"]')).toHaveCount(0);
+
+  await UNLOCK['blueprint-rush'](page);
+  await expect(page.locator('section[class*="br_"]')).toBeVisible({timeout: 5000});
+});
+
 test('the arcade page lists every game the site ships', async ({page}) => {
   await page.goto('/arcade/');
   /* The roster in docusaurus.config.js and this list have to agree, or
@@ -326,7 +447,158 @@ test('the arcade page lists every game the site ships', async ({page}) => {
     'Twelve apps', 'Sink the boats', 'Hex-vaders', 'Logo memory', 'Kade cyclist',
     'Stamp rush', 'Deadline defender', 'Blueprint rush', 'Record run',
     'Lock pick', 'Paint by tokens', 'Black it out',
+    'Monster run', 'Dice duel', 'Match the bank', 'Make the connection',
   ]) {
     await expect(page.getByText(name, {exact: false}).first()).toBeVisible();
   }
+});
+
+test.describe('dice duel, on the Larpinq page', () => {
+  test.beforeEach(async ({page}) => {
+    await clearScores(page);
+    await page.goto('/apps/larpinq/');
+  });
+
+  test('stays hidden until the lucky roll is typed, then deals a hand', async ({page}) => {
+    const game = page.getByRole('region', {name: 'Dice duel'});
+    await findGame(page, 'dice-duel', game);
+    await game.getByRole('button', {name: /draw steel/i}).click();
+
+    const dice = game.getByRole('group', {name: /your dice/i}).getByRole('button');
+    await expect(dice).toHaveCount(4);
+
+    /* Holding a die says so in its label, not only in its colour: that
+       is the whole state a player has to read before pushing. */
+    await dice.first().click();
+    await expect(dice.first()).toHaveAttribute('aria-label', /held/);
+    await expect(game.locator('p[class*="worth"]')).toContainText(/worth \d/i);
+  });
+
+  test('pushing your luck until it bites reaches the dialog', async ({page}) => {
+    const game = page.getByRole('region', {name: 'Dice duel'});
+    await findGame(page, 'dice-duel', game);
+    await game.getByRole('button', {name: /draw steel/i}).click();
+
+    /* Hold nothing and keep throwing. A hand that comes up worse than
+       the one before it costs a heart, and three of those end it. */
+    await expect(async () => {
+      await game.getByRole('button', {name: /push your luck/i}).click({timeout: 800}).catch(() => {});
+      await game.getByRole('button', {name: /^Swing$/}).click({timeout: 800}).catch(() => {});
+      await expect(page.locator(MODAL)).toBeVisible({timeout: 400});
+    }).toPass({timeout: 40000});
+
+    await expect(page.locator(MODAL)).toContainText(/monsters felled/);
+  });
+});
+
+test.describe('match the bank, on the Shillinq page', () => {
+  test.beforeEach(async ({page}) => {
+    await clearScores(page);
+    await page.goto('/apps/shillinq/');
+  });
+
+  test('wants five knocks, not three, and then settles a payment', async ({page}) => {
+    const game = page.getByRole('region', {name: 'Match the bank'});
+    const glyph = page.locator('[data-hidden-target="app-glyph"]').first();
+
+    /* Decidiq's three knocks must not open Shillinq's game, or every
+       page would answer to the same riddle and the hunt would be one
+       riddle long. Three, a pause, then the two that finish it. */
+    await expect(async () => {
+      for (let i = 0; i < 3; i++) await glyph.click({force: true});
+      await page.waitForTimeout(400);
+      await expect(game).toHaveCount(0);
+    }).toPass({timeout: 15000});
+
+    await findGame(page, 'reconcile', game);
+    await game.getByRole('button', {name: /open the statement/i}).click();
+
+    /* Pick up a payment; the one in hand says so in its pressed state. */
+    const payments = game.getByRole('button', {name: /^Settle invoice/}).first();
+    const picked = game.locator('button[aria-pressed="true"]');
+    await expect(picked).toHaveCount(0);
+    await game.locator('button[class*="pick"]').first().click();
+    await expect(picked).toHaveCount(1);
+    await expect(payments).toBeVisible();
+  });
+
+  test('flagging the real payments burns the corrections and opens the dialog', async ({page}) => {
+    const game = page.getByRole('region', {name: 'Match the bank'});
+    await findGame(page, 'reconcile', game);
+    await game.getByRole('button', {name: /open the statement/i}).click();
+
+    /* At most one line on a statement belongs to nobody, so flagging
+       everything spends the three corrections within a sheet or two. */
+    await expect(async () => {
+      const flags = await game.getByRole('button', {name: /as belonging to nobody/}).all();
+      for (const flag of flags) await flag.click({timeout: 600}).catch(() => {});
+      await expect(page.locator(MODAL)).toBeVisible({timeout: 400});
+    }).toPass({timeout: 30000});
+
+    await expect(page.locator(MODAL)).toContainText(/lines matched/);
+  });
+});
+
+test.describe('make the connection, on the Integriq page', () => {
+  test.beforeEach(async ({page}) => {
+    await clearScores(page);
+    await page.goto('/apps/integriq/');
+  });
+
+  test('stays behind a quiet opener, then a route can be made to meet', async ({page}) => {
+    const game = page.getByRole('region', {name: 'Make the connection'});
+    await findGame(page, 'pipe-fit', game);
+    await game.getByRole('button', {name: /send it/i}).click();
+
+    const pieces = game.getByRole('button', {name: /^Connector \d/});
+    await expect(pieces.first()).toBeVisible({timeout: 5000});
+
+    /* Turn left to right: each connector has exactly one turn that
+       meets what the one before it hands over, so a single pass
+       settles the line. The route is replaced the moment it connects,
+       so the walk starts over rather than carrying on into a puzzle
+       nobody asked for. */
+    await expect(async () => {
+      const count = await pieces.count();
+      for (let i = 0; i < count; i++) {
+        for (let t = 0; t < 3; t++) {
+          const label = await pieces.nth(i).getAttribute('aria-label');
+          if (label && !/does not meet/.test(label)) break;
+          await pieces.nth(i).click({timeout: 600});
+        }
+      }
+      await expect(game.locator('p[class*="hint"]')).toContainText(/Through/, {timeout: 500});
+    }).toPass({timeout: 30000});
+
+    const score = Number((await game.locator('span[class*="hudPill"]').first().innerText()).replace(/\D/g, ''));
+    expect(score, 'the route connected without paying the bonus').toBeGreaterThanOrEqual(20);
+  });
+});
+
+test.describe('the monster goes for a run, in the La Frankendesk post', () => {
+  test.beforeEach(async ({page}) => {
+    await clearScores(page);
+    await page.goto('/academy/blog/la-frankendesk/');
+  });
+
+  test('stays hidden until the word Frankenstein shouts is typed', async ({page}) => {
+    const game = page.getByRole('region', {name: 'The monster goes for a run'});
+    await findGame(page, 'monster-run', game);
+    await game.getByRole('button', {name: /it lives/i}).click();
+
+    await expect(game.getByRole('button', {name: /^Jump$/})).toBeVisible();
+    await expect(game.getByRole('button', {name: /^Duck$/})).toBeVisible();
+  });
+
+  test('the first stride is clear, so nobody loses a stitch to a standing start', async ({page}) => {
+    /* The run opened with an obstacle already on top of the monster,
+       which cost a stitch before anyone could reach a key. The lead-in
+       columns fixed it, and this is the line that keeps them. */
+    const game = page.getByRole('region', {name: 'The monster goes for a run'});
+    await findGame(page, 'monster-run', game);
+    await game.getByRole('button', {name: /it lives/i}).click();
+
+    await page.waitForTimeout(1200);
+    await expect(game.getByText(/Stitches 3/)).toBeVisible();
+  });
 });
