@@ -504,7 +504,7 @@ function AcademyLandingInner({items}) {
         <div style={{
           padding: '48px 0',
           textAlign: 'center',
-          color: 'var(--c-cobalt-400)',
+          color: 'var(--conduction-color-text-muted)',
           fontSize: 16,
         }}>
           <Translate
