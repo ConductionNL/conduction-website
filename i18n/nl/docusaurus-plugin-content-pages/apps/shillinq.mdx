@@ -4,7 +4,7 @@ description: Boekhouden en factureren voor zzp'ers en kleine bedrijven, in dezel
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock, Reconcile, HiddenGame} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -285,6 +285,13 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       why="Je kas, debiteuren en omzet op het startscherm dat het hele team opent."
     />
   </PairRow>
+</Section>
+
+{/* The app's own mini-game, hidden like the rest. */}
+<Section spacing="default">
+  <HiddenGame id="reconcile" unlock={{kind: 'clicks', target: 'app-glyph', count: 5}}>
+    <Reconcile />
+  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="shillinq" />
