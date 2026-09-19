@@ -1,5 +1,5 @@
 ---
-title: Apps, Conduction
+title: Apps
 description: Open-source apps that plug into Nextcloud. Catalogs, registers, integrations, document handling, dashboards.
 hide_table_of_contents: true
 ---
@@ -7,6 +7,7 @@ hide_table_of_contents: true
 import React, {useState, useMemo} from 'react';
 import {Section, SectionHead, FacetedFilters, AppCard} from '@conduction/docusaurus-preset/components';
 import {getApps, APP_CATEGORIES, getCatalogTotals} from '@site/src/data/apps-catalog';
+import PageHeading from '@site/src/components/PageHeading';
 
 export const apps = getApps();
 export const totals = getCatalogTotals();
@@ -50,25 +51,27 @@ export function FilterableApps() {
   );
 
   return (
-    <div style={{display: 'grid', gridTemplateColumns: '240px 1fr', gap: 56, alignItems: 'start'}}>
+    <div className="cn-filter-layout">
       <FacetedFilters facets={facets} selected={selected} onChange={setSelected} />
       <div>
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--c-cobalt-100)', fontSize: 14, color: 'var(--c-cobalt-700)'}}>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--c-cobalt-100)', fontSize: 14, color: 'var(--conduction-color-text-body)'}}>
           <div>
-            <strong style={{color: 'var(--c-cobalt-900)'}}>{filtered.length}</strong> of {apps.length} apps
-            {totalSelected > 0 && <span style={{color: 'var(--c-cobalt-400)'}}> · {apps.length - filtered.length} hidden by filters</span>}
+            <strong style={{color: 'var(--conduction-color-text-strong)'}}>{filtered.length}</strong> of {apps.length} apps
+            {totalSelected > 0 && <span style={{color: 'var(--conduction-color-text-muted)'}}> · {apps.length - filtered.length} hidden by filters</span>}
           </div>
         </div>
         <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24}}>
           {filtered.map((app, i) => <AppCard key={i} app={app} />)}
         </div>
         {filtered.length === 0 && (
-          <p style={{textAlign: 'center', color: 'var(--c-cobalt-500)', padding: 'var(--space-8) 0'}}>No apps match this filter.</p>
+          <p style={{textAlign: 'center', color: 'var(--conduction-color-text-default)', padding: 'var(--space-8) 0'}}>No apps match this filter.</p>
         )}
       </div>
     </div>
   );
 }
+
+<PageHeading>Pick an app. Install it. Done.</PageHeading>
 
 <Section spacing="default">
   <SectionHead

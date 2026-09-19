@@ -1,0 +1,141 @@
+---
+slug: shillinq-getting-started
+title: "Get started with Shillinq: your first invoice"
+contentType: tutorial
+heroIcon: invoice
+authors: [conduction]
+date: 2026-07-10
+summary: Install Shillinq, read the Financial overview dashboard, and send your first sales invoice with the quick draft, all through the Nextcloud interface.
+tags: [Shillinq, Bookkeeping, Invoicing, OpenRegister, Accounts receivable, Tutorial]
+apps: [shillinq, openregister]
+durationMinutes: 15
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, Troubleshooting, TroubleshootingItem} from '@conduction/docusaurus-preset/components';
+
+[Shillinq](/apps/shillinq) is an open-source business-administration app for the
+Nextcloud workspace. It covers double-entry bookkeeping, sales and purchase
+invoicing, procurement, contract management, and bank reconciliation, all on top
+of [OpenRegister](/apps/openregister). This first tutorial keeps it small: you
+install the app, get your bearings on the **Financial overview** dashboard, and
+create your first sales invoice with the **quick draft**. Everything happens in
+the browser, no configuration files.
+
+{/* truncate */}
+
+<Outcomes title="What you'll have at the end">
+  <Outcome>Shillinq installed and pointed at an OpenRegister register.</Outcome>
+  <Outcome>A clear read on the <strong>Financial overview</strong> dashboard: the KPI strip, the charts, and the open-invoice tables.</Outcome>
+  <Outcome>Your first <strong>draft sales invoice</strong> on the books, created in under a minute with the quick draft.</Outcome>
+  <Outcome>That invoice visible in <strong>Accounts receivable</strong>, with its total and status.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>A running Nextcloud. If you do not have one yet, follow <a href="/academy/run-nextcloud-locally">Run Nextcloud locally with Docker</a> first.</PrerequisiteItem>
+  <PrerequisiteItem>The <a href="/apps/openregister">OpenRegister</a> app installed and enabled. Shillinq stores all its data there.</PrerequisiteItem>
+  <PrerequisiteItem>An account with admin rights, so you can enable the app and let it seed its registers.</PrerequisiteItem>
+</Prerequisites>
+
+## 1. Install Shillinq
+
+1. Open **Apps** from your Nextcloud user menu (top right).
+2. Find **Shillinq** in the *Organization* category, or install it from the
+   [Nextcloud App Store](https://apps.nextcloud.com), and click **Enable**.
+3. On first enable, Shillinq seeds its registers and schemas into OpenRegister
+   and applies a Dutch chart of accounts (RGS). Give it a few seconds.
+4. Open **Shillinq** from the app menu. You land on the **Financial overview**.
+
+The very first time you open the app, a short **Welcome to Shillinq** tour
+offers to walk you through creating an invoice, exactly what the rest of this
+tutorial does by hand. Follow the tour or click **Close tour** and read on;
+either way you end up in the same place.
+
+## 2. Read the Financial overview
+
+The **Financial overview** is Shillinq's home screen. It reads straight from
+your bookkeeping register, so it is empty on a brand-new install and fills in as
+you record invoices, bills, and payments. If you enabled the demo data, you see
+realistic figures right away.
+
+The **KPI strip** across the top gives you the numbers you check most:
+
+| Card | What it means |
+|------|---------------|
+| **Turnover** | Invoiced revenue for the selected period |
+| **Margin** | Revenue minus direct costs |
+| **Open debtors** | Unpaid customer invoices (accounts receivable) |
+| **Open creditors** | Unpaid supplier bills (accounts payable) |
+| **Cash position** | Balance across your reconciled bank accounts |
+| **Billable** | Share of recorded hours that is billable |
+
+Below the KPIs are the trend charts (turnover, margin, cashflow, billable hours),
+each with its own **date chip** in the top-right so you can change the period
+without leaving the page. At the bottom, two tables list the **open debtors** and
+**open creditors** that need attention. Every KPI card links through to the
+underlying list, so the dashboard doubles as a table of contents.
+
+## 3. Create your first invoice with the quick draft
+
+The fastest way to bill a customer is the **quick draft**. It asks only for what
+an invoice needs and fills in the technical bookkeeping fields (administration,
+period, invoice number) for you.
+
+1. On the **Financial overview**, click **Create invoice** in the page header.
+   The **Quick draft invoice** dialog opens.
+2. In **Customer**, start typing a customer's name and pick them from the list.
+   The list is your Shillinq customers; the due date is pre-filled from their
+   payment terms.
+3. Check the **Invoice date** (today by default) and **Due date**. Add a
+   **Reference / PO number** if the customer wants one on the invoice.
+4. Add a line under **Line items**: a **Description**, a **Quantity**, a
+   **Unit price**, and the **VAT** rate (21% by default in the Netherlands).
+   Use **+ Add line** for more. The running **Net / VAT / Total** updates as you
+   type.
+5. Click **Save draft**.
+
+Shillinq numbers the invoice, sets it to **Draft** status, and books it to
+**Accounts receivable**. Nothing has been sent to the customer yet, and it is
+not yet posted to the ledger; a draft is safe to edit or delete.
+
+:::info Invoice, not bill
+Shillinq uses **invoice** for what you *send* (accounts receivable) and **bill**
+for what you *receive* (accounts payable). The **Import bill** button next to
+**Create invoice** is the counterpart for incoming documents.
+:::
+
+## 4. See it in Accounts receivable
+
+1. Open **Sales → Accounts receivable** from the left navigation (or click the
+   **Open debtors** KPI card).
+2. Your new invoice is in the list, with its **Invoice #**, **Customer**,
+   **Invoice date**, **Due date**, **Total (EUR)**, and **Status** (`draft`).
+3. Click the row to open the invoice. From the detail page you can refine the
+   lines, then **post** and **send** it (as PDF, or as a UBL / Peppol e-invoice
+   for Dutch government clients).
+
+That is the core loop: create, review, post, send. Everything else in Shillinq,
+purchasing, contracts, bank reconciliation, VAT returns, hangs off the same
+bookkeeping register you just wrote your first record into.
+
+<Troubleshooting>
+  <TroubleshootingItem title="The customer list is empty">
+    Shillinq draws customers from its <strong>CustomerMaster</strong> register.
+    On a fresh install with no demo data, add a customer first under
+    <strong>Sales → Customers</strong>, then reopen the quick draft.
+  </TroubleshootingItem>
+  <TroubleshootingItem title="Save draft stays greyed out">
+    A draft needs at least a selected customer and one line with a description
+    and a unit price greater than zero. Fill those and the button enables.
+  </TroubleshootingItem>
+  <TroubleshootingItem title="The dashboard is all zeros">
+    That is expected on a clean install, the figures come from your own records.
+    Create an invoice (this tutorial) and record a bill to see the KPIs move,
+    or enable the demo dataset when you first set up the app.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+<NextSteps title="Where to go next">
+  <NextStep>Read the full <a href="https://shillinq.conduction.nl">Shillinq documentation</a> for the user and admin guides.</NextStep>
+  <NextStep>Set up your <a href="https://shillinq.conduction.nl/guides/setup-chart-of-accounts">chart of accounts</a> so invoices post to the right ledger accounts.</NextStep>
+  <NextStep>Import a bank statement and try <a href="https://shillinq.conduction.nl/guides/import-bank-statements">bank reconciliation</a> to match payments to invoices.</NextStep>
+</NextSteps>

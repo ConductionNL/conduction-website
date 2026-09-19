@@ -1,0 +1,460 @@
+---
+slug: pull-data-with-openconnector
+title: "Pull external data into your register with Integriq"
+contentType: tutorial
+heroIcon: connector
+authors: [conduction]
+date: 2026-06-28
+summary: Feed your OpenRegister Pet Store from a live external API without writing integration code. You register the public Swagger Pet Store as a source, test the connection, write a Twig mapping that reshapes an external pet into your pet-academy schema and test it against a sample record, tie source, endpoint, results/id position, mapping and target register together in a synchronisation, run it for real to create pets in your register, and finally schedule it so new records arrive on their own — with id-based deduplication on every re-run. Pet Store domain, with UI, API and PHP tabs throughout.
+tags: [Integriq, OpenRegister, Synchronisation, Integration, Mapping, Twig, Tutorial]
+apps: [openconnector, openregister]
+durationMinutes: 30
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+  Troubleshooting,
+} from '@conduction/docusaurus-preset/components';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+import dashboardImg from './images/01-oc-dashboard.png';
+import sourceCreateImg from './images/02-source-create.png';
+import sourceDetailImg from './images/03-source-detail-location.png';
+import sourceTestImg from './images/04-source-test-action.png';
+import mappingRuleImg from './images/05-mapping-rule-modal.png';
+import mappingPreviewImg from './images/06-mapping-editor-preview.png';
+import mappingPetToPetImg from './images/07-mapping-pet-to-pet.png';
+import mappingTestImg from './images/08-mapping-test-result.png';
+import syncCreateImg from './images/09-sync-create.png';
+import syncEditorImg from './images/10-sync-editor.png';
+import syncRunImg from './images/11-sync-run-action.png';
+import importedPetsImg from './images/13-imported-pets-openregister.png';
+
+Integriq is the integration engine for Conduction apps. Where OpenRegister stores the data you own, Integriq reaches out to data you do not — a case-management API, an open-data portal, a partner's REST service — and pulls it into a register on a schedule, reshaped to fit your own schema. It does this without a line of integration code: you describe *where* the data lives, *how* a record should be reshaped, and *what* should run, and Integriq does the fetching, the transforming, the writing and the deduplicating for you.
+
+This tutorial fills the **Pet Store** register you built in [Part 1](/academy/model-data-with-openregister) from a real, public, external API — the [Swagger Pet Store](https://petstore.swagger.io/v2). You register that API as a source, test it, write a Twig mapping that turns an external pet into a `pet-academy` object and test the mapping against a sample record, build a synchronisation that ties it all together, run it for real to create pets in your register, and schedule it so it keeps the register current. No code, no cron file, no glue.
+
+{/* truncate */}
+
+:::tip This is part two of a three-tutorial chain
+You are in the middle of a full data pipeline, all in the Pet Store domain:
+
+1. [Model your data with OpenRegister](/academy/model-data-with-openregister) — design the schemas and store records.
+2. **Integriq (you are here)** — feed the register from an external API on a schedule.
+3. [Publish a public catalog with OpenCatalogi](/academy/publish-catalog-with-opencatalogi) — expose the register as an open, harvestable catalog.
+
+Each tutorial stands on its own, but together they take a record from "modelled" to "public". This part assumes the `petstore-academy` register and its `pet-academy` schema from Part 1; if you do not have them, run Part 1 first — it takes about half an hour.
+:::
+
+:::tip Choose how you work
+Most steps below have three tabs — **UI**, **API**, and **PHP** — so you can follow the click-path, automate it with `curl`, or call Integriq's `OCA\` services in code. The UI is the star; the API and PHP tabs show the same action as automation. One step (scheduling) is UI-only, and the tutorial says so when you get there.
+:::
+
+<Outcomes title="What you'll have at the end">
+  <Outcome>A <strong>source</strong> in Integriq pointing at the public Swagger Pet Store API, with its connection tested.</Outcome>
+  <Outcome>A <strong>Twig mapping</strong> (<code>Pet to pet</code>) that reshapes an external pet into your <code>pet-academy</code> schema, verified against a sample record in the live preview and the Test dialog.</Outcome>
+  <Outcome>A <strong>synchronisation</strong> that ties the source, its endpoint, the results and id positions, the mapping and your target register and schema together.</Outcome>
+  <Outcome>Real <strong>pets created in your <code>petstore-academy</code> register</strong> by running the synchronisation, visible alongside the ones you typed in by hand in Part 1.</Outcome>
+  <Outcome>A <strong>schedule</strong> that re-runs the synchronisation as a background job, creating new records, updating changed ones and skipping the unchanged — no duplicates.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>A Nextcloud instance with <strong>Integriq</strong> and <strong>OpenRegister</strong> enabled. The OpenRegister Docker dev environment is fine. If you do not have one yet, follow <a href="/academy/run-nextcloud-locally">Run Nextcloud locally with Docker</a>.</PrerequisiteItem>
+  <PrerequisiteItem>The <strong><code>petstore-academy</code></strong> register and its <strong><code>pet-academy</code></strong> schema from <a href="/academy/model-data-with-openregister">Part 1</a>. You sync into these.</PrerequisiteItem>
+  <PrerequisiteItem>A user with admin rights. No coding — open Integriq from the Nextcloud app menu and you are ready.</PrerequisiteItem>
+</Prerequisites>
+
+## The three pieces of an integration
+
+Before clicking, hold these three words in your head. Integriq splits every integration into three objects, and you build them in this order:
+
+- A **source** is *where* the data comes from: a base URL and how to authenticate. The Swagger Pet Store is a source.
+- A **mapping** is *how* a record is reshaped: each field of your schema gets a [Twig](https://twig.symfony.com/) expression that reads from the external record. "An external pet becomes a `pet-academy` object" is a mapping.
+- A **synchronisation** is *what* runs: it pulls from a source endpoint, applies a mapping, and writes into a register and schema. It is the thing you run, and later schedule.
+
+Open **Integriq** from the Nextcloud app menu. The dashboard counts each piece — **Sources**, **Mappings**, **Synchronizations**, **Contracts**, **Jobs**, **Endpoints** — and charts the outgoing calls, job executions and synchronisation runs over time. On a fresh instance every tile reads zero; you are about to make them count.
+
+<figure>
+  <img src={dashboardImg} alt="The Integriq dashboard with count tiles for Sources, Mappings, Synchronizations, Contracts, Jobs and Endpoints, and time-series charts for outgoing calls, job executions and synchronisation runs" />
+  <figcaption>The Integriq dashboard. The six tiles are the building blocks of every integration; the charts track what runs. The left navigation groups them under <strong>Connections</strong> (sources, endpoints) and <strong>Automation</strong> (mappings, synchronisations, jobs).</figcaption>
+</figure>
+
+## Step 1: Register the Swagger Pet Store as a source
+
+In the left navigation open **Connections → Sources**. This is the list of every external system Integriq knows about. The toolbar carries an **Add Source** button.
+
+<Tabs groupId="dp-how">
+<TabItem value="ui" label="UI">
+
+Click **Add Source**. The **Create Source** dialog asks for a **name**, a **type**, an optional **description**, and an **isEnabled** toggle (on by default). Name it `Swagger Pet Store (Academy)`, set the type to `api` (the type tells Integriq's `CallService` which adapter to dispatch at runtime — `api` is plain HTTP), add a short description, and leave it enabled. Click **Create**.
+
+<figure>
+  <img src={sourceCreateImg} alt="The Create Source dialog with a description, an isEnabled toggle set on, name set to Swagger Pet Store (Academy), and type set to api" />
+  <figcaption>The <strong>Create Source</strong> dialog: a name, a type (<code>api</code>), a description and the enabled toggle. The type is the runtime adapter; <code>api</code> is a plain HTTP source.</figcaption>
+</figure>
+
+Now give the source its **location** — the base URL it talks to. Open the source from the list (its **Actions → View**) and set the location to `https://petstore.swagger.io/v2`. This public API needs no authentication, so there are no credentials to add. The detail page shows the source's full record: location, type, isEnabled, and the auth, rate-limit and retention fields you would fill in for a real, secured source.
+
+<figure>
+  <img src={sourceDetailImg} alt="The source detail page for Swagger Pet Store (Academy) showing its data grid with location set to https://petstore.swagger.io/v2, type api, isEnabled ticked, and empty auth, rate-limit and credential fields" />
+  <figcaption>The source's detail page. <strong>location</strong> is <code>https://petstore.swagger.io/v2</code>; the auth, credential and rate-limit fields stay empty because this public API needs none.</figcaption>
+</figure>
+
+Use the source's **Actions → Test connection** to confirm Integriq can reach the host. Integriq pings the source's base location and records the response. For the Swagger Pet Store the bare base path returns a server response (the host is reachable; the root simply has no resource of its own) — the real end-to-end check is running the synchronisation in Step 4, which calls an actual endpoint.
+
+<figure>
+  <img src={sourceTestImg} alt="The Sources table with the row Actions menu open for Swagger Pet Store (Academy), showing View, Test connection, View logs, Edit, Copy and Delete" />
+  <figcaption>Each source row's <strong>Actions</strong> menu carries <strong>Test connection</strong> and <strong>View logs</strong>. Test confirms Integriq can reach the host; View logs records every call it made, with the exact request and response.</figcaption>
+</figure>
+
+</TabItem>
+<TabItem value="api" label="API">
+
+Host `http://localhost:8080`, basic auth `admin:admin`, and the header `OCS-APIRequest: true` on every call. Create the source with its location and type, then test connectivity with its id:
+
+```bash
+curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/sources" \
+  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
+  -d '{ "name": "Swagger Pet Store (Academy)", "type": "api",
+        "location": "https://petstore.swagger.io/v2", "auth": "none", "isEnabled": true }'
+
+curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/sources/test/<SOURCE_ID>" \
+  -H "OCS-APIRequest: true"
+```
+
+The create response includes the source's `id` and `uuid`; keep them — the synchronisation references the source by its uuid.
+
+</TabItem>
+<TabItem value="php" label="PHP">
+
+A source, mapping and synchronisation are all OpenRegister objects in the `openconnector` register, so you create them with OpenRegister's `ObjectService` and test reachability with Integriq's `CallService`:
+
+```php
+use OCA\OpenRegister\Service\ObjectService;
+use OCA\OpenConnector\Service\CallService;
+
+$objects = \OCP\Server::get(ObjectService::class);
+
+$source = $objects->saveObject(
+    object: [
+        'name'      => 'Swagger Pet Store (Academy)',
+        'type'      => 'api',
+        'location'  => 'https://petstore.swagger.io/v2',
+        'auth'      => 'none',
+        'isEnabled' => true,
+    ],
+    register: 'openconnector',
+    schema:   'source',
+);
+
+// Confirm Integriq can reach it by calling a real endpoint.
+$call     = \OCP\Server::get(CallService::class);
+$response = $call->call($source, '/pet/findByStatus?status=available');
+```
+
+</TabItem>
+</Tabs>
+
+<HexCard title="Keep secrets out of files, not just out of git">
+  This source is public, so it has no credentials. A real source — a case system, a government register — needs authentication, and you set it on the source's auth fields, not in any synchronisation. Integriq stores those credentials encrypted and never returns them in plain text. The integration that follows is identical whether the source is open or secured; only the source's auth changes.
+</HexCard>
+
+**Verify:** `Swagger Pet Store (Academy)` appears in **Connections → Sources** with type `api`, and its detail page shows the location `https://petstore.swagger.io/v2`.
+
+## Step 2: Write the mapping
+
+A mapping turns one external record into one object in your schema. The Swagger Pet Store returns pets as a bare JSON array; one record looks like this:
+
+```json
+{
+  "id": 9,
+  "name": "doggie",
+  "status": "available",
+  "category": { "id": 1, "name": "Dogs" },
+  "photoUrls": ["..."],
+  "tags": [{ "id": 1, "name": "friendly" }]
+}
+```
+
+Your `pet-academy` schema (from Part 1) wants `name`, `species` and `status`. The species is not a top-level field on the source — it sits inside the nested `category` object — so the mapping has to reach into it. Each target field is a Twig expression that reads from the source record:
+
+| `pet-academy` field | Expression |
+| --- | --- |
+| `name` | `{{ name }}` |
+| `species` | `{{ category.name }}` |
+| `status` | `{{ status }}` |
+
+<Tabs groupId="dp-how">
+<TabItem value="ui" label="UI">
+
+Open **Automation → Mappings → Add Mapping**. Integriq creates the mapping and drops you straight into its editor. The editor has a **General** section (name, description, and a **Pass through** toggle), a **Transformation rules** section with **Mapping rules**, **Cast rules** and **Unset rules** tabs, and a **Live preview** that re-renders as you work.
+
+On the **Mapping rules** tab click **Add mapping rule**. A dialog asks for a **Target property** and a **Twig template**. Add the three rows from the table above — `name` → `{{ name }}`, then `species` → `{{ category.name }}`, then `status` → `{{ status }}`.
+
+<figure>
+  <img src={mappingRuleImg} alt="The Add mapping rule dialog with Target property set to name and Twig template set to a name expression, with an Add rule button" />
+  <figcaption>The <strong>Add mapping rule</strong> dialog. Each rule maps one target property to a Twig template; <code>{'{{ category.name }}'}</code> reaches into the nested category object for the species.</figcaption>
+</figure>
+
+Now the important toggle: turn **Pass through off**. With pass-through on, every field of the source record (its `id`, `photoUrls`, raw `tags`) is copied through alongside your three derived fields — handy sometimes, but here it would pollute your clean `pet-academy` object with source plumbing. Off, the output is exactly the three fields you mapped.
+
+Paste a sample pet into the **Sample input (JSON)** box and watch the **Output** re-render live. With pass-through off and the three rules in place, the output is precisely what `pet-academy` expects:
+
+```json
+{ "name": "doggie", "species": "Dogs", "status": "available" }
+```
+
+<figure>
+  <img src={mappingPreviewImg} alt="The mapping editor with three mapping rules (name, species, status), Pass through disabled, a sample Swagger pet in the input box and the output showing name doggie, species Dogs, status available" />
+  <figcaption>The mapping editor's <strong>Live preview</strong>. With <strong>Pass through</strong> off and three rules, a Swagger pet reshapes to exactly <code>name</code>, <code>species</code> and <code>status</code> — the live output updates as you type.</figcaption>
+</figure>
+
+Give the mapping a name — `Pet to pet` — and a description from the editor's General section (or rename it later from the mappings list). It now reads cleanly as the thing it is: a Swagger pet, reshaped into one of your pets.
+
+<figure>
+  <img src={mappingPetToPetImg} alt="The Pet to pet mapping detail showing its name, description, Pass through disabled, the Mapping rules tab with three rules, and the live preview below" />
+  <figcaption>The finished <strong>Pet to pet</strong> mapping: three rules, pass-through off, and a live preview that proves it produces a clean <code>pet-academy</code> object.</figcaption>
+</figure>
+
+Before you wire it into a synchronisation, run the mapping's **Test mapping** action. It opens a dialog where you paste an input object, optionally pick a schema to validate the output against, and click **Run test** — the **Result** panel shows the reshaped object, so you confirm the mapping does what you expect against a real record, not a guess.
+
+<figure>
+  <img src={mappingTestImg} alt="The Test mapping dialog with a Swagger pet in the Input object box and the Result panel showing name doggie, species Dogs, status available" />
+  <figcaption>The <strong>Test mapping</strong> dialog: an input on the left, the transformed result on the right. Run it before wiring the mapping up, so you know the transformation is right.</figcaption>
+</figure>
+
+</TabItem>
+<TabItem value="api" label="API">
+
+A mapping is a name plus a `mapping` object of target field → Twig template. Turn `passThrough` off so only the mapped fields reach the target. Create it, then test it against a sample record:
+
+```bash
+curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/mappings" \
+  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
+  -d '{ "name": "Pet to pet", "passThrough": false, "mapping": {
+        "name": "{{ name }}", "species": "{{ category.name }}", "status": "{{ status }}" } }'
+
+curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/mappings/test" \
+  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
+  -d '{ "mapping": { "name": "{{ name }}", "species": "{{ category.name }}", "status": "{{ status }}" },
+        "inputObject": { "name": "doggie", "status": "available", "category": { "name": "Dogs" } } }'
+```
+
+The test response is the reshaped object: `{ "name": "doggie", "species": "Dogs", "status": "available" }`.
+
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+use OCA\OpenConnector\Service\MappingService;
+
+$mapping = $objects->saveObject(
+    object: [
+        'name'        => 'Pet to pet',
+        'passThrough' => false,
+        'mapping'     => [
+            'name'    => '{{ name }}',
+            'species' => '{{ category.name }}',
+            'status'  => '{{ status }}',
+        ],
+    ],
+    register: 'openconnector',
+    schema:   'mapping',
+);
+
+// Reshape one sample record to verify the mapping before wiring it up.
+$mapper = \OCP\Server::get(MappingService::class);
+$result = $mapper->executeMapping(
+    $mapping,
+    ['name' => 'doggie', 'status' => 'available', 'category' => ['name' => 'Dogs']]
+);
+// $result === ['name' => 'doggie', 'species' => 'Dogs', 'status' => 'available']
+```
+
+</TabItem>
+</Tabs>
+
+<HexCard title="Twig reaches where a flat copy cannot">
+  A field-for-field copy would lose the species, because the source buries it inside <code>category</code>. The Twig expression <code>{'{{ category.name }}'}</code> walks into the nested object and lifts the value out to your flat <code>species</code> field. The same mechanism handles defaults (<code>{"{{ status|default('available') }}"}</code>), formatting and conditionals — the mapping is where the two data models are reconciled, declaratively, in one place you can read and test.
+</HexCard>
+
+**Verify:** the **Test mapping** dialog (or the API test call) returns `{ "name": "doggie", "species": "Dogs", "status": "available" }` for a sample Swagger pet.
+
+## Step 3: Create the synchronisation
+
+The synchronisation ties the three pieces together. It needs:
+
+- **Source**: the `Swagger Pet Store (Academy)` source from Step 1.
+- **Source endpoint**: `/pet/findByStatus?status=available`, the path appended to the source's location.
+- **Results position**: where the list of records sits in the response. The Pet Store returns a *bare array*, addressed as `_root`.
+- **Id position**: `id`, the field that uniquely identifies a record. Integriq keys deduplication on it.
+- **Source → Target mapping**: the `Pet to pet` mapping from Step 2.
+- **Target**: your `petstore-academy` register and its `pet-academy` schema.
+
+<Tabs groupId="dp-how">
+<TabItem value="ui" label="UI">
+
+Open **Automation → Synchronizations → Add Synchronization**. The **Create Synchronization** dialog asks for a **name**, a **sourceType** and a **targetType**. Name it `Pets to Pet Store register`, set `sourceType` to `api` and `targetType` to `register/schema`, and click **Create**.
+
+<figure>
+  <img src={syncCreateImg} alt="The Create Synchronization dialog with name Pets to Pet Store register, sourceType api and targetType register/schema" />
+  <figcaption>The <strong>Create Synchronization</strong> dialog: a name and two discriminators — <code>sourceType: api</code> (pull from an HTTP API) and <code>targetType: register/schema</code> (write into an OpenRegister schema).</figcaption>
+</figure>
+
+Open the new synchronisation's **Actions → Open editor**. The editor is laid out in panels: **Source** (source type, the source record, endpoint, id position, results position), **Target** (target type, register, schema, an optional object filter), and **Mapping** (the source → target mapping, plus optional reverse and hash mappings). Fill them from the dropdowns and fields:
+
+- In **Source**, pick `Swagger Pet Store (Academy)`, set **Endpoint** to `/pet/findByStatus?status=available`, **ID position** to `id`, and **Results position** to `_root`.
+- In **Target**, pick the **Pet Store** register and the **Pet** schema.
+- In **Mapping**, pick `Pet to pet` as the **Source → Target mapping**.
+
+Then **Save changes**.
+
+<figure>
+  <img src={syncEditorImg} alt="The synchronisation editor showing the Source panel (source type API, endpoint, ID position, Results position _root), the Target panel (Register/Schema, register, schema, object filter) and the Mapping panel" />
+  <figcaption>The synchronisation editor. The <strong>Source</strong> panel sets the endpoint and where to find the records and their ids; the <strong>Target</strong> panel picks the register and schema; the <strong>Mapping</strong> panel supplies the transformation. That is the whole integration on one screen.</figcaption>
+</figure>
+
+</TabItem>
+<TabItem value="api" label="API">
+
+Reference the source by its uuid, the mapping by its uuid, and the target as `<REGISTER_ID>/<SCHEMA_ID>` (here `petstore-academy` is id `2414` and `pet-academy` is id `4318`):
+
+```bash
+curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openconnector/api/synchronizations" \
+  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
+  -d '{ "name": "Pets to Pet Store register",
+        "sourceId": "<SOURCE_UUID>", "sourceType": "api",
+        "sourceTargetMapping": "<MAPPING_UUID>",
+        "sourceConfig": { "endpoint": "/pet/findByStatus?status=available",
+                          "resultsPosition": "_root", "idPosition": "id" },
+        "targetType": "register/schema", "targetId": "2414/4318" }'
+```
+
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+$sync = $objects->saveObject(
+    object: [
+        'name'                => 'Pets to Pet Store register',
+        'sourceId'            => $source->getUuid(),
+        'sourceType'          => 'api',
+        'sourceTargetMapping' => $mapping->getUuid(),
+        'sourceConfig'        => [
+            'endpoint'        => '/pet/findByStatus?status=available',
+            'resultsPosition' => '_root',
+            'idPosition'      => 'id',
+        ],
+        'targetType'          => 'register/schema',
+        'targetId'            => '2414/4318', // petstore-academy / pet-academy
+    ],
+    register: 'openconnector',
+    schema:   'synchronization',
+);
+```
+
+</TabItem>
+</Tabs>
+
+<HexCard title="Results position and id position are the two settings that matter most">
+  <strong>Results position</strong> tells Integriq where the list of records lives in the response. The Pet Store returns a bare array at the top level, so it is <code>_root</code>; an API that wraps its list in <code>{'{ "results": [...] }'}</code> would use <code>results</code>. Get this wrong and the sync finds nothing to process. <strong>Id position</strong> names the field that uniquely identifies each record (<code>id</code>). Integriq remembers it, so the next run updates or skips a record instead of creating a second copy. These two fields are the difference between a working sync and either zero objects or endless duplicates.
+</HexCard>
+
+**Verify:** the synchronisation's editor shows the source, endpoint `/pet/findByStatus?status=available`, results position `_root`, id position `id`, the `Pet to pet` mapping, and the Pet Store register and Pet schema as the target.
+
+## Step 4: Run it
+
+With the synchronisation configured, run it. From the **Synchronizations** list, open the row's **Actions** menu and choose **Run now** (the same menu offers **Test (dry run)**, **View logs** and **View contracts**). Integriq fetches the endpoint, applies the mapping to each record, and writes the results into your register.
+
+<figure>
+  <img src={syncRunImg} alt="The Synchronizations table with the row Actions menu open showing Open editor, Run now, Test (dry run) and View logs" />
+  <figcaption>The synchronisation row's <strong>Actions</strong> menu. <strong>Run now</strong> executes it immediately; the run reports how many records it found, created, updated and skipped.</figcaption>
+</figure>
+
+<Tabs groupId="dp-how">
+<TabItem value="ui" label="UI">
+
+Run it with **Run now**. The run reports a result — how many records it read (**found**), and how many it **created**, **updated** and **skipped**. On a first run against your empty target, every found record is created. On our run the register went from the six pets you typed in Part 1 to ten: four new pets created from the Swagger source, no duplicates of the six you already had.
+
+</TabItem>
+<TabItem value="api" label="API">
+
+```bash
+curl -u admin:admin -X POST \
+  "http://localhost:8080/index.php/apps/openconnector/api/synchronizations/<SYNC_ID>/run" \
+  -H "OCS-APIRequest: true"
+```
+
+The run returns a log shaped like `{ "result": { "objects": { "found": 4, "created": 4, "updated": 0, "skipped": 0 } } }`.
+
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+use OCA\OpenConnector\Service\SynchronizationService;
+
+$syncService = \OCP\Server::get(SynchronizationService::class);
+$log = $syncService->synchronize($sync);
+// $log['result']['objects'] === ['found' => 4, 'created' => 4, 'updated' => 0, 'skipped' => 0]
+```
+
+</TabItem>
+</Tabs>
+
+Now open **OpenRegister → Data → Search / views**, select the **Pet Store** register and the **Pet** schema in the sidebar, and the imported pets appear in the table — right next to Rex, Bella and the rest you created by hand in Part 1. The external records are now first-class objects in your register: searchable, versioned, permissioned, exactly like the ones you typed.
+
+<figure>
+  <img src={importedPetsImg} alt="OpenRegister's Search / views scoped to the Pet Store register and Pet schema, showing the hand-typed pets (Rex, Bella, Whiskers, Coco, Spike, Sunny) and imported 'doggie' pets together in one table" />
+  <figcaption>The pets in OpenRegister, scoped to the Pet Store register and Pet schema. The hand-typed pets from Part 1 (Rex, Bella, …) and the imported <code>doggie</code> records from the Swagger source sit in one table — the synchronisation wrote straight into your <code>pet-academy</code> schema.</figcaption>
+</figure>
+
+<HexCard title="A public sandbox is shared, so its data is noisy">
+  The Swagger Pet Store is a public demo API that everyone on the internet writes to, so its <code>findByStatus</code> response is large and full of other people's test records (you will see many pets literally named <code>doggie</code> with a <code>species</code> of <code>string</code>). That is the source's data, faithfully imported — not an Integriq fault. A real source is stable and yours, and returns the records you expect. The mechanics you just learned are identical; only the source changes.
+</HexCard>
+
+**Verify:** the run reports records created, and in OpenRegister's Search / views — scoped to the Pet Store register and Pet schema — the imported pets appear alongside the ones from Part 1.
+
+## Step 5: Schedule it
+
+A synchronisation that runs once is an import. To keep the register current you schedule it, and Integriq registers a background **job** — its cron task runs the same synchronisation on the interval you pick. Open the synchronisation and set a schedule from its settings; from then on it runs on its own.
+
+Scheduling is its own object (a job), so unlike the steps above it has no clean one-line API or PHP equivalent — create it from the UI. Once it exists, the **Jobs** tile on the dashboard counts it, and each execution shows up in the job-execution charts.
+
+On every scheduled run, Integriq reads each record's **id** (the id position you set in Step 3) and compares it against what it already wrote — it keeps a **contract** linking each source record to the target object it produced. New ids are **created**, records whose content changed are **updated**, and unchanged records are **skipped**. The register tracks the source faithfully, and re-running never duplicates a pet you already have.
+
+:::warning Match the interval to how often the source changes
+A daily open-data export does not need an hourly sync. Frequent runs against a slow or rate-limited API waste both sides and can get you throttled. Pick the longest interval that keeps the data fresh enough for its use.
+:::
+
+<Troubleshooting>
+  <p><strong>The synchronisation runs but creates zero objects.</strong> Check the <strong>results position</strong>. If it does not point at the list of records in the response, Integriq finds nothing to process. Open the source endpoint in a browser and look at where the array sits: a bare top-level array is <code>_root</code>; a list wrapped in <code>{`{ "results": [...] }`}</code> is <code>results</code>.</p>
+  <p><strong>You run the synchronisation twice and get duplicate pets.</strong> Check the <strong>id position</strong>. Without a correct id field, Integriq cannot recognise a record it has already imported, so every run creates fresh copies. Point it at the field that uniquely identifies a record (here, <code>id</code>) and the second run updates or skips instead of duplicating.</p>
+  <p><strong>A target field arrives empty.</strong> Check the mapping's Twig expression against the real shape of the source record. <code>species</code> comes from <code>{`{{ category.name }}`}</code>, not <code>{`{{ species }}`}</code>, because the source nests the category — use the mapping's live preview or Test dialog against a real record to catch this before you run.</p>
+</Troubleshooting>
+
+## Test yourself
+
+You have pulled the data in if all of these are true:
+
+- A **source** named `Swagger Pet Store (Academy)` exists with location `https://petstore.swagger.io/v2`, type `api`, and its connection has been tested.
+- The **Pet to pet** mapping reshapes a Swagger pet to `{ name, species, status }`, with `species` coming from `{{ category.name }}` and pass-through off, confirmed in the Test dialog.
+- The **synchronisation** ties the source, the endpoint `/pet/findByStatus?status=available`, results position `_root`, id position `id`, the `Pet to pet` mapping, and the `petstore-academy` / `pet-academy` target together.
+- **Running it created pets** in the register, visible in OpenRegister's Search / views alongside the Part 1 pets.
+- You understand that a **schedule** turns the run into a background job, and that the **id position** makes re-runs deduplicate — create, update, skip — instead of duplicating.
+
+## Where to go from here
+
+Your register now fills itself from an external API, on a schedule, without code. The last part of the chain takes that register public.
+
+<NextSteps>
+  <NextStep href="/academy/publish-catalog-with-opencatalogi">Part 3 — Publish your Pet Store register as a public, harvestable catalog with OpenCatalogi, so the data you just pulled in can flow out to anyone.</NextStep>
+  <NextStep href="/academy/model-data-with-openregister">Part 1 — Revisit how the Pet Store register and its schemas were modelled, the target this synchronisation writes into.</NextStep>
+  <NextStep href="https://openconnector.app">Browse the Integriq documentation for sources with authentication, rules, conditions and error handling in depth.</NextStep>
+</NextSteps>

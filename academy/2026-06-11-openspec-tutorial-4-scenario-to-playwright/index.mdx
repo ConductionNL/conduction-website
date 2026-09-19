@@ -1,0 +1,327 @@
+---
+slug: openspec-tutorial-4-scenario-to-playwright
+title: "OpenSpec tutorial series — Part 4: From scenario to Playwright test"
+contentType: tutorial
+heroIcon: flask
+authors: [conduction]
+date: 2026-06-11
+summary: A scenario in a spec is a test you have not run yet. This part shows how a GIVEN/WHEN/THEN scenario becomes a Playwright test, how the @e2e and @spec annotations let you backtrace any line of code or any test to the demand it serves, and how gate-19 turns that into a safe sandbox for spec coding instead of vibe coding.
+tags: [OpenSpec, Spec-first, Testing, Playwright, e2e, Tutorial series]
+apps: []
+durationMinutes: 20
+series: openspec-tutorial
+partNumber: 4
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+In Part 1 you learned that a **scenario** describes behaviour in `GIVEN / WHEN / THEN` form. In Part 2 you wrote one. This part closes the loop. A scenario is a **test you have not run yet**, and OpenSpec gives you a mechanical way to prove that every scenario in a spec is exercised by a real browser test. The `@e2e` annotation and the gate that enforces it are what turn "write a spec" into a safe sandbox for AI. They are also the single biggest thing that separates **spec coding** from **vibe coding**.
+
+{/* truncate */}
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>Why a scenario and a Playwright test are two views of the same thing.</Outcome>
+  <Outcome>The two backtrace links: code to spec via <code>@spec</code>, and test to scenario via <code>@e2e</code>.</Outcome>
+  <Outcome>How a <code>#### Scenario:</code> heading becomes a slug, and the two compliant <code>@e2e</code> forms.</Outcome>
+  <Outcome>The three exclusion scopes, and why <code>@e2e exclude</code> always needs a reason.</Outcome>
+  <Outcome>The division of labour: Playwright for UI, Newman for API, PHPUnit for unit.</Outcome>
+  <Outcome>Why specs, ADRs, gates and tests form a sandbox the AI cannot escape.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you'll need">
+  <PrerequisiteItem>Parts 1 and 2 read: <a href="/academy/openspec-tutorial-1-what-is-openspec">What is OpenSpec?</a> and <a href="/academy/openspec-tutorial-2-first-change">Your first OpenSpec change</a>, so you know what a requirement and a scenario are.</PrerequisiteItem>
+  <PrerequisiteItem>A rough idea of what an end-to-end browser test does (clicks a button, reads what is on screen). No Playwright experience needed.</PrerequisiteItem>
+  <PrerequisiteItem>Optional but useful: the <a href="/academy/hydra-tutorial-3-quality-gates">Hydra quality-gates tutorial</a>, where gate-16 and gate-19 first appear.</PrerequisiteItem>
+</Prerequisites>
+
+## A scenario is a test you have not run yet
+
+Look again at a scenario from Part 2, this time in our pet-store register:
+
+```markdown
+### Requirement: Search pets by name
+Users MUST be able to find pets by typing part of the name.
+
+#### Scenario: Searching narrows the visible list
+- GIVEN the pet register contains "Rex", "Bella" and "Max"
+- WHEN the user types "be" into the search box
+- THEN only "Bella" is shown in the result list
+```
+
+Read that `WHEN` and `THEN` again. It is already a test script. Type "be" into the search box, assert that only "Bella" is visible. The only thing missing is the code that drives a browser to do exactly that. A Playwright test is that code:
+
+```typescript
+test('Searching narrows the visible list', async () => {
+  // @e2e pet-store-search::searching-narrows-the-visible-list
+  await page.getByRole('searchbox').fill('be')
+  await expect(page.getByText('Bella')).toBeVisible()
+  await expect(page.getByText('Rex')).toHaveCount(0)
+})
+```
+
+The scenario and the test are two views of one behaviour. One is plain language for the reviewer, one is TypeScript for the browser. The `@e2e` comment on the second line is the thread that ties them together, and that thread is what a gate can check.
+
+## Two links, total backtrace
+
+Spec coding rests on a simple promise: from any line of code, or any test, you can trace back to the functional demand it serves. Two annotations make that promise hold, pointing in opposite directions:
+
+| Link | Annotation | Lives in | Answers |
+|---|---|---|---|
+| Backward | `@spec openspec/...` | the **code** (PHPDoc / JSDoc) | "which requirement does this method implement?" |
+| Forward | `@e2e <spec>::<slug>` | the **test** (Playwright file) | "which scenario does this test prove?" |
+
+Every method we write carries an `@spec` tag naming the requirement it is based on. Every test carries an `@e2e` tag naming the scenario it proves. Put them together and you can walk the loop in either direction:
+
+```
+   Requirement ──@spec──▶ Code ──implements──▶ behaviour
+        ▲                                         │
+        │                                         ▼
+   Scenario ◀──proves── Playwright test ◀──@e2e──┘
+```
+
+Walk it forward and every scenario has a test. Walk it backward and every method has a requirement. The result is 100% backtrace: pick any function in the codebase and you can name the functional demand behind it; pick any demand and you can name the code and the test that satisfy it. Nothing in between is orphaned. No unspecified feature, no untested UI. That is the whole game.
+
+## How a scenario becomes a slug
+
+The `@e2e` annotation references a scenario by a **slug**, a stable kebab-case identifier the gate derives mechanically from the spec. You do not invent it. You compute it the same way the gate does. There are two spec formats, and each produces a slug deterministically.
+
+**Format A, heading scenarios (the common one).** Take the `#### Scenario:` heading, lowercase it, replace each run of non-alphanumeric characters with a hyphen:
+
+```markdown
+#### Scenario: Searching narrows the visible list
+```
+
+This gives the slug `searching-narrows-the-visible-list`.
+
+**Format B, numbered scenarios under a requirement.** Some specs list scenarios as a numbered list under a `**Scenarios:**` marker. The slug is built from the requirement heading plus the item number, not from the prose:
+
+```markdown
+### REQ-SEARCH-001: Search pets by name
+
+**Scenarios:**
+
+1. **GIVEN** the register has 3 pets **WHEN** the user types "be" **THEN** only Bella shows.
+```
+
+This gives the slug `req-search-001-search-pets-by-name-scenario-1`.
+
+<HexCard title="The four-hash rule">
+  Scenario headings must use four hashes, <code>#### Scenario:</code>, not three. The parser that builds the slug list only recognises <code>####</code>. A three-hash <code>### Scenario:</code> is silently skipped. The gate never learns the scenario exists, your <code>@e2e</code> annotation points at a slug that is not there, and you get a confusing "missing annotation" failure on a scenario you did annotate. This is the most common OpenSpec testing mistake. See the troubleshooting section.
+</HexCard>
+
+## The two compliant `@e2e` forms
+
+Both of these are accepted, and both may appear anywhere in a test file: a JSDoc docblock, a `describe(...)` string, a `test(...)` title, or a plain comment. The gate greps for them. There is no AST parsing.
+
+**Long form**, canonical path plus anchor:
+
+```typescript
+// @e2e openspec/specs/pet-store-search/spec.md#searching-narrows-the-visible-list
+```
+
+**Short form**, `spec-name::slug`:
+
+```typescript
+// @e2e pet-store-search::searching-narrows-the-visible-list
+```
+
+Use whichever you like. Teams usually pick the short form for brevity and the long form when they want a clickable path. Tests live under `tests/e2e/**`, by convention `tests/e2e/spec-coverage/<spec-name>.spec.ts`.
+
+## Excluding a scenario, with a reason
+
+Not every scenario is a UI behaviour. "The metrics endpoint returns `text/plain`" is an HTTP contract, not something a user clicks. For those you do not write a Playwright test. You **exclude** the scenario, and you say why. There are three scopes, from narrowest to widest.
+
+**Scenario level**, to excuse one scenario:
+
+```markdown
+#### Scenario: Nightly re-index runs at midnight
+
+@e2e exclude background cron job, covered by PHPUnit integration test
+```
+
+**Requirement level**, to excuse every scenario under one requirement:
+
+```markdown
+### Requirement: Background sync
+
+@e2e exclude background-only, no UI surface, covered by Newman
+```
+
+**Whole-spec level**, placed right after `## Purpose`, to excuse the entire spec:
+
+```markdown
+## Purpose
+
+@e2e exclude pure-backend API contract, every scenario describes HTTP response shape; covered by Newman
+```
+
+<HexCard title="A bare exclude is not an exclude">
+  <code>@e2e exclude</code> requires a reason. A bare <code>@e2e exclude</code> with no text behind it is treated exactly like a missing annotation, and the gate fails. The reason is the point. It makes the decision auditable. A reviewer reading "covered by Newman" can go check the Newman collection. A reviewer reading nothing has to guess. The same rule holds for <code>@spec exclude</code> on the code side.
+</HexCard>
+
+## Who tests what: Playwright, Newman, PHPUnit
+
+The exclusion reasons above are not free-form excuses. They map onto a strict division of labour. Each kind of behaviour has exactly one home:
+
+| Behaviour | Tool | Where |
+|---|---|---|
+| User interaction: clicks, typing, navigation, what is on screen | **Playwright** (e2e) | `tests/e2e/**`, tied with `@e2e` |
+| API contract: endpoint shape, status codes, auth, response format | **Newman / Postman** | `tests/integration/*.postman_collection.json` |
+| Unit logic: algorithms, transforms, internal state | **PHPUnit / Jest** | `tests/Unit/**` |
+| Background and cron: async jobs, events, DB consistency | **PHPUnit integration** | `lib/BackgroundJob/`, `lib/Cron/` |
+
+So a valid `@e2e exclude` reason is a pointer to the right test layer: `covered by Newman`, `unit-level algorithm, covered by Jest`, `DB migration correctness, covered by PHPUnit`, `DI wiring, framework boilerplate`. What you may not do is assert an API contract inside a Playwright test just to make gate-19 green. That is the wrong layer, and the testing standard calls it out. Playwright drives the UI. It does not poke the API directly.
+
+## Gate-19: the enforcement
+
+None of this would matter if it were a guideline. It is not. It is **gate-19** (`e2e-coverage`), one of [Hydra's 22 mechanical gates](/academy/hydra-tutorial-3-quality-gates). Here is exactly what it does:
+
+1. It scans every spec file (`openspec/specs/*/spec.md`) added or modified in the current PR. The scan is diff-scoped, per ADR-020, so untouched legacy specs never block you.
+2. For each spec, it lists every scenario (Format A and Format B).
+3. For each scenario it checks one thing: is there a matching `@e2e` annotation in a test file, or a reason-bearing `@e2e exclude`?
+4. Every scenario with neither becomes one finding, reported as `<spec>::<slug>` missing `@e2e`. The exit code is the number of uncovered scenarios.
+
+Its sibling, **gate-16** (`spec-coverage`), does the same for the backward link. Every public or protected method you add or change must carry `@spec openspec/...` or `@spec exclude <reason>`. Between them, the two gates make the backtrace from the previous section non-optional. You cannot merge a PR that adds an unspecified method, and you cannot merge a PR that adds an untested UI scenario. The builder, human or AI, has no way around it.
+
+## Spec coding versus vibe coding
+
+Now the payoff. Picture two ways to ask an AI to build the pet-search feature.
+
+**Vibe coding.** "Add a search box to the pet list." The model improvises. It guesses what "search" means, invents an endpoint, maybe skips the auth check, maybe leaves a `// TODO: handle empty query`, maybe adds a route it forgets to register. It might be great. It might be subtly wrong in a way nobody notices until production. You are trusting vibes, and re-reviewing everything by hand every time.
+
+**Spec coding.** You write the requirement and the scenario first. Then the AI implements against them, inside a sandbox with walls:
+
+- The **spec** fixes *what* must happen: typing "be" shows only "Bella". Not negotiable. It is a contract with `MUST`.
+- The **ADRs** fix *how* it must be built: data goes through OpenRegister, auth attributes match intent, modals live in their own files. See [Part 3](/academy/openspec-tutorial-3-adrs).
+- **Gate-16** forces every new method to point back at the spec. No orphan code.
+- **Gate-19** forces every new scenario to have a real browser test. No untested claims.
+- The other **20 gates** stop the AI shipping debug calls, unreachable routes, IDOR holes, fail-open auth, accessibility regressions, and the rest.
+- A **code reviewer and a security reviewer** then read what is left. See Parts 4 and 5 of the Hydra series.
+
+The AI still writes the code. But it cannot invent a feature that is not specified, cannot leave a UI scenario untested, cannot skip the auth check, cannot leave a stub. Every one of those moves trips a deterministic wall before a human ever looks. That is the sandbox. Not "trust the model", but "let the model move freely inside walls you defined on purpose". Spec coding is vibe coding with the guardrails turned on, and the guardrails are specs, ADRs, gates and tests, all tied together by the two annotations you met in this part.
+
+<HexCard title="Why this scales where review-by-hand does not">
+  A human reviewer gets tired, skims boilerplate, and cannot re-check 22 invariants on every PR without burning out. A gate never gets tired and never skims. By pushing every mechanical, objective check into a gate, you reserve scarce human judgement for the things that need it: architecture, intent, edge cases. The sandbox handles the rest. That is how one team safely runs many AI builds in parallel.
+</HexCard>
+
+## Troubleshooting
+
+<Troubleshooting title="Common scenario-to-test mistakes">
+  <TroubleshootingItem title="Gate-19 says 'missing @e2e' on a scenario I clearly annotated">
+    Almost always a slug mismatch. Re-derive the slug exactly: lowercase the <code>#### Scenario:</code> heading and hyphenate non-alphanumeric runs. Common traps are a trailing period or a colon in the heading, capital letters, or a heading you edited after writing the annotation. Copy the slug from the gate's own output if you can.
+  </TroubleshootingItem>
+  <TroubleshootingItem title="The gate does not see my scenario at all">
+    Check the heading level. It must be <code>#### Scenario:</code> (four hashes). A <code>### Scenario:</code> (three) is silently skipped by the parser. Same trap as the three-hash mistake from Part 2: wrong level means invisible.
+  </TroubleshootingItem>
+  <TroubleshootingItem title="I excluded the scenario but the gate still fails">
+    A bare <code>@e2e exclude</code> needs a reason after it. <code>@e2e exclude</code> on its own counts as non-compliant. Add the why: <code>@e2e exclude pure-backend, covered by Newman</code>.
+  </TroubleshootingItem>
+  <TroubleshootingItem title="I want to test an API response, can I just do it in Playwright?">
+    No. API contracts belong in Newman (<code>tests/integration/*.postman_collection.json</code>), not Playwright. Exclude the scenario with <code>@e2e exclude API contract, covered by Newman</code> and write the assertion in the Newman collection. Playwright is UI-only.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+## Test yourself
+
+<div className="tutorial-quiz">
+
+**1. What are the two backtrace links, and which annotation lives where?**
+
+<Details summary="Hint">
+
+One points from code to the spec. The other points from a test to the spec. Both are comments.
+
+</Details>
+
+<Details summary="Answer">
+
+The **backward link** is `@spec openspec/...`, which lives in the **code** (PHPDoc/JSDoc) and answers "which requirement does this method implement?". Enforced by **gate-16**. The **forward link** is `@e2e <spec>::<slug>`, which lives in the **Playwright test** and answers "which scenario does this test prove?". Enforced by **gate-19**. Together they give 100% backtrace from any line of code or any test to the functional demand behind it.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Turn this heading into the slug the gate expects: `#### Scenario: User adds a Pet to the Wishlist`.**
+
+<Details summary="Hint">
+
+Lowercase everything, replace each run of non-alphanumeric characters with a single hyphen.
+
+</Details>
+
+<Details summary="Answer">
+
+`user-adds-a-pet-to-the-wishlist`.
+
+The full long-form annotation would be `// @e2e openspec/specs/<spec-name>/spec.md#user-adds-a-pet-to-the-wishlist`, or short form `// @e2e <spec-name>::user-adds-a-pet-to-the-wishlist`.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. A scenario describes "the `/api/pets` endpoint returns HTTP 401 without auth". How do you satisfy gate-19?**
+
+<Details summary="Hint">
+
+Is that a thing a user clicks, or an HTTP contract? Which test layer owns it?
+
+</Details>
+
+<Details summary="Answer">
+
+It is an API contract, not a UI interaction, so you exclude it from e2e with a reason and test it in Newman:
+
+```markdown
+#### Scenario: Pets endpoint rejects unauthenticated requests
+
+@e2e exclude API contract, covered by Newman integration test
+```
+
+Then assert the 401 in `tests/integration/*.postman_collection.json`. Writing it as a Playwright test would be the wrong layer. Playwright is UI-only.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. In one sentence, why is spec coding safer than vibe coding?**
+
+<Details summary="Hint">
+
+Think about what the AI cannot do once the walls are up.
+
+</Details>
+
+<Details summary="Answer">
+
+Because the spec (what), the ADRs (how) and the 22 gates (including gate-16 and gate-19) form deterministic walls the AI cannot cross. It cannot ship an unspecified feature, an untested UI scenario, a skipped auth check or a leftover stub, so human review is reserved for genuine judgement instead of catching mechanical mistakes by hand.
+
+</Details>
+
+</div>
+
+<NextSteps title="Where to next" lede="You now have the full OpenSpec loop, from idea to spec to tested code. Two directions from here:">
+  <NextStep
+    title="Part 3 — ADRs: the standing context"
+    href="/academy/openspec-tutorial-3-adrs"
+    description="The 'how' half of the sandbox: company-wide vs per-app architecture decisions, and how to set them up."
+  />
+  <NextStep
+    title="Hydra series — Part 3: Quality gates"
+    href="/academy/hydra-tutorial-3-quality-gates"
+    description="All 22 gates in one place, including gate-16 and gate-19 from the factory's side."
+  />
+  <NextStep
+    title="Spec-driven development — the capstone"
+    href="/academy/spec-driven-development"
+    description="How specs, ADRs, the harness and configuration-over-code come together end to end."
+  />
+</NextSteps>
+
+<ContactCta />

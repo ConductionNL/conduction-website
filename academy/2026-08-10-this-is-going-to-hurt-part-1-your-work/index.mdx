@@ -1,0 +1,355 @@
+---
+slug: blog/this-is-going-to-hurt-part-1-your-work
+title: "This is going to hurt. Part 1: you are the horse"
+contentType: blog
+hero: featured
+heroIcon: horse
+authors: [ruben]
+date: 2026-08-10
+summary: "After every AI talk the same question comes up: how f*cked are we? For your daily work the honest answer is: more than you want to hear, less than you fear. The change runs ten times faster than your gut expects, the stock market has already marked down the software you use every day, and the first thing to go is not your job but the tasks inside it."
+tags: [Opinion, AI, Work, Society]
+durationMinutes: 9
+ai: assisted
+apps: [hermiq, openregister]
+appsCta: inline
+---
+
+import {
+  PullQuote,
+  Outcomes,
+  Outcome,
+  AppCrossLinks,
+} from '@conduction/docusaurus-preset/components';
+import VideoEmbed from '@site/src/components/VideoEmbed';
+
+<style>{`
+.hfaw-chart { --chart-c1:#3560B2; --chart-c2:#F36C21; --chart-c3:#0082C9; margin: 2rem 0; }
+html[data-theme='dark'] .hfaw-chart { --chart-c1:#6E8FD0; --chart-c2:#E8641B; --chart-c3:#2E9AD6; }
+.hfaw-chart svg { width:100%; height:auto; display:block; }
+.hfaw-chart .lbl { font: 600 13px var(--ifm-font-family-base); fill: var(--ifm-font-color-base); }
+.hfaw-chart .lbl2 { font: 500 12px var(--ifm-font-family-base); fill: var(--ifm-color-emphasis-700); }
+.hfaw-chart .grid { stroke: var(--ifm-color-emphasis-200); stroke-width:1; }
+.hfaw-chart .neutral { stroke: var(--ifm-color-emphasis-500); }
+.hfaw-chart figcaption { font-size: 0.8rem; color: var(--ifm-color-emphasis-600); margin-top: 0.5rem; text-align: center; }
+.hfaw-split { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; align-items:start; margin:2rem 0; }
+.hfaw-split .hfaw-chart { margin:0; background: var(--ifm-color-emphasis-100); border-radius: 12px; padding: 18px 20px; }
+.hfaw-split > div > p:first-child { margin-top:0; }
+@media (max-width:820px){ .hfaw-split { grid-template-columns:1fr; gap:1rem; } }
+.hfaw-series { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:1.25rem 0 2.25rem; font-size:0.8rem; line-height:1; }
+.hfaw-series a, .hfaw-series span.cur { display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:999px; text-decoration:none; color:var(--ifm-color-emphasis-700); background:var(--ifm-color-emphasis-100); white-space:nowrap; }
+.hfaw-series a:hover { background:var(--ifm-color-emphasis-200); color:var(--ifm-color-emphasis-900); }
+.hfaw-series span.cur { background:#F36C21; color:#fff; font-weight:700; }
+.hfaw-series b { font-weight:700; opacity:0.55; font-variant-numeric:tabular-nums; }
+.hfaw-series span.cur b { opacity:0.9; }
+.hfaw-well { background: var(--ifm-color-emphasis-100); border-left: 4px solid #F36C21; border-radius: 12px; padding: 20px 24px; margin: 0 0 2rem; font-size: 0.95rem; }
+.hfaw-well .well-title { display:block; font-weight:800; font-size: 1rem; margin-bottom: 8px; }
+.hfaw-well p { margin: 0 0 0.75rem; }
+.hfaw-well p:last-child { margin-bottom: 0; }
+`}</style>
+
+How f\*cked are we? I get that question after every AI talk now, in exactly those words, from developers and directors alike. It deserves a better answer than a shrug or a sales pitch, so I am writing that talk, "This is going to hurt", out as six posts: your work, [the money](/academy/blog/this-is-going-to-hurt-part-2-the-big-three), [what we still own](/academy/blog/this-is-going-to-hurt-part-3-the-end-of-ownership), [security at machine speed](/academy/blog/this-is-going-to-hurt-part-4-security-at-machine-speed), [the singularity](/academy/blog/this-is-going-to-hurt-part-5-the-singularity), and [how we get our grip back](/academy/blog/this-is-going-to-hurt-part-6-actually-it-might-help).
+
+{/* truncate */}
+
+<nav className="hfaw-series" aria-label="Series: This is going to hurt">
+<span className="cur"><b>1</b> your work</span>
+<a href="/academy/blog/this-is-going-to-hurt-part-2-the-big-three"><b>2</b> the big three</a>
+<a href="/academy/blog/this-is-going-to-hurt-part-3-the-end-of-ownership"><b>3</b> ownership</a>
+<a href="/academy/blog/this-is-going-to-hurt-part-4-security-at-machine-speed"><b>4</b> security</a>
+<a href="/academy/blog/this-is-going-to-hurt-part-5-the-singularity"><b>5</b> the singularity</a>
+<a href="/academy/blog/this-is-going-to-hurt-part-6-actually-it-might-help"><b>6</b> actually, it might help</a>
+</nav>
+
+The honest answer starts with three history lessons and ends in the post-transition workplace. Let's start with the lesson that stings the most.
+
+## You are the horse, and the horse peaked in 1915
+
+<div className="hfaw-split">
+<div>
+
+American horses and mules peaked at roughly 26.5 million around 1915, fifteen years after the automobile arrived, and then fell to 3 million by 1960. Cars went from nothing to 8 million by 1920 and 61.7 million by 1960.
+
+The incumbent was at its strongest the moment it was already finished. Nobody at the 1915 horse fair experienced decline; demand had never been higher.
+
+That is what the middle of a substitution feels like from the inside: busier than ever. Your inbox is fuller, your backlog longer, the demand for your reports, designs, translations and code reviews at an all-time high. None of that is evidence the transition missed you. The horse had record employment in 1915.
+
+</div>
+<figure className="hfaw-chart">
+<svg viewBox="0 0 660 300" role="img" aria-label="Line chart: US horses and mules versus registered automobiles in millions, 1900 to 1960; horses peak in 1915 and collapse while automobiles rise">
+  <line x1="60" y1="270" x2="620" y2="270" className="grid" />
+  <line x1="60" y1="210" x2="620" y2="210" className="grid" />
+  <line x1="60" y1="150" x2="620" y2="150" className="grid" />
+  <line x1="60" y1="90" x2="620" y2="90" className="grid" />
+  <text x="52" y="274" textAnchor="end" className="lbl2">0</text>
+  <text x="52" y="214" textAnchor="end" className="lbl2">20</text>
+  <text x="52" y="154" textAnchor="end" className="lbl2">40</text>
+  <text x="52" y="94" textAnchor="end" className="lbl2">60</text>
+  <polyline points="60,205.5 153,198 200,190.5 247,194.4 340,212.7 433,226.5 527,247.2 620,261" fill="none" stroke="var(--chart-c1)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+  <polyline points="60,270 153,268.5 200,263.1 247,245.7 340,201 433,187.5 527,149.1 620,84.9" fill="none" stroke="var(--chart-c2)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+  <circle cx="200" cy="190.5" r="5" fill="var(--chart-c1)"><title>1915: 26.5 million horses and mules, the all-time peak</title></circle>
+  <circle cx="620" cy="84.9" r="5" fill="var(--chart-c2)"><title>1960: 61.7 million automobiles</title></circle>
+  <circle cx="620" cy="261" r="5" fill="var(--chart-c1)"><title>1960: 3 million horses and mules</title></circle>
+  <line x1="200" y1="150" x2="200" y2="182" stroke="var(--ifm-font-color-base)" strokeWidth="1.5" />
+  <text x="200" y="140" textAnchor="middle" className="lbl">We are here</text>
+  <text x="614" y="72" textAnchor="end" className="lbl">Automobiles</text>
+  <text x="614" y="256" textAnchor="end" className="lbl">Horses &amp; mules</text>
+  <text x="60" y="290" textAnchor="middle" className="lbl2">1900</text>
+  <text x="200" y="290" textAnchor="middle" className="lbl2">1915</text>
+  <text x="340" y="290" textAnchor="middle" className="lbl2">1930</text>
+  <text x="433" y="290" textAnchor="middle" className="lbl2">1940</text>
+  <text x="527" y="290" textAnchor="middle" className="lbl2">1950</text>
+  <text x="620" y="290" textAnchor="middle" className="lbl2">1960</text>
+</svg>
+<figcaption>US horses &amp; mules versus registered automobiles, millions. Census Bureau historical series and FHWA vehicle registrations.</figcaption>
+</figure>
+</div>
+
+<PullQuote variant="hero" eyebrow="The uncomfortable observation">
+  The horse population peaked fifteen years after the car arrived. Substitution never looks like substitution from the saddle.
+</PullQuote>
+
+## Lincoln could have telegraphed the last samurai
+
+<div className="hfaw-split">
+<div>
+
+The new world does not wait for the old one to finish. Morse sent the first telegram in 1844. By 1861 Lincoln was running a war by wire from the War Department's telegraph office. And in 1877, while the telegraph was already wiring the planet together, Saigō Takamori died in the Satsuma Rebellion as the last samurai.
+
+Your organisation is that timeline in miniature. Somewhere in your building an intern is shipping working software by directing three AI agents, while two floors up a committee is scheduling the Q3 evaluation of whether to pilot a chatbot. Both are real, both are now, and what separates them is adoption.
+
+</div>
+<figure className="hfaw-chart">
+<svg viewBox="0 0 660 210" role="img" aria-label="Timeline from 1844 to 1877: first telegram, Lincoln runs the war by wire, Lincoln assassinated, the last samurai dies">
+  <line x1="40" y1="105" x2="620" y2="105" stroke="var(--ifm-color-emphasis-300)" strokeWidth="4" strokeLinecap="round" />
+  <circle cx="119" cy="105" r="8" fill="var(--chart-c1)"><title>1844: Morse sends the first telegram</title></circle>
+  <text x="119" y="62" textAnchor="middle" className="lbl">1844</text>
+  <text x="119" y="80" textAnchor="middle" className="lbl2">Morse sends the first telegram</text>
+  <circle cx="343" cy="105" r="8" fill="var(--chart-c1)"><title>1861: Lincoln runs the war by wire</title></circle>
+  <text x="343" y="140" textAnchor="middle" className="lbl">1861</text>
+  <text x="343" y="158" textAnchor="middle" className="lbl2">Lincoln runs the war by wire</text>
+  <circle cx="410" cy="105" r="8" fill="var(--chart-c3)"><title>1865: Lincoln assassinated</title></circle>
+  <text x="410" y="62" textAnchor="middle" className="lbl">1865</text>
+  <text x="410" y="80" textAnchor="middle" className="lbl2">Lincoln assassinated</text>
+  <circle cx="560" cy="105" r="8" fill="var(--chart-c2)"><title>1877: Saigō Takamori dies, the last samurai</title></circle>
+  <text x="560" y="62" textAnchor="middle" className="lbl">1877</text>
+  <text x="560" y="80" textAnchor="middle" className="lbl2">Saigō Takamori dies</text>
+  <text x="330" y="195" textAnchor="middle" className="lbl2" fontStyle="italic">Two worlds we file as centuries apart were barely twelve years apart.</text>
+</svg>
+<figcaption>The telegraph and the last samurai shared the planet for thirty-three years.</figcaption>
+</figure>
+</div>
+
+## Ten times faster than your gut
+
+<div className="hfaw-split">
+<div>
+
+Your intuition about how fast technology arrives was trained on the wrong century. The telephone took seventy years to reach half of American homes. Electricity took forty-three. The web did it in ten, the smartphone in six. ChatGPT reached 800 million weekly users in four.
+
+Sixty-six years separated Kitty Hawk from the Moon: one human lifetime spans the first powered flight and the first footprint up there. That was the fast century. The current one compressed a comparable leap into about a year, the time between two Nextcloud LTS releases. When someone in a meeting says "this will take a generation", they are quoting the telephone's schedule to a technology that runs on the web's.
+
+</div>
+<figure className="hfaw-chart">
+<svg viewBox="0 0 660 250" role="img" aria-label="Bar chart: years from breakthrough to world-changing milestone, from telephone at 70 years to ChatGPT at 4 years">
+  <text x="205" y="23" textAnchor="end" className="lbl2">Telephone → 50% of US homes</text>
+  <rect x="215" y="8" width="380" height="20" rx="4" fill="var(--chart-c1)"><title>70 years</title></rect>
+  <text x="603" y="23" className="lbl">70</text>
+  <text x="205" y="59" textAnchor="end" className="lbl2">First flight → Moon landing</text>
+  <rect x="215" y="44" width="358" height="20" rx="4" fill="var(--chart-c1)"><title>66 years</title></rect>
+  <text x="581" y="59" className="lbl">66</text>
+  <text x="205" y="95" textAnchor="end" className="lbl2">Electricity → 50% of US homes</text>
+  <rect x="215" y="80" width="233" height="20" rx="4" fill="var(--chart-c1)"><title>43 years</title></rect>
+  <text x="456" y="95" className="lbl">43</text>
+  <text x="205" y="131" textAnchor="end" className="lbl2">Web → 50% of US homes</text>
+  <rect x="215" y="116" width="54" height="20" rx="4" fill="var(--chart-c1)"><title>10 years</title></rect>
+  <text x="277" y="131" className="lbl">10</text>
+  <text x="205" y="167" textAnchor="end" className="lbl2">Smartphone → 50% of users</text>
+  <rect x="215" y="152" width="33" height="20" rx="4" fill="var(--chart-c1)"><title>6 years</title></rect>
+  <text x="256" y="167" className="lbl">6</text>
+  <text x="205" y="203" textAnchor="end" className="lbl2">ChatGPT → 800M weekly users</text>
+  <rect x="215" y="188" width="22" height="20" rx="4" fill="var(--chart-c2)"><title>4 years</title></rect>
+  <text x="245" y="203" className="lbl">4</text>
+</svg>
+<figcaption>Years from breakthrough to world-changing milestone. Spans are standard historical approximations assembled for the talk.</figcaption>
+</figure>
+</div>
+
+## The robots already clocked in. The question is when you clock out
+
+<div className="hfaw-split">
+<div>
+
+The abstract version of this is easy to wave away. The concrete version is filming itself. Walk into an Albert Heijn after closing and a [Pudu cleaning robot is scrubbing the floor](https://www.linkedin.com/posts/pudurobotics_retail-puducc1-pudurobotics-activity-7322560227034177537-rkXR) that a person mopped last year. Amazon's warehouses now run [more than a million robots](https://www.youtube.com/watch?v=8-ESlUGAwGU); its Sparrow arm already handles about 65 percent of the distinct items it sells, and its newest machine, Blue Jay, does picking, stowing and consolidating in one unit. Waymo runs paid driverless taxis across several US cities. Your neighbour's lawn is cut by a robot that never asks for a Saturday. None of these is a demo reel from a lab; they are line items in operating budgets, filmed by amused shoppers and posted to TikTok.
+The same pattern the horse showed repeats one layer down, in the physical world right now: the routine and predictable goes first, whether it is a mop, a picking arm or a steering wheel. And the risk is not spread evenly over jobs; study after study finds the same ranking.
+</div>
+<VideoEmbed
+  url="https://www.youtube.com/watch?v=8-ESlUGAwGU"
+  title="Amazon's multi-tasking warehouse robot"
+  caption="A million robots on the floor. Line items in an operating budget, not a demo reel."
+/>
+</div>
+
+
+<div className="hfaw-split">
+<div>
+
+Researchers measure this as task exposure: how much of what you actually do in a day a model can already take over. Your risk rides on your tasks, not on your job title. Those estimates put the desk jobs first, not the trades: administrative support near [46 percent](https://www.demandsage.com/ai-job-replacement-stats/), legal and financial operations not far behind, and up to 65 percent of routine retail tasks in reach. The OECD puts 27 percent of jobs at high automation risk across its member countries, and the Dutch numbers land in the same place: [PwC expects half of Dutch jobs to change significantly under generative AI](https://www.pwc.nl/nl/actueel-en-publicaties/themas/de-toekomst-van-werk/helft-nederlandse-banen-verandert-significant-door-generatieve-ai.html), with [UWV naming administrative and secretarial work as the biggest risk group](https://www.ictmagazine.nl/nieuws/uwv-ai-bedreigt-baankansen-in-creatieve-en-klantcontactsector/). And the load is uneven in a way that should bother us: in high-income countries the most-exposed roles make up nearly three times the share of women's jobs as men's. This is not a rounding error landing on everyone equally. It lands hardest on the routine desk work that a generation was told was the safe choice.
+
+For the desk worker reading this: "physical and routine" was never a synonym for "someone else". The mop went first because it was routine, not because it was physical. The routine parts of your day are next in line for the same reason.
+
+</div>
+<figure className="hfaw-chart">
+<svg viewBox="0 0 400 300" role="img" aria-label="Bar chart: share of tasks highly exposed to AI automation by function, administrative support 46 percent down to IT and software 36 percent">
+  <text x="10" y="30" className="lbl2">Administrative support</text>
+  <rect x="10" y="38" width="322" height="22" rx="4" fill="var(--chart-c2)"><title>46 percent</title></rect>
+  <text x="338" y="54" className="lbl">46%</text>
+  <text x="10" y="86" className="lbl2">Legal services</text>
+  <rect x="10" y="94" width="308" height="22" rx="4" fill="var(--chart-c1)"><title>44 percent</title></rect>
+  <text x="324" y="110" className="lbl">44%</text>
+  <text x="10" y="142" className="lbl2">Financial operations</text>
+  <rect x="10" y="150" width="259" height="22" rx="4" fill="var(--chart-c1)"><title>37 percent</title></rect>
+  <text x="275" y="166" className="lbl">37%</text>
+  <text x="10" y="198" className="lbl2">IT &amp; software</text>
+  <rect x="10" y="206" width="252" height="22" rx="4" fill="var(--chart-c1)"><title>36 percent</title></rect>
+  <text x="268" y="222" className="lbl">36%</text>
+  <text x="10" y="254" className="lbl2">OECD jobs at high risk (all sectors)</text>
+  <rect x="10" y="262" width="189" height="22" rx="4" fill="var(--chart-c3)"><title>27 percent</title></rect>
+  <text x="205" y="278" className="lbl">27%</text>
+</svg>
+<figcaption>Share of tasks highly exposed to automation, by function; directional, not precise. The bottom bar is a different measure: the OECD's share of jobs, not tasks, at high risk.</figcaption>
+</figure>
+</div>
+
+## The market already repriced your toolbox
+
+<div className="hfaw-split">
+<div>
+
+If you want to know what the money thinks AI does to knowledge work, look at what happened to the software you use every day. In the spring of 2026 the market staged what analysts now call the [SaaS-pocalypse](https://247wallst.com/investing/2026/04/09/the-saas-pocalypses-biggest-losers-figma-duolingo-and-monday-com-suffer-brutal-meltdowns/): Figma down 86.5 percent from its high, Duolingo down 83.3, Monday.com down 80.2, against 35 percent for the broad software index.
+
+The businesses themselves were fine, and that is the part that matters for your work. Figma grew revenue 48 percent year over year and beat every estimate; Duolingo posted 52.7 million daily users and real profit. What collapsed was the belief that a tool which charges per human seat survives a world where the work inside the seat gets automated. The market has stopped pricing what these companies earn and started pricing what happens to the tasks, and [some analysts already call the sell-off overdone](https://www.fool.com/investing/2026/05/03/goldman-sachs-says-the-artificial-intelligence-ai/), which tells you how unresolved the question still is. Either way, the repricing of your toolbox has already happened. The repricing of your task list is next.
+
+</div>
+<figure className="hfaw-chart">
+<svg viewBox="0 0 660 320" role="img" aria-label="Line chart: share prices of Figma, Duolingo and Monday.com indexed to their October 2025 peak, collapsing to 15 to 24 percent by August 2026, against the software ETF at 65 percent">
+  <rect x="60" y="8" width="12" height="12" rx="2" fill="var(--chart-c1)" />
+  <text x="78" y="18" className="lbl2">Figma</text>
+  <rect x="150" y="8" width="12" height="12" rx="2" fill="var(--chart-c2)" />
+  <text x="168" y="18" className="lbl2">Duolingo</text>
+  <rect x="260" y="8" width="12" height="12" rx="2" fill="var(--chart-c3)" />
+  <text x="278" y="18" className="lbl2">Monday.com</text>
+  <line x1="380" y1="14" x2="404" y2="14" className="neutral" strokeWidth="2.5" strokeDasharray="6 4" />
+  <text x="412" y="18" className="lbl2">Software ETF (IGV)</text>
+  <line x1="60" y1="270" x2="620" y2="270" className="grid" />
+  <line x1="60" y1="160" x2="620" y2="160" className="grid" />
+  <line x1="60" y1="50" x2="620" y2="50" className="grid" />
+  <text x="52" y="274" textAnchor="end" className="lbl2">0</text>
+  <text x="52" y="164" textAnchor="end" className="lbl2">50</text>
+  <text x="52" y="54" textAnchor="end" className="lbl2">100</text>
+  <polyline points="70,50 180,54.4 290,76.4 400,111.6 510,120.4 620,127" fill="none" className="neutral" strokeWidth="2.5" strokeDasharray="6 4" strokeLinecap="round" />
+  <polyline points="70,50 180,67.6 290,116 400,204 510,221.6 620,226" fill="none" stroke="var(--chart-c2)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+  <polyline points="70,50 180,61 290,98.4 400,193 510,215 620,217.2" fill="none" stroke="var(--chart-c3)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+  <polyline points="70,50 180,76.4 290,149 400,239.2 510,232.6 620,237" fill="none" stroke="var(--chart-c1)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+  <circle cx="620" cy="237" r="5" fill="var(--chart-c1)"><title>Figma: 15, down 85 percent from the October 2025 peak</title></circle>
+  <circle cx="620" cy="226" r="5" fill="var(--chart-c2)"><title>Duolingo: 20</title></circle>
+  <circle cx="620" cy="217.2" r="5" fill="var(--chart-c3)"><title>Monday.com: 24</title></circle>
+  <circle cx="620" cy="127" r="5" fill="var(--ifm-color-emphasis-500)"><title>Software ETF: 65</title></circle>
+  <text x="70" y="290" textAnchor="middle" className="lbl2">Oct '25</text>
+  <text x="180" y="290" textAnchor="middle" className="lbl2">Dec '25</text>
+  <text x="290" y="290" textAnchor="middle" className="lbl2">Feb '26</text>
+  <text x="400" y="290" textAnchor="middle" className="lbl2">Apr '26</text>
+  <text x="510" y="290" textAnchor="middle" className="lbl2">Jun '26</text>
+  <text x="620" y="290" textAnchor="middle" className="lbl2">Aug '26</text>
+</svg>
+<figcaption>Share price indexed to the October 2025 peak = 100. Monthly shape reconstructed from the reported falls.</figcaption>
+</figure>
+</div>
+
+<PullQuote variant="hero" eyebrow="The repricing">
+  Two trillion dollars of software value repriced in one spring, while the companies kept growing. The market was pricing your tasks.
+</PullQuote>
+
+## What adapted work already looks like
+
+<div className="hfaw-split">
+<div>
+
+You do not have to imagine the post-transition workplace; it already runs in production. Google studied [nine million of its own code reviews](https://x.com/milan_milanovic/status/2086702090722877833): the median change is 24 lines, most ship within a day, the median review takes under four hours, and 97 percent of its engineers are satisfied with the process. The machine does the mechanical checking before a human looks, and one rule holds the culture together: a reviewer cannot reject work without pointing at something specific to fix.
+
+The lesson travels far beyond code. The unit of work shrank until one person could hold it in their head, the machine took the mechanical part, and human judgement moved to the centre of a fast loop. Every profession has its version of the 900-line change; the teams that thrive learn to work in 24-line units, the model linting and a person judging.
+
+</div>
+<aside className="hfaw-well">
+<span className="well-title">How much of the code is already machine-written</span>
+
+At Google, [more than a quarter of all new code is generated by AI](https://www.theverge.com/2024/10/29/24282757/google-new-code-generated-ai-q3-earnings-call), then reviewed by engineers. Microsoft puts its own figure at [20 to 30 percent of repository code](https://www.cnbc.com/2025/04/29/satya-nadella-says-as-much-as-30percent-of-microsoft-code-is-written-by-ai.html). And in Y Combinator's winter 2025 batch, [a quarter of the startups shipped codebases that were about 95 percent AI-written](https://techcrunch.com/2025/03/06/a-quarter-of-startups-in-ycs-current-cohort-have-codebases-that-are-almost-entirely-ai-generated/).
+
+The engineers did not leave. They moved up a level, to the judging.
+
+</aside>
+</div>
+
+We run our own shop on that lesson. At Conduction, agents draft the small changes in our Nextcloud apps, a wall of mechanical gates checks the boilerplate, and nothing merges until a human has read the diff and can point at what is wrong. The unit of work shrank. The judgement stayed human.
+
+Even the crankiest workshop shows it. Linus Torvalds calls the coming [Linux 7.2 "huge"](https://x.com/Itsfoss/status/2086770941670109187) for its AI-reviewed fixes, "the new normal", while also fuming that AI bug reports made the kernel security list "almost entirely unmanageable". Both at once: a flood of slop wherever nobody filters, real acceleration wherever judgement stays in the loop. If the most unimpressed reviewer alive is making his peace with it, the committee on your second floor can too.
+
+The org chart is following. On the All-In podcast at Davos, Satya Nadella described [LinkedIn merging four roles into one](https://x.com/karlmehta/status/2086075045462540293), product manager, designer, front-end and back-end, into a single "full-stack builder" whose workflow starts with evals. Whatever your sector's version of those four titles is, that merger is coming, because the borders between those roles were mostly people translating for each other, design into code, requirements into tickets, and the model now does that translating in seconds.
+
+## So how f\*cked are you?
+
+<div className="hfaw-split">
+<div>
+
+Less than you fear, sooner than you think. Horses did not vanish in 1916; the work shifted for forty years, and the cart drivers learned to drive the trucks. The difference between you and the horse is the whole point: the horse could not learn to drive. You can.
+
+What disappears first is not your job but the tasks inside it a model does in seconds, the first draft, the summary, the boilerplate. What appears is the work of directing, checking and owning the result. The people in trouble in 2027 are the ones whose entire role was the first draft.
+
+The entry-level question deserves honesty: Anthropic's Dario Amodei [warned that AI could erase half of entry-level white-collar jobs within five years](https://www.axios.com/2025/05/28/ai-jobs-white-collar-unemployment-anthropic) and has [doubled down since](https://www.forbes.com/sites/kolawolesamueladebayo/2026/02/21/dario-amodei-doubled-down-on-his-ai-jobs-warning-heres-whats-different-now/). Yet [staffing data](https://x.com/Hesamation/status/2086562765959844121) shows Anthropic's own junior cohort is its largest bucket, because what shrinks is entry-level tasks, while juniors stay the cheapest way an organisation grows judgement.
+
+A Flemish investor [summed up the corporate to-do list](https://x.com/nonkelpier/status/2086379479744627151): reassess every skillset, redesign every process, re-evaluate every system, back office first. He is right about the direction. What you actually do about it, as a person and not just as an employer, is where the rest of this series goes, and it ends better than this part.
+
+</div>
+<div>
+
+<Outcomes title="What you can do on Monday">
+  <Outcome>Pick the most routine task in your week, let a model do it, and grade the result yourself. You are training the checker, and the checker is the job that stays.</Outcome>
+  <Outcome>Split your role into tasks and mark which ones are first drafts. That list is your exposure, whatever your job title says.</Outcome>
+  <Outcome>Shrink one piece of work to a 24-line unit: small enough to hold in your head, finished within a day.</Outcome>
+</Outcomes>
+
+</div>
+</div>
+
+*Next, [part two](/academy/blog/this-is-going-to-hurt-part-2-the-big-three): the industry selling you all this carries two trillion dollars of conviction, and the ground beneath it is already moving.*
+
+<div style={{margin: '64px 0'}}>
+  <AppCrossLinks
+    variant="inline"
+    apps={['hermiq', 'openregister']}
+    surface="academy"
+    heading="Continue with these apps"
+  />
+</div>
+
+## Sources
+
+1. **24/7 Wall St**. [The SaaS-pocalypse's biggest losers: Figma, Duolingo and Monday.com](https://247wallst.com/investing/2026/04/09/the-saas-pocalypses-biggest-losers-figma-duolingo-and-monday-com-suffer-brutal-meltdowns/). April 2026 drawdowns from 52-week highs: Figma 86.5 percent, Duolingo 83.3, Monday.com 80.2, against roughly 35 percent for the software index.
+2. **The Motley Fool**. [Goldman Sachs says the AI software sell-off was overdone](https://www.fool.com/investing/2026/05/03/goldman-sachs-says-the-artificial-intelligence-ai/). The counterweight: the strong fundamentals under the crashed prices.
+3. **Tech Insider**. [AI agents just erased $2T in SaaS value](https://tech-insider.org/saas-stock-crash-ai-agents-2-trillion-2026/). The scale of the application-software repricing.
+4. **Milan Milanović (X)**. [97 percent of Google engineers are satisfied with their code review tool](https://x.com/milan_milanovic/status/2086702090722877833). The Critique numbers across nine million reviewed changes: median 24 lines, 70 percent committed within 24 hours, median review under four hours, and the no-rejection-without-a-fix rule. Quotes Google's own book, Software Engineering at Google: "Trust and communication are core to the code review process."
+5. **It's FOSS (X)**. [Torvalds on Linux 7.2 and AI review](https://x.com/Itsfoss/status/2086770941670109187). The "huge" release driven by AI-reviewed fixes, the unmanageable AI bug-report flood on the security list, and "Linux is not one of those anti-AI projects."
+6. **Karl Mehta (X)**. [Nadella on LinkedIn's full-stack builders](https://x.com/karlmehta/status/2086075045462540293). Four roles merged into one, the evals-first workflow, and the Associate Product Builder track, from the All-In podcast at Davos 2026.
+7. **Axios**. [Behind the curtain: a white-collar bloodbath](https://www.axios.com/2025/05/28/ai-jobs-white-collar-unemployment-anthropic). Dario Amodei's May 2025 warning: half of entry-level white-collar jobs within one to five years, and the duty to stop "sugarcoating" what is coming.
+8. **Forbes**. [Amodei doubled down on his AI jobs warning](https://www.forbes.com/sites/kolawolesamueladebayo/2026/02/21/dario-amodei-doubled-down-on-his-ai-jobs-warning-heres-whats-different-now/). The February 2026 restatement.
+9. **Hesamation (X)**. [The staffing pyramid observation](https://x.com/Hesamation/status/2086562765959844121). Amplemarket data: Anthropic's zero-to-two-years cohort as its largest bucket, offered as a fun observation, not a contradiction.
+10. **nonkelpier (X)**. [People, processes, systems](https://x.com/nonkelpier/status/2086379479744627151). The transformation to-do list, the Musk process rule, and back office first.
+11. **Pudu Robotics**. [The Pudu CC1 cleaning an Albert Heijn](https://www.linkedin.com/posts/pudurobotics_retail-puducc1-pudurobotics-activity-7322560227034177537-rkXR). Retail floor-cleaning robots deployed in Dutch supermarkets.
+12. **Amazon**. [Amazon unveils its multi-tasking warehouse robot](https://www.youtube.com/watch?v=8-ESlUGAwGU). The million-robot fleet, Sparrow, and Blue Jay.
+13. **DemandSage**. [AI job-replacement statistics 2026](https://www.demandsage.com/ai-job-replacement-stats/). Task-exposure by function (administrative 46 percent, legal 44, financial 37, IT 36), the OECD 27-percent high-risk figure, and the gendered exposure gap.
+14. **US Census Bureau**. [Historical Statistics of the United States, Colonial Times to 1970](https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html). The horses-and-mules-on-farms series behind the first chart, with automobile registrations from the FHWA historical tables.
+15. **PwC**. [Helft Nederlandse banen verandert significant door generatieve AI](https://www.pwc.nl/nl/actueel-en-publicaties/themas/de-toekomst-van-werk/helft-nederlandse-banen-verandert-significant-door-generatieve-ai.html). The Dutch half-of-jobs estimate.
+16. **UWV, via ICT Magazine**. [AI bedreigt baankansen in creatieve en klantcontactsector](https://www.ictmagazine.nl/nieuws/uwv-ai-bedreigt-baankansen-in-creatieve-en-klantcontactsector/). Administrative and secretarial work as the biggest Dutch risk group.
+17. **The Verge**. [Google says more than a quarter of its new code is generated by AI](https://www.theverge.com/2024/10/29/24282757/google-new-code-generated-ai-q3-earnings-call). Pichai's Q3 2024 earnings-call figure.
+18. **CNBC**. [Nadella: as much as 30 percent of Microsoft code is written by AI](https://www.cnbc.com/2025/04/29/satya-nadella-says-as-much-as-30percent-of-microsoft-code-is-written-by-ai.html). The Microsoft repository figure, April 2025.
+19. **TechCrunch**. [A quarter of YC's current cohort have codebases that are almost entirely AI-generated](https://techcrunch.com/2025/03/06/a-quarter-of-startups-in-ycs-current-cohort-have-codebases-that-are-almost-entirely-ai-generated/). The winter 2025 batch, per Garry Tan.
+20. **Conduction ConNext**. "This is going to hurt" (2026 talk). The slide deck behind this series. The adoption spans, the telegraph timeline and the horse-and-automobile series are standard historical approximations assembled for the talk; the monthly shape of the SaaS drawdown chart is reconstructed from the reported peaks and troughs.

@@ -1,0 +1,259 @@
+---
+slug: workstation-tutorial-1-what-to-install
+title: "Workstation Setup leerlijn — Deel 1: Wat installeer je, en waarom?"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-29
+summary: Een nieuwe Conduction-developer heeft een specifieke combinatie aan tools nodig — Claude Code, Docker, Nextcloud lokaal, Playwright, een handvol globale instellingen. Voor we door installers gaan klikken, legt dit deel uit wat er op het menu staat en welke keuzes je als eerste maakt. Eerste van zes korte modules.
+tags: [Workstation, Setup, Onboarding, WSL2, Docker, Tutorial series]
+apps: []
+durationMinutes: 10
+series: workstation-tutorial
+partNumber: 1
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+Een werkend Conduction-workstation heeft een specifieke combinatie aan tools nodig: Claude Code, Docker, een lokaal draaiende Nextcloud, Playwright, een handvol globale Claude-instellingen en hooks, en een werkende `gh` CLI. Nieuwe developers verliezen vaak hun eerste dag (of twee) aan setup-puzzels die wij intern al opgelost hebben. Deze leerlijn van zes delen brengt je in één avond van een schone laptop naar een werkend workstation. Deel 1 — dit deel — beantwoordt de vraag *wat installeer je, en waarom* voor je door installers gaat klikken.
+
+{/* truncate */}
+
+:::tip Ken je het systeem al? Spring direct naar het cheat-sheet
+Als je al eens een Conduction-workstation hebt opgezet en alleen de commando's in volgorde nodig hebt op een nieuwe machine, dan heeft het **[Quick Setup cheat-sheet](https://github.com/ConductionNL/.github/blob/main/docs/claude/quick-setup.md)** in de `.github`-repo de prerequisites (Windows + WSL, native Linux **of** macOS), de te klonen repo's, de install-commando's in volgorde, en een validatiestap — op één pagina. Deze leerlijn is de *narratieve* walkthrough voor first-timers; het cheat-sheet is de *gecondenseerde* recept voor opnieuw inrichten.
+:::
+
+<Outcomes title="Wat je leert in dit deel">
+  <Outcome>Welke combinatie van OS + tooling Conduction aanraadt, en de afweging achter die keuze.</Outcome>
+  <Outcome>De volledige lijst tools die je in deel 2–5 installeert, en wat elk ding doet.</Outcome>
+  <Outcome>Hoe de zes delen van deze leerlijn aan elkaar haken — wat je hier doet, wat je later doet, en wat je overslaat als je het al hebt.</Outcome>
+  <Outcome>Hoe lang het hele traject realistisch duurt (spoiler: één avond).</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Een laptop waarop je software mag installeren. Een werklaptop met admin-rechten is ideaal.</PrerequisiteItem>
+  <PrerequisiteItem>Zo'n 30 GB vrije schijfruimte — WSL, Docker-images, Nextcloud-volumes en een paar node_modules-mappen stapelen samen snel op.</PrerequisiteItem>
+  <PrerequisiteItem>Een werkende internetverbinding. De meeste installatiestappen downloaden iets.</PrerequisiteItem>
+</Prerequisites>
+
+## De aanbevolen combinatie
+
+De stack van Conduction is met reden opinionated: elke tool hieronder is gekozen omdat de volgende tool in de keten erop leunt. De standaardcombinatie is:
+
+<HexCard title="Windows 11 + WSL2 + Ubuntu 24.04">
+  Je editor en browser draaien op Windows, je terminal en code op Linux. Dit is de combinatie die de canonical workstation-setup-doc end-to-end beschrijft.
+</HexCard>
+
+<HexCard title="Docker Desktop (Windows-kant)">
+  Nextcloud, de database, n8n, optionele AI-services — allemaal containers. Docker Desktop integreert met WSL2, zodat je containers start vanuit Ubuntu.
+</HexCard>
+
+<HexCard title="VS Code + Claude Code-extensie">
+  VS Code op Windows, via de Remote-WSL-extensie verbonden met WSL. Claude Code draait binnen die VS Code als de AI-coding-assistent waar we *mee* bouwen, niet alleen *naast*.
+</HexCard>
+
+<HexCard title="Node 20+, PHP 8.1+, Composer, gh, OpenSpec CLI">
+  De gereedschapskist voor het echte werk. Allemaal binnen WSL geïnstalleerd — nooit aan de Windows-kant, ook al wordt het je gemakkelijk gemaakt.
+</HexCard>
+
+## Waarom deze stack en geen andere?
+
+Een paar veelgehoorde vragen van mensen die eerder iets anders hebben gebruikt:
+
+**"Mag ik macOS gebruiken?"** De canonical workstation-setup-doc beschrijft alleen Windows + WSL2. De concepten (Docker Desktop, VS Code + Claude Code, Node, PHP, Composer, `gh`, OpenSpec, Playwright) vertalen zich naar macOS via Homebrew, maar de installatiecommando's zul je zelf moeten aanpassen.
+
+**"Mag ik plain Linux gebruiken?"** Zelfde verhaal — de canonical doc is Windows-first, dus op native Linux sla je het WSL-stuk over en pas je de installatiecommando's aan je distro aan. De concepten blijven gelijk.
+
+**"Waarom niet native Windows zonder WSL?"** Omdat de helft van de stack Linux-first is: Nextclouds officiële Docker-images, PHP CLI-tooling, bash-hooks en de `gh` CLI gedragen zich allemaal beter op Linux. WSL2 geeft je een snelle Linux-VM die zó goed met Windows integreert dat je meestal vergeet dat het een apart OS is.
+
+**"Kan ik de web-versie van VS Code gebruiken?"** Nee. We leunen op lokale bestandstoegang, de Claude Code-extensie en MCP-servers die filesystem-toegang nodig hebben — die werken geen van allen in de web-build.
+
+**"Mag ik een andere editor — Cursor, JetBrains, Vim?"** In theorie ja. In de praktijk noemt de canonical workstation-setup-doc VS Code + de Claude Code-extensie als de standaard, en de meeste interne docs gaan daarvan uit. Begin met VS Code; switch later als het echt moet.
+
+## Wat je onderweg gaat installeren
+
+Een bird's-eye view van elke tool, gegroepeerd per deel waarin hij geïnstalleerd wordt. Gebruik dit als je boodschappenlijst:
+
+| Tool | Wat het doet | Deel |
+| --- | --- | --- |
+| WSL2 + Ubuntu 24.04 (alleen Windows) | Het Linux-subsysteem waar je daadwerkelijk commando's in draait | Deel 2 |
+| Docker Desktop | Container-runtime — draait Nextcloud, db, n8n | Deel 2 |
+| VS Code | Editor, plus de Claude Code-extensie | Deel 2 |
+| VS Code-extensies (Claude Code, WSL, Docker, Vue, PHP Intelephense, ESLint) | Editor-ondersteuning voor de talen en de AI-assistent | Deel 2 |
+| Node 20+ (via nvm) | Vereist voor OpenSpec CLI en Vue-tooling | Deel 2 |
+| PHP 8.1+ en Composer | Backend-taal van elke Nextcloud-app | Deel 2 |
+| Codeberg SSH-sleutel + `tea` CLI | Primaire git-auth bij Conduction (Codeberg is de nieuwe canonical host) | Deel 2 |
+| GitHub CLI (`gh`) | Secundaire host — nog steeds nodig voor Hydra-cron-scripts en een handvol niet-gemigreerde repo's | Deel 2 |
+| OpenSpec CLI | Spec-first development-tooling | Deel 2 |
+| Playwright Chromium-binary | Browser-automatisering voor de test-skills | Deel 2 |
+| Claude Code (in VS Code) | Dagelijkse AI-pair-programmer | Deel 3 |
+| Globale Claude-instellingen + hooks | Verplicht veiligheidsbeleid op user-niveau | Deel 3 |
+| Conduction MCP-server | Live verbindingen met Conduction-systemen tijdens het werk | Deel 4 |
+| Nextcloud (in Docker) | Lokale kopie van het platform waar we apps voor bouwen | Deel 5 |
+| Optioneel: Ollama + lokale LLM | Lokale AI voor overnight batch-jobs | Hier overgeslagen, zie [local-llm.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/local-llm.md) |
+
+Dat is het complete menu. Je raakt niet elk item dagelijks aan, maar elk item komt minstens één keer terug in normaal Conduction-werk.
+
+## Wat zit er in elk deel
+
+De leerlijn is bewust opgesplitst in korte modules. Vanavond geen tijd? Stop na deel 2 — je machine is dan al een bruikbaar dev-workstation, alleen zonder Claude Code aangesloten. De rest kan wachten tot morgen.
+
+| Deel | Wat je doet | Wanneer je het kunt overslaan |
+| --- | --- | --- |
+| **1 — Wat installeer je, en waarom?** | Het overzicht dat je nu leest. Keuzes voor de installs. | Nooit. Lees het één keer. |
+| **[2 — De basis inrichten](/nl/academy/workstation-tutorial-2-base-setup)** | WSL2, Docker Desktop, VS Code + extensies, Node, PHP, Codeberg-auth (SSH + `tea`), `gh`, OpenSpec, Playwright. | Als je al een werkende WSL + Docker + Node + PHP + git-auth-setup hebt. |
+| **[3 — Claude Code installeren en configureren](/nl/academy/workstation-tutorial-3-claude-code)** | Claude Code installeren, inloggen, de **verplichte** globale instellingen en safety-hooks installeren. | Nooit — de globale instellingen zijn verplicht bij Conduction. |
+| **[4 — De MCP-server aansluiten](/nl/academy/workstation-tutorial-4-mcp-server)** | Je Claude Code aan de Conduction-MCP-server koppelen via `.mcp.json`. | Als je alleen buiten Conduction-projecten gaat werken. |
+| **[5 — Nextcloud lokaal draaien](/nl/academy/workstation-tutorial-5-nextcloud-locally)** | Nextcloud draaien op `localhost:8080` om tegen te testen. | Als je alleen tooling-werk doet dat geen draaiende Nextcloud nodig heeft. |
+| **[6 — Klaar — wat nu?](/nl/academy/workstation-tutorial-6-done-what-next)** | Een korte kaart van de volgende leerlijnen: OpenSpec, Skills, Build an App. | Nooit — lees het om te weten waar je verder kunt. |
+
+## Hoe lang duurt het écht?
+
+Reken op één avond op een schone Windows-machine met een redelijke verbinding. Een flink stuk daarvan zijn downloads en installer-dialogen die op de achtergrond draaien terwijl je iets anders doet; het hands-on-werk is korter.
+
+Waar je rekening mee moet houden:
+
+1. **WSL2-install vraagt om een reboot.** Begin er niet vijf minuten voor een meeting aan. Plan het aan het eind van de dag.
+2. **`composer install` kan falen omdat `vendor/` van root is** na de eerste Docker-run. Deel 2 loopt door de fix heen (staat ook in de canonical workstation-setup-doc).
+3. **De Playwright Chromium-download** is fors. Doe die vanuit een plek met een stabiele verbinding, niet vanuit de trein.
+
+Loop je tegen iets anders aan? De [canonical workstation-setup-doc](https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md) is de bron van waarheid.
+
+## Wat deze leerlijn volgt
+
+Deze leerlijn is een begeleide wandeling door de canonical [`workstation-setup.md`](https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md) in de Conduction `.github`-repo. Die doc beschrijft Windows + WSL2 + Docker Desktop + VS Code. macOS en native Linux komen daar niet aan bod — kies je voor die route, dan pas je dezelfde concepten zelf aan.
+
+## Een opmerking over volgorde
+
+Wees niet in de verleiding om Claude Code als eerste te installeren en "die globale instellingen later wel" te doen. De globale instellingen bevatten een hook die voorkomt dat Claude destructieve shell-commando's draait zonder akkoord — Claude Code draaien zónder die hooks vooraf betekent dat **elk commando dat Claude voorstelt zonder vangnet wordt uitgevoerd**. Deel 3 installeert daarom bewust Claude Code *samen met* de globale instellingen.
+
+## Test jezelf
+
+Vijf korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
+
+<div className="tutorial-quiz">
+
+**1. Welke combinatie van OS + tooling raadt Conduction aan, en wat is de belangrijkste reden?**
+
+<Details summary="Hint">
+
+Drie woorden voor de OS-laag, één voor de editor, één voor de AI-assistent. De reden gaat over de taal achter Nextcloud en het grootste deel van de tooling.
+
+</Details>
+
+<Details summary="Antwoord">
+
+**Windows 11 + WSL2 + Ubuntu 24.04 + Docker Desktop + VS Code + Claude Code-extensie** is de standaard. macOS en native Linux zijn beide ondersteunde alternatieven; Windows zonder WSL is **niet** aanbevolen.
+
+De voornaamste reden: de helft van de stack — Nextcloud-images, PHP-tooling, bash-hooks, de `gh` CLI — draait betrouwbaarder op Linux dan op native Windows. WSL2 geeft je een snelle Linux-omgeving die zó strak met Windows integreert dat je meestal vergeet dat het een apart OS is.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Waarom installeren we niet gewoon Docker Desktop op Windows en slaan we WSL over?**
+
+<Details summary="Hint">
+
+Docker is niet het enige onderdeel dat Linux nodig heeft.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Omdat de helft van het workstation geen Docker is:
+
+- De **`gh` CLI** is op Linux het meest in zijn element.
+- **PHP CLI-tooling** (Composer, phpcs, phpstan) gedraagt zich consistenter op Linux.
+- **Bash-hooks** (de hooks van de globale Claude-instellingen) draaien alleen op Linux/macOS.
+- Veel interne scripts en skills gaan uit van een POSIX-shell.
+
+Je *zou* alleen Docker op Windows kunnen draaien en WSL overslaan, maar dan loop je tegen een muur aan zodra je een bash-hook of `composer install` direct moet uitvoeren.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Welke stap in de leerlijn moet je niet vlak voor een meeting starten, en waarom?**
+
+<Details summary="Hint">
+
+Kijk naar de lijst met tijdvreters. Eén specifieke stap is halverwege onvermijdelijk en kun je niet pauzeren.
+
+</Details>
+
+<Details summary="Antwoord">
+
+De **WSL2-install** in deel 2. Die vraagt halverwege om een Windows-reboot, en Ubuntu maakt zijn first-time setup pas *na* die reboot af. Begin je er vijf minuten voor een meeting aan, dan kom je óf te laat binnen, óf je komt terug bij een half-geconfigureerde Ubuntu-prompt waarvan je de context inmiddels kwijt bent.
+
+De andere trage stap om rekening mee te houden is de **Playwright Chromium-download** (~300 MB) — geen harde onderbreking, maar wel merkbaar traag op een trein- of koffietent-wifi.
+
+Vuistregel: plan de WSL2-stap aan het begin van een ononderbroken blok, het liefst aan het eind van de werkdag, zodat de reboot valt op een moment dat er niets anders om aandacht vraagt.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Welke twee delen van de leerlijn zijn technisch optioneel, en waarom?**
+
+<Details summary="Hint">
+
+De ene is alleen optioneel als je nooit aan een Conduction-project komt; de andere alleen als je nooit een draaiende Nextcloud nodig hebt.
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **Deel 4 — De MCP-server aansluiten** — alleen optioneel als je volledig buiten Conduction-projecten gaat werken. Voor iedereen die daadwerkelijk Conduction-werk doet, is de MCP-server datgene wat Claude Code directe toegang geeft tot onze systemen tijdens het werk.
+- **Deel 5 — Nextcloud lokaal draaien** — alleen optioneel voor puur tooling-werk (docs schrijven, aan de website werken, Hydra-config). Zodra je een Nextcloud-app aanraakt, heb je een lokale Nextcloud nodig om tegen te testen.
+
+Deel 1, 2, 3 en 6 zijn nooit optioneel. Met name deel 3 — de globale Claude safety-hooks — is **verplicht** voor al het Conduction-werk.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. Waarom installeert deel 3 Claude Code *samen met* de globale safety-hooks, in plaats van eerst Claude Code?**
+
+<Details summary="Hint">
+
+Denk aan wat Claude Code kan zodra het geïnstalleerd is, en wat de globale hooks voorkomen.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Omdat Claude Code shell-commando's kan uitvoeren vanaf het moment dat het geïnstalleerd is. De globale instellingen bevatten een hook die destructieve shell-commando's zonder expliciete goedkeuring blokkeert — `rm -rf`, `git push --force`, `git reset --hard`, en zo verder.
+
+Claude Code installeren zonder die hooks betekent dat de allereerste commando's die Claude voorstelt zonder vangnet worden uitgevoerd. Door ze samen te installeren ligt het vangnet er al voor Claude ook maar één keer je shell raakt.
+
+</Details>
+
+</div>
+
+<NextSteps title="Volgende stap" lede="Nu het overzicht klaar is, is het tijd om de échte tooling te installeren.">
+  <NextStep
+    title="Deel 2 — De basis inrichten"
+    href="/nl/academy/workstation-tutorial-2-base-setup"
+    description="WSL2, Docker Desktop, VS Code, Node, PHP, gh, OpenSpec, Playwright. Het deel met de meeste installer-commando's."
+  />
+  <NextStep
+    title="De canonical workstation-setup.md"
+    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md"
+    description="De interne referentie-doc waar deze leerlijn op gebaseerd is. Handig als je later iets wilt opzoeken."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Vastgelopen voor je überhaupt begonnen bent?"
+  body="Stuur ons een mail of pak je teamlead erbij. Setup-problemen zijn makkelijker te debuggen als ze vers zijn; verlies geen avond aan één verkeerde installer."
+  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=Workstation%20setup%20leerlijn%20deel%201" }}
+/>

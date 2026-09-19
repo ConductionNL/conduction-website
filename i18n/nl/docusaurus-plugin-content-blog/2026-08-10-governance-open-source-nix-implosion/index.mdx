@@ -1,0 +1,125 @@
+---
+slug: opinion/feed-the-wolf-that-ships
+title: "In elk publiek opensourceproject leven twee wolven. Voer de wolf die levert."
+contentType: opinion
+heroIcon: wolf
+authors: [ruben]
+date: 2026-08-10
+summary: "In elk opensourceproject van de overheid leven twee wolven. De één schrijft code, de ander schrijft beleid. Allebei doen ze eerlijk hun best, en tóch gaat het steeds mis, van Nixpkgs tot Gaia-X. Waarom is het zo moeilijk om die twee te laten samenwerken?"
+tags: [Opinion, Open source, Governance, Sovereignty, NixOS, Eurostack]
+durationMinutes: 9
+ai: assisted
+appsCta: inline
+---
+
+import {
+  PullQuote,
+  HexCard,
+  AppCrossLinks,
+} from '@conduction/docusaurus-preset/components';
+
+Opensourceprojecten van de overheid gaan zelden dood aan een gebrek aan code. Ze gaan dood aan governance. En wat me daarbij oprecht blijft verbazen: ze gaan dood terwijl iedereen die erbij betrokken is eerlijk zijn best doet.
+
+{/* truncate */}
+
+Ik zit inmiddels twintig jaar in en om de Nederlandse overheids-IT, en ik heb tegenover meer stuurgroepen gezeten dan me lief is. De mensen daarin waren vrijwel zonder uitzondering capabel en goedbedoelend. Toch heb ik in al die jaren nooit een stuurgroep een project sneller zien maken. Langzamer wel. Daar is een stuurgroep ook voor: hij vangt risico op door er proces aan toe te voegen, en soms is dat precies wat een organisatie nodig heeft. In een technische gemeenschap die draait op vrijwilligersenergie onttrekt hij juist datgene waar die gemeenschap op draait. Het doodt de vonk.
+
+Je kent de twee-wolven-meme. In elk opensourceproject van de overheid leven twee wolven. De één schrijft code. De ander schrijft beleid. Geen van beide wolven heeft ongelijk, en toch verwonden ze elkaar.
+
+De codewolf is in hart en nieren een hacker. Hij wil deze week nog leveren, hij improviseert, hij bouwt om twee uur 's nachts dat ene gave ding omdat het idee hem niet losliet. Zijn cultuur is vakmanschap en vertrouwen onder gelijken; zijn belang is persoonlijk: reputatie, en het plezier in het werk zelf. Alles wat je aan open source liefhebt komt voort uit het vuur van deze wolf, en vuur is van nature onvoorspelbaar. Er bestaat geen innovatie zonder risico. Jeff Bezos verwoordde het in zijn [aandeelhoudersbrief van 2015](https://s2.q4cdn.com/299287126/files/doc_financials/annual/2015-Letter-to-Shareholders.PDF) als "failure and invention are inseparable twins", en de cijfers geven hem gelijk: Shikhar Ghosh van Harvard volgde ruim 2.000 met durfkapitaal gefinancierde bedrijven en vond dat [drie op de vier hun investeerders nooit hun geld teruggeven](https://www.hbs.edu/news/Pages/item.aspx?num=487). Zo ziet gezonde innovatie er van buitenaf uit. Meestal mislukking, af en toe magie.
+
+De beleidswolf heeft er niet voor gekozen om saai te zijn, en wil dat ook niet. Zijn belangen zijn simpelweg andere: publiek geld, politieke verantwoording, en een pers met een vaste voorkeur, want nog nooit haalde een wolf het nieuws met een project dat goed ging, terwijl een mislukt project de voorpagina haalt. Dus leert de beleidswolf voorspelbaarheid op prijs te stellen. Hij wil over achttien maanden kunnen uitleggen waarom niets van wat er misging als een verrassing kwam. Binnen zijn eigen muren is dat wijsheid.
+
+Zet ze samen in één kamer en ze doen elkaar pijn zonder het te willen. De improvisatie van de codewolf bezorgt de beleidswolf een hartaanval, want op papier is ongepland briljant niet te onderscheiden van onbeheerst risico. En de voorspelbaarheid van de beleidswolf smoort het vuur van de codewolf, want een cultuur waarin drie van de vier pogingen niet mogen mislukken is een cultuur waarin niets nieuws meer geprobeerd wordt. De hele kunst van publieke open source is deze twee te laten samenwerken, en bijna niemand krijgt dat voor elkaar. De interessante vraag is waarom.
+
+## Tien maanden, twee handtekeningen, één sollicitant
+
+Op 8 augustus kondigde het [Nixpkgs Core Team aan dat het zichzelf ophief](https://discourse.nixos.org/t/the-nixpkgs-core-team-has-disbanded/79413), ruwweg tien maanden na de oprichting. Niemand deed dit half. De twee overgebleven leden schreven dat de rol "not turned out to be the lightweight role compatible with active technical contribution that we had originally hoped" was, en dat opstappen "necessary for our health" was. Twee vrijwilligers die om het project gaven liepen het veld af omdat blijven hen pijn deed. Een openbare oproep voor nieuwe leden leverde precies één sollicitant op.
+
+De andere kant was evenmin een schurk. Het team schreef dat de Steering Committee "lacks a native instinct for the delegation envisioned by the constitution"; [commissielid John Ericson bestreed dat](https://discourse.nixos.org/t/the-scs-role-in-the-disbandment-of-the-nixpkgs-core-team/79433), noemde de micromanagementklacht "objectively false" en wees erop dat het Core Team nauwelijks op de agenda van de commissie had gestaan. Ik geloof ze allebei, en dat is precies het punt. Een project met een geschreven grondwet, gekozen organen en formeel gedelegeerde mandaten bracht twee groepen oprechte, capabele mensen voort die het niet eens kunnen worden over de vraag óf er is ingegrepen. Als governance werkt, bestaat die discussie niet.
+
+De mensen van binnenuit zeggen het onomwonden. Voormalig release manager Jon Ringer: ["FOSS nerds don't make good politicians… Nix governance was set up to fail."](https://x.com/jonringer117/status/2086116977974952114) Een zittend lid van de Steering Committee, [@cafkafk](https://x.com/cafkafk/status/2086532204276924802): "NixOS is such a correct and strong idea that it will survive our absolutely dysfunctional governance. The institution is fine. The people just fail it." Geef het organogram de schuld of geef de mensen de schuld, de conclusie is dezelfde: een governancelaag die betere mensen nodig heeft dan de mensen die er daadwerkelijk zijn, is een mislukt ontwerp. En Nix had de route van meer structuur al geprobeerd. De [crises van 2024](https://lwn.net/Articles/971531/), de open brief ["Save Nix Together"](https://github.com/save-nix-together/open-letter/blob/main/content/posts/letter.md), [het vertrek van Eelco Dolstra](https://discourse.nixos.org/t/leaving-the-foundation-going-back-to-the-roots/46644), de [opstappende moderatoren](https://itsfoss.gitlab.io/post/nixos-moderation-team-resigns-in-protest-of-sc-interference/): elke crisis werd beantwoord met nieuwe structuur, en elke structuur voedde de volgende crisis. Vier dagen voor de opheffing gaf Domen Kožar de hele cyclus zijn toets: ["The test of governance is not whether it gives me what I want. It is whether I would accept the same rules if the people and positions were reversed."](https://domenkozar.com/2026/08/04/nixpkgs-has-a-due-process-problem/)
+
+Het hoopvolle deel: met Nixpkgs zelf gaat het goed. De pakketten worden nog steeds gereviewd, de build farm draait door, en duizenden bijdragers hebben dwars door het hele drama heen geleverd. De codewolf is kerngezond. Hij is alleen opnieuw zijn metgezel kwijt.
+
+## Europa heeft dit experiment eerder gedaan
+
+Battlestar Galactica had er een liturgie voor: all of this has happened before, and all of this will happen again. Europa blijft soevereine infrastructuurvehikels lanceren, en zoals [een waarnemer op X opmerkte terwijl hij ze opsomde](https://x.com/_billiambennett/status/2074156226502435237), van Theseus via Bull en het European Processor Initiative tot Gaia-X, is er "surprisingly little public conversation on the past failure modes".
+
+**Gaia-X** is gebouwd door gelovigen. Voormalig CEO Francesco Bonfiglio [zei het zelf](https://www.politico.eu/article/anatomy-franco-german-tech-misfire-american-dependence/): "I joined Gaia-X because I believed in the original mission. I left Gaia-X because I didn't believe it was going in the original direction." Aangekondigd in 2019 met oprechte Frans-Duitse steun, groeide het door naar meer dan 320 leden, liet het Microsoft, Google, Amazon, Huawei, Alibaba en Palantir toe als volwaardige leden, en binnen zestien maanden [sprak een dozijn insiders tegenover Politico over onderling gevecht en uitgestelde deadlines](https://www.politico.eu/article/chaos-and-infighting-are-killing-europes-grand-cloud-project/). Frank Karlitschek van Nextcloud verwoordde het mild: "There's too many cooks in the kitchen." Bonfiglio omschreef zijn eigen baan uiteindelijk als "the CEO of a consensus-based organization where consensus couldn't be achieved most of the time". [Zeven jaar later heeft Gaia-X geen datacentrum gebouwd en verkoopt het geen clouddienst](https://en.ilsole24ore.com/art/europes-big-bet-on-the-cloud-remains-without-a-data-centre-AInU9xxD); het produceert labels, raamwerken en wat Bert Hubert ["standaarden om over standaarden te praten"](https://berthub.eu/articles/posts/gaia-x-is-an-expensive-distraction/) noemde. Er zijn geen schurken voor nodig. Geef oprechte mensen een consensusstructuur met 320 botsende belangen, en consensus is wat ze jarenlang zullen produceren in plaats van software.
+
+<PullQuote attribution="Francesco Bonfiglio" role="voormalig CEO, Gaia-X">
+  I joined Gaia-X because I believed in the original mission. I left Gaia-X because I didn't believe it was going in the original direction.
+</PullQuote>
+
+Het patroon is niet eens specifiek Europees. **18F** bewees elf jaar lang dat de Amerikaanse overheid open source kan leveren die werkt, [inclusief Login.gov en IRS Direct File, en werd in maart 2025 in één politieke risicoafweging weggevaagd](https://theconversation.com/how-18f-transformed-government-technology-and-why-its-elimination-matters-251333). **The Document Foundation**, oprecht bezorgd over belangenverstrengeling, [zette de ontwikkelaars achter ruwweg tachtig procent van de commits in LibreOffice eruit](https://lwn.net/Articles/1066418/), en [de industrie antwoordde met een fork](https://www.computerworld.com/article/4152487/euro-office-billed-as-europes-sovereign-alternative-to-microsoft-office.html). Overal goede bedoelingen, en elke keer verlaten de spelers het veld.
+
+## Waarom dit ertoe doet
+
+Nix is al een tijd geen hobbycuriositeit meer. Het Franse DINUM [bouwt zijn uittocht uit Windows op NixOS](https://www.thestack.technology/frances-shift-from-us-technology-starts-with-250-dinum-machines-and-nixos/): [Sécurix](https://github.com/cloud-gouv/securix/blob/main/README.md), een geharde configuratie gebouwd volgens de eisen van ANSSI, Bureautix voor kantoorwerk, 250 machines eind 2026 en daarna routekaarten per ministerie. Reproduceerbare builds en volledige controle voor de beheerder zijn precies de eigenschappen waar iedereen in de Eurostack-gesprekken om vraagt zodra het alternatief een ondoorzichtige cloud onder buitenlands recht is.
+
+Er staat dus Europees publiek geld op het punt te gaan leunen op een project dat zijn governance-middenlaag net kwijtraakte. Ik ken de reflex die die zin oproept op een ministerie, want hij komt van een goede plek: dit project heeft hulp nodig, en hulp ziet eruit als de dingen die een ministerie kent. Een stuurgroep, een besluitvormingsproces, een risicoregister, een stakeholdermatrix. Gaia-X had ze allemaal. Het is een oprecht cadeau, en het is het verkeerde cadeau.
+
+## De scheidsrechter op een leeg veld
+
+Waarom kunnen de twee wolven niet gewoon samenwerken? Omdat ze allebei gelijk hebben, thuis. Ik maakte dit argument eerder dit jaar in een intern advies voor een Nederlands publiek samenwerkingsverband dat precies met deze vraag worstelde. Een open gemeenschap werkt bottom-up: de mensen die het werk doen krijgen vertrouwen en ruimte, en dat vertrouwen is nu juist de bron van de kwaliteit die iedereen prijst. Een overheid draait op risicobeheersing, en dat is net zo functioneel: haar handelen ligt onder een publieke en politieke loep, en haar waarde zit in voorspelbaarheid. Scherp gesteld: een overheidsproject mág mislukken, zolang er maar netjes is gerapporteerd en de juiste organen de besluiten hebben genomen. Zo levert een overheid de voorspelbaarheid die we van haar vragen. Twee culturen, allebei valide, elk dragend voor de organisatie die hem draagt.
+
+Wat die twee niet kunnen, is één programma delen, en het is in niemands belang om de ander te vragen te buigen. Probeer het toch en je krijgt het slechtste van twee werelden: experts die rapporteren in plaats van bouwen, en bestuurders die verantwoordelijk zijn voor een proces dat ze niet werkelijk kunnen sturen. Eén geïnterviewde in dat advies vatte het in één zin: als je de cultuur niet hebt, kun je niet meedoen. Wie uit een verantwoordingscultuur komt heeft de wil en de kennis, en mist toch de aannames eronder. Zo iemand gaat op zoek naar een stuurgroep waar een pull request het antwoord is. Geld dicht het gat evenmin; ik heb een overheidsherbouw met drie keer het budget van de gemeenschap alsnog zien zinken, omdat hij vastgelast zat aan de verkeerde context.
+
+Er is een verontrustende historische spiegel voor dit alles. In 1944 schreef de OSS, de voorloper van de CIA, de [Simple Sabotage Field Manual](https://www.gutenberg.org/ebooks/26184): instructies voor gewone burgers om vijandelijke organisaties stilletjes van binnenuit te slopen. De recepten: praat zo vaak en zo lang mogelijk. Verwijs alles door naar commissies, nooit minder dan vijf personen. Steggel over precieze formuleringen. Kom terug op zaken die in de vorige vergadering al zijn besloten. Vermenigvuldig de procedures en goedkeuringen bij elke opdracht. In 2008 vrijgegeven leest het, [zoals Corporate Rebels opmerkte](https://www.corporate-rebels.com/blog/cia-field-manual), als de agenda van een doorsnee organisatie, en het wijst op de claim die onder deze hele post schuilgaat: **slechte governance is niet te onderscheiden van sabotage**. Niet omdat iemand kwaad wil. Het genie van het handboek was dat sabotage er precies uit moest zien als plichtsgetrouw management, en de spiegel werkt ook andersom: plichtsgetrouw management, toegepast op de verkeerde cultuur, doet het werk van de saboteur gratis. En dat niemand kwaad wil, maakt het zoveel moeilijker te zien. Een echte saboteur kun je betrappen; er is opzet, een spoor, ergens een verspreking. Als hetzelfde gedrag komt van oprechte mensen die verdedigbare dingen doen, valt er niets te ontmaskeren en heeft niemand een grens overschreden. Alleen een project dat elk kwartaal een beetje trager wordt, en een zaal vol mensen die allemaal, aantoonbaar, hun werk deden.
+
+Governance zonder spelers is een scheidsrechter op een leeg veld. En het trieste aan dat beeld is dat iedereen in het stadion dezelfde wedstrijd wil: de bestuurders die het VAR-protocol verfijnen willen een eerlijk spel, de scheidsrechter staat op zijn plek, het publiek juicht nog steeds. Maar de spelers zijn weggeglipt, omdat de lol er ergens tussen de derde commissie en de vierde uitgestelde deadline uit ging. Elk verhaal hierboven eindigt bij dat beeld, en niemand in die verhalen heeft het gewild.
+
+<PullQuote attribution="Ruben van der Linde" variant="hero" eyebrow="De ongemakkelijke observatie">
+  Nog nooit ging een project sneller dankzij een stuurgroep. Vertragen is waar stuurgroepen voor zijn.
+</PullQuote>
+
+## Hoe beide wolven eten
+
+Het bemoedigende nieuws is dat het antwoord van niemand een cultuurverandering vraagt. Het vraagt om de culturen te koppelen in plaats van ze te versmelten.
+
+Financier de mensen die het werk al doen, zonder er zeggenschap aan te hangen, want een geldstroom met een bestuurszetel eraan creëert precies de dubbele machtsstructuur die Nix zojuist zag mislukken. Stel aanbestedingen open voor de amateurclubs, de gemeenschapsprojecten en kleine leveranciers die daadwerkelijk spelers op het veld hebben, in plaats van ze te schrijven voor clubs met een gelicentieerd stadion en een juridische afdeling. Accepteer dat rough consensus onder actieve bijdragers een legitieme manier is om dingen te besluiten, ook al zal geen accountant er ooit van houden. En bouw je eigen vermogen om de software af te nemen, te verpakken en aan te passen, want dát is het deel dat je in je eigen cultuur kunt draaien, met je eigen verantwoording. Sécurix is het levende bewijs: Frankrijk vroeg niet om een zetel in enig Nix-bestuur, het nam het project zoals het is en bouwde zijn harding erbovenop. De gemeenschap houdt haar vertrouwen. De overheid houdt haar voorspelbaarheid. Beide wolven eten.
+
+Iemand op X [perste dezelfde les in vier woorden](https://x.com/meghanatweets/status/2066593382164468020): "Don't crown. Layer." Elke mislukking hierboven begon met een kroning en een persbericht. Elk stil succes, van Sécurix tot [de Nextcloud-uitrol van SURF voor 100.000 gebruikers](/academy/opinion/government-open-source-needs-an-engine), begon met een laag.
+
+De meeste beleidsstukken eindigen hun leven in een la, en dat is prima; laden zijn waar beleid met pensioen gaat. Wat daar niet mee in mag, is onze opensourcetoekomst: de maintainers die opbrandden terwijl ze op een mandaat wachtten, de projecten die hun beste jaren in commissie doorbrachten. De mensen die nog om het technische werk geven zijn het enige kapitaal dat geen enkele structuur kan produceren. Alles wat de moeite waard is in opensourcegovernance begint met hen beschermen.
+
+Financier het werk. Vertrouw de mensen die het doen. Houd de spelers op het veld.
+
+<div style={{margin: '64px 0'}}>
+  <AppCrossLinks
+    variant="inline"
+    apps={['opencatalogi', 'openbuild']}
+    surface="academy"
+    heading="Ga verder met deze apps"
+  />
+</div>
+
+## Bronnen
+
+1. **Nixpkgs Core Team**. [The Nixpkgs Core Team has disbanded](https://discourse.nixos.org/t/the-nixpkgs-core-team-has-disbanded/79413). De aankondiging van 8 augustus 2026 op de NixOS Discourse, ondertekend door de twee overgebleven leden, met de werkdruk, de burn-out en de delegatieklachten richting de Steering Committee.
+2. **NixOS Discourse**. [The SC's role in the disbandment of the Nixpkgs Core Team](https://discourse.nixos.org/t/the-scs-role-in-the-disbandment-of-the-nixpkgs-core-team/79433). De vervolgdraad waarin Steering Committee-lid John Ericson de micromanagementklacht "objectively false" noemt.
+3. **Linuxiac**. [Nixpkgs Core Team dissolves, leaving governance duties without a direct owner](https://linuxiac.com/nixpkgs-core-team-dissolves-leaving-governance-duties-without-a-direct-owner/). Persverslag van de opheffing, inclusief het mislukte wervingstraject en de terugval op de Steering Committee.
+4. **Domen Kožar**. [Nixpkgs has a due process problem](https://domenkozar.com/2026/08/04/nixpkgs-has-a-due-process-problem/). Gepubliceerd vier dagen voor de opheffing; betoogt dat macht in Nixpkgs werkt zonder geschreven normen, termijnen of beroepsmogelijkheid.
+5. **LWN**. [NixOS governance in crisis](https://lwn.net/Articles/971531/). De crisis van 2024 in overzicht: het conflict over de Anduril-sponsoring, de open brief en de vertrekken die de huidige formele structuren opleverden.
+6. **Save Nix Together**. [An open letter to the NixOS Foundation](https://github.com/save-nix-together/open-letter/blob/main/content/posts/letter.md). De gemeenschapsbrief uit 2024 die governancehervorming eist.
+7. **Eelco Dolstra**. [Leaving the Foundation, going back to the roots](https://discourse.nixos.org/t/leaving-the-foundation-going-back-to-the-roots/46644). De oorspronkelijke auteur van Nix stapt in 2024 uit het bestuur van de Foundation.
+8. **It's FOSS**. [NixOS moderation team resigns in protest of SC interference](https://itsfoss.gitlab.io/post/nixos-moderation-team-resigns-in-protest-of-sc-interference/). Een van de golven van opstappende moderatoren, met dezelfde inmengingsklacht die later in de aankondiging van het Core Team terugkwam.
+9. **The Stack**. [France's shift from US technology starts with 250 DINUM machines and NixOS](https://www.thestack.technology/frances-shift-from-us-technology-starts-with-250-dinum-machines-and-nixos/). De DINUM-migratie: Sécurix, Bureautix, 250 machines eind 2026 en routekaarten per ministerie.
+10. **cloud-gouv**. [Sécurix](https://github.com/cloud-gouv/securix/blob/main/README.md). De publieke repository van de geharde NixOS-configuratie van Frankrijk voor systeembeheerders, gebouwd volgens de eisen van ANSSI.
+11. **NixOS Discourse**. [DINUM (France) is switching to NixOS](https://discourse.nixos.org/t/dinum-france-is-switching-to-nixos/77558). De discussie binnen de Nix-gemeenschap zelf over de Franse adoptie.
+12. **Il Sole 24 Ore**. [Europe's big bet on the cloud remains without a data centre](https://en.ilsole24ore.com/art/europes-big-bet-on-the-cloud-remains-without-a-data-centre-AInU9xxD). Zeven jaar Gaia-X: meer dan 300 leden, hyperscalers toegelaten, geen infrastructuur gebouwd.
+13. **Bert Hubert**. [Gaia-X is an expensive distraction](https://berthub.eu/articles/posts/gaia-x-is-an-expensive-distraction/). De technische ontleding: standaarden om over standaarden te praten, twee stappen verwijderd van bruikbaar zijn.
+14. **Politico**. [Chaos and infighting are killing Europe's grand cloud project](https://www.politico.eu/article/chaos-and-infighting-are-killing-europes-grand-cloud-project/). Oktober 2021, zestien maanden na de onthulling: een dozijn insiders over onderling gevecht, de machtsstrijd in het bestuur over overheidscommunicatie, en een functionaris die het project "a mess" noemt.
+15. **Politico**. [Anatomy of a Franco-German tech misfire](https://www.politico.eu/article/anatomy-franco-german-tech-misfire-american-dependence/). De post-mortem van november 2025: Bonfiglio over geloven in de missie, en over het zijn van CEO van een consensusorganisatie zonder consensus.
+16. **The Conversation**. [How 18F transformed government technology, and why its elimination matters](https://theconversation.com/how-18f-transformed-government-technology-and-why-its-elimination-matters-251333). Wat 18F in elf jaar bouwde en wat er op 1 maart 2025 verloren ging.
+17. **LWN**. [Digging into drama at The Document Foundation](https://lwn.net/Articles/1066418/). De uitzetting in juni 2025 van de ontwikkelaars van Collabora en allotropia achter ruwweg tachtig procent van de commits in LibreOffice.
+18. **Computerworld**. [Euro-Office billed as Europe's sovereign alternative to Microsoft Office](https://www.computerworld.com/article/4152487/euro-office-billed-as-europes-sovereign-alternative-to-microsoft-office.html). De lancering in maart 2026 van Euro-Office door Nextcloud, IONOS, Proton en anderen: het antwoord van de industrie op de governancecrisis rond de kantoorsuite.
+19. **Jeff Bezos**. [2015 Letter to Shareholders](https://s2.q4cdn.com/299287126/files/doc_financials/annual/2015-Letter-to-Shareholders.PDF). "Failure and invention are inseparable twins. To invent you have to experiment, and if you know in advance that it's going to work, it's not an experiment."
+20. **Harvard Business School**. [The venture capital secret: 3 out of 4 start-ups fail](https://www.hbs.edu/news/Pages/item.aspx?num=487). Het onderzoek van Shikhar Ghosh onder ruim 2.000 met durfkapitaal gefinancierde bedrijven: ruwweg 75 procent geeft investeerders nooit hun geld terug.
+21. **Office of Strategic Services**. [Simple Sabotage Field Manual (1944), volledige tekst](https://www.gutenberg.org/ebooks/26184). Het vrijgegeven origineel bij Project Gutenberg: verwijs alles door naar commissies van nooit minder dan vijf, steggel over precieze formuleringen, kom terug op reeds genomen besluiten, vermenigvuldig procedures en goedkeuringen.
+22. **Corporate Rebels**. [The CIA field manual](https://www.corporate-rebels.com/blog/cia-field-manual). Over hoe de sabotage-instructies uit 1944 lezen als een beschrijving van doodgewoon modern management.
+23. **Jon Ringer (X)**. ["Nix governance was set up to fail"](https://x.com/jonringer117/status/2086116977974952114). De reactie van de voormalige NixOS release manager op de opheffing van het Core Team.
+24. **@cafkafk (X)**. ["It will survive our absolutely dysfunctional governance"](https://x.com/cafkafk/status/2086532204276924802). Een zittend lid van de Steering Committee over de eigen instelling: de instelling is in orde, de mensen laten haar in de steek.
+25. **@meghanatweets (X)**. ["Don't crown. Layer."](https://x.com/meghanatweets/status/2066593382164468020). Project Independence, Gaia-X, Aleph Alpha: drie landen, drie decennia, drie faalmodi, allemaal begonnen met het persbericht.
+26. **@\_billiambennett (X)**. [Europese soevereine infrastructuurprojecten](https://x.com/_billiambennett/status/2074156226502435237). Somt de vehikels op van Theseus en Bull tot Gaia-X en het European Processor Initiative, en merkt op hoe weinig publiek gesprek er bestaat over hun faalmodi.
