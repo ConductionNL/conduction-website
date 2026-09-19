@@ -37,6 +37,20 @@ export const ArcadeIcon = (
 .arcade-prose ul, .arcade-prose ol { margin: 0 0 1.25rem; padding-left: 1.25rem; }
 .arcade-prose li { margin: 0 0 0.4rem; line-height: 1.55; }
 .arcade-prose li:last-child { margin-bottom: 0; }
+/* De speltabel heeft vier kolommen tekst, meer dan de leeskolom op een
+   telefoon aankan. Laat hem zijwaarts scrollen in zijn eigen wrapper in
+   plaats van de duwtjes tot losse woorden te persen. */
+.arcade-prose .arcade-table { overflow-x: auto; margin: 0 0 1.5rem; }
+.arcade-prose .arcade-table table {
+  display: table;
+  width: 100%;
+  min-width: 660px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.arcade-prose .arcade-table th { text-align: left; vertical-align: bottom; white-space: nowrap; }
+.arcade-prose .arcade-table td { vertical-align: top; }
+.arcade-prose .arcade-table td:first-child { white-space: nowrap; }
 .arcade-prose .hashtag {
   font-family: var(--conduction-typography-font-family-code);
   color: var(--c-blue-cobalt);
@@ -50,24 +64,30 @@ export const ArcadeIcon = (
 
 Elk spel zit in iets dat op deze site al werk doet. De cookieconsole is een echte console. De gracht in de footer is de footer.
 
-Geen van alle roept dat het er is, en er zijn er geen twee die op dezelfde manier opengaan. Dat is het spel rond de spellen, dus hieronder staat op welke pagina elk spel zit en een duwtje, geen handleiding.
+Geen van alle roept dat het er is, en er zijn er geen twee die op dezelfde manier opengaan. Dat is het spel rond de spellen, dus de laatste kolom is een duwtje en geen handleiding.
 
-- **Twaalf apps**, in de hexregen op de homepage
-- **Boten kelderen**, in de gracht onderaan de pagina
-- **Hex-vaders**, in de cookieconsole. Vraag hem wat hij kan
-- **Logomemory**, in de klantenmarquee
-- **Kadefietser**, op de kade in de footer
-- **Stempelrace**, op de Decidiq-pagina. Klop op het logo. Drie keer, kort achter elkaar
-- **Deadlineverdediger**, op de Dossiq-pagina. Wie in de jaren tachtig een console had, kent deze al
-- **Bouwtekeningrace**, op de Buildiq-pagina. Typ wat de app met je doet
-- **Slot openen**, op de Keepiq-pagina. Een slot openen is een kwestie van geduld: druk, en blijf drukken
-- **Zwart lakken**, op de Filinq-pagina. Selecteer een zin, alsof je de stift erin gaat zetten
-- **Kleuren op token**, op de Thematiq-pagina. Typ wat je met een muur doet (in het Engels)
-- **Recordrun**, op de Connext-pagina. Hij biedt je een pauze aan. Neem hem
-- **Monsterloop**, in het La Frankendesk-artikel. Typ wat Victor roept als het lukt (in het Engels)
-- **Dobbelduel**, op de Larpinq-pagina. Typ de worp die elke speler wil
-- **Bank matchen**, op de Shillinq-pagina. Klop op het logo, en blijf kloppen
-- **Koppeling leggen**, op de Integriq-pagina. Ook die biedt je een pauze aan
+<div className="arcade-table">
+
+| Spel | Wat je speelt | Waar het zit | Hoe je het vindt |
+| --- | --- | --- | --- |
+| **Twaalf apps** | Verzamel alle twaalf apps uit de hexregen binnen een minuut. Klik er een aan die je al hebt en hij gaat er weer af. | [Homepage](/nl/) | Klik op een vallende hex |
+| **Boten kelderen** | Alles wat op de gracht vaart, terugtellend vanaf honderd, tot het slagschip komt opdagen. | Footer, op elke pagina | Klik op een boot |
+| **Hex-vaders** | De shooter, in een terminal die echt de cookieconsole is. | Cookieconsole | Vraag hem wat hij kan |
+| **Logomemory** | De klantlogo's stoppen met scrollen en worden vierentwintig memorytegels. | [Homepage](/nl/) | Klik op een logo |
+| **Kadefietser** | Twee banen op de kade, en verkeer dat oploopt van fietsen tot trams. | Footer, op elke pagina | Klik op een fiets op de kade |
+| **Stempelrace** | Neem aan wat quorum heeft, houd tegen wat dat niet heeft. Drie missers en de voorzitter neemt de pen terug. | [Decidiq](/nl/apps/decidiq) | Klop op het logo. Drie keer, kort achter elkaar |
+| **Deadlineverdediger** | Elke zaak komt binnen met de klok al lopend. Stuur hem naar de juiste stap voor de tijd op is. | [Dossiq](/nl/apps/dossiq) | Wie in de jaren tachtig een console had, kent deze al |
+| **Bouwtekeningrace** | Pak de onderdelen die elke app nodig heeft van de plank, en laat liggen wat bij een andere app hoort. | [Buildiq](/nl/apps/buildiq) | Typ wat de app met je doet |
+| **Recordrun** | Eén record onderweg door de stack. Stuur om de drie dingen heen die er altijd een tegenhouden. | [Connext](/nl/connext) | Hij biedt je een pauze aan. Neem hem |
+| **Slot openen** | Zet de pick, draai de cilinder, voel hoever hij meegeeft. Drie picks, en elk slot zit strakker dan het vorige. | [Keepiq](/nl/apps/keepiq) | Een slot openen is een kwestie van geduld: druk, en blijf drukken |
+| **Kleuren op token** | Kleuren op nummer, alleen zijn de nummers tokens en bepaalt het thema welke kleur dat is. | [Thematiq](/nl/apps/thematiq) | Typ wat je met een muur doet (in het Engels) |
+| **Zwart lakken** | Lak weg wat niet naar buiten mag en verstuur het. Laat je er één ding in staan, dan is het een datalek. | [Filinq](/nl/apps/filinq) | Selecteer een zin, alsof je de stift erin gaat zetten |
+| **Monsterloop** | Spring over de forks, duik onder de patchsets door, en raap de onderdelen op waar het uit is genaaid. | [La Frankendesk](/academy/blog/la-frankendesk) | Typ wat Victor roept als het lukt (in het Engels) |
+| **Dobbelduel** | Sla toe met wat je gooide, of houd de goede stenen vast en gooi de rest door. Gooi je slechter, dan bijt het. | [Larpinq](/nl/apps/larpinq) | Typ de worp die elke speler wil |
+| **Bank matchen** | Elke betaling hoort bij een factuur, behalve die ene die bij niemand hoort. Match ze voor de maand sluit. | [Shillinq](/nl/apps/shillinq) | Klop op het logo, en blijf kloppen |
+| **Koppeling leggen** | Draai de koppelstukken tot de lijn doorloopt. Draai je er een, dan bewegen beide openingen mee, en dat is het probleem. | [Integriq](/nl/apps/integriq) | Ook die biedt je een pauze aan |
+
+</div>
 
 Ze vinden is het halve werk. De game-overkaart onthoudt welke je hebt gevonden, en de laatste regel zegt hoeveel er nog liggen.
 
