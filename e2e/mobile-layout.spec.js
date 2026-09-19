@@ -37,15 +37,29 @@ import {test, expect} from '@playwright/test';
  */
 async function footerStylesApplied(page) {
   await page.waitForFunction(() => {
+    /* Key the wait on the FOOTER, not on the stylesheet link. Keying it
+       on the link meant "link not found yet" was indistinguishable from
+       "this page has no canal footer", so the wait returned true while
+       the stylesheet was still on its way and the test measured the
+       unstyled footer anyway. That is the hole this closes. */
+    const footer = document.querySelector('.canal-footer');
+    if (!footer) return true; // genuinely no canal footer on this page
     const link = [...document.querySelectorAll('link[rel="stylesheet"]')].find((l) =>
       l.href.includes('canal-footer'),
     );
-    if (!link) return true; // page does not use the canal footer
+    if (!link) return false; // footer is here, its stylesheet is not, keep waiting
     try {
-      return !!link.sheet && link.sheet.cssRules.length > 0;
+      if (!link.sheet || link.sheet.cssRules.length === 0) return false;
     } catch {
-      return !!link.sheet;
+      if (!link.sheet) return false;
     }
+    /* The rules are parsed; confirm they have actually taken effect.
+       `.game-over` is `display: none` only once this stylesheet applies,
+       so while it is still visible the footer is unstyled, which is
+       exactly the state that produced twelve phantom findings. */
+    const gameOver = footer.querySelector('.game-over');
+    if (gameOver && getComputedStyle(gameOver).display !== 'none') return false;
+    return true;
   });
 }
 
