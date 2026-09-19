@@ -26,7 +26,7 @@ export const app = getApp('opencatalogi');
 />
 
 <Section spacing="default">
-  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+  <div className="cn-split-main-aside">
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="Wat het doet"
@@ -143,15 +143,15 @@ export const app = getApp('opencatalogi');
       title: 'Catalogi in één oogopslag',
       desc: 'Elke catalogus die je draait, hoeveel er in elk is gepubliceerd, en hoeveel nog op een besluit wacht.',
       panel: (
-        <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6}}>
+        <div className="cn-stack-mobile" style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6}}>
           {[
             {n: '3.4k', l: 'gepubliceerd', tone: 'var(--c-cobalt-900)'},
             {n: '12',  l: 'catalogi', tone: 'var(--c-mint-500)'},
             {n: '847', l: 'wachtend', tone: 'var(--c-orange-knvb)'},
           ].map((kpi, i) => (
-            <div key={i} style={{padding: '8px 6px', background: 'var(--c-cobalt-50)', borderRadius: 'var(--radius-sm)', display: 'flex', flexDirection: 'column', gap: 2}}>
+            <div key={i} style={{padding: '8px 6px', background: 'var(--conduction-color-surface-subtle)', borderRadius: 'var(--radius-sm)', display: 'flex', flexDirection: 'column', gap: 2}}>
               <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 18, fontWeight: 700, color: kpi.tone}}>{kpi.n}</div>
-              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>{kpi.l}</div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)'}}>{kpi.l}</div>
             </div>
           ))}
         </div>
@@ -169,8 +169,8 @@ export const app = getApp('opencatalogi');
           ].map((row, i) => (
             <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
               <span style={{width: 8, height: 9, clipPath: 'var(--hex-pointy-top)', background: row.tone, flexShrink: 0}}></span>
-              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'var(--c-cobalt-700)', flex: 1}}>{row.label}</div>
-              <div style={{height: 3, width: 26, background: 'var(--c-cobalt-100)', borderRadius: 1}}></div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, color: 'var(--conduction-color-text-body)', flex: 1}}>{row.label}</div>
+              <div style={{height: 3, width: 26, background: 'var(--conduction-color-surface-sunken)', borderRadius: 1}}></div>
             </div>
           ))}
         </div>

@@ -54,6 +54,17 @@ const PAGES = [
      than a sample can be extended by hand: the durable fix is a lint
      rule rejecting raw palette tokens for text and surface roles. */
   ['contact (CRM form)', '/contact/'],
+
+  /* The Dutch locale. It is a separate set of source files, it is live,
+     and it is NOT in sitemap.xml, so every sweep that used the sitemap as
+     "all pages" measured only English. /nl/apps/ was carrying 22
+     unreachable controls and /nl/terms/ 88 invisible elements the whole
+     time the English suite was green. Four pages is a sample, not
+     coverage, but it is enough to fail if the locale is forgotten again. */
+  ['nl home', '/nl/'],
+  ['nl terms (worst offender)', '/nl/terms/'],
+  ['nl quality', '/nl/quality/'],
+  ['nl support', '/nl/support/'],
 ];
 
 /**
@@ -144,7 +155,7 @@ async function lowContrastText(page, theme, threshold) {
         /* Docusaurus's own skip link is parked off-screen until focused,
            and its colours come from Infima rather than from us. It is not
            something a visitor ever sees at this contrast. */
-        if (text === 'Skip to main content') continue;
+        if (text === 'Skip to main content' || text === 'Ga naar hoofdinhoud') continue;
         /* Leaves only, so a wrapper is not blamed for its children. */
         if (el.querySelector('p,h1,h2,h3,h4,li,div')) continue;
         const style = getComputedStyle(el);
