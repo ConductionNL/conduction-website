@@ -37,6 +37,16 @@ const PAGES = [
   ['quality', '/quality/'],
   ['terms (SLA tables)', '/terms/'],
   ['ai', '/ai/'],
+  /* Added after a full 163-page sweep of the deployed site found 12
+     invisible elements on exactly these two, both outside the original
+     sample. /connext/ renders the platform diagram, a custom element
+     whose CSS lives in static/lib and was missed by a sweep scoped to
+     src/components and src/theme. /privacy/ renders the cookie panel,
+     whose colours are inline in a .jsx rather than an .mdx. A sample
+     that covers only the layouts you already thought about will keep
+     agreeing with you. */
+  ['connext (platform diagram)', '/connext/'],
+  ['privacy (cookie panel)', '/privacy/'],
 ];
 
 /**
