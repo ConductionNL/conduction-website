@@ -56,7 +56,21 @@ export default defineConfig({
   },
 
   projects: [
-    {name: 'chromium', use: {...devices['Desktop Chrome']}},
+    /* The desktop suite skips the mobile spec: its assertions are about
+       a 390px viewport and would be meaningless at 1280px. */
+    {
+      name: 'chromium',
+      use: {...devices['Desktop Chrome']},
+      testIgnore: /mobile-layout\.spec\.js/,
+    },
+    /* Mobile layout regressions. iPhone 13 is 390x844, the viewport the
+       September 2026 audit measured, so the numbers in that spec and
+       the ones in the report refer to the same thing. */
+    {
+      name: 'mobile',
+      use: {...devices['iPhone 13']},
+      testMatch: /mobile-layout\.spec\.js/,
+    },
   ],
 
   ...(REMOTE ? {} : {
