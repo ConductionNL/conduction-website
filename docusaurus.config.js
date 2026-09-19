@@ -259,6 +259,40 @@ module.exports = createConfig({
 
   /* OpenCatalogi content plugin slot, wired in via env once it exists. */
   plugins: [
+    /* First-party traffic measurement, from our own Portaliq portal. No
+       Google, no vendor script, and nothing sent to anyone else: the
+       collector is a Portaliq endpoint and the client is served by the same
+       portal that receives the events.
+
+       `content: false` is the point of the option. This site writes its own
+       57 pages and takes NOTHING from the portal but the measuring, and
+       without that flag the plugin fetches the whole content contract at
+       build time. An unreachable content API deliberately fails the build,
+       so a portal being down would have stopped this site publishing pages
+       it does not even get from that portal.
+
+       WIRED ONLY WHEN THE ORIGIN IS SET, deliberately. Emitting the script
+       tag unconditionally would put a 404 on every page of the site until
+       Portaliq is installed and a portal exists, and a console error on
+       every page load is not a neutral default. Set
+       PORTALIQ_TRAFFIC_ORIGIN and measurement starts on the next deploy;
+       leave it unset and this is exactly as it was.
+
+       The portal still holds its own switch: `traffic.enabled` is false
+       until an operator turns it on, so this variable alone does not start
+       recording anyone. Two switches, both of which must be on, because the
+       site's operator and the portal's operator can be different people. */
+    ...(process.env.PORTALIQ_TRAFFIC_ORIGIN
+      ? [[
+        require.resolve('@conduction/docusaurus-plugin-portaliq'),
+        {
+          baseUrl: process.env.PORTALIQ_TRAFFIC_ORIGIN,
+          portal: process.env.PORTALIQ_TRAFFIC_PORTAL || 'conduction',
+          content: false,
+          traffic: true,
+        },
+      ]]
+      : []),
     /* academy-modules: scans academy/*\/index.mdx frontmatter and emits
        module → ordered parts global data. Consumed by BlogListPage
        (composite ModuleCards + module pill row) and per-module MDX
