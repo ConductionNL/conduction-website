@@ -520,3 +520,114 @@ body {
 .hfaw-well > p:last-child {
   margin-bottom: 0;
 }
+
+
+/**
+ * Responsive layout classes.
+ *
+ * These replace inline `style={{display: 'grid', gridTemplateColumns:
+ * ...}}` objects on the marketing pages. An inline style cannot be
+ * answered by a media query, so every page that declared its columns
+ * inline kept its desktop layout on a phone: /apps/ rendered a 240px
+ * filter rail beside a 280px card grid inside a 358px viewport, and
+ * the cards were cut off at the screen edge.
+ *
+ * Declaring the columns here instead is what makes them addressable.
+ */
+
+/* Detail pages: body column plus a 320px aside. */
+.cn-split-main-aside {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+/* Listing pages: filter rail plus the result grid. */
+.cn-filter-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+/* Below 900px both collapse to a single column. The aside and the
+   filter rail then read as sections above the content they qualify,
+   which is the order they already have in the DOM. */
+@media (max-width: 900px) {
+  .cn-split-main-aside,
+  .cn-filter-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cn-filter-layout {
+    gap: var(--space-6);
+  }
+}
+
+/**
+ * Stack a fixed-column inline grid on a phone.
+ *
+ * `!important` is deliberate and is the reason this works: the element
+ * keeps its inline `style` object, which carries the gap, padding and
+ * background that belong to that one layout, and only the column track
+ * is overridden. An author-stylesheet `!important` declaration beats an
+ * inline one, which is exactly the case this rule exists for.
+ *
+ * Applied to page layouts and form rows. Grids that are genuinely
+ * tabular (the SLA priority table on /terms/) or a fixed data shape
+ * (the seven-day heatmap on /apps/decidiq/) keep their columns: those
+ * are content, not layout, and stacking them would break the reading.
+ */
+@media (max-width: 700px) {
+  .cn-stack-mobile {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+/**
+ * Long URLs in running text.
+ *
+ * Tutorials quote addresses like `http://localhost:8700/apps/openregister`
+ * as link text. A URL has no spaces, so it is a single unbreakable word:
+ * on a 390px phone it ran to 627px and took the paragraph with it. Six
+ * academy pages and /solutions/openwoo/ overflowed this way.
+ *
+ * `anywhere` rather than `break-word` so the browser may also break
+ * inside the word when nothing else fits, and scoped to content links
+ * so headings and UI labels keep their normal wrapping.
+ */
+.markdown a,
+.markdown code,
+.content-detail-body a {
+  overflow-wrap: anywhere;
+}
+
+/**
+ * Form fields on a phone.
+ *
+ * Two problems, both from inline styles on the /support/ forms.
+ *
+ * `font-size: 14px` is the important one. Mobile Safari zooms the page
+ * in when a field smaller than 16px takes focus, and it does not zoom
+ * back out afterwards, so filling in one field leaves the visitor
+ * stranded at 1.3x with the layout off-screen. 16px is the threshold
+ * that stops it.
+ *
+ * The fields were also 41px tall, just under a comfortable thumb.
+ * Checkboxes and radios are excluded: they stay small by design and
+ * their surrounding row carries the target instead.
+ *
+ * `!important` because the declarations being corrected are inline.
+ */
+@media (max-width: 700px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+    min-height: 44px;
+  }
+
+  button[type="submit"] {
+    min-height: 44px;
+  }
+}
