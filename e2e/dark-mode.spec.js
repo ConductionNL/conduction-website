@@ -47,6 +47,13 @@ const PAGES = [
      agreeing with you. */
   ['connext (platform diagram)', '/connext/'],
   ['privacy (cookie panel)', '/privacy/'],
+  /* Added after a second full sweep. /contact/ grew a CRM form while
+     this work was in flight, and the form arrived with
+     `background: 'white'` hardcoded, so it was broken the day it
+     shipped. New pages and new features reintroduce the pattern faster
+     than a sample can be extended by hand: the durable fix is a lint
+     rule rejecting raw palette tokens for text and surface roles. */
+  ['contact (CRM form)', '/contact/'],
 ];
 
 /**
