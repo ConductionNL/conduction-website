@@ -5,6 +5,13 @@ hide_table_of_contents: true
 ---
 
 import {Section, SectionHead, TeamGrid, EmployeeCard} from '@conduction/docusaurus-preset/components';
+import PageHeading from '@site/src/components/PageHeading';
+import EnquiryForm from '@site/src/components/EnquiryForm';
+
+export const contactEnquiryTitle = (f) =>
+  `Contact: ${[f.firstName, f.lastName].filter(Boolean).join(' ') || 'Websitebezoeker'}${f.organisation ? ` (${f.organisation})` : ''}`;
+
+<PageHeading>Praat met een mens. Niet met een ticketwachtrij.</PageHeading>
 
 <Section spacing="default">
   <SectionHead
@@ -64,6 +71,49 @@ import {Section, SectionHead, TeamGrid, EmployeeCard} from '@conduction/docusaur
   </TeamGrid>
 </Section>
 
+<Section spacing="default" id="write">
+  <SectionHead
+    eyebrow="Schrijf ons"
+    title="Liever typen dan bellen?"
+    align="stack"
+    lede="Stuur het hier en het komt terecht bij de persoon die het kan beantwoorden. We reageren binnen twee werkdagen."
+  />
+  <div style={{maxWidth: 640, margin: '0 auto'}}>
+    <EnquiryForm source="website-contact" buildTitle={contactEnquiryTitle} successText="We komen binnen twee werkdagen bij je terug." style={{background: 'var(--conduction-color-surface-card)', border: '1px solid var(--c-cobalt-100)', borderRadius: 'var(--radius-lg)', padding: 36}}>
+      <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14}}>
+        <label style={{display: 'block'}}>
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Voornaam</span>
+          <input type="text" name="firstName" placeholder="Sanne" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--c-cobalt-900)'}} />
+        </label>
+        <label style={{display: 'block'}}>
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Achternaam</span>
+          <input type="text" name="lastName" placeholder="de Vries" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--c-cobalt-900)'}} />
+        </label>
+      </div>
+
+      <label style={{display: 'block', marginBottom: 14}}>
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>E-mailadres</span>
+        <input type="email" name="email" required placeholder="je@bedrijf.nl" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--c-cobalt-900)'}} />
+      </label>
+
+      <label style={{display: 'block', marginBottom: 14}}>
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Organisatie</span>
+        <input type="text" name="organisation" placeholder="Gemeente, MKB, ziekenhuis" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--c-cobalt-900)'}} />
+      </label>
+
+      <label style={{display: 'block', marginBottom: 14}}>
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Waarmee kunnen we helpen?</span>
+        <textarea name="message" required placeholder="Bijv: we willen weten of OpenRegister past op onze bestaande Nextcloud." style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--c-cobalt-900)', resize: 'vertical', minHeight: 100}}></textarea>
+      </label>
+
+      <p style={{fontSize: 12, color: 'var(--conduction-color-text-muted)', lineHeight: 1.5, margin: '16px 0 18px'}}>We gebruiken wat je hier typt om je te antwoorden, en voor niets anders. <a href="/nl/privacy">Privacyverklaring</a>.</p>
+      <button type="submit" style={{background: 'var(--c-blue-cobalt)', color: 'white', border: 'none', padding: '13px 28px', borderRadius: 'var(--radius-md)', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', cursor: 'pointer'}}>
+        Versturen
+      </button>
+    </EnquiryForm>
+  </div>
+</Section>
+
 <Section spacing="default" id="office">
   <SectionHead
     eyebrow="Kantoor"
@@ -73,24 +123,19 @@ import {Section, SectionHead, TeamGrid, EmployeeCard} from '@conduction/docusaur
   />
   <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-8)', maxWidth: 760, margin: '0 auto'}}>
     <div>
+      {/* Eén regel per alinea, en het e-mailadres als JSX-string. Over
+          meerdere regels leest MDX de inhoud van een blok-tag als markdown
+          en zet er een eigen alinea omheen, dus <p> in <p>; de parser van
+          de browser splitst dat en de pagina mislukt in hydration. Kale
+          tekst als info@conduction.nl wordt bovendien automatisch gelinkt,
+          wat een <a> in deze <a> zette. */}
       <h3 style={{fontSize: 22, fontWeight: 700, color: 'var(--c-cobalt-900)', margin: '0 0 var(--space-3)'}}>Conduction B.V.</h3>
-      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 0}}>
-        Lauriergracht 14h<br/>
-        1016 RR Amsterdam<br/>
-        Nederland
-      </p>
-      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 'var(--space-3) 0 0'}}>
-        <a href="tel:+31853036840">+31 85 303 6840</a><br/>
-        <a href="mailto:info@conduction.nl">info@conduction.nl</a>
-      </p>
+      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 0}}>Lauriergracht 14h<br/>1016 RR Amsterdam<br/>Nederland</p>
+      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 'var(--space-3) 0 0'}}><a href="tel:+31853036840">+31 85 303 6840</a><br/><a href="mailto:info@conduction.nl">{'info@conduction.nl'}</a></p>
     </div>
     <div>
       <h3 style={{fontSize: 22, fontWeight: 700, color: 'var(--c-cobalt-900)', margin: '0 0 var(--space-3)'}}>Bedrijfsgegevens</h3>
-      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 0}}>
-        KvK: 76741850<br/>
-        BTW: NL860784241B01<br/>
-        IBAN: NL51 ABNA 0868951550
-      </p>
+      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 0}}>KvK: 76741850<br/>BTW: NL860784241B01<br/>IBAN: NL51 ABNA 0868951550</p>
     </div>
   </div>
 </Section>

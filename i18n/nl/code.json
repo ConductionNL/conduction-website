@@ -546,13 +546,9 @@
     "message": "{found} / {total} mini-games gevonden",
     "description": "Progress label below the game-over copy"
   },
-  "preset.gameModal.cta.remaining": {
-    "message": "{remaining, plural, one {# game nog verstopt ergens. Blijf klikken.} other {# games nog verstopt ergens. Blijf klikken.}}",
-    "description": "CTA text on the game-over modal when at least one game is still hidden"
-  },
   "preset.gameModal.cta.allFound": {
-    "message": "Alle vijf gevonden. Je hebt de kit gelezen.",
-    "description": "CTA text on the game-over modal when the player has discovered every mini-game"
+    "message": "Alle {total} gevonden. Je hebt de kit gelezen.",
+    "description": "CTA on the game-over modal when every mini-game has been discovered. {total} is how many games there are."
   },
   "preset.gameModal.action.close": {
     "message": "Sluiten",
@@ -573,5 +569,1233 @@
   "preset.audience.short.developer": {
     "message": "Developer",
     "description": "Short audience label used in the 'For: ...' line. Slug: developer."
+  },
+  "preset.gameModal.cta.remaining.one": {
+    "message": "Nog één spel ergens verstopt. Blijf klikken.",
+    "description": "CTA on the game-over modal when exactly one mini-game is still hidden."
+  },
+  "preset.gameModal.cta.remaining.other": {
+    "message": "Nog {remaining} spellen ergens verstopt. Blijf klikken.",
+    "description": "CTA on the game-over modal when several mini-games are still hidden. {remaining} is how many."
+  },
+  "preset.gameModal.totalScore": {
+    "message": "Totaalscore {score}",
+    "description": "Total score line under the games list. {score} is the sum of the player's best score in every game."
+  },
+  "preset.gameModal.share.head": {
+    "message": "Deel je score",
+    "description": "Heading above the share buttons on the game-over modal"
+  },
+  "preset.gameModal.share.hint": {
+    "message": "Zet er een schermafbeelding van deze kaart bij, dan zien mensen de run achter het getal.",
+    "description": "Line under the share heading telling the player to attach a screenshot of the modal"
+  },
+  "preset.gameModal.share.mastodon": {
+    "message": "Mastodon",
+    "description": "Share-on-Mastodon button label"
+  },
+  "preset.gameModal.share.linkedin": {
+    "message": "LinkedIn",
+    "description": "Share-on-LinkedIn button label"
+  },
+  "preset.gameModal.share.copy": {
+    "message": "Kopieer de post",
+    "description": "Copy-the-post-text button label"
+  },
+  "preset.gameModal.share.copied": {
+    "message": "Gekopieerd. Plak hem met je schermafbeelding.",
+    "description": "Confirmation shown after the post text is copied to the clipboard"
+  },
+  "preset.gameModal.share.instanceLabel": {
+    "message": "Jouw Mastodon-server",
+    "description": "Label for the input asking which Mastodon instance the player is on"
+  },
+  "preset.gameModal.share.instanceGo": {
+    "message": "Openen",
+    "description": "Submit button next to the Mastodon instance input"
+  },
+  "preset.gameModal.share.rules": {
+    "message": "Lees de spelregels",
+    "description": "Link to the giveaway rules, shown after the prize line in the share block"
+  },
+  "preset.gameModal.game.hexrain": {
+    "message": "Twaalf apps · hexregen",
+    "description": "Name of the hex-rain mini-game and where it hides"
+  },
+  "preset.gameModal.game.boats": {
+    "message": "Boten kelderen · gracht in de footer",
+    "description": "Name of the boat-sinking mini-game and where it hides"
+  },
+  "preset.gameModal.game.invaders": {
+    "message": "Hex-vaders · cookieconsole",
+    "description": "Name of the invaders mini-game and where it hides"
+  },
+  "preset.gameModal.game.logoMemory": {
+    "message": "Logomemory · klantenmarquee",
+    "description": "Name of the logo-memory mini-game and where it hides"
+  },
+  "preset.gameModal.game.kadeCyclist": {
+    "message": "Kadefietser · kade in de footer",
+    "description": "Name of the kade-cyclist mini-game and where it hides"
+  },
+  "preset.stampRush.eyebrow": {
+    "message": "Mini-game",
+    "description": "Eyebrow above the stamp-rush game on a product page"
+  },
+  "preset.stampRush.title": {
+    "message": "Stempelrace",
+    "description": "Name of the Decidiq mini-game"
+  },
+  "preset.stampRush.lede": {
+    "message": "Stel vast wat quorum heeft. Houd tegen wat dat niet heeft. Drie foute stempels en de voorzitter pakt de pen terug.",
+    "description": "One-line explanation of the stamp-rush rules"
+  },
+  "preset.stampRush.hud.score": {
+    "message": "Score {score}",
+    "description": "Score readout on the stamp-rush HUD"
+  },
+  "preset.stampRush.hud.lives": {
+    "message": "Stempels over {lives}",
+    "description": "Remaining-lives readout on the stamp-rush HUD"
+  },
+  "preset.stampRush.card.ready.title": {
+    "message": "Klaar om vast te stellen",
+    "description": "Stamp-rush card that the player should stamp"
+  },
+  "preset.stampRush.card.ready.note": {
+    "message": "Quorum {have} van {need}",
+    "description": "Quorum line on a stamp-rush card. {have} present, {need} required."
+  },
+  "preset.stampRush.card.noQuorum.title": {
+    "message": "Geen quorum",
+    "description": "Stamp-rush card the player must hold back because too few members are present"
+  },
+  "preset.stampRush.card.noQuorum.note": {
+    "message": "Quorum {have} van {need}",
+    "description": "Quorum line on a stamp-rush card that lacks quorum."
+  },
+  "preset.stampRush.card.conflict.title": {
+    "message": "Belang gemeld",
+    "description": "Stamp-rush card the player must hold back because of a declared conflict of interest"
+  },
+  "preset.stampRush.card.conflict.note": {
+    "message": "Je mag niet stemmen",
+    "description": "Second line on the conflict-of-interest card"
+  },
+  "preset.stampRush.slot.full": {
+    "message": "Bureau {n}: {state}, {note}",
+    "description": "Accessible label for an occupied stamp-rush desk slot. {state} is the decision state, {note} its quorum line."
+  },
+  "preset.stampRush.slot.empty": {
+    "message": "Bureau {n}: leeg",
+    "description": "Accessible label for an empty stamp-rush desk slot"
+  },
+  "preset.stampRush.start": {
+    "message": "Pak de pen",
+    "description": "Button that starts the stamp-rush game"
+  },
+  "preset.stampRush.restart": {
+    "message": "Opnieuw",
+    "description": "Button that restarts the stamp-rush game"
+  },
+  "preset.stampRush.hint": {
+    "message": "Klik op een bureau, of druk op het nummer. Elke keer dat je het op rij goed hebt, levert vaststellen meer op.",
+    "description": "Hint under the stamp-rush board explaining the controls and the streak bonus"
+  },
+  "preset.stampRush.over.title": {
+    "message": "De vergadering verloor haar geduld.",
+    "description": "Headline on the game-over dialog after a stamp-rush run"
+  },
+  "preset.stampRush.over.subtitle": {
+    "message": "Drie foute stempels en de voorzitter pakt de pen terug.",
+    "description": "Subtitle on the game-over dialog after a stamp-rush run"
+  },
+  "preset.deadlineDefender.eyebrow": {
+    "message": "Mini-game",
+    "description": "Eyebrow above the deadline-defender game on a product page"
+  },
+  "preset.deadlineDefender.title": {
+    "message": "Deadlineverdediger",
+    "description": "Name of the Dossiq mini-game"
+  },
+  "preset.deadlineDefender.lede": {
+    "message": "Elke zaak komt binnen met de klok al lopend. Stuur hem naar de juiste stap voordat de tijd op is. De verkeerde stap kost evenveel als te laat zijn.",
+    "description": "One-line explanation of the deadline-defender rules"
+  },
+  "preset.deadlineDefender.hud.score": {
+    "message": "Score {score}",
+    "description": "Score readout on the deadline-defender HUD"
+  },
+  "preset.deadlineDefender.hud.lives": {
+    "message": "Zaken die je nog mag verliezen {lives}",
+    "description": "Remaining-lives readout on the deadline-defender HUD"
+  },
+  "preset.deadlineDefender.lane.intake": {
+    "message": "Intake",
+    "description": "Name of the intake step in the deadline-defender game"
+  },
+  "preset.deadlineDefender.lane.review": {
+    "message": "Beoordeling",
+    "description": "Name of the assessment step in the deadline-defender game"
+  },
+  "preset.deadlineDefender.lane.decision": {
+    "message": "Besluit",
+    "description": "Name of the decision step in the deadline-defender game"
+  },
+  "preset.deadlineDefender.caseNo": {
+    "message": "Zaak {id}",
+    "description": "Case-number line on the deadline-defender file. {id} is the case number."
+  },
+  "preset.deadlineDefender.clock": {
+    "message": "Tijd over op deze termijn",
+    "description": "Accessible name of the deadline countdown bar"
+  },
+  "preset.deadlineDefender.next": {
+    "message": "Volgende zaak…",
+    "description": "Placeholder between two cases in the deadline-defender game"
+  },
+  "preset.deadlineDefender.idle": {
+    "message": "De werkvoorraad wacht op je.",
+    "description": "Placeholder on the deadline-defender desk before the game starts"
+  },
+  "preset.deadlineDefender.start": {
+    "message": "Open de werkvoorraad",
+    "description": "Button that starts the deadline-defender game"
+  },
+  "preset.deadlineDefender.restart": {
+    "message": "Opnieuw",
+    "description": "Button that restarts the deadline-defender game"
+  },
+  "preset.deadlineDefender.hint": {
+    "message": "Klik op een stap, of druk op 1, 2 of 3. Elke zaak op rij levert meer op dan de vorige.",
+    "description": "Hint under the deadline-defender board explaining the controls and the streak bonus"
+  },
+  "preset.deadlineDefender.feedback.misrouted": {
+    "message": "Verkeerde stap. Die zaak ligt nu waar niemand kijkt.",
+    "description": "Feedback after routing a case to the wrong step"
+  },
+  "preset.deadlineDefender.feedback.missed": {
+    "message": "Tijd op. De termijn liep door terwijl hij bleef liggen.",
+    "description": "Feedback after letting a deadline expire"
+  },
+  "preset.deadlineDefender.over.title": {
+    "message": "De werkvoorraad won.",
+    "description": "Headline on the game-over dialog after a deadline-defender run"
+  },
+  "preset.deadlineDefender.over.subtitle": {
+    "message": "Drie zaken op de verkeerde plek, of over datum. Allebei tellen.",
+    "description": "Subtitle on the game-over dialog after a deadline-defender run"
+  },
+  "preset.deadlineDefender.case.permitReceived": {
+    "message": "Er is een vergunningaanvraag binnengekomen via het portaal. Nog niets geregistreerd.",
+    "description": "Deadline-defender case that belongs in intake"
+  },
+  "preset.deadlineDefender.case.objectionReceived": {
+    "message": "Er kwam een bezwaar per post binnen. Het is nog niet ingeboekt.",
+    "description": "Deadline-defender case that belongs in intake"
+  },
+  "preset.deadlineDefender.case.complaintReceived": {
+    "message": "Vanochtend is een klacht ingediend. Nog geen zaaknummer.",
+    "description": "Deadline-defender case that belongs in intake"
+  },
+  "preset.deadlineDefender.case.documentsComplete": {
+    "message": "Het laatste ontbrekende document is binnen. Het dossier is compleet.",
+    "description": "Deadline-defender case that belongs in assessment"
+  },
+  "preset.deadlineDefender.case.siteVisitDone": {
+    "message": "Het locatiebezoek is geweest en het verslag zit erbij.",
+    "description": "Deadline-defender case that belongs in assessment"
+  },
+  "preset.deadlineDefender.case.adviceReturned": {
+    "message": "Het advies van de brandweer is terug. Niemand heeft het naast het dossier gelegd.",
+    "description": "Deadline-defender case that belongs in assessment"
+  },
+  "preset.deadlineDefender.case.assessmentDone": {
+    "message": "De beoordeling is af en het concept is geschreven.",
+    "description": "Deadline-defender case that belongs in decision"
+  },
+  "preset.deadlineDefender.case.objectionAssessed": {
+    "message": "Het bezwaar is beoordeeld. Er moet nog getekend worden.",
+    "description": "Deadline-defender case that belongs in decision"
+  },
+  "preset.deadlineDefender.case.enforcementReady": {
+    "message": "De handhaving is voorbereid en gecontroleerd. Wacht op een handtekening.",
+    "description": "Deadline-defender case that belongs in decision"
+  },
+  "preset.blueprintRush.eyebrow": {
+    "message": "Mini-game",
+    "description": "Eyebrow above the blueprint-rush game on a product page"
+  },
+  "preset.blueprintRush.title": {
+    "message": "Bouwtekeningrace",
+    "description": "Name of the Buildiq mini-game"
+  },
+  "preset.blueprintRush.lede": {
+    "message": "Elke app heeft dezelfde paar onderdelen nodig. Pak ze van de plank voordat de tijd op is, en laat liggen wat bij de app van iemand anders hoort.",
+    "description": "One-line explanation of the blueprint-rush rules"
+  },
+  "preset.blueprintRush.hud.score": {
+    "message": "Score {score}",
+    "description": "Score readout on the blueprint-rush HUD"
+  },
+  "preset.blueprintRush.hud.time": {
+    "message": "Nog {seconds}s",
+    "description": "Remaining-time readout on the blueprint-rush HUD"
+  },
+  "preset.blueprintRush.idle": {
+    "message": "Een lege bouwtekening, en een plank vol onderdelen.",
+    "description": "Placeholder on the blueprint before the game starts"
+  },
+  "preset.blueprintRush.start": {
+    "message": "Open een bouwtekening",
+    "description": "Button that starts the blueprint-rush game"
+  },
+  "preset.blueprintRush.restart": {
+    "message": "Opnieuw",
+    "description": "Button that restarts the blueprint-rush game"
+  },
+  "preset.blueprintRush.hint": {
+    "message": "Lees de bouwtekening en pak wat erop staat. Elke app op rij levert meer op dan de vorige.",
+    "description": "Hint under the blueprint-rush board"
+  },
+  "preset.blueprintRush.slot.done": {
+    "message": "staat erin",
+    "description": "State of a blueprint slot that has been filled"
+  },
+  "preset.blueprintRush.slot.open": {
+    "message": "open",
+    "description": "State of a blueprint slot that is still empty"
+  },
+  "preset.blueprintRush.slot.register": {
+    "message": "Ergens om de records te bewaren",
+    "description": "Blueprint slot asking for a register"
+  },
+  "preset.blueprintRush.slot.schema": {
+    "message": "Hoe één record eruitziet",
+    "description": "Blueprint slot asking for a schema"
+  },
+  "preset.blueprintRush.slot.form": {
+    "message": "Hoe mensen er een invullen",
+    "description": "Blueprint slot asking for a form"
+  },
+  "preset.blueprintRush.slot.view": {
+    "message": "Hoe mensen er een terugvinden",
+    "description": "Blueprint slot asking for a list view"
+  },
+  "preset.blueprintRush.slot.flow": {
+    "message": "Wat er gebeurt nadat iemand opslaat",
+    "description": "Blueprint slot asking for a flow"
+  },
+  "preset.blueprintRush.slot.permission": {
+    "message": "Wie het mag zien",
+    "description": "Blueprint slot asking for permissions"
+  },
+  "preset.blueprintRush.slot.widget": {
+    "message": "Wat de manager maandag ziet",
+    "description": "Blueprint slot asking for a dashboard widget"
+  },
+  "preset.blueprintRush.slot.notification": {
+    "message": "Wie ervan hoort",
+    "description": "Blueprint slot asking for a notification"
+  },
+  "preset.blueprintRush.tray.register": {
+    "message": "Een register",
+    "description": "Tray part: a register"
+  },
+  "preset.blueprintRush.tray.schema": {
+    "message": "Een set velden",
+    "description": "Tray part: a schema"
+  },
+  "preset.blueprintRush.tray.form": {
+    "message": "Een formulier",
+    "description": "Tray part: a form"
+  },
+  "preset.blueprintRush.tray.view": {
+    "message": "Een lijst met zoeken",
+    "description": "Tray part: a list view"
+  },
+  "preset.blueprintRush.tray.flow": {
+    "message": "Een flow",
+    "description": "Tray part: a flow"
+  },
+  "preset.blueprintRush.tray.permission": {
+    "message": "Een groep en haar rechten",
+    "description": "Tray part: permissions"
+  },
+  "preset.blueprintRush.tray.widget": {
+    "message": "Een dashboardwidget",
+    "description": "Tray part: a dashboard widget"
+  },
+  "preset.blueprintRush.tray.notification": {
+    "message": "Een melding",
+    "description": "Tray part: a notification"
+  },
+  "preset.blueprintRush.feedback.built": {
+    "message": "App gebouwd. Dat leverde zeven seconden op.",
+    "description": "Feedback after completing a blueprint"
+  },
+  "preset.blueprintRush.feedback.wrong": {
+    "message": "Dat onderdeel hoort bij een andere app. Tweeënhalve seconde weg.",
+    "description": "Feedback after picking a part the blueprint does not need"
+  },
+  "preset.blueprintRush.feedback.duplicate": {
+    "message": "Die zit er al in.",
+    "description": "Feedback after picking a part that is already on the blueprint"
+  },
+  "preset.blueprintRush.over.title": {
+    "message": "Tijd, en de bouwtekening ligt er nog open bij.",
+    "description": "Headline on the game-over dialog after a blueprint-rush run"
+  },
+  "preset.blueprintRush.over.subtitle": {
+    "message": "Elke afgebouwde app leverde seconden op. De verkeerde onderdelen gaven ze uit.",
+    "description": "Subtitle on the game-over dialog after a blueprint-rush run"
+  },
+  "preset.recordRun.eyebrow": {
+    "message": "Mini-game",
+    "description": "Eyebrow above the record-run game"
+  },
+  "preset.recordRun.title": {
+    "message": "Recordrun",
+    "description": "Name of the Connext mini-game"
+  },
+  "preset.recordRun.lede": {
+    "message": "Eén record, onderweg door de stack. Stuur om de drie dingen heen die er altijd eentje tegenhouden, en pak de apps op die hem verder brengen.",
+    "description": "One-line explanation of the record-run rules"
+  },
+  "preset.recordRun.hud.score": {
+    "message": "Score {score}",
+    "description": "Score readout on the record-run HUD"
+  },
+  "preset.recordRun.hud.lives": {
+    "message": "Pogingen {lives}",
+    "description": "Remaining-lives readout on the record-run HUD"
+  },
+  "preset.recordRun.block.format": {
+    "message": "Formaat dat niemand leest",
+    "description": "Obstacle in the record-run game: an unreadable format"
+  },
+  "preset.recordRun.block.permission": {
+    "message": "Recht dat niemand gaf",
+    "description": "Obstacle in the record-run game: a missing permission"
+  },
+  "preset.recordRun.block.connector": {
+    "message": "Koppeling die er niet is",
+    "description": "Obstacle in the record-run game: a missing connector"
+  },
+  "preset.recordRun.app.register": {
+    "message": "Register",
+    "description": "Pick-up in the record-run game: a register"
+  },
+  "preset.recordRun.app.catalogue": {
+    "message": "Catalogus",
+    "description": "Pick-up in the record-run game: a catalogue"
+  },
+  "preset.recordRun.app.portal": {
+    "message": "Portaal",
+    "description": "Pick-up in the record-run game: a portal"
+  },
+  "preset.recordRun.laneLabel": {
+    "message": "Baan {n}. Komt eraan: {what}",
+    "description": "Accessible label for a record-run lane button. {what} is what the next row holds in that lane."
+  },
+  "preset.recordRun.laneClear": {
+    "message": "vrij",
+    "description": "What a record-run lane holds when the next row is empty there"
+  },
+  "preset.recordRun.idle": {
+    "message": "Eén record, drie banen, en alles wat ertussen komt.",
+    "description": "Placeholder on the record-run track before the game starts"
+  },
+  "preset.recordRun.start": {
+    "message": "Stuur een record",
+    "description": "Button that starts the record-run game"
+  },
+  "preset.recordRun.restart": {
+    "message": "Opnieuw",
+    "description": "Button that restarts the record-run game"
+  },
+  "preset.recordRun.hint": {
+    "message": "Pijltjestoetsen, de cijfers, of klik op een baan. Vrije banen leveren iets op, apps meer.",
+    "description": "Hint under the record-run board explaining the controls"
+  },
+  "preset.recordRun.feedback.blocked": {
+    "message": "Vastgelopen op: {what}",
+    "description": "Feedback after the record hits an obstacle. {what} is the obstacle."
+  },
+  "preset.recordRun.feedback.collected": {
+    "message": "Opgepakt: {what}",
+    "description": "Feedback after the record collects an app. {what} is the app."
+  },
+  "preset.recordRun.over.title": {
+    "message": "Het record liep vast.",
+    "description": "Headline on the game-over dialog after a record-run run"
+  },
+  "preset.recordRun.over.subtitle": {
+    "message": "Drie keer, op de drie dingen die er altijd eentje tegenhouden.",
+    "description": "Subtitle on the game-over dialog after a record-run run"
+  },
+  "preset.lockPick.eyebrow": {
+    "message": "Mini-game",
+    "description": "Eyebrow above the lock-pick game on a product page"
+  },
+  "preset.lockPick.title": {
+    "message": "Slot openen",
+    "description": "Name of the Keepiq mini-game"
+  },
+  "preset.lockPick.lede": {
+    "message": "Zet de loper, draai de cilinder, voel hoe ver hij meegeeft. Elke draai zegt hoe dichtbij je zat. Drie lopers, en elk slot zit strakker dan het vorige.",
+    "description": "One-line explanation of the lock-pick rules"
+  },
+  "preset.lockPick.hud.score": {
+    "message": "Score {score}",
+    "description": "Score readout on the lock-pick HUD"
+  },
+  "preset.lockPick.hud.picks": {
+    "message": "Lopers {picks}",
+    "description": "Remaining-picks readout on the lock-pick HUD"
+  },
+  "preset.lockPick.hud.opened": {
+    "message": "Open {opened}",
+    "description": "Opened-locks readout on the lock-pick HUD"
+  },
+  "preset.lockPick.dialLabel": {
+    "message": "Waar de loper zit",
+    "description": "Label for the lock-pick dial slider"
+  },
+  "preset.lockPick.wear": {
+    "message": "Deze loper",
+    "description": "Label for the lock-pick durability bar"
+  },
+  "preset.lockPick.cylinder": {
+    "message": "De cilinder draait {percent} procent waar de loper nu zit",
+    "description": "Accessible description of the lock cylinder. {percent} is how far it turns at the current pick position."
+  },
+  "preset.lockPick.turn": {
+    "message": "Draai de cilinder",
+    "description": "Button that attempts to turn the lock"
+  },
+  "preset.lockPick.start": {
+    "message": "Pak een loper",
+    "description": "Button that starts the lock-pick game"
+  },
+  "preset.lockPick.restart": {
+    "message": "Nieuw slot",
+    "description": "Button that restarts the lock-pick game"
+  },
+  "preset.lockPick.hint": {
+    "message": "Verschuif de loper met de slider of de pijltjestoetsen en draai dan. Wilde gokken kosten de loper, net-ernaast kost bijna niets.",
+    "description": "Hint under the lock-pick board before the first turn"
+  },
+  "preset.lockPick.feel.almost": {
+    "message": "Hij draait bijna helemaal. Je zit er een haar naast.",
+    "description": "Lock-pick feedback when the pick is very close to the sweet spot"
+  },
+  "preset.lockPick.feel.close": {
+    "message": "De cilinder draait een flink stuk en blijft dan steken.",
+    "description": "Lock-pick feedback when the pick is close"
+  },
+  "preset.lockPick.feel.some": {
+    "message": "Hij geeft een beetje mee.",
+    "description": "Lock-pick feedback when the pick is somewhere near"
+  },
+  "preset.lockPick.feel.barely": {
+    "message": "Nauwelijks iets. Je zit er ver naast.",
+    "description": "Lock-pick feedback when the pick is far from the sweet spot"
+  },
+  "preset.lockPick.feel.nothing": {
+    "message": "Niets. De cilinder beweegt geen millimeter.",
+    "description": "Lock-pick feedback when the pick is nowhere near the sweet spot"
+  },
+  "preset.lockPick.feedback.opened": {
+    "message": "Open, in {attempts}. Levert {points} op. De volgende zit strakker.",
+    "description": "Feedback after opening a lock. {attempts} is how many turns it took, {points} what it scored."
+  },
+  "preset.lockPick.feedback.snapped": {
+    "message": "De loper brak. Het slot staat nog waar je het liet, dus ga daar verder.",
+    "description": "Feedback after a pick breaks"
+  },
+  "preset.lockPick.over.title": {
+    "message": "Dat was de laatste loper.",
+    "description": "Headline on the game-over dialog after a lock-pick run"
+  },
+  "preset.lockPick.over.subtitle": {
+    "message": "Het slot zit nog dicht, en dat is precies de bedoeling van een goed slot.",
+    "description": "Subtitle on the game-over dialog after a lock-pick run"
+  },
+  "preset.paintByTokens.eyebrow": {
+    "message": "Mini-game",
+    "description": "Eyebrow above the paint-by-tokens game on a product page"
+  },
+  "preset.paintByTokens.title": {
+    "message": "Kleuren op token",
+    "description": "Name of the Thematiq mini-game"
+  },
+  "preset.paintByTokens.lede": {
+    "message": "Kleuren op nummer, alleen zijn de nummers tokens. Elk vakje zegt welk token het wil, en welke kleur dat is bepaalt het thema, niet jouw oog.",
+    "description": "One-line explanation of the paint-by-tokens rules"
+  },
+  "preset.paintByTokens.hud.score": {
+    "message": "Score {score}",
+    "description": "Score readout on the paint-by-tokens HUD"
+  },
+  "preset.paintByTokens.hud.time": {
+    "message": "Nog {seconds}s",
+    "description": "Remaining-time readout on the paint-by-tokens HUD"
+  },
+  "preset.paintByTokens.hud.left": {
+    "message": "Nog {left} vakjes",
+    "description": "Remaining-cells readout on the paint-by-tokens HUD"
+  },
+  "preset.paintByTokens.paletteLabel": {
+    "message": "Tokens",
+    "description": "Accessible name for the paint-by-tokens palette"
+  },
+  "preset.paintByTokens.token.surface": {
+    "message": "vlak",
+    "description": "Name of the surface token in the paint-by-tokens game"
+  },
+  "preset.paintByTokens.token.accent": {
+    "message": "accent",
+    "description": "Name of the accent token in the paint-by-tokens game"
+  },
+  "preset.paintByTokens.token.ink": {
+    "message": "inkt",
+    "description": "Name of the ink token in the paint-by-tokens game"
+  },
+  "preset.paintByTokens.token.muted": {
+    "message": "gedempt",
+    "description": "Name of the muted token in the paint-by-tokens game"
+  },
+  "preset.paintByTokens.token.line": {
+    "message": "lijn",
+    "description": "Name of the line token in the paint-by-tokens game"
+  },
+  "preset.paintByTokens.cell.done": {
+    "message": "Gevuld met {token}",
+    "description": "Accessible label for a painted cell"
+  },
+  "preset.paintByTokens.cell.open": {
+    "message": "Wil {token}",
+    "description": "Accessible label for an unpainted cell"
+  },
+  "preset.paintByTokens.idle": {
+    "message": "Een leeg thema, en vijf tokens om het mee te vullen.",
+    "description": "Placeholder before the paint-by-tokens game starts"
+  },
+  "preset.paintByTokens.start": {
+    "message": "Open een thema",
+    "description": "Button that starts the paint-by-tokens game"
+  },
+  "preset.paintByTokens.restart": {
+    "message": "Opnieuw",
+    "description": "Button that restarts the paint-by-tokens game"
+  },
+  "preset.paintByTokens.hint": {
+    "message": "Kies een token met de cijfertoetsen en vul daarna elk vakje dat erom vraagt.",
+    "description": "Hint under the paint-by-tokens board"
+  },
+  "preset.paintByTokens.feedback.finished": {
+    "message": "Thema af. Dat leverde twintig seconden op.",
+    "description": "Feedback after finishing a picture"
+  },
+  "preset.paintByTokens.feedback.wrong": {
+    "message": "Dat vakje wilde {wanted}, geen {used}. Drie seconden weg.",
+    "description": "Feedback after filling a cell with the wrong token"
+  },
+  "preset.paintByTokens.over.title": {
+    "message": "Tijd, en het thema is half geverfd.",
+    "description": "Headline on the game-over dialog after a paint-by-tokens run"
+  },
+  "preset.paintByTokens.over.subtitle": {
+    "message": "Elk afgemaakt plaatje leverde tijd op. Op het oog kleuren gaf die weer uit.",
+    "description": "Subtitle on the game-over dialog after a paint-by-tokens run"
+  },
+  "preset.redaction.eyebrow": {
+    "message": "Mini-game",
+    "description": "Eyebrow above the redaction game on a product page"
+  },
+  "preset.redaction.title": {
+    "message": "Zwart lakken",
+    "description": "Name of the Filinq mini-game"
+  },
+  "preset.redaction.lede": {
+    "message": "Dit document gaat naar buiten. Lak weg wat niet gepubliceerd mag worden en verstuur het. Laat één ding staan en het is een datalek; lak alles weg en je publiceert strepen.",
+    "description": "One-line explanation of the redaction rules"
+  },
+  "preset.redaction.hud.score": {
+    "message": "Score {score}",
+    "description": "Score readout on the redaction HUD"
+  },
+  "preset.redaction.hud.lives": {
+    "message": "Datalekken over {lives}",
+    "description": "Remaining-lives readout on the redaction HUD"
+  },
+  "preset.redaction.clock": {
+    "message": "Tijd tot dit document zichzelf publiceert",
+    "description": "Accessible name of the redaction countdown"
+  },
+  "preset.redaction.word.blacked": {
+    "message": "{text}, weggelakt",
+    "description": "Accessible label for a redacted word"
+  },
+  "preset.redaction.idle": {
+    "message": "Een stapel documenten, die vandaag allemaal de deur uit moeten.",
+    "description": "Placeholder before the redaction game starts"
+  },
+  "preset.redaction.publish": {
+    "message": "Publiceer",
+    "description": "Button that publishes the redacted document"
+  },
+  "preset.redaction.start": {
+    "message": "Open de stapel",
+    "description": "Button that starts the redaction game"
+  },
+  "preset.redaction.restart": {
+    "message": "Opnieuw",
+    "description": "Button that restarts the redaction game"
+  },
+  "preset.redaction.hint": {
+    "message": "Klik op een woord om het weg te lakken. Namen, nummers en adressen gaan weg; de zin eromheen blijft staan.",
+    "description": "Hint under the redaction document"
+  },
+  "preset.redaction.feedback.breach": {
+    "message": "Dat ging naar buiten met iets erop wat er niet op had gemogen. Eén datalek.",
+    "description": "Feedback after publishing a document with a secret still visible"
+  },
+  "preset.redaction.feedback.clean": {
+    "message": "Schoon. Alles wat weg moest is weg, en de rest is nog leesbaar.",
+    "description": "Feedback after publishing a perfectly redacted document"
+  },
+  "preset.redaction.feedback.over": {
+    "message": "Veilig, maar je lakte {over} woord(en) weg die hadden mogen blijven.",
+    "description": "Feedback after publishing an over-redacted document"
+  },
+  "preset.redaction.over.title": {
+    "message": "Drie daarvan gingen de deur uit met een naam er nog op.",
+    "description": "Headline on the game-over dialog after a redaction run"
+  },
+  "preset.redaction.over.subtitle": {
+    "message": "En dat is het deel dat het nieuws haalt, niet het papierwerk.",
+    "description": "Subtitle on the game-over dialog after a redaction run"
+  },
+  "preset.redaction.token.permitIntro": {
+    "message": "Vergunning verleend aan",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.permitMiddle": {
+    "message": "voor een dakkapel op",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.permitTail": {
+    "message": "kenmerk aanvrager",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.permitEnd": {
+    "message": "Bezwaar binnen zes weken.",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.invoiceIntro": {
+    "message": "Factuur voor",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.invoiceMiddle": {
+    "message": "te voldoen aan",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.invoiceTail": {
+    "message": "totaal",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.invoiceEnd": {
+    "message": "Vragen aan",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.objectionIntro": {
+    "message": "Bezwaar ingediend door",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.objectionMiddle": {
+    "message": "geboren",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.objectionTail": {
+    "message": "tegen besluit",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.objectionEnd": {
+    "message": "Hoorzitting op de veertiende.",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.reportIntro": {
+    "message": "Inspectierapport van",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.reportMiddle": {
+    "message": "contact via",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.reportTail": {
+    "message": "inspecteur",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.reportEnd": {
+    "message": "Gepubliceerd onder",
+    "description": "Redaction document text"
+  },
+  "preset.redaction.token.name": {
+    "message": "J. de Vries",
+    "description": "Redaction document text: a personal name, which must be redacted"
+  },
+  "preset.redaction.token.address": {
+    "message": "Keizersgracht 12",
+    "description": "Redaction document text: an address, which must be redacted"
+  },
+  "preset.redaction.token.bsn": {
+    "message": "BSN 1234 56 789",
+    "description": "Redaction document text: a citizen service number, which must be redacted"
+  },
+  "preset.redaction.token.iban": {
+    "message": "NL91 ABNA 0417 1643 00",
+    "description": "Redaction document text: a bank account, which must be redacted"
+  },
+  "preset.redaction.token.email": {
+    "message": "j.devries@example.nl",
+    "description": "Redaction document text: an email address, which must be redacted"
+  },
+  "preset.redaction.token.birthdate": {
+    "message": "4 maart 1971",
+    "description": "Redaction document text: a date of birth, which must be redacted"
+  },
+  "preset.redaction.token.phone": {
+    "message": "06 1234 5678",
+    "description": "Redaction document text: a phone number, which must be redacted"
+  },
+  "preset.redaction.token.company": {
+    "message": "Bakkerij Janssen BV",
+    "description": "Redaction document text: a company name, which may be published"
+  },
+  "preset.redaction.token.amount": {
+    "message": "1.240 euro",
+    "description": "Redaction document text: an amount, which may be published"
+  },
+  "preset.redaction.token.caseNumber": {
+    "message": "zaak 2026-118",
+    "description": "Redaction document text: a case number, which may be published"
+  },
+  "preset.redaction.token.department": {
+    "message": "de afdeling bouwen",
+    "description": "Redaction document text: a department, which may be published"
+  },
+  "preset.redaction.token.policy": {
+    "message": "de Wet open overheid",
+    "description": "Redaction document text: a law, which may be published"
+  },
+  "preset.lockPick.feelIdle": {
+    "message": "Pak een loper om te gaan voelen.",
+    "description": "Placeholder where the live feel line sits before the game starts"
+  },
+  "preset.lockPick.wearLabel": {
+    "message": "Hoeveel er van deze loper over is",
+    "description": "Accessible name of the bar showing the current pick condition"
+  },
+  "preset.hiddenGame.opener": {
+    "message": "Even pauze",
+    "description": "Quiet link that opens a hidden mini-game on a page"
+  },
+  "preset.monsterRun.eyebrow": {
+    "message": "Mini-game",
+    "description": "Eyebrow above the monster-run game"
+  },
+  "preset.monsterRun.title": {
+    "message": "Het monster gaat rennen",
+    "description": "Name of the La Frankendesk mini-game"
+  },
+  "preset.monsterRun.lede": {
+    "message": "Spring over de forks, duik onder de patch sets door, en pak de onderdelen op waar het uit is genaaid. De onderdelen waren nooit het probleem.",
+    "description": "One-line explanation of the monster-run rules"
+  },
+  "preset.monsterRun.hud.score": {
+    "message": "Score {score}",
+    "description": "Score readout on the monster-run HUD"
+  },
+  "preset.monsterRun.hud.lives": {
+    "message": "Hechtingen {lives}",
+    "description": "Remaining-lives readout on the monster-run HUD"
+  },
+  "preset.monsterRun.obstacle.fork": {
+    "message": "een fork",
+    "description": "Monster-run obstacle on the ground: a fork of the code"
+  },
+  "preset.monsterRun.obstacle.patchset": {
+    "message": "een patch set",
+    "description": "Monster-run obstacle overhead: a patch set"
+  },
+  "preset.monsterRun.obstacle.releaseTrain": {
+    "message": "een release-trein",
+    "description": "Monster-run obstacle on the ground: a release train"
+  },
+  "preset.monsterRun.obstacle.designLanguage": {
+    "message": "weer een designtaal",
+    "description": "Monster-run obstacle overhead: a design language"
+  },
+  "preset.monsterRun.part.token": {
+    "message": "een token",
+    "description": "Monster-run pick-up: a design token"
+  },
+  "preset.monsterRun.part.protocol": {
+    "message": "een protocol",
+    "description": "Monster-run pick-up: a protocol"
+  },
+  "preset.monsterRun.part.component": {
+    "message": "een component",
+    "description": "Monster-run pick-up: a component"
+  },
+  "preset.monsterRun.ahead": {
+    "message": "Komt eraan: {what}, {where}",
+    "description": "Spoken description of the next obstacle"
+  },
+  "preset.monsterRun.ahead.low": {
+    "message": "over de grond",
+    "description": "Where a monster-run obstacle sits when it must be jumped"
+  },
+  "preset.monsterRun.ahead.high": {
+    "message": "boven je hoofd",
+    "description": "Where a monster-run obstacle sits when it must be ducked"
+  },
+  "preset.monsterRun.ahead.clear": {
+    "message": "De weg is vrij.",
+    "description": "Spoken description when no monster-run obstacle is near"
+  },
+  "preset.monsterRun.idle": {
+    "message": "Het ligt sinds de vorige paragraaf op tafel.",
+    "description": "Placeholder before the monster-run game starts"
+  },
+  "preset.monsterRun.jump": {
+    "message": "Springen",
+    "description": "Button that makes the monster jump"
+  },
+  "preset.monsterRun.duck": {
+    "message": "Bukken",
+    "description": "Button that makes the monster duck"
+  },
+  "preset.monsterRun.start": {
+    "message": "Het leeft",
+    "description": "Button that starts the monster-run game"
+  },
+  "preset.monsterRun.restart": {
+    "message": "Opnieuw",
+    "description": "Button that restarts the monster-run game"
+  },
+  "preset.monsterRun.hint": {
+    "message": "Omhoog is springen, omlaag is bukken. Pijltjestoetsen werken ook.",
+    "description": "Hint under the monster-run controls"
+  },
+  "preset.monsterRun.feedback.hit": {
+    "message": "Er recht in: {what}.",
+    "description": "Feedback after hitting an obstacle"
+  },
+  "preset.monsterRun.feedback.part": {
+    "message": "{what} opgepakt.",
+    "description": "Feedback after collecting a part"
+  },
+  "preset.monsterRun.over.title": {
+    "message": "Het monster ligt.",
+    "description": "Headline on the game-over dialog after a monster-run run"
+  },
+  "preset.monsterRun.over.subtitle": {
+    "message": "Drie forks doen dat. De onderdelen waren nooit het probleem.",
+    "description": "Subtitle on the game-over dialog after a monster-run run"
+  },
+  "preset.diceDuel.eyebrow": {
+    "message": "Mini-game",
+    "description": "Eyebrow above the dice duel on a product page"
+  },
+  "preset.diceDuel.title": {
+    "message": "Dobbelduel",
+    "description": "Name of the Larpinq mini-game"
+  },
+  "preset.diceDuel.lede": {
+    "message": "Er staat iets op het pad. Sla toe met wat je hebt gegooid, of houd de goede dobbelstenen vast en gooi de rest opnieuw. Gooi je slechter dan je had, dan bijt het.",
+    "description": "One-line explanation of the dice-duel rules"
+  },
+  "preset.diceDuel.hud.score": {
+    "message": "Score {score}",
+    "description": "Score readout on the dice-duel HUD"
+  },
+  "preset.diceDuel.hud.hearts": {
+    "message": "Levens {hearts}",
+    "description": "Remaining-lives readout on the dice-duel HUD"
+  },
+  "preset.diceDuel.monster.goblin": {
+    "message": "een goblin",
+    "description": "The first monster in the dice duel"
+  },
+  "preset.diceDuel.monster.troll": {
+    "message": "een trol",
+    "description": "The second monster in the dice duel"
+  },
+  "preset.diceDuel.monster.wyrm": {
+    "message": "een draak",
+    "description": "The third monster in the dice duel"
+  },
+  "preset.diceDuel.monster.lich": {
+    "message": "een lich",
+    "description": "The fourth monster in the dice duel"
+  },
+  "preset.diceDuel.monsterLine": {
+    "message": "{what}, nog {hp} van {max}",
+    "description": "The monster and how much fight it has left"
+  },
+  "preset.diceDuel.wounds": {
+    "message": "Wat het monster nog overheeft",
+    "description": "Accessible name of the monster health bar"
+  },
+  "preset.diceDuel.diceLabel": {
+    "message": "Jouw dobbelstenen",
+    "description": "Accessible name for the row of dice"
+  },
+  "preset.diceDuel.die": {
+    "message": "Dobbelsteen met {face}{held}",
+    "description": "Accessible label for one die"
+  },
+  "preset.diceDuel.die.held": {
+    "message": ", vastgehouden",
+    "description": "Appended to a die that is being kept"
+  },
+  "preset.diceDuel.worth": {
+    "message": "Die klap is {damage} waard",
+    "description": "How much the current dice are worth"
+  },
+  "preset.diceDuel.strike": {
+    "message": "Slaan",
+    "description": "Button that attacks with the current dice"
+  },
+  "preset.diceDuel.reroll": {
+    "message": "Doorgooien ({left})",
+    "description": "Button that rerolls the unheld dice"
+  },
+  "preset.diceDuel.start": {
+    "message": "Zwaard trekken",
+    "description": "Button that starts the dice duel"
+  },
+  "preset.diceDuel.restart": {
+    "message": "Nieuw duel",
+    "description": "Button that restarts the dice duel"
+  },
+  "preset.diceDuel.idle": {
+    "message": "Er wacht iets verderop het pad.",
+    "description": "Placeholder before the dice duel starts"
+  },
+  "preset.diceDuel.hint": {
+    "message": "Houd de stenen vast die je bevallen en gooi de rest door. Zessen zijn meer waard dan zes.",
+    "description": "Hint under the dice duel"
+  },
+  "preset.diceDuel.feedback.felled": {
+    "message": "Het valt. Er komt al iets ergers aan.",
+    "description": "Feedback after felling a monster"
+  },
+  "preset.diceDuel.feedback.hit": {
+    "message": "Je raakt voor {damage}. Er is nog {left} over.",
+    "description": "Feedback after a swing that did not fell the monster"
+  },
+  "preset.diceDuel.feedback.bitten": {
+    "message": "Slechter dan je had, en het bijt. {from} werd {to}.",
+    "description": "Feedback after a reroll that came up worse"
+  },
+  "preset.diceDuel.feedback.better": {
+    "message": "Beter. {from} werd {to}.",
+    "description": "Feedback after a reroll that improved the hand"
+  },
+  "preset.diceDuel.over.title": {
+    "message": "Het kreeg je uiteindelijk.",
+    "description": "Headline on the game-over dialog after a dice duel"
+  },
+  "preset.diceDuel.over.subtitle": {
+    "message": "Drie keer te gretig. Aan de stenen lag het niet.",
+    "description": "Subtitle on the game-over dialog after a dice duel"
+  },
+  "preset.reconcile.eyebrow": {
+    "message": "Mini-game",
+    "description": "Eyebrow above the reconciliation game on a product page"
+  },
+  "preset.reconcile.title": {
+    "message": "Bank matchen",
+    "description": "Name of the Shillinq mini-game"
+  },
+  "preset.reconcile.lede": {
+    "message": "Elke betaling hoort bij een factuur, behalve die ene die bij niemand hoort. Match wat past en markeer wat niet past, voordat de maand sluit.",
+    "description": "One-line explanation of the reconciliation rules"
+  },
+  "preset.reconcile.hud.score": {
+    "message": "Score {score}",
+    "description": "Score readout on the reconciliation HUD"
+  },
+  "preset.reconcile.hud.lives": {
+    "message": "Correcties over {lives}",
+    "description": "Remaining-lives readout on the reconciliation HUD"
+  },
+  "preset.reconcile.statement": {
+    "message": "Op het afschrift",
+    "description": "Heading above the bank payments"
+  },
+  "preset.reconcile.invoices": {
+    "message": "Openstaande facturen",
+    "description": "Heading above the open invoices"
+  },
+  "preset.reconcile.flag": {
+    "message": "Markeer",
+    "description": "Short label on the button that flags a payment as fraudulent"
+  },
+  "preset.reconcile.flagOne": {
+    "message": "Markeer {amount}, kenmerk {reference}, als horend bij niemand",
+    "description": "Accessible label for the flag button on one payment"
+  },
+  "preset.reconcile.settle": {
+    "message": "Voldoe factuur {reference} van {amount} met de betaling die je vasthebt",
+    "description": "Accessible label for an invoice button"
+  },
+  "preset.reconcile.clock": {
+    "message": "Tijd tot de maand sluit",
+    "description": "Accessible name of the reconciliation countdown"
+  },
+  "preset.reconcile.idle": {
+    "message": "Een afschrift, een stapel facturen, en één regel die bij geen van beide past.",
+    "description": "Placeholder before the reconciliation game starts"
+  },
+  "preset.reconcile.start": {
+    "message": "Open het afschrift",
+    "description": "Button that starts the reconciliation game"
+  },
+  "preset.reconcile.restart": {
+    "message": "Opnieuw",
+    "description": "Button that restarts the reconciliation game"
+  },
+  "preset.reconcile.hint": {
+    "message": "Pak een betaling op en klik daarna de factuur aan die erbij hoort. Wat nergens bij past, markeer je.",
+    "description": "Hint under the reconciliation sheet"
+  },
+  "preset.reconcile.feedback.matched": {
+    "message": "Voldaan.",
+    "description": "Feedback after a correct match"
+  },
+  "preset.reconcile.feedback.caught": {
+    "message": "Dat is hem. Die ging nergens heen.",
+    "description": "Feedback after catching the fraudulent line"
+  },
+  "preset.reconcile.feedback.mismatch": {
+    "message": "Die betaling hoort niet bij die factuur.",
+    "description": "Feedback after matching the wrong invoice"
+  },
+  "preset.reconcile.feedback.paidFraud": {
+    "message": "Je hebt net de regel betaald die bij niemand hoort.",
+    "description": "Feedback after matching the fraudulent payment"
+  },
+  "preset.reconcile.feedback.flaggedGood": {
+    "message": "Die was echt. Markeer je alles, dan leest niemand je markeringen.",
+    "description": "Feedback after flagging a genuine payment"
+  },
+  "preset.reconcile.feedback.closed": {
+    "message": "De maand sloot met regels die nog openstonden.",
+    "description": "Feedback after the clock runs out"
+  },
+  "preset.reconcile.feedback.sheet": {
+    "message": "Afschrift rond. Hier komt het volgende.",
+    "description": "Feedback after clearing a whole sheet"
+  },
+  "preset.reconcile.over.title": {
+    "message": "De boeken kloppen niet.",
+    "description": "Headline on the game-over dialog after a reconciliation run"
+  },
+  "preset.reconcile.over.subtitle": {
+    "message": "Drie van die, en in april komt iemand erachter.",
+    "description": "Subtitle on the game-over dialog after a reconciliation run"
+  },
+  "preset.pipeFit.eyebrow": {
+    "message": "Mini-game",
+    "description": "Eyebrow above the pipe-fit game on a product page"
+  },
+  "preset.pipeFit.title": {
+    "message": "Koppeling leggen",
+    "description": "Name of the Integriq mini-game"
+  },
+  "preset.pipeFit.lede": {
+    "message": "Een record is onderweg van het ene systeem naar het andere en de route is half af. Draai de koppelstukken tot de lijn doorloopt. Draai je er een, dan bewegen beide openingen mee, en dat is precies het probleem.",
+    "description": "One-line explanation of the pipe-fit rules"
+  },
+  "preset.pipeFit.hud.score": {
+    "message": "Score {score}",
+    "description": "Score readout on the pipe-fit HUD"
+  },
+  "preset.pipeFit.hud.lives": {
+    "message": "Zendingen over {lives}",
+    "description": "Remaining-lives readout on the pipe-fit HUD"
+  },
+  "preset.pipeFit.port.top": {
+    "message": "boven",
+    "description": "The upper opening of a connector"
+  },
+  "preset.pipeFit.port.middle": {
+    "message": "midden",
+    "description": "The middle opening of a connector"
+  },
+  "preset.pipeFit.port.bottom": {
+    "message": "onder",
+    "description": "The lower opening of a connector"
+  },
+  "preset.pipeFit.source": {
+    "message": "Bron",
+    "description": "The system a record leaves in the pipe-fit game"
+  },
+  "preset.pipeFit.target": {
+    "message": "Afnemer",
+    "description": "The system a record arrives at in the pipe-fit game"
+  },
+  "preset.pipeFit.piece": {
+    "message": "Koppelstuk {n}: opent {in} naar {out}, {state}. Draai het.",
+    "description": "Accessible label for one connector"
+  },
+  "preset.pipeFit.piece.joined": {
+    "message": "sluit aan op het vorige",
+    "description": "State of a connector that lines up"
+  },
+  "preset.pipeFit.piece.gap": {
+    "message": "sluit niet aan op het vorige",
+    "description": "State of a connector that does not line up"
+  },
+  "preset.pipeFit.clock": {
+    "message": "Tijd tot de zending aankomt",
+    "description": "Accessible name of the pipe-fit countdown"
+  },
+  "preset.pipeFit.idle": {
+    "message": "Twee systemen, en er zit nog niets tussen.",
+    "description": "Placeholder before the pipe-fit game starts"
+  },
+  "preset.pipeFit.start": {
+    "message": "Stuur hem",
+    "description": "Button that starts the pipe-fit game"
+  },
+  "preset.pipeFit.restart": {
+    "message": "Opnieuw",
+    "description": "Button that restarts the pipe-fit game"
+  },
+  "preset.pipeFit.hint": {
+    "message": "Klik op een koppelstuk om het te draaien. Beide openingen bewegen mee.",
+    "description": "Hint under the pipe-fit route"
+  },
+  "preset.pipeFit.feedback.connected": {
+    "message": "Erdoorheen. De volgende is langer.",
+    "description": "Feedback after completing a route"
+  },
+  "preset.pipeFit.feedback.spilled": {
+    "message": "De zending kwam aan en vond een gat.",
+    "description": "Feedback after the clock runs out"
+  },
+  "preset.pipeFit.over.title": {
+    "message": "Het kwam nergens aan.",
+    "description": "Headline on the game-over dialog after a pipe-fit run"
+  },
+  "preset.pipeFit.over.subtitle": {
+    "message": "Drie zendingen het gat in. Volgend kwartaal valt het iemand op.",
+    "description": "Subtitle on the game-over dialog after a pipe-fit run"
   }
 }

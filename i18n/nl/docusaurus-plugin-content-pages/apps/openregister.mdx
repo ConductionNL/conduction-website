@@ -1,178 +1,291 @@
 ---
 title: OpenRegister, Conduction
-description: Schema-gedreven object store met audit trail. De data-fundering onder elke workspace-app.
+description: Alle objecten, registers en documenten op één plek, die jij zelf beheert. De gedeelde gegevensopslag onder elke Conduction-app, met automatisering die je tekent in plaats van programmeert.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, FeatureGrid, PairRow, PairCard, CtaBanner, AppMock, RotatingCards} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, MockScene, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock, getApp} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+export const app = getApp('openregister');
 
 <DetailHero
+  background="cobalt"
   appId="openregister"
-  crumb={[{label: 'Apps', href: '/apps'}, 'OpenRegister']}
-  status={{label: 'Stable', color: 'var(--c-mint-500)'}}
-  version="v3.1"
+  crumb={[{label: 'Apps', href: '/apps'}, app.name]}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.2"
   locales="NL · EN"
-  title="OpenRegister"
-  tagline={<>Schema's, registers en getypeerde data-objecten. De typed-data backbone onder elke andere Conduction-app, en de install waar je als eerste naar grijpt.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://docs.conduction.nl/openregister'}}
-  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/openregister'}}
-  iconColor="var(--c-blue-cobalt)"
-  icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>}
+  title={app.name}
+  tagline={<>Alle objecten, registers en documenten op één plek, die jij zelf beheert. Op je eigen <span className="next-blue">Nextcloud</span>.</>}
+  intro={<>{app.name} is de gedeelde gegevensopslag onder elke Conduction-app. Je klanten, offertes, facturen, projecten en zaken staan er één keer in, op je eigen server. Elke app leest en schrijft dezelfde gegevens, dus een wijziging op één plek is een wijziging overal. Het draait ook je automatisering: teken wat er moet gebeuren, en het gebeurt. Elke wijziging wordt gelogd met wie, wat en wanneer. Open source, uitgebracht onder EUPL-1.2 en sinds 2019 onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/openregister'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=openregister'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/openregister'}}
   illustration={<AppMock app="openregister" />}
 />
 
 <Section spacing="default">
-  <SectionHead
-    eyebrow="Wat het doet"
-    title="De typed-data fundering."
-    align="stack"
-    lede="Definieer een schema één keer. De app geeft je een API, een UI, validatie, een audit log en een citation-stable identifier per record. Elke andere Conduction-app leest en schrijft via die ene bron van waarheid."
-  />
-
-  <FeatureList>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M5 4h14v6H5zM5 14h14v6H5zM9 4v16"/></svg>}
-      title="Schema's die je één keer schrijft."
-    >
-      Definieer de vorm van een register in JSON Schema. De app genereert de API, valideert elke schrijfactie, en stelt de data beschikbaar aan andere apps die REST spreken.
-    </FeatureItem>
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="Eén dossier, elke app. Automatisering die je tekent. Elke wijziging gelogd."
+        align="stack"
+        lede="Je CRM, facturatie, contracten en projecten lezen en schrijven allemaal dezelfde gegevens. Je tekent wat er moet gebeuren als er iets verandert. En je ziet altijd wie wat heeft gewijzigd, en wanneer."
+      />
+      <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-      title="Eén backbone, elke app."
+      title="Eén klantdossier voor je CRM, facturatie en contracten."
     >
-      Elk getypeerd object leeft in één register. Andere apps consumeren het via dezelfde API. Geen syncs te onderhouden, geen dubbele bronnen van waarheid.
+      Nu: een klant krijgt een nieuw telefoonnummer en jij past het aan in drie systemen. Straks: je past het één keer aan. Het CRM, de factuur, het contract en je adresboek tonen allemaal het nieuwe nummer. Geen kopieerwerk, geen twee versies van de waarheid.
     </FeatureItem>
     <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M3 12h18M12 3v18"/><circle cx="12" cy="12" r="9"/></svg>}
-      title="REST en GraphQL, automatisch gegenereerd."
+      icon={<svg viewBox="0 0 24 24"><path d="M3 12h6l3-7 3 14 3-7h3"/></svg>}
+      title="Automatisering die je tekent, niet programmeert."
     >
-      Beide API's rollen uit het schema. Geen controllers schrijven, geen spec bijwerken als het schema wijzigt, geen lijmcode tussen OpenRegister en de apps die ervan consumeren.
+      Teken wat er moet gebeuren als een dossier verandert, of op een vast moment. Is een offerte akkoord, dan bestaat het project en ligt de kick-off-taak op het juiste bureau. Een korting boven tien procent wacht op jouw goedkeuring. Elke maandag om negen uur een lijst met leads die niemand heeft aangeraakt. Elke run gebruikt de rechten van wie hem startte, en elke stap wordt gelogd.
     </FeatureItem>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>}
-      title="Audit log, signed en getimestampt."
+      title="Elke wijziging gelogd, elke eerdere versie bewaard."
     >
-      Elke leesactie, schrijfactie en schemawijziging laat een tamper-evident spoor achter. Woo- en BIO-bewijslast komt mee met de install, geen spreadsheet-exports op het moment van auditen.
+      Wie heeft de prijs op die offerte aangepast, en wanneer? Het staat in het logboek. Per ongeluk iets verwijderd? Het staat in de prullenbak, en komt terug. Eerdere versies van een dossier blijven beschikbaar. Dat is je bewijs bij een audit en je antwoord op een privacyverzoek.
     </FeatureItem>
     <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5 1 6-5.5-3-5.5 3 1-6L3 9l6-1z"/></svg>}
-      title="Citation-stable identifiers."
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>}
+      title="Op je eigen server, en van jou om mee te nemen."
     >
-      Elk record krijgt een permanente identifier op het moment dat je het aanmaakt. Reorganisaties, systeem-migraties en hernoemingen breken je links niet.
-    </FeatureItem>
-    <FeatureItem
-      icon={<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.4-.7L3 21l1.5-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>}
-      title="Open, voor altijd."
-    >
-      Issues staan in het openbaar, releases zijn getagged, en elk register dat je aanmaakt is exporteerbaar naar plain JSON. De dag dat je deïnstalleert is even makkelijk als de dag van installeren.
+      Je gegevens staan op de Nextcloud die jij host, of die je partner voor je host. Niets gaat naar een derde partij. Elk dossier exporteer je naar gewone, open bestanden. De dag dat je vertrekt is net zo makkelijk als de dag dat je begon.
     </FeatureItem>
   </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['openregister']}
+      surface="product"
+    />
+  </div>
 </Section>
 
 <RotatingCards
-  eyebrow="Drie redenen waarom OpenRegister zijn plek verdient"
-  title="Schema-first, overal te vullen, standaard zichtbaar."
-  lede="Scroll door de kaarten. Elke kaart pint als je hem bereikt; de volgende schuift omhoog om hem te bedekken."
+  eyebrow={`Vier manieren waarop ${app.name} zijn plek verdient`}
+  title="Het werkt zoals jij werkt. En het werkt voor je."
+  lede="Vier dingen waar je normaal extra voor betaalt. Hier zitten ze ingebouwd, voor elke app op je werkplek."
   cards={[
     {
       tone: 'forest',
-      eyebrow: 'Schema-first',
-      title: 'Getypeerde registers uit een JSON-schema.',
-      summary: 'Definieer een schema, krijg een register. REST- en GraphQL-endpoints genereren zichzelf, audit logging staat standaard aan, citation-stable IDs landen op elke regel.',
-      cta: {label: 'Bekijk OpenRegister', href: '/apps/openregister'},
-      panel: <AppMock app="openregister" />,
+      eyebrow: 'Automatiseer',
+      title: 'Een factuur blijft onbetaald. De herinnering ligt al op iemands bureau.',
+      summary: 'Nu: iemand kijkt elke week de openstaande facturen na en belt met de hand na. Straks: je tekent het één keer. Elke ochtend controleert het de openstaande facturen. Veertien dagen over de vervaldatum landt een opvolgtaak bij de juiste collega, en het klantdossier laat het zien. Een afboeking boven vijfhonderd euro wacht op jouw goedkeuring voordat er iets verandert. Elke eerste van de maand de lijst met achterstallige facturen per klant. Elke stap wordt gelogd, en elke run doet alleen wat de persoon die hem instelde mag. Niets vergeten, geen nabellen, geen programmeerwerk.',
+      cta: {label: 'Lees de docs', href: 'https://openregister.conduction.nl'},
+      panel: <FlowMock />,
     },
     {
       tone: 'lavender',
-      eyebrow: 'Overal te vullen',
-      title: 'OpenConnector vult de registers voor je.',
-      summary: 'Bestaand systeem spreekt REST, SOAP, GraphQL of file drops? OpenConnector haalt het op, valideert tegen het schema en schrijft getypeerde regels. Geen lijmcode, geen nightly batch.',
-      cta: {label: 'Bekijk OpenConnector', href: '/apps/openconnector'},
-      panel: <AppMock app="openconnector" />,
+      eyebrow: 'Maak het van jou',
+      title: 'Voeg het veld toe dat jouw bedrijf nodig heeft. Zonder ontwikkelaar.',
+      summary: 'Een groothandel wil een bezorgregio op elke klant. Een installateur wil een schouwstap vóór de offerte. Voeg het veld toe, voeg de stap toe, zet de widget waar je het eerst naar kijkt bovenaan. In de draaiende app, in minuten, en je aanpassingen blijven bij elke update staan. Een kleine app van jezelf nodig, zoals een wagenparklijst met keuringsdata? Geef hem een naam, voeg de velden toe, zeg wie hem ziet, en hij staat in de bovenbalk.',
+      cta: {label: 'Zo werkt aanpassen', href: '/apps/buildiq'},
+      panel: <BuildMock />,
     },
     {
       tone: 'workspace',
-      eyebrow: 'Standaard zichtbaar',
-      title: 'Elk register is een LaunchPad-databron.',
-      summary: 'LaunchPad leest de schema\'s direct. Sleep een grafiek op een board, wijs een register aan en de kolommen zijn getypeerd. Geen BI-database, geen aparte login.',
-      cta: {label: 'Bekijk LaunchPad', href: '/apps/launchpad'},
-      panel: <AppMock app="launchpad-bi" />,
+      eyebrow: 'Praat ermee',
+      title: 'Stel een vraag. Krijg het antwoord, geen rapport om te bouwen.',
+      summary: 'Typ "welke klanten hebben een open offerte ouder dan een maand?" en je krijgt de lijst. Zeg "log mijn gesprek met Jansen, ze willen de offerte in mei" en het gesprek is gelogd en de opvolging gepland. Elke app op de werkplek kan haar acties aan een assistent geven. Jij bepaalt per assistent wat die mag, en er verandert niets zonder jouw akkoord.',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'jij: welke klanten hebben een open offerte ouder dan een maand?',
+        'assistent: 4 klanten gevonden, de oudste is Bakker BV (38 dagen)',
+        'assistent: zal ik voor elk een opvolggesprek inplannen?',
+      ]} cursor mode="vraagt eerst voordat het iets verandert" />,
+    },
+    {
+      tone: 'mint',
+      eyebrow: 'Laat klanten zichzelf helpen',
+      title: 'Klanten zien hun eigen dossiers. In hun eigen portaal.',
+      summary: <>De dossiers staan hier al: contracten, bestellingen, aanvragen, facturen. Geef klanten er hun eigen ingang naartoe met <a href="/apps/portaliq">Portaliq</a>: een portaal in jouw huisstijl waar ze hun contracten en producten zien, offertes aanvragen en tekenen, en hun tickets volgen. Geen kopie van de gegevens, geen aparte portaaldatabase. Je team en je klanten kijken naar hetzelfde dossier, en de waar-blijft-het-telefoontjes stoppen.</>,
+      cta: {label: 'Geef klanten hun eigen portaal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets die we meeleveren"
+  title="We leveren de widgets die je nodig hebt"
+  lede={<>Installeer het en het dashboard laat zien hoeveel gegevens je hebt, wat er veranderde en waar mensen naar zoeken. Ontwerp je eigen widgets met <a href="/apps/buildiq">Buildiq</a>, of bouw je eigen dashboard uit al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
+  widgets={[
+    {
+      title: 'Gebeurtenissen',
+      desc: 'De laatste wijzigingen in elke app. Wie wat deed, en wanneer.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {['var(--c-forest-300)', 'var(--c-lavender-300)', 'var(--c-mint-300)', 'var(--c-terracotta-300)', 'var(--c-forest-300)'].map((tone, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <span style={{width: 18, height: 18, borderRadius: 2, background: tone, flexShrink: 0}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 3}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{height: 3, width: 22, background: 'var(--c-cobalt-100)', borderRadius: 1}}></div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Objecten',
+      desc: 'Hoeveel dossiers er in je werkplek staan, en hoe hard dat groeit.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 26, fontWeight: 700, color: 'var(--c-cobalt-900)'}}>847</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, fontWeight: 600, color: 'var(--c-mint-500)'}}>+12%</div>
+          </div>
+          <svg viewBox="0 0 200 60" preserveAspectRatio="none" style={{width: '100%', height: 50}}>
+            <path d="M 0 48 L 28 36 L 56 42 L 84 24 L 112 30 L 140 16 L 168 22 L 200 8" stroke="var(--c-blue-cobalt)" strokeWidth="2" fill="none"/>
+            <path d="M 0 48 L 28 36 L 56 42 L 84 24 L 112 30 L 140 16 L 168 22 L 200 8 L 200 60 L 0 60 Z" fill="var(--c-cobalt-100)"/>
+            <circle cx="200" cy="8" r="3" fill="var(--c-orange-knvb)"/>
+          </svg>
+        </div>
+      ),
+    },
+    {
+      title: 'Populaire zoektermen',
+      desc: 'Waar je team het vaakst naar zoekt. Laat zien wat lastig te vinden is, zodat je het kunt oplossen.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[{w: '90%', n: '142'}, {w: '70%', n: '88'}, {w: '60%', n: '54'}, {w: '50%', n: '37'}, {w: '40%', n: '21'}].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+              <div style={{flex: 1, position: 'relative', height: 14, background: 'var(--c-cobalt-50)', borderRadius: 2, overflow: 'hidden'}}>
+                <div style={{position: 'absolute', top: 0, left: 0, height: '100%', width: row.w, background: i === 0 ? 'var(--c-orange-knvb)' : 'var(--c-cobalt-300)', borderRadius: 2}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, fontWeight: 600, color: 'var(--c-cobalt-700)', minWidth: 28, textAlign: 'right'}}>{row.n}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {title: 'Registers', desc: 'Je gegevensverzamelingen in één oogopslag, met aantallen per verzameling.'},
+    {title: 'Objecttypen', desc: 'De soorten dossiers die je bijhoudt, en hoeveel van elk.'},
+    {title: 'Zoekopdrachten', desc: 'Hoe vaak je team zoekt, dag voor dag.'},
+    {title: 'Objecten per register', desc: 'Welke verzamelingen de meeste dossiers bevatten.'},
+    {title: 'Objecten per type', desc: 'Je dossiers uitgesplitst naar soort.'},
+    {title: 'Gegevensverdeling', desc: 'Eén grafiek van waar je gegevens staan.'},
+    {title: 'Status koppelingen', desc: 'Op het Nextcloud-startscherm: of je koppelingen draaiden, in één oogopslag.'},
+  ]}
+/>
+
+<div id="integrations" />
+<Showcase
+  eyebrow={`Zo sluit ${app.name} aan op je werkplek`}
+  title="Apps die echt samenwerken."
+  lede="Elke app op je Nextcloud kan dezelfde gegevens lezen en schrijven. Bestanden, mail, contacten en agenda verschijnen op het dossier. Het dossier verschijnt in Bestanden, Mail en Talk. Niemand kopieert tussen tabbladen."
+  layout="side"
+  defaultOpen="data-everywhere"
+  items={[
+    {
+      id: 'data-everywhere',
+      title: 'Bestanden, mail en delingen blijven bij het dossier.',
+      summary: "Elke klant, elk project of elke zaak krijgt een eigen map zodra die bestaat. Zet er bestanden in, schrijf er notities bij, geef het labels zoals je je bestanden labelt. Voeg een mail toe aan een project en je collega's zien hem zonder dat iemand doorstuurt. Deel een van die bestanden en de deling staat op het dossier. Het dossier is onderdeel van de werkplek, geen tweede archief dat je bij moet houden.",
+      cta: {label: 'Lees de docs', href: 'https://openregister.conduction.nl/docs/Integrations/'},
+      panel: <MockScene
+        width={680}
+        height={420}
+        items={[
+          {type: 'sidebar', kind: 'openregister-metadata',  x: 200, y: 10,  size: 'md', z: 1},
+          {type: 'widget',  kind: 'nextcloud-mail',         x: 0,   y: 0,   size: 'sm', z: 2},
+          {type: 'widget',  kind: 'nextcloud-files',        x: 0,   y: 230, size: 'sm', z: 2},
+          {type: 'widget',  kind: 'openregister-activity',  x: 460, y: 60,  size: 'sm', z: 0},
+        ]}
+      />,
+    },
+    {
+      id: 'groupware',
+      title: 'Je CRM gebruikt je echte contacten en agenda.',
+      summary: "Heeft je CRM een contact nodig, dan gebruikt het je Nextcloud-adresboek. Heeft het een afspraak nodig, dan schrijft het in je Nextcloud-agenda. Open een lead en zie de afspraken erover. Klik op een contact en start een Talk-gesprek. Eén login dekt het allemaal, en niemand houdt een tweede adresboek bij.",
+      cta: {label: 'Lees de docs', href: 'https://openregister.conduction.nl/docs/Integrations/calendar'},
+      panel: <LeafMock leaf="contacts" />
+    },
+    {
+      id: 'project-knowledge',
+      title: 'Projectkennis, vast aan het project.',
+      summary: "Bladwijzers worden de bronnen bij een zaak. Wikipagina's worden het werkgeheugen van het team op het project. Kaarten markeren de locatiebezoeken. Foto's dragen het bewijs, met tijd en plaats. Het project is niet langer een map vol pdf's. Een nieuwe collega is in een middag bij, zonder een uur aan doorgestuurde mails.",
+      cta: {label: 'Lees de docs', href: 'https://openregister.conduction.nl/docs/Integrations/collectives'},
+      panel: <AppMock app="opencatalogi" />,
+    },
+    {
+      id: 'workflow-from-anywhere',
+      title: 'Open een ticket of lead direct vanuit een Talk-bericht.',
+      summary: "Een Talk-bericht wordt een ticket zonder het gesprek te verlaten. Een openbaar formulier op je website schrijft een dossier waar het team mee aan de slag kan. Uren, budget en peilingen lopen allemaal mee op dezelfde gegevens waar het project op is gebouwd. Elke app krijgt de gedeelde gegevens, en elke app geeft eraan terug.",
+      cta: {label: 'Lees de docs', href: 'https://openregister.conduction.nl/docs/Integrations/talk'},
+      panel: <AppMock app="decidesk" />,
+    },
+    {
+      id: 'beyond-the-workspace',
+      title: 'Systemen van buiten, in hetzelfde beeld.',
+      summary: <>Je boekhoudpakket, het bestelsysteem van je leverancier, een openbare databron: via <a href="/apps/integriq">Integriq</a> voeden ze dezelfde gegevens, op momenten die jij bepaalt. Het systeem van buiten blijft wat het is. Je werkplek behandelt zijn gegevens als onderdeel van het klantdossier, met hetzelfde logboek en dezelfde rechten.</>,
+      cta: {label: 'Bekijk Integriq', href: '/apps/integriq'},
+      panel: <MockScene
+        width={680}
+        height={420}
+        items={[
+          {type: 'sidebar', kind: 'openconnector-run-detail', x: 220, y: 10,  size: 'md', z: 1},
+          {type: 'widget',  kind: 'openregister-activity',    x: 0,   y: 0,   size: 'sm', z: 2},
+          {type: 'widget',  kind: 'openconnector-runs',       x: 0,   y: 230, size: 'sm', z: 2},
+          {type: 'widget',  kind: 'procest-werkvoorraad',     x: 480, y: 80,  size: 'sm', z: 0},
+        ]}
+      />,
     },
   ]}
 />
 
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Werkt goed met"
-    title="Drie apps die de install versterken."
+    eyebrow="Past goed bij"
+    title="Drie apps die dezelfde gegevens aan het werk zetten."
     align="stack"
-    lede="OpenRegister is de data-fundering. Deze apps consumeren hem, ontsluiten hem en houden hem gevuld."
+    lede="Geef de dossiers vorm, praat ermee, en zie ze op één startscherm."
   />
   <PairRow>
     <PairCard
-      href="/apps/opencatalogi"
-      icon={<svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>}
-      name="OpenCatalogi"
-      why="Ontsluit elk register als publieke, doorzoekbare catalogus-entry. Twee installs, één citatie-strategie."
+      href="/apps/buildiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="Buildiq"
+      why="Voeg velden, schermen en kleine eigen apps toe bovenop deze gegevens. Zonder ontwikkelaar."
     />
     <PairCard
-      href="/apps/openconnector"
-      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-      name="OpenConnector"
-      why="Vult je registers vanuit bestaande systemen, REST, SOAP, file drops, message queues, zonder lijmcode te schrijven."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>}
+      name="Hermiq"
+      why="Stel je gegevens een vraag, of geef ze een taak. Jij bepaalt wat elke assistent mag."
     />
     <PairCard
       href="/apps/launchpad"
       icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>}
       name="LaunchPad"
-      why="Bouwt dashboards rechtstreeks op je registers. Geen aparte BI-tool, geen extra login, geen ETL."
+      why="Dashboards rechtstreeks uit je gegevens. Geen aparte rapportagetool, geen extra login."
     />
   </PairRow>
 </Section>
 
 <Section spacing="default">
   <SectionHead
-    eyebrow="Elke feature in de doos"
-    title="De volledige spec, hover voor detail."
+    eyebrow="Voor ontwikkelaars"
+    title="De volledige specificatie staat op de docs-site."
     align="stack"
-    lede="Hover (of tab naar) elke feature voor de volledige beschrijving. De status-hex toont waar elke feature zit op de volwassenheidscurve."
-  />
-  <FeatureGrid
-    legend
-    items={[
-      {group: 'Kerncapaciteiten'},
-      {label: 'JSON Schema-validatie', tip: 'Definieer een register-vorm in JSON Schema. Elke schrijfactie wordt eraan gevalideerd.', status: 'stable'},
-      {label: 'REST API, automatisch gegenereerd', tip: 'REST API rolt uit het schema. Geen controllers te schrijven.', status: 'stable'},
-      {label: 'GraphQL-endpoint', tip: 'GraphQL-endpoint ook uit het schema gegenereerd. Dezelfde bron van waarheid als REST.', status: 'stable'},
-      {label: 'Schemaversies', tip: 'Migraties zijn versie-stabiel. Oude clients blijven werken als velden worden toegevoegd.', status: 'stable'},
-      {label: 'Citation-stable IDs', tip: 'Elk record krijgt een permanente identifier op het moment dat je hem aanmaakt.', status: 'stable'},
-      {label: 'Signed audit log', tip: 'Audit log is signed en getimestampt. Woo- en BIO-bewijslast komt mee met de install.', status: 'stable'},
-      {label: 'Bewaartermijnen', tip: 'Per record bewaarregels met automatische archivering en verwijdering.', status: 'stable'},
-      {label: 'JSON-export en -import', tip: 'Elk register exporteerbaar naar plain JSON. Elders importeren met hetzelfde schema.', status: 'stable'},
-
-      {group: 'Integraties'},
-      {label: 'OpenCatalogi-indexing', tip: 'OpenCatalogi indexeert elk register als doorzoekbare publieke catalogus-entry.', status: 'stable'},
-      {label: 'OpenConnector-inlees', tip: 'OpenConnector laadt data in registers vanuit REST, SOAP, file drops, message queues.', status: 'stable'},
-      {label: 'LaunchPad-dashboards', tip: 'LaunchPad bouwt dashboards rechtstreeks op je registers. Geen ETL, geen aparte BI-tool.', status: 'stable'},
-      {label: 'DocuDesk-templatevelden', tip: 'DocuDesk leest registervelden direct in document-templates en signt het resultaat.', status: 'stable'},
-      {label: 'NLDS-profile-pack', tip: 'Twaalf NLDS-profile-packs zitten in de install: BAG, BRO, BRP, KvK, RGBZ, ZTC, etc.', status: 'beta'},
-      {label: 'Federatieve registers', tip: 'Cross-instance register-federatie via signed manifests.', status: 'soon'},
-
-      {group: 'Compliance &amp; admin'},
-      {label: 'Woo-bewijspakket', tip: 'Woo-bewijslast (audit log + bewaartermijnen + citatie-IDs) als één export.', status: 'stable'},
-      {label: 'BIO-controls', tip: 'BIO-control mapping dekt het audit log, bewaartermijnen en role-based access.', status: 'stable'},
-      {label: 'AVG-export, per betrokkene', tip: 'Per-betrokkene AVG-export verzamelt elk record over registers heen in één ZIP.', status: 'stable'},
-      {label: 'Recht op vergetelheid', tip: 'Tombstone-erasure met retentie-aware respijttermijn.', status: 'beta'},
-      {label: 'CLI-migratietools', tip: 'Schema-migratie-CLI: dry-run, diff, apply. Idempotent op elke run.', status: 'stable'},
-      {label: 'Geplande imports', tip: 'Cron-stijl geplande imports vanuit externe bronnen via OpenConnector.', status: 'soon'},
-    ]}
+    lede={<>Datamodel, API's, automatiseringsengine en integratiehandleidingen: <a href="https://openregister.conduction.nl">openregister.conduction.nl</a>.</>}
   />
 </Section>
 
+<PartnersForApp slug="openregister" />
+
 <CtaBanner
-  title="Twee minuten tot getypeerde data."
-  lede={<>Installeer OpenRegister uit de <span className="next-blue">Nextcloud</span>-app-store, definieer één schema, en je team schrijft dezelfde ochtend gestructureerde data.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://docs.conduction.nl/openregister'}}
+  title="Jouw gegevens, op je eigen Nextcloud."
+  lede={<>Open source. Gratis te installeren. Standaard AVG-proof. Elke Conduction-app draait op dezelfde gegevens, op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: 'https://apps.nextcloud.com/apps/openregister'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=openregister'}}
 />

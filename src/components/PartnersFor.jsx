@@ -46,10 +46,24 @@ function localizedCopy({locale, kind, subject}) {
   };
 }
 
+/* Display-name rebrand 2026-08: the preset's apps-registry may still
+   carry the former product names. Map them to the current display
+   names so section copy and the partners-catalog match (the catalog
+   uses the new names). Remove once @conduction/docusaurus-preset
+   ships the renamed registry. */
+const RENAMED = {
+  Procest: 'Dossiq', DocuDesk: 'Filinq', Doriath: 'Keepiq', HRMQ: 'Humaniq',
+  Scholiq: 'Learniq', DeciDesk: 'Decidiq', SoftwareCatalog: 'Stackiq',
+  NLDesign: 'Thematiq', OpenBuild: 'Buildiq', OpenConnector: 'Integriq',
+  LarpingApp: 'Larpinq', 'App Versions': 'Versioniq',
+  OpenAnonymiser: 'Anonymiq', Planix: 'Planninq',
+};
+
 export function PartnersForApp({slug, name, ...rest}) {
   const {i18n} = useDocusaurusContext();
   const app = getApp(slug);
-  const subject = name || (app && app.name) || slug;
+  const registryName = app && app.name ? (RENAMED[app.name] || app.name) : null;
+  const subject = name || registryName || slug;
   const partners = usePartnersByApp(subject);
   const becomePartner = useBecomePartner();
   const copy = localizedCopy({locale: i18n.currentLocale, kind: 'app', subject});

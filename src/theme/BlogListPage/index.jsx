@@ -42,6 +42,7 @@ import {
   APPS_REGISTRY,
   APP_LABELS,
 } from '@conduction/docusaurus-preset/data/apps-registry';
+import PageHeading from '@site/src/components/PageHeading';
 
 const TYPE_SET = new Set(CONTENT_TYPES);
 const APP_SET = new Set(Object.keys(APPS_REGISTRY));
@@ -593,6 +594,13 @@ export default function BlogListPage(props) {
       >
         <main className="marketing-page">
           <article style={{margin: 0, padding: 0}}>
+            {/* The academy landing page had no <h1>: its heading comes from a
+                SectionHead, which renders an <h2>, so the document had no
+                level-one heading for screen readers or search engines to
+                anchor on (WCAG 1.3.1). Hidden rather than visible so the
+                page looks exactly as designed. See
+                src/components/PageHeading.jsx. */}
+            <PageHeading>{metadata?.blogTitle || 'Conduction Academy'}</PageHeading>
             <Section spacing="default">
               <BrowserOnly fallback={<AcademyLandingFallback items={sorted} />}>
                 {() => <AcademyLandingInner items={sorted} />}

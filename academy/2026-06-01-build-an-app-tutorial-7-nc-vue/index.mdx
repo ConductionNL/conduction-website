@@ -2,6 +2,7 @@
 slug: build-an-app-tutorial-7-nc-vue
 title: "Build a Nextcloud app on the Conduction stack — Part 7: The nc-vue component library"
 contentType: tutorial
+heroIcon: blocks
 authors: [conduction]
 date: 2026-06-01
 summary: Parts 2–6 used a handful of nc-vue components by name (CnAppRoot, CnObjectSidebar, CnDashboardPage, CnMarkdownEditor). Part 7 completes the picture, organised by capability so you can reach for the right component the moment your PetStore app needs it.
@@ -342,12 +343,12 @@ When OpenRegister's object-lock feature is on and another user holds the lock on
 
 ### `CnDependencyMissing`: required app not installed
 
-The Conduction stack has app dependencies (PetStore requires OpenRegister; the integrations from Part 6 require OpenConnector). When a dependency is missing, the page renders a friendly banner that says what's missing and how to install it, instead of a stack trace.
+The Conduction stack has app dependencies (PetStore requires OpenRegister; the integrations from Part 6 require Integriq). When a dependency is missing, the page renders a friendly banner that says what's missing and how to install it, instead of a stack trace.
 
 ```vue
 <template>
   <CnDependencyMissing
-    v-if="!hasOpenConnector"
+    v-if="!hasIntegriq"
     app="openconnector"
     :reason="$t('petstore.integrations.openconnectorRequired')"
     install-url="https://apps.nextcloud.com/apps/openconnector" />

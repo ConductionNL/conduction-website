@@ -1,10 +1,10 @@
 ---
 title: Portaliq, Conduction
-description: Eén gedeeld extern portaal voor klanten en leveranciers. White-label, gebouwd op OpenRegister, geen aparte login per app.
+description: Eén portaal voor je klanten en leveranciers, op je eigen Nextcloud. Ze loggen één keer in en zien hun offertes, facturen, contracten en open verzoeken uit elke app die je draait. Jouw logo, jouw kleuren.
 hide_table_of_contents: true
 ---
 
-import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppCrossLinks} from '@conduction/docusaurus-preset/components';
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, LeafMock} from '@conduction/docusaurus-preset/components';
 import {PartnersForApp} from '@site/src/components/PartnersFor';
 
 <DetailHero
@@ -12,14 +12,15 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   appId="portaliq"
   crumb={[{label: 'Apps', href: '/apps'}, 'Portaliq']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
-  version="v0.x"
+  version="v0.1.8"
   locales="NL · EN"
   title="Portaliq"
-  tagline={<>Eén gedeeld extern portaal voor klanten en leveranciers, op <span className="next-blue">Nextcloud</span>. Geen aparte login en geen aparte UI per app — één white-label voordeur, gebouwd op OpenRegister.</>}
-  intro={<>Portaliq is het gedeelde externe portaal voor de hele appsuite. Klanten (burgers) en leveranciers (bedrijven) krijgen één geïntegreerd, white-label portaal om hun gegevens over alle Conduction-apps heen in te zien en er acties op te doen — lezen en schrijven via OpenRegister, per onderwerp afgeschermd en per rij herverifieerd. Medewerkers blijven binnen Nextcloud; Portaliq is uitsluitend voor de mensen die dat niet zijn. Uitgegeven onder EUPL-1.2, onderhouden door Conduction.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Lees de docs', href: 'https://portaliq.conduction.nl'}}
-  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://codeberg.org/Conduction/portaliq'}}
+  tagline={<>Eén portaal voor je klanten en leveranciers, op je eigen <span className="next-blue">Nextcloud</span>. Ze loggen één keer in en zien alles wat je voor ze doet.</>}
+  intro={<>Je klant logt één keer in en ziet zijn offertes, facturen, contracten en open verzoeken uit elke app die je draait. Je leverancier ziet zijn eigen orders en contracten, nooit die van een andere leverancier. Elk bericht uit elke app landt voor hen in één inbox. Eén login voor hen, één plek voor jou, met jouw logo en jouw kleuren. Je eigen medewerkers blijven in Nextcloud. Portaliq is alleen voor de mensen die daar niet zitten. Open source, uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=portaliq'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/portaliq'}}
+  illustration={<AppMock app="portaliq" />}
 />
 
 <Section spacing="default">
@@ -27,42 +28,42 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
     <div style={{minWidth: 0}}>
       <SectionHead
         eyebrow="Wat het doet"
-        title="Eén portaal, niet één portaal per app."
+        title="Wat je klant ziet. Wat je leverancier ziet. Eén voordeur."
         align="stack"
-        lede="Elke app die iets extern wilde tonen, bouwde vroeger zijn eigen login, zijn eigen UI, zijn eigen authenticatiemodel. Portaliq vervangt dat allemaal door één register van bijdragen: een app meldt in een klein manifest wat een klant of leverancier mag zien en doen, en Portaliq rendert het, leest het via OpenRegister, en handhaaft de grens."
+        lede="Elke app die je draait kan een stukje van zichzelf aan de buitenwereld laten zien. Portaliq bundelt die stukjes tot één portaal per organisatie, controleert bij elke regel wie hem mag zien, en levert wat de bezoeker terugstuurt af bij de app waar het hoort."
       />
       <FeatureList>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>}
-          title="Fail-closed authenticatie-edge."
-        >
-          Vandaag een bearer-token portaalsessie, server-side herleid en nooit vertrouwd vanaf de client. Echte DigiD- (burgers) en eHerkenning-federatie (bedrijven) is gepland achter dezelfde interface, in afwachting van een OpenConnector-broker.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>}
-          title="Declaratief register van bijdragen."
-        >
-          Elke app sluit aan met één ontkoppelde klasse — geen import van Portaliq, geen info.xml-afhankelijkheid, inactief als Portaliq niet is geïnstalleerd. procest, PipelinQ en Scholiq leveren in de huidige beta al bij.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-          title="Per onderwerp afgeschermde, herverifieerde reads."
-        >
-          Portaliq leest de gegevens van elke app via OpenRegister en herverifieert elke rij tegen het geauthenticeerde onderwerp — een leverancier ziet alleen zijn eigen aanbestedingen, contracten en facturen.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>}
-          title="Gewhitelistte aanmaakacties."
-        >
-          Apps bepalen welke velden een extern onderwerp mag indienen; de server zet het eigenaarschap, waardoor een vervalst identificatienummer in het verzoek nooit standhoudt.
-        </FeatureItem>
-        <FeatureItem
-          icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
-          title="Gebundelde berichtenbox."
-        >
-          De meldingen van elke bijdragende app komen samen in één berichtenlijst per onderwerp, gevoed door de meldingsengine van OpenRegister.
-        </FeatureItem>
-      </FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 18a5 5 0 0 1 10 0"/></svg>}
+      title="Je klant logt één keer in. Zijn offertes, facturen en verzoeken staan er."
+    >
+      Vandaag belt een klant om te vragen waar zijn factuur blijft, en iemand zoekt het op. In plaats daarvan opent de klant het portaal en ziet de factuur met de status, de offerte die op zijn handtekening wacht, de order die eruit kwam en de meldingen die nog openstaan. Hij accepteert en tekent de offerte ter plekke, betaalt een openstaande factuur, en bekijkt zijn contracten en lopende projecten. Uit elke app die je draait, op één scherm, achter één login. Minder telefoontjes, en de telefoontjes die je wel krijgt beginnen een stuk verder.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>}
+      title="Je leverancier ziet zijn eigen contracten. Nooit die van een ander."
+    >
+      Een leverancier logt in en vindt zijn aanbestedingen, zijn contracten en zijn facturen. Portaliq controleert bij elke afzonderlijke regel dat hij hoort bij de persoon die is ingelogd. Wie het nummer van een ander bedrijf probeert te raden, krijgt niets. Zelfs geen hint dat het bestaat.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
+      title="Elk bericht uit elke app in één inbox voor hen."
+    >
+      Een statusupdate uit je zaakafhandeling, een notitie van sales, een herinnering van facturatie. De bezoeker ziet ze in één inbox, nieuwste eerst, met een teller voor ongelezen berichten in het menu. Markeert hij een bericht als gelezen, dan zie jij dat. Nooit meer "die mail heb ik nooit gehad".
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>}
+      title="Een verzoek uit het portaal landt waar je team al werkt."
+    >
+      De bezoeker dient vanuit het portaal een verzoek of een klacht in, met bijlagen. Het komt binnen in de app die je team gebruikt, als een dossier met de naam van de bezoeker er al op. De bezoeker krijgt een ontvangstbevestiging. Mislukt de aflevering bij de app, dan wordt de inzending bewaard en gemarkeerd, zodat je het opnieuw kunt proberen. Niets wat vanuit het portaal is verstuurd gaat ooit verloren.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>}
+      title="Ze loggen in zoals ze elders al inloggen."
+    >
+      Inwoners kunnen inloggen met DigiD en bedrijven met eHerkenning, via een identiteitsmakelaar waarmee je organisatie een contract heeft. Zakelijke klanten kunnen de inlogaanbieder gebruiken waarmee je al werkt. Portaliq zelf ziet nooit een wachtwoord. Sessies verlopen, en jij kunt er op elk moment een beëindigen van jouw kant.
+    </FeatureItem>
+  </FeatureList>
     </div>
     <AppCrossLinks
       variant="rail"
@@ -72,39 +73,209 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   </div>
 </Section>
 
-<PartnersForApp slug="portaliq" />
+<RotatingCards
+  eyebrow="Drie manieren waarop Portaliq zijn plek verdient"
+  title="Het werkt zoals jij werkt. En het werkt voor jou."
+  lede="Drie dingen waar je normaal extra voor betaalt. In Portaliq zitten ze ingebouwd."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automatiseer',
+      title: 'Een inzending kon niet worden afgeleverd. Iemand is er al mee bezig.',
+      summary: 'Vandaag: een klacht via een webformulier verdwijnt in een mailbox die op vrijdag niemand bekijkt. In plaats daarvan stel je het één keer in. Elke inzending uit het portaal is een dossier. Zodra de aflevering van eentje mislukt, landt er een taak om het opnieuw te proberen op het juiste bureau. Een bericht dat een klant na een week nog niet heeft geopend, zet een belafspraak op de lijst van de accountmanager. Elke maandag een lijst met verzoeken die niemand beantwoordde. Niets vergeten, geen nabellen, geen programmeerwerk.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
+      panel: <FlowMock />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Jouw logo, jouw kleuren, jouw naam op de deur.',
+      summary: 'Een bezoeker moet jouw organisatie zien, niet de onze. Stel per organisatie de naam, het logo en de kleuren in, en het portaal draagt ze op de inlogpagina en elk scherm daarna. Draai meer dan één portaal vanuit dezelfde Nextcloud, elk met een eigen uitstraling. Voeg een pagina met je eigen uitleg toe en een begrippenlijst met de woorden waar je bezoekers naar vragen. Kies welke apps in het menu staan en in welke volgorde.',
+      cta: {label: 'Lees de docs', href: 'https://portaliq.conduction.nl'},
+      panel: <BuildMock />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Praat ermee',
+      title: 'Vraag je assistent hoe het portaal ervoor staat. Bezoekers komen hem nooit tegen.',
+      summary: 'De assistent van Portaliq werkt voor je eigen medewerkers, nooit voor de bezoeker van het portaal. Vraag "welke inzendingen zijn vandaag niet afgeleverd?" en je krijgt de lijst, geen rapport dat je moet bouwen. Vraag hoeveel klanten deze maand inlogden, of welke berichten nog ongelezen zijn. Hij leest dezelfde dossiers die jij mag zien en vraagt het voordat hij iets wijzigt. Aan de kant van de bezoeker is er helemaal geen assistent, met opzet.',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'jij: welke inzendingen zijn vandaag niet afgeleverd?',
+        'assistent: 2 inzendingen gemarkeerd als mislukt, allebei klachten van vanochtend',
+        'jij: probeer ze opnieuw',
+        'assistent: dit wijzigt dossiers, zal ik doorgaan?',
+      ]} cursor mode="vraagt het voordat hij iets wijzigt" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Widgets die we meeleveren"
+  title="We leveren de widgets die je nodig hebt"
+  lede={<>Installeer Portaliq en het dashboard laat zien hoeveel klanten en leveranciers het portaal gebruiken, hoeveel er nu zijn ingelogd, en hoeveel berichten nog wachten om gelezen te worden. Ontwerp je eigen widgets met <a href="/apps/buildiq">Buildiq</a>, of bouw je eigen dashboard van al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
+  widgets={[
+    {
+      title: 'Actieve accounts',
+      desc: 'Klanten en leveranciers met een werkend portaalaccount. Klik door naar de accountlijst.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>312</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>accounts</div>
+          </div>
+          {[
+            {label: 'klanten', val: '75%', tone: 'var(--c-cobalt-300)'},
+            {label: 'leveranciers', val: '40%', tone: 'var(--c-lavender-300)'},
+            {label: 'nieuw', val: '15%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Ongelezen berichten',
+      desc: 'Berichten aan bezoekers die nog niemand heeft geopend. Een week lang hoog? Tijd om te bellen.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', stage: '9 dagen'},
+            {tone: 'var(--c-lavender-300)', stage: '3 dagen'},
+            {tone: 'var(--c-mint-500)', stage: 'vandaag'},
+            {tone: 'var(--c-mint-500)', stage: 'vandaag'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Verkeer',
+      desc: 'Sessies in deze periode, sessies die je van jouw kant beëindigde, afgeleverde berichten. De gezondheid van de voordeur in één oogopslag.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {label: 'sessies', val: '85%', tone: 'var(--c-cobalt-300)'},
+            {label: 'beëindigd', val: '10%', tone: 'var(--c-orange-knvb)'},
+            {label: 'berichten', val: '60%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Actieve sessies',
+      desc: 'Wie er nu in het portaal is. De live hartslag van de voordeur.',
+    },
+    {
+      title: 'Beëindigde sessies',
+      desc: 'Sessies die je van jouw kant stopte, zodat je precies kunt laten zien wanneer toegang eindigde.',
+    },
+    {
+      title: 'Sessies per account',
+      desc: 'Welke accounts elke week inloggen en welke nooit. Jouw sein om te bellen.',
+    },
+    {
+      title: 'Portalen en thema\'s',
+      desc: 'Elk portaal dat je draait en de uitstraling die het draagt, vanuit één overzicht.',
+    },
+    {
+      title: 'Pagina\'s, menu\'s en begrippenlijst',
+      desc: 'De inhoud van elk portaal: je eigen pagina\'s, de menuvolgorde, en de woorden die je uitlegt.',
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="Zo sluit Portaliq aan op je werkplek"
+  title="De apps die je al draait, gezien van buitenaf."
+  lede="Portaliq laat niets van zichzelf zien. Elk scherm dat een bezoeker ziet komt uit een app waar je team al in werkt. Dit is wat elke app laat zien."
+  layout="side"
+  defaultOpen="files"
+  items={[
+    {
+      id: 'files',
+      title: 'Documenten bij het dossier, ook voor de bezoeker',
+      summary: 'Een getekend contract, een factuur als pdf, een brief over een zaak. Heeft je team het in Bestanden aan het dossier gehangen, dan kan de bezoeker het downloaden vanuit het portaal, nadat Portaliq heeft gecontroleerd dat het dossier van hem is. Waar jij het toestaat, uploadt hij zelf een document terug op zijn eigen dossier. Niets reist als e-mailbijlage.',
+      cta: {label: 'Lees de docs', href: 'https://portaliq.conduction.nl'},
+      panel: <LeafMock leaf="files" />,
+    },
+    {
+      id: 'business',
+      title: 'De klantkant van je bedrijf',
+      summary: <>Uit <a href="/apps/pipelinq">Pipelinq</a> ziet de klant zijn verzoeken, klachten, contracten, afspraken en de geschiedenis van elk gesprek en elke mail met jou, en kan hij een nieuw verzoek indienen. Uit <a href="/apps/shillinq">Shillinq</a> ziet hij zijn offertes, orders en facturen met vervaldatum en status, tekent hij een offerte en betaalt hij een openstaande factuur vanuit het portaal. Een leverancier ziet jouw inkooporders en zijn eigen facturen.</>,
+      cta: {label: 'Bekijk Pipelinq', href: '/apps/pipelinq'},
+      panel: <AppMock app="pipelinq" />,
+    },
+    {
+      id: 'public',
+      title: 'Zaken, aanbestedingen en klachten',
+      summary: <>Uit <a href="/apps/dossiq">Dossiq</a> en <a href="/apps/zaakafhandelapp">ZaakAfhandelApp</a>: een leverancier ziet zijn aanbestedingen, contracten en facturen, en de berichten daarover. Een inwoner ziet zijn eigen zaken en verzoeken, dient een klacht in met bijlagen, en volgt wat er daarna gebeurt. Elke regel gecontroleerd tegen de persoon die is ingelogd.</>,
+      cta: {label: 'Bekijk Dossiq', href: '/apps/dossiq'},
+      panel: <AppMock app="procest" />,
+    },
+    {
+      id: 'school',
+      title: 'Wat een leerling of ouder ziet',
+      summary: <>Uit <a href="/apps/learniq">Learniq</a>: cijfers, eindcijfers, aanwezigheid en inschrijvingen. Een leerling levert een opdracht in vanuit het portaal en meldt een afwezigheid. Een ouder volgt het rapport zonder de administratie te bellen. Hetzelfde portaal, dezelfde login, een andere set schermen.</>,
+      cta: {label: 'Bekijk Learniq', href: '/apps/learniq'},
+      panel: <AppMock app="scholiq" />,
+    },
+  ]}
+/>
 
 <Section spacing="default" background="tinted">
   <SectionHead
-    eyebrow="Werkt goed met"
-    title="De apps waarop Portaliq leunt en die het rendert."
+    eyebrow="Past goed bij"
+    title="Bouw ermee, vraag ernaar, houd je eigen overzicht."
     align="stack"
   />
   <PairRow>
     <PairCard
-      href="/apps/openregister"
-      icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>}
-      name="OpenRegister"
-      why="De gegevens van elke bijdrage — gelezen per onderwerp afgeschermd, geschreven met server-side eigenaarschap."
+      href="/apps/buildiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="Buildiq"
+      why="Bouw je eigen schermen en portaalpagina's zonder ontwikkelaar. Wat je bouwt zien je bezoekers ook."
     />
     <PairCard
-      href="/apps/procest"
-      icon={<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>}
-      name="Procest"
-      why="Eerste live bijdrage: leveranciers zien hun eigen aanbestedingen, contracten en facturen."
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7v3a7 7 0 0 1-14 0V9a7 7 0 0 1 7-7Z"/><path d="M9 22h6"/><circle cx="9.5" cy="10" r="1"/><circle cx="14.5" cy="10" r="1"/></svg>}
+      name="Hermiq"
+      why="De assistent voor je eigen medewerkers. Vraag welke inzendingen mislukten of welke berichten ongelezen zijn. Bezoekers komen hem nooit tegen."
     />
     <PairCard
-      href="/apps/pipelinq"
-      icon={<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="19" cy="18" r="2"/></svg>}
-      name="PipelinQ"
-      why="Bijdragen voor klant en customer — contactmomenten, boekingen en aanvragen."
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Je eigen dashboard over al je apps. Zet het verkeer en de ongelezen berichten van het portaal naast de rest van je dag."
     />
   </PairRow>
 </Section>
 
+<PartnersForApp slug="portaliq" />
+
 <CtaBanner
-  title="Eén voordeur voor iedereen buiten Nextcloud."
-  lede={<>Portaliq vervangt een aparte externe login en een aparte externe UI per app door één white-label portaal, gebouwd op dezelfde registers waarin je team al werkt. Open-source, op je eigen data.</>}
-  primaryCta={{label: 'Installeer uit de app store', href: '/install'}}
-  secondaryCta={{label: 'Praat met een partner', href: '/partners'}}
+  title="Eén voordeur voor iedereen buiten je Nextcloud."
+  lede={<>Open source. Gratis te installeren. Jouw logo op de deur en je gegevens op je eigen server. Portaliq draait op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=portaliq'}}
 />

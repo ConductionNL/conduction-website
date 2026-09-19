@@ -7,6 +7,7 @@ hide_table_of_contents: true
 import React, {useState, useMemo} from 'react';
 import {Section, SectionHead, SolutionCard, SolutionGrid, FacetedFilters, FilterChip} from '@conduction/docusaurus-preset/components';
 import {SOLUTIONS} from '@site/src/data/solutions-catalog';
+import PageHeading from '@site/src/components/PageHeading';
 
 export function FilterableSolutions() {
   const [selected, setSelected] = useState({});
@@ -61,13 +62,13 @@ export function FilterableSolutions() {
   );
 
   return (
-    <div style={{display: 'grid', gridTemplateColumns: '240px 1fr', gap: 56, alignItems: 'start'}}>
+    <div className="cn-filter-layout">
       <FacetedFilters facets={facets} selected={selected} onChange={setSelected} />
       <div>
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--c-cobalt-100)', fontSize: 14, color: 'var(--c-cobalt-700)'}}>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--c-cobalt-100)', fontSize: 14, color: 'var(--conduction-color-text-body)'}}>
           <div>
-            <strong style={{color: 'var(--c-cobalt-900)'}}>{filteredFinal.length}</strong> of {SOLUTIONS.length} solutions
-            {totalSelected > 0 && <span style={{color: 'var(--c-cobalt-400)'}}> · {SOLUTIONS.length - filteredFinal.length} hidden by filters</span>}
+            <strong style={{color: 'var(--conduction-color-text-strong)'}}>{filteredFinal.length}</strong> of {SOLUTIONS.length} solutions
+            {totalSelected > 0 && <span style={{color: 'var(--conduction-color-text-muted)'}}> · {SOLUTIONS.length - filteredFinal.length} hidden by filters</span>}
           </div>
         </div>
         <SolutionGrid columns={2}>
@@ -88,6 +89,8 @@ export function FilterableSolutions() {
     </div>
   );
 }
+
+<PageHeading>What you achieve, not what we sell.</PageHeading>
 
 <Section spacing="default">
   <SectionHead

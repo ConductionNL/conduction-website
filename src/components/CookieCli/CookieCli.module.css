@@ -1,0 +1,304 @@
+/**
+ * <CookieCli /> styles. Mirrors preview/components/cookie-cli.html
+ * exactly: terminal dark panel, IBM Plex Mono throughout, three
+ * action buttons with key glyphs.
+ */
+
+.term {
+  --term-bg: #0A0F1A;
+  --term-fg: #C9D4E5;
+  --term-fg-dim: #5F6E86;
+  --term-cobalt: #6892D9;
+  --term-green: #5FE39A;
+  --term-border: #1A2540;
+
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+
+  background: var(--term-bg);
+  color: var(--term-fg);
+  border: 1px solid var(--term-border);
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 1px rgba(33, 70, 139, 0.12),
+    0 24px 64px -16px rgba(10, 23, 47, 0.45),
+    inset 0 0 80px rgba(0, 0, 0, 0.4);
+  font-family: var(--conduction-typography-font-family-code);
+  font-size: 13px;
+  line-height: 1.55;
+  width: calc(100% - 48px);
+  max-width: 640px;
+  overflow: hidden;
+
+  /* Cap the panel to the viewport and let the body scroll inside it.
+     Without this the panel grows with the shell scrollback and the game
+     surface until its title bar is pushed off the top of the screen: the
+     consent buttons then sit above the fold with no way to reach them.
+     Flex column so the title bar stays put and only .body scrolls. */
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 48px);
+}
+
+.bar {
+  background: #060912;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--term-border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--term-fg-dim);
+}
+.dots { display: flex; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dotR { background: #FF6B7A; }
+.dotY { background: #F7C76F; }
+.dotG { background: var(--term-green); }
+.title { flex: 1; text-align: center; }
+.title b { color: var(--term-fg); }
+
+/* min-height:0 is load-bearing: a flex child defaults to min-height:auto,
+   which refuses to shrink below its content, so overflow-y would never
+   engage and the panel would grow past the viewport anyway. */
+.body {
+  padding: 18px 20px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.prompt { color: var(--term-fg); margin: 6px 0; }
+.user { color: var(--term-green); }
+.host { color: var(--term-cobalt); }
+.sigil { color: var(--term-fg-dim); }
+.path { color: var(--term-fg-dim); }
+.cmd { color: var(--term-fg); }
+
+.comment {
+  color: var(--term-fg-dim);
+  margin: 6px 0;
+}
+
+.opts {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.opts li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--term-fg);
+  font-family: inherit;
+  font-size: inherit;
+  text-align: left;
+  width: 100%;
+}
+.opts li:hover { background: rgba(255, 255, 255, 0.02); }
+.opts li:focus-visible {
+  outline: 1px solid var(--term-cobalt);
+  outline-offset: 2px;
+}
+.optKey { color: var(--term-fg-dim); }
+.optCheck { color: var(--term-fg-dim); width: 12px; }
+.optOn .optCheck { color: var(--term-green); }
+.optLabel { color: var(--term-fg); flex: 1; }
+.optTag {
+  font-size: 10px;
+  color: var(--term-fg-dim);
+  border: 1px solid var(--term-border);
+  padding: 1px 7px;
+  border-radius: 3px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--term-border);
+  flex-wrap: wrap;
+}
+
+.btn {
+  background: transparent;
+  color: var(--term-fg);
+  border: 1px solid var(--term-border);
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.btn:hover {
+  background: rgba(33, 70, 139, 0.10);
+  border-color: var(--term-cobalt);
+}
+
+.btnKey {
+  background: var(--term-border);
+  color: var(--term-cobalt);
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-size: 10px;
+}
+
+.btnPrimary {
+  background: var(--c-orange-knvb);
+  color: white;
+  border-color: var(--c-orange-knvb);
+}
+.btnPrimary:hover {
+  background: var(--c-orange-knvb);
+  border-color: white;
+  filter: brightness(1.05);
+}
+.btnPrimary .btnKey {
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+@media (max-width: 600px) {
+  .term {
+    bottom: 12px;
+    width: calc(100% - 24px);
+  }
+  .actions { flex-direction: column; }
+  .btn { justify-content: center; }
+}
+
+/* ============================================================
+ * The shell, and the game hiding in it
+ * ============================================================
+ * Colours mirror the kit specimen (preview/cookie-cli.html):
+ * cobalt UFOs, KNVB-orange lasers, green player.
+ *
+ * The game paints by writing HTML into a ref, so its class names are
+ * plain strings that never pass through the CSS-modules rewriter. They
+ * have to be :global() or they would style nothing at all, silently. */
+
+.scrollback {
+  max-height: 40vh;
+  overflow-y: auto;
+  margin-bottom: 4px;
+}
+
+.outBlock { margin-bottom: 6px; }
+
+.out {
+  margin: 4px 0;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--term-fg-dim);
+  white-space: pre-wrap;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+.tone_ok   { color: var(--term-green); }
+.tone_warn { color: #F7C76F; }
+.tone_cmt  { color: var(--term-fg-dim); }
+.tone_dir  { color: var(--term-cobalt); }
+
+/* Blinking block cursor after the typed text. */
+.cursor {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--term-green);
+  animation: cookieCliBlink 1s steps(2, start) infinite;
+}
+
+@keyframes cookieCliBlink {
+  to { visibility: hidden; }
+}
+
+/* Respect a reduced-motion preference: keep the cursor, drop the blink. */
+@media (prefers-reduced-motion: reduce) {
+  .cursor { animation: none; }
+}
+
+/* Off-screen, not display:none — a hidden input still has to be reachable
+   for mobile keyboards, and display:none would remove it from the a11y
+   tree entirely. */
+.hiddenInput {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.game { padding-top: 4px; }
+
+.gameHud {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  border-top: 1px dashed #1F2A45;
+  border-bottom: 1px dashed #1F2A45;
+  padding: 6px 0;
+  margin-bottom: 8px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.gameHud :global(.hud-label) { color: var(--term-fg-dim); font-size: 10px; }
+.gameHud :global(.hud-val)   { color: var(--term-fg); font-weight: 600; }
+
+.gameScreen {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  white-space: pre;
+  padding: 10px 12px;
+  margin: 0;
+  color: var(--term-fg);
+  background: rgba(6, 9, 18, 0.5);
+  border: 1px solid #15203A;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.gameFooter {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed #1F2A45;
+  font-size: 11px;
+  color: var(--term-fg-dim);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.gameScreen :global(.g-ufo)    { color: var(--term-cobalt); text-shadow: 0 0 6px rgba(104, 146, 217, 0.55); }
+.gameScreen :global(.g-player) { color: var(--term-green);  text-shadow: 0 0 6px rgba(95, 227, 154, 0.55); font-weight: 600; }
+.gameScreen :global(.g-laser)  { color: #F36C21;            text-shadow: 0 0 8px rgba(243, 108, 33, 0.95); font-weight: 700; }
+.gameScreen :global(.g-bomb)   { color: #FF6B7A;            text-shadow: 0 0 6px rgba(255, 107, 122, 0.6); }
+.gameScreen :global(.g-boom)   { color: #F7C76F;            text-shadow: 0 0 10px rgba(247, 199, 111, 0.85); font-weight: 700; }
+
+.gameHud :global(.g-laser)  { color: #F36C21; }
+.gameHud :global(.g-player) { color: var(--term-green); }
+
+.gameFooter :global(.ok)   { color: var(--term-green); }
+.gameFooter :global(.warn) { color: #F7C76F; }
+.gameFooter :global(.cmt)  { color: var(--term-fg-dim); }

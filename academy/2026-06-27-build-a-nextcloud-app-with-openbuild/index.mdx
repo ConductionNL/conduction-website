@@ -1,11 +1,12 @@
 ---
 slug: build-a-nextcloud-app-with-openbuild
-title: "Build a Nextcloud app with OpenBuild, no code required"
+title: "Build a Nextcloud app with Buildiq, no code required"
 contentType: tutorial
+heroIcon: wand
 authors: [conduction]
 date: 2026-06-27
-summary: Build a complete Pet Store app inside Nextcloud without writing a line of code. You will create the app, design its data model, seed it with demo data, compose a dashboard from every widget type, give a vets group its own medical layer, release a production version, publish the app to GitHub and reinstall it from the store, surface the app on the LaunchPad dashboard and in search, link vet visits to Calendar, drop files onto a pet, add business-logic flows that book a vet inspection and email the vet when a pet is registered, and learn how an AI agent can build the whole app over MCP. OpenBuild is the visual builder for the same manifest the code path teaches; here you author it by clicking, not by editing JSON.
-tags: [App development, OpenBuild, OpenRegister, No-code, Manifest, Flows, GitHub, MCP, Tutorial]
+summary: Build a complete Pet Store app inside Nextcloud without writing a line of code. You will create the app, design its data model, seed it with demo data, compose a dashboard from every widget type, give a vets group its own medical layer, release a production version, publish the app to GitHub and reinstall it from the store, surface the app on the LaunchPad dashboard and in search, link vet visits to Calendar, drop files onto a pet, add business-logic flows that book a vet inspection and email the vet when a pet is registered, and learn how an AI agent can build the whole app over MCP. Buildiq is the visual builder for the same manifest the code path teaches; here you author it by clicking, not by editing JSON.
+tags: [App development, Buildiq, OpenRegister, No-code, Manifest, Flows, GitHub, MCP, Tutorial]
 apps: [openbuild, openregister]
 durationMinutes: 60
 ---
@@ -71,56 +72,56 @@ import githubStoreTabImg from './images/github-store-tab.png';
 import githubInstallDialogImg from './images/github-install-dialog.png';
 import githubPermissionsImg from './images/openbuild_githubpermisions.jpg';
 
-OpenBuild is the visual builder for Conduction apps. The [three-paths tutorial](/academy/build-an-app-tutorial-0-three-paths) teaches the manifest path by hand: you write `manifest.json` and the `Cn*` components render it. OpenBuild builds that exact same manifest for you through a UI. You point and click, OpenBuild writes the manifest and the OpenRegister schemas behind it, and you get a working Nextcloud app with no repository, no build step, and no deploy.
+Buildiq is the visual builder for Conduction apps. The [three-paths tutorial](/academy/build-an-app-tutorial-0-three-paths) teaches the manifest path by hand: you write `manifest.json` and the `Cn*` components render it. Buildiq builds that exact same manifest for you through a UI. You point and click, Buildiq writes the manifest and the OpenRegister schemas behind it, and you get a working Nextcloud app with no repository, no build step, and no deploy.
 
-This tutorial builds a **Pet Store with a veterinary layer**, the canonical Conduction sample domain. By the end you have an app your whole organisation can open: a dashboard of live numbers and charts, browsable lists of pets and owners, a rich pet profile page, a vets-only medical section, a released production version, a widget on everyone's LaunchPad, vet appointments in Nextcloud Calendar, and photos attached to each pet. Everything in this tutorial is built in the OpenBuild UI against a real OpenRegister behind it.
+This tutorial builds a **Pet Store with a veterinary layer**, the canonical Conduction sample domain. By the end you have an app your whole organisation can open: a dashboard of live numbers and charts, browsable lists of pets and owners, a rich pet profile page, a vets-only medical section, a released production version, a widget on everyone's LaunchPad, vet appointments in Nextcloud Calendar, and photos attached to each pet. Everything in this tutorial is built in the Buildiq UI against a real OpenRegister behind it.
 
 {/* truncate */}
 
 <Outcomes title="What you'll have at the end">
-  <Outcome>A working <strong>Pet Store app</strong> in OpenBuild with its own paw icon, seven schemas, and real relations between them.</Outcome>
-  <Outcome>A <strong>dashboard that uses every widget type</strong> OpenBuild offers (header, stats, charts, gauge, delta, object list, image, label, text) bound to live register data.</Outcome>
+  <Outcome>A working <strong>Pet Store app</strong> in Buildiq with its own paw icon, seven schemas, and real relations between them.</Outcome>
+  <Outcome>A <strong>dashboard that uses every widget type</strong> Buildiq offers (header, stats, charts, gauge, delta, object list, image, label, text) bound to live register data.</Outcome>
   <Outcome>A <strong>vets-only medical layer</strong>: a Nextcloud group that alone can read the medical records, enforced by OpenRegister, not by hiding a menu.</Outcome>
   <Outcome>A <strong>released production version</strong> you can iterate on safely, plus the app surfaced on the <strong>LaunchPad dashboard</strong>, in <strong>Calendar</strong> (vet visits), and on each pet's <strong>file drop zone</strong>.</Outcome>
   <Outcome>A <strong>flow</strong> (business logic in the register config) that, when a pet is created, books a vet inspection task in Calendar and emails the vet, plus the knowledge that an <strong>AI agent can build the whole app over MCP</strong>.</Outcome>
 </Outcomes>
 
 <Prerequisites title="What you need">
-  <PrerequisiteItem>A Nextcloud instance with <strong>OpenBuild</strong> and <strong>OpenRegister</strong> enabled. Docker Compose from the OpenRegister dev environment is fine.</PrerequisiteItem>
+  <PrerequisiteItem>A Nextcloud instance with <strong>Buildiq</strong> and <strong>OpenRegister</strong> enabled. Docker Compose from the OpenRegister dev environment is fine.</PrerequisiteItem>
   <PrerequisiteItem>Admin rights on that instance. You will create a group and two users for the permissions step.</PrerequisiteItem>
   <PrerequisiteItem>No coding. If you have read the <a href="/academy/build-an-app-tutorial-0-three-paths">three-paths tutorial</a> you will recognise the manifest concepts, but it is not required.</PrerequisiteItem>
 </Prerequisites>
 
 :::tip Recommended first
-If you want to understand what OpenBuild is writing for you under the hood, skim [Part 0: three paths](/academy/build-an-app-tutorial-0-three-paths) first. It explains the manifest and the `nextcloud-vue` component library that OpenBuild drives.
+If you want to understand what Buildiq is writing for you under the hood, skim [Part 0: three paths](/academy/build-an-app-tutorial-0-three-paths) first. It explains the manifest and the `nextcloud-vue` component library that Buildiq drives.
 :::
 
 ## Step 1: Create the app and give it a paw
 
-Open **OpenBuild** from the Nextcloud app menu and choose **Create app**. The wizard opens on **Basics**: give it a name (`Pet Store`) and a short description. Every app you build here is *virtual* — it lives entirely in OpenBuild with no installed Nextcloud counterpart — so there is no app-type to pick.
+Open **Buildiq** from the Nextcloud app menu and choose **Create app**. The wizard opens on **Basics**: give it a name (`Pet Store`) and a short description. Every app you build here is *virtual* — it lives entirely in Buildiq with no installed Nextcloud counterpart — so there is no app-type to pick.
 
-Right there in Basics, give it a **paw**. The **App icon** picker offers thousands of **Material Design Icons** plus the **OpenGemeenten** set: type `paw` in the search box and click the paw glyph, or use **Upload your own SVG** if you have your own artwork. A single pick becomes *both* icons — a white glyph for Nextcloud's dark app header and a dark glyph for light backgrounds — and the two preview swatches show exactly how each will look; use **Add a dark override** only if you want a different glyph for dark. OpenBuild attaches the icon to the app and serves it at `/apps/openbuild/icons/pet-store.svg`.
+Right there in Basics, give it a **paw**. The **App icon** picker offers thousands of **Material Design Icons** plus the **OpenGemeenten** set: type `paw` in the search box and click the paw glyph, or use **Upload your own SVG** if you have your own artwork. A single pick becomes *both* icons — a white glyph for Nextcloud's dark app header and a dark glyph for light backgrounds — and the two preview swatches show exactly how each will look; use **Add a dark override** only if you want a different glyph for dark. Buildiq attaches the icon to the app and serves it at `/apps/openbuild/icons/pet-store.svg`.
 
 Then **Next** through **Preset** (pick a version preset — **Single production** is fine to start) and **Review**, and hit **Create**. You can change the icon any time later from the app's detail page, on the **Icon** tab.
 
-**Verify:** the app appears in the OpenBuild app list with its paw, and opening it shows an empty shell with your app name in the navigation.
+**Verify:** the app appears in the Buildiq app list with its paw, and opening it shows an empty shell with your app name in the navigation.
 
 <HexCard title="What just happened">
-  OpenBuild created an <code>Application</code> object plus a first <code>ApplicationVersion</code> in OpenRegister. The version holds the manifest you are about to fill in. The icon is a file attached to the application object, the same file mechanism you will use for pet photos in Step 9.
+  Buildiq created an <code>Application</code> object plus a first <code>ApplicationVersion</code> in OpenRegister. The version holds the manifest you are about to fill in. The icon is a file attached to the application object, the same file mechanism you will use for pet photos in Step 9.
 </HexCard>
 
 <figure>
-  <img src={step1Img} alt="The OpenBuild dashboard with a Create app button and the Pet Store app listed among recent apps" />
-  <figcaption>OpenBuild's dashboard: Create app, then your Pet Store appears in the recent apps list.</figcaption>
+  <img src={step1Img} alt="The Buildiq dashboard with a Create app button and the Pet Store app listed among recent apps" />
+  <figcaption>Buildiq's dashboard: Create app, then your Pet Store appears in the recent apps list.</figcaption>
 </figure>
 
 ## How you author: the edit menu and edit mode
 
-Everything in this tutorial is built **inside the running app**, through one control. Open your app and look at the top-right of any page: the **orange OpenBuild button**. Click it and a menu drops down. This is your whole authoring surface. You never leave the app to edit it.
+Everything in this tutorial is built **inside the running app**, through one control. Open your app and look at the top-right of any page: the **orange Buildiq button**. Click it and a menu drops down. This is your whole authoring surface. You never leave the app to edit it.
 
 <figure>
-  <img src={editMenuImg} alt="The running Pet Store with the orange OpenBuild edit button open, showing the menu: Edit page, Add widget, Edit pages, Edit menu, Edit sidebar, Edit actions, Edit settings, Edit data, Edit flows" />
-  <figcaption>The orange OpenBuild button opens the author menu. Each entry edits one part of the app, and every change is saved straight back into the manifest behind it.</figcaption>
+  <img src={editMenuImg} alt="The running Pet Store with the orange Buildiq edit button open, showing the menu: Edit page, Add widget, Edit pages, Edit menu, Edit sidebar, Edit actions, Edit settings, Edit data, Edit flows" />
+  <figcaption>The orange Buildiq button opens the author menu. Each entry edits one part of the app, and every change is saved straight back into the manifest behind it.</figcaption>
 </figure>
 
 Each entry opens a focused editor, and the rest of this tutorial is really just "open the edit menu, pick the right entry":
@@ -143,7 +144,7 @@ For pages made of widgets (dashboards and detail pages), choose **Edit page**. T
   <figcaption>In edit mode each widget gets a <strong>cog</strong> (configure) in its corner. The dashboard is a 12-column <strong>grid</strong>: drag a widget to move it, drag its edge to resize it; the layout snaps to the grid and is saved with the page.</figcaption>
 </figure>
 
-- **Move / resize:** drag a widget to reposition it, or drag its edges/corners to resize. OpenBuild uses a 12-column grid (GridStack) under the hood, so widgets snap into a tidy layout and never overlap. Your positions are stored on the page.
+- **Move / resize:** drag a widget to reposition it, or drag its edges/corners to resize. Buildiq uses a 12-column grid (GridStack) under the hood, so widgets snap into a tidy layout and never overlap. Your positions are stored on the page.
 - **Configure:** click a widget's **cog** to open its settings (data source, labels, colours, format; see Step 5).
 - **Add:** with edit mode on, use **Add widget…** from the orange menu.
 - **Save / cancel:** the orange button now reads **Save page** (keep your layout) or **Cancel** (discard). Until you save, nothing is committed.
@@ -152,7 +153,7 @@ With that one mechanic (orange button → an editor, or Edit page → cogs and a
 
 ## Step 2: Design the data model
 
-A Pet Store needs more than pets. From the orange menu choose **Edit data…**. This opens the data editor: it shows the app's **register** and its **schemas**, with an **Add schema** button and a pencil to edit each one. (The data editor talks straight to OpenRegister: schemas are real OpenRegister schemas, not an OpenBuild-only construct.)
+A Pet Store needs more than pets. From the orange menu choose **Edit data…**. This opens the data editor: it shows the app's **register** and its **schemas**, with an **Add schema** button and a pencil to edit each one. (The data editor talks straight to OpenRegister: schemas are real OpenRegister schemas, not an Buildiq-only construct.)
 
 <figure>
   <img src={editDataModalImg} alt="The Manage data modal showing the Pet Store register and its seven schemas (Category, Tag, Owner, Pet, Order, Visit, Medical record) each with a property count, an edit pencil and a delete button, plus an Add schema button" />
@@ -171,11 +172,11 @@ Create these seven schemas. For each one, add the properties listed, then add th
 | `visit` | date, reason, vet, status, cost | pet (to `pet`), medicalRecord (to `medicalRecord`) |
 | `medicalRecord` | date, diagnosis, treatment, notes, weightKg | pet (to `pet`), visit (to `visit`) |
 
-A relation property is a `string` with `format: uuid` and an `x-openregister-relation` marker pointing at the target schema. OpenBuild's schema editor adds that for you when you pick "relation" as the property type and choose the target.
+A relation property is a `string` with `format: uuid` and an `x-openregister-relation` marker pointing at the target schema. Buildiq's schema editor adds that for you when you pick "relation" as the property type and choose the target.
 
 <figure>
-  <img src={step2EditorImg} alt="The OpenBuild schema editor for the Pet schema: a Title field, Properties / Configuration / Security tabs, and a properties table (name, status, species, sex, dateOfBirth) with an Add property button" />
-  <figcaption>The schema editor (Edit data… → the pencil on a schema). On the <strong>Properties</strong> tab, <strong>Add property</strong> and pick a type for each field; for a relation choose type "relation" and the target schema and OpenBuild writes the <code>x-openregister-relation</code> marker for you.</figcaption>
+  <img src={step2EditorImg} alt="The Buildiq schema editor for the Pet schema: a Title field, Properties / Configuration / Security tabs, and a properties table (name, status, species, sex, dateOfBirth) with an Add property button" />
+  <figcaption>The schema editor (Edit data… → the pencil on a schema). On the <strong>Properties</strong> tab, <strong>Add property</strong> and pick a type for each field; for a relation choose type "relation" and the target schema and Buildiq writes the <code>x-openregister-relation</code> marker for you.</figcaption>
 </figure>
 
 The schema editor has three tabs: **Properties** (the fields, above), **Security** (which groups may read/write, used in Step 6), and **Configuration**. Open **Configuration** to set the schema's identity and how it behaves across Nextcloud:
@@ -214,7 +215,7 @@ An empty app is hard to judge. Add real-looking content so your dashboard and li
 Good demo data has variety: a sold beagle, an available parakeet, a pending kitten, a cancelled skin-allergy visit. Variety is what makes the charts in Step 5 worth looking at.
 
 <HexCard title="Pet photos are files, and Nextcloud blocks external images">
-  Nextcloud's content-security policy only loads images from the instance itself (<code>img-src 'self' data: blob:</code>). A photo URL pointing at an external stock-photo site will not render. Upload the photos into Nextcloud Files (or attach them to the pet, Step 9) and point <code>photoUrl</code> at the same-origin path. This is a real constraint, not an OpenBuild limitation.
+  Nextcloud's content-security policy only loads images from the instance itself (<code>img-src 'self' data: blob:</code>). A photo URL pointing at an external stock-photo site will not render. Upload the photos into Nextcloud Files (or attach them to the pet, Step 9) and point <code>photoUrl</code> at the same-origin path. This is a real constraint, not an Buildiq limitation.
 </HexCard>
 
 **Verify:** the OpenRegister object count for `pet` reads 10, and a pet object has its `owner`, `category`, and `tags` filled with the UUIDs of the objects you created.
@@ -247,9 +248,9 @@ Now make the pages reachable. Choose **Edit menu…** and click **Add menu item*
 
 **Verify:** each index page lists its objects, the search box filters them, and the card/table toggle switches layout.
 
-## Build a specialised detail page, where OpenBuild shines
+## Build a specialised detail page, where Buildiq shines
 
-A list gets you *to* an object. The **detail page** is where the work happens, and it is where OpenBuild earns its keep. A detail page is a **grid of widgets bound to one object**, composed exactly like the dashboard: open the page, choose **Edit page** to enter edit mode, then **Add widget…**, drag on the grid, and tune each widget through its **cog** (Step 5). A good detail page is not one generic form. It is a deliberate mix of widgets that fits the domain. That mix is what makes an app feel built for its job, and it is all configuration.
+A list gets you *to* an object. The **detail page** is where the work happens, and it is where Buildiq earns its keep. A detail page is a **grid of widgets bound to one object**, composed exactly like the dashboard: open the page, choose **Edit page** to enter edit mode, then **Add widget…**, drag on the grid, and tune each widget through its **cog** (Step 5). A good detail page is not one generic form. It is a deliberate mix of widgets that fits the domain. That mix is what makes an app feel built for its job, and it is all configuration.
 
 Open a pet from the Pets list to land on its detail page. The pet profile below is four widgets: a header banner, an editable data grid, a files drop zone, and a related-objects panel.
 
@@ -310,7 +311,7 @@ Every widget here is added from the same **Add widget…** menu, dragged onto th
 
 Add a **dashboard** page (Edit pages… → Add page → Type **Dashboard**) and set it as the app's home. A dashboard is a free grid you fill with widgets. Use the full set so the store has a real cockpit:
 
-<HexCard title="The OpenBuild widget palette">
+<HexCard title="The Buildiq widget palette">
   <strong>Header</strong> for a titled banner. <strong>Stat</strong> cards for single numbers (pets in catalogue, owners, orders, revenue). <strong>Chart</strong> for distributions and trends (pets by status as a donut, visits over time as a line). <strong>Gauge</strong> for a value against a target (pets sold out of ten). <strong>Delta</strong> for a number with its change. <strong>Stats block</strong> for a labelled count (available pets). <strong>Object list</strong> for a live mini-table (recent pets). <strong>Image</strong>, <strong>label</strong>, and <strong>text</strong> for framing and copy.
 </HexCard>
 
@@ -408,14 +409,14 @@ With the data locked down, you can now scope the **navigation**: tag the medical
 
 You have been building in the open. Before colleagues rely on the app, cut a **production version** so you can keep editing without changing what they see.
 
-OpenBuild versions an app the way OpenRegister versions any object. Open the app's **version history**. The version you have been editing is the draft. Use **release** to mark it as production. From now on there is exactly one production version at a time; "Open app" always opens that one.
+Buildiq versions an app the way OpenRegister versions any object. Open the app's **version history**. The version you have been editing is the draft. Use **release** to mark it as production. From now on there is exactly one production version at a time; "Open app" always opens that one.
 
 To keep working, open a non-production version from the version list and edit there. Your colleagues stay on production until you release again. This is how you separate development from what is live, without a second instance.
 
 **Verify:** the version history shows one version marked as production, and opening the app from the app list lands on it.
 
 <figure>
-  <img src={step7Img} alt="The OpenBuild version picker for Pet Store listing Production 0.1.0 and Development versions, with the production version marked" />
+  <img src={step7Img} alt="The Buildiq version picker for Pet Store listing Production 0.1.0 and Development versions, with the production version marked" />
   <figcaption>One production version at a time: the version picker shows Production 0.1.0 alongside the editable Development version.</figcaption>
 </figure>
 
@@ -423,40 +424,40 @@ To keep working, open a non-production version from the version list and edit th
 
 A released app lives on your instance. To hand it to a colleague, move it to another instance, or back it up outside Nextcloud, **publish it to GitHub**. Publishing writes the app as plain files to a repository — `openbuild-app.json` (name, description, type), `manifest.json` (every page, widget, and setting you built by clicking), and `schemas/` (the data model) — and tags the repo with the `openbuild-app` topic. That topic is what the store searches, so a published app is discoverable the moment it exists.
 
-You never paste a token into OpenBuild. You store a GitHub personal access token once, in the **Credentials** pane of the app's user settings; it is kept in Doriath, Nextcloud's encrypted credential vault. When you publish, OpenBuild asks the OpenRegister credential broker to make the GitHub calls on your behalf. The token is injected server-side and never travels to the app or the browser — OpenBuild only ever sees the repository it created.
+You never paste a token into Buildiq. You store a GitHub personal access token once, in the **Credentials** pane of the app's user settings; it is kept in Keepiq, Nextcloud's encrypted credential vault. When you publish, Buildiq asks the OpenRegister credential broker to make the GitHub calls on your behalf. The token is injected server-side and never travels to the app or the browser — Buildiq only ever sees the repository it created.
 
 Create the token as a GitHub **fine-grained** personal access token, scoped to the repositories you want to publish to (or all of them), and grant exactly three repository permissions — nothing more:
 
-- **Administration — Read and write**: lets OpenBuild create the repository and set its `openbuild-app` topic.
+- **Administration — Read and write**: lets Buildiq create the repository and set its `openbuild-app` topic.
 - **Contents — Read and write**: lets it push the app's files and commits.
 - **Metadata — Read-only**: required by GitHub, and what the store's search reads.
 
-No issues, pull-requests, workflows, or account permissions are needed — and the broker's allow-rules deny those anyway, so a token scoped this tightly can do everything OpenBuild needs and nothing it doesn't.
+No issues, pull-requests, workflows, or account permissions are needed — and the broker's allow-rules deny those anyway, so a token scoped this tightly can do everything Buildiq needs and nothing it doesn't.
 
 <figure>
   <img src={githubPermissionsImg} alt="GitHub fine-grained personal access token permissions screen showing Administration set to Read and write, Contents set to Read and write, and Metadata set to Read-only (Required)" />
-  <figcaption>The minimal token: Administration and Contents at Read and write, Metadata at Read-only. That is the whole surface OpenBuild publishing needs.</figcaption>
+  <figcaption>The minimal token: Administration and Contents at Read and write, Metadata at Read-only. That is the whole surface Buildiq publishing needs.</figcaption>
 </figure>
 
-Open the Pet Store, choose **Actions → GitHub**, pick your GitHub credential, and select **Publish**. OpenBuild creates a public repository, tags it `openbuild-app`, and commits the app in one clean commit. **Pull** does the reverse: it fetches the repository back into a new *draft* version, so a change someone else pushed lands next to your production version for you to review — it never overwrites what is live.
+Open the Pet Store, choose **Actions → GitHub**, pick your GitHub credential, and select **Publish**. Buildiq creates a public repository, tags it `openbuild-app`, and commits the app in one clean commit. **Pull** does the reverse: it fetches the repository back into a new *draft* version, so a change someone else pushed lands next to your production version for you to review — it never overwrites what is live.
 
 <figure>
-  <img src={githubPublishModalImg} alt="The OpenBuild GitHub panel for an app: a GitHub credential picker with Link repository, Publish, and Pull buttons, and a note that the app is not linked to a repository yet" />
-  <figcaption>Actions → GitHub: pick a credential and Publish. The token stays in Doriath — the broker makes the GitHub call, OpenBuild never sees the secret.</figcaption>
+  <img src={githubPublishModalImg} alt="The Buildiq GitHub panel for an app: a GitHub credential picker with Link repository, Publish, and Pull buttons, and a note that the app is not linked to a repository yet" />
+  <figcaption>Actions → GitHub: pick a credential and Publish. The token stays in Keepiq — the broker makes the GitHub call, Buildiq never sees the secret.</figcaption>
 </figure>
 
 <HexCard title="Why the token never reaches the app">
-  Publishing needs write access to GitHub, but a no-code builder should not hold your access token. So it doesn't. The token lives in Doriath; the OpenRegister credential broker performs each GitHub call (create repo, push commit, set topic) with the token injected at the edge, host-locked to `api.github.com`, and returns only the result. Revoke or rotate the token in one place and every app that used it stops — nothing to clean up inside OpenBuild.
+  Publishing needs write access to GitHub, but a no-code builder should not hold your access token. So it doesn't. The token lives in Keepiq; the OpenRegister credential broker performs each GitHub call (create repo, push commit, set topic) with the token injected at the edge, host-locked to `api.github.com`, and returns only the result. Revoke or rotate the token in one place and every app that used it stops — nothing to clean up inside Buildiq.
 </HexCard>
 
 Now go to **Store → GitHub**. The store searches GitHub for the `openbuild-app` topic and shows every published app as an installable card — your Pet Store among them. Public apps show up with no credential at all; add your credential to also see your own private repositories.
 
 <figure>
-  <img src={githubStoreTabImg} alt="The OpenBuild store with a GitHub source tab selected, a search box, and a result card for a published app with an Install button" />
+  <img src={githubStoreTabImg} alt="The Buildiq store with a GitHub source tab selected, a search box, and a result card for a published app with an Install button" />
   <figcaption>Store → GitHub: published apps are found by the `openbuild-app` topic and rendered as installable cards, straight from `openbuild-app.json`.</figcaption>
 </figure>
 
-Click **Install**, give the new app a name and slug, and confirm. The store parses the repository and clones it into a fresh local app through the same path as any template — so an installed-from-GitHub app is an ordinary editable OpenBuild app, not a locked import.
+Click **Install**, give the new app a name and slug, and confirm. The store parses the repository and clones it into a fresh local app through the same path as any template — so an installed-from-GitHub app is an ordinary editable Buildiq app, not a locked import.
 
 <figure>
   <img src={githubInstallDialogImg} alt="The Install app from GitHub dialog with editable application name and slug fields and an Install button" />
@@ -470,7 +471,7 @@ Click **Install**, give the new app a name and slug, and confirm. The store pars
 LaunchPad is the personal Nextcloud dashboard. Surface the Pet Store there so it is one glance away. Open LaunchPad, choose **Add custom widget**, pick **Object list**, and point it at the Pet Store production register and the `pet` schema. Add columns for name, species, and status, give it a title, and save.
 
 <HexCard title="Why this works without glue code">
-  LaunchPad's widgets read OpenRegister live at runtime. You give it a register and a schema as plain text, it fetches and renders. The same data your OpenBuild app shows is now on the personal dashboard, with no integration to build.
+  LaunchPad's widgets read OpenRegister live at runtime. You give it a register and a schema as plain text, it fetches and renders. The same data your Buildiq app shows is now on the personal dashboard, with no integration to build.
 </HexCard>
 
 **Verify:** the LaunchPad widget lists your pets with their species and status, and updates when you add a pet.
@@ -486,7 +487,7 @@ Three Nextcloud-native touches finish the app. Each one is a small piece of conf
 
 **Search.** In each schema you want findable, turn on the **searchable** flag. OpenRegister exposes those objects to Nextcloud's unified search through one fleet-wide provider, so a pet becomes a result in the top-bar magnifier next to files and messages. You write no search code.
 
-**Calendar (the leaf).** A vet appointment is an event, so it belongs in Calendar. OpenBuild ships a **Calendar** integration for the `visit` schema: open a visit's detail page and use its calendar action to book the appointment, and the next step's flow books a new-pet inspection automatically. Open Nextcloud Calendar and the appointments are there; the **Related** widget on a visit's detail page lists its event. Calendar is the right leaf for an event, the same way knowledge belongs in a wiki and tasks belong in Deck.
+**Calendar (the leaf).** A vet appointment is an event, so it belongs in Calendar. Buildiq ships a **Calendar** integration for the `visit` schema: open a visit's detail page and use its calendar action to book the appointment, and the next step's flow books a new-pet inspection automatically. Open Nextcloud Calendar and the appointments are there; the **Related** widget on a visit's detail page lists its event. Calendar is the right leaf for an event, the same way knowledge belongs in a wiki and tasks belong in Deck.
 
 **Files.** A pet's detail page carries a **Files** widget. Drop a photo or a vaccination certificate on it and the file attaches to that pet's object in OpenRegister, stored in Nextcloud Files. The data widget keeps the structured fields; the file widget keeps the documents.
 
@@ -522,9 +523,9 @@ that triggered the flow. The **calendar event** action puts an agenda task in
 the vet's Nextcloud Calendar; the **email** action sends the notification. Flows
 never break a save: if an action fails it is logged and the others still run.
 
-OpenBuild stores the flow on the schema as configuration that travels with the
+Buildiq stores the flow on the schema as configuration that travels with the
 register, so an admin can review or change it later, no developer needed. The
-exact config format lives in the [OpenBuild technical documentation](https://conduction.nl/products/openbuild).
+exact config format lives in the [Buildiq technical documentation](https://conduction.nl/products/openbuild).
 
 <HexCard title="Why flows live in the register, not in code">
   A flow is configuration, the same shape as a schema or a register. It is
@@ -544,7 +545,7 @@ the vet's Calendar for the next day, and an email goes out to the vet.
 ## Step 11: Build it by talking to an AI
 
 Everything you did by clicking in this tutorial is also available to an AI agent
-over **MCP** (Model Context Protocol). OpenBuild exposes its authoring surface as
+over **MCP** (Model Context Protocol). Buildiq exposes its authoring surface as
 MCP tools, so you can build an app in conversation: "create an app called Pet
 Store, add a pet schema with these fields, add a Pets index page, put a stat and
 a chart on the dashboard." The agent calls the tools; the app takes shape.
@@ -582,7 +583,7 @@ It is not just talk: the entry the assistant created appears in the live navigat
 **Verify:** ask the assistant to list the virtual apps; it returns your Pet Store. Then ask it to add a menu item or a widget and reload the app; it is there.
 
 These are not mock-ups. The two screenshots below were produced by calling the
-OpenBuild MCP tools directly, no clicking in the UI. First, `Create or update a
+Buildiq MCP tools directly, no clicking in the UI. First, `Create or update a
 menu item` added a navigation entry:
 
 <figure>
@@ -599,11 +600,11 @@ Then `Create or update a page` rewrote the pet detail page's header:
 
 ## Onboard your users: setup wizard, walkthrough, and support
 
-Three first-run experiences ship with the app shell: a setup wizard, a guided walkthrough, and a support dialog. You configure all three from the same OpenBuild edit menu you used for pages and widgets. No JSON by hand. Open the orange edit button and pick the one you want.
+Three first-run experiences ship with the app shell: a setup wizard, a guided walkthrough, and a support dialog. You configure all three from the same Buildiq edit menu you used for pages and widgets. No JSON by hand. Open the orange edit button and pick the one you want.
 
 <figure>
-  <img src={editMenuOnboardingImg} alt="The OpenBuild edit menu open over the Pet Store, showing Edit setup wizard, Edit walkthrough, and Edit support and donation among the other edit options" />
-  <figcaption>The OpenBuild edit menu. <strong>Edit setup wizard</strong>, <strong>Edit walkthrough</strong>, and <strong>Edit support &amp; donation</strong> sit alongside the page, menu, and data editors. Everything about the app is configured from here.</figcaption>
+  <img src={editMenuOnboardingImg} alt="The Buildiq edit menu open over the Pet Store, showing Edit setup wizard, Edit walkthrough, and Edit support and donation among the other edit options" />
+  <figcaption>The Buildiq edit menu. <strong>Edit setup wizard</strong>, <strong>Edit walkthrough</strong>, and <strong>Edit support &amp; donation</strong> sit alongside the page, menu, and data editors. Everything about the app is configured from here.</figcaption>
 </figure>
 
 ### A setup wizard for first run
@@ -701,7 +702,7 @@ You have built the app if all of these are true:
 ## Where to go from here
 
 <NextSteps>
-  <NextStep href="/academy/build-an-app-tutorial-0-three-paths">See the manifest OpenBuild wrote for you. Part 0 of the code path explains the same app built by hand, so you can read your own app's JSON.</NextStep>
+  <NextStep href="/academy/build-an-app-tutorial-0-three-paths">See the manifest Buildiq wrote for you. Part 0 of the code path explains the same app built by hand, so you can read your own app's JSON.</NextStep>
   <NextStep href="https://openbuild.conduction.nl/docs/widgets/">Browse the full widget reference to push your dashboard and detail pages further.</NextStep>
   <NextStep>Rebuild your own domain. Swap pets for cases, products, or requests; the seven-schema, dashboard, permissions, release shape is the same for any register-backed app.</NextStep>
 </NextSteps>

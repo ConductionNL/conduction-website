@@ -6,7 +6,7 @@ hide_table_of_contents: true
 
 import {DetailHero, Section, SectionHead, Showcase, WidgetShelf, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
 
-export const WORKFLOW_FILE = 'https://codeberg.org/Conduction/.github/src/branch/main/.github/workflows/quality.yml';
+export const WORKFLOW_FILE = 'https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml';
 
 export function QualityPipelineFlow() {
   const card = {background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 8, padding: '14px 14px 16px', boxShadow: '0 1px 3px rgba(33, 70, 139, 0.04)'};
@@ -532,7 +532,7 @@ Komt er een bevinding boven, dan triëren we hem en starten de opvolging **binne
 
 ## Kwaliteitsworkflow op GitHub
 
-Elke Conduction-app staat publiek op GitHub onder de [ConductionNL](https://codeberg.org/Conduction)-organisatie. De herbruikbare [`Quality`-workflow](https://codeberg.org/Conduction/.github/src/branch/main/.github/workflows/quality.yml) — één keer gedefinieerd in de `.github`-repo en aangeroepen door elke app — draait dezelfde gate-stack op elke pull request: vier parallelle kwaliteitsmatrices, daarna een gated test-fase, daarna rapportage + een Software Bill of Materials op beschermde branches.
+Elke Conduction-app staat publiek op GitHub onder de [ConductionNL](https://github.com/ConductionNL)-organisatie. De herbruikbare [`Quality`-workflow](https://github.com/ConductionNL/.github/blob/main/.github/workflows/quality.yml) — één keer gedefinieerd in de `.github`-repo en aangeroepen door elke app — draait dezelfde gate-stack op elke pull request: vier parallelle kwaliteitsmatrices, daarna een gated test-fase, daarna rapportage + een Software Bill of Materials op beschermde branches.
 
 <QualityPipelineFlow />
 
@@ -540,7 +540,7 @@ Elke Conduction-app staat publiek op GitHub onder de [ConductionNL](https://code
   <a href={WORKFLOW_FILE} target="_blank" rel="noopener noreferrer" style={{padding: '10px 18px', background: 'var(--c-blue-cobalt)', color: 'white', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
     Bekijk quality.yml op GitHub →
   </a>
-  <a href="https://codeberg.org/Conduction/openregister/actions/runs/26099018560" target="_blank" rel="noopener noreferrer" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
+  <a href="https://github.com/ConductionNL/openregister/actions/runs/26099018560" target="_blank" rel="noopener noreferrer" style={{padding: '10px 18px', background: 'transparent', color: 'var(--c-cobalt-900)', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-md, 6px)', textDecoration: 'none', fontWeight: 600, fontSize: 14}}>
     Bekijk een live run →
   </a>
 </div>
@@ -581,7 +581,7 @@ Naast de twee ISO-certificeringen, het operationele handboek, de pentest-scans e
     De afstemming op de Baseline Informatiebeveiliging Overheid loopt. We gebruiken de BIO-controleset als gap-analyse tegen onze bestaande ISO 27001-controls en publiceren hier een status­update zodra die rond is. ISO 27001:2022 dekt het grootste deel van de BIO-vereisten al af, daarom beschouwen de meeste overheidsklanten Conduction nu al als inkoop-klaar.
   </FAQItem>
   <FAQItem question="Hebben jullie een DigiD-assessment?">
-    Nee, DigiD valt buiten de scope van onze huidige portfolio. We bouwen apps die met DigiD-systemen integreren (via OpenConnector), maar we zijn zelf geen DigiD-dienstverlener. Als je aanbesteding een DigiD-assessment vraagt, ligt dat assessment bij de hostende partij of bij het systeem dat de DigiD-login aanbiedt.
+    Nee, DigiD valt buiten de scope van onze huidige portfolio. We bouwen apps die met DigiD-systemen integreren (via Integriq), maar we zijn zelf geen DigiD-dienstverlener. Als je aanbesteding een DigiD-assessment vraagt, ligt dat assessment bij de hostende partij of bij het systeem dat de DigiD-login aanbiedt.
   </FAQItem>
   <FAQItem question="Wat dekt het ISO 27001-certificaat op commonground.nu?">
     De managed Common Ground-omgeving draait op infrastructuur van Cyso onder ISAE 3402 Type II. Het ISO 27001-certificaat van Conduction dekt de applicatielaag (de Conduction-apps, de ontwikkelpipeline, de operatieworkflows), de ISAE van Cyso dekt de hostinglaag (datacenters, netwerk, hypervisor). Samen dekken ze de volledige stack die een overheidsklant op commonground.nu afneemt.

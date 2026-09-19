@@ -2,6 +2,7 @@
 slug: hydra-tutorial-3-quality-gates
 title: "Hydra tutorial series — Part 3: Quality gates"
 contentType: tutorial
+heroIcon: pipeline
 authors: [conduction]
 date: 2026-05-12
 summary: What are Hydra's mechanical quality gates, why do they deliberately NOT rely on AI judgement, and what do you do when a gate misfires? The third of six short modules.
@@ -65,7 +66,7 @@ Each check is red or green. One red check → `build:fail` (in the pre-review ph
 
 ## Category 2: Hydra-specific gates
 
-On top of the generic tools, Hydra has **its own set of `hydra-gate-*` skills** for things that are Conduction-specific. They live in `hydra/.claude/skills/`, but the single source of truth is the shell script [`scripts/run-hydra-gates.sh`](https://codeberg.org/Conduction/hydra/src/branch/main/scripts/run-hydra-gates.sh). One dispatcher skill — `hydra-gates` — runs all of them one after another and produces a single pass/fail summary. The last line of a clean run reads:
+On top of the generic tools, Hydra has **its own set of `hydra-gate-*` skills** for things that are Conduction-specific. They live in `hydra/.claude/skills/`, but the single source of truth is the shell script [`scripts/run-hydra-gates.sh`](https://github.com/ConductionNL/hydra/blob/main/scripts/run-hydra-gates.sh). One dispatcher skill — `hydra-gates` — runs all of them one after another and produces a single pass/fail summary. The last line of a clean run reads:
 
 ```text
 [hydra-gates] ALL 22 GATES GREEN
@@ -98,7 +99,7 @@ That's the current count: **22 gates**, numbered `gate-1` through `gate-22`. (Ea
 | 21 | `conflict-markers` | No unresolved git merge markers (`<<<<<<<`, `=======`, `>>>>>>>`) committed. |
 | 22 | `manifest-validation` | `src/manifest.json` validates against the `@conduction/nextcloud-vue` schema (ADR-024). |
 
-A large share of these were born out of incidents: a gate arises in response to a bug that slipped through all earlier checks. `stub-scan` (gate-3), for example, came out of the [`decidesk-44-45` retrospective](https://codeberg.org/Conduction/hydra/src/branch/main/docs/retrospectives/decidesk-44-45-phase-g.md), where a builder delivered a method that just did `return null;` with a TODO. PHPCS swallowed it, PHPUnit had no test for it, code review read it as "in scope", and it broke in production. The set grows; it never shrinks silently.
+A large share of these were born out of incidents: a gate arises in response to a bug that slipped through all earlier checks. `stub-scan` (gate-3), for example, came out of the [`decidesk-44-45` retrospective](https://github.com/ConductionNL/hydra/blob/main/docs/retrospectives/decidesk-44-45-phase-g.md), where a builder delivered a method that just did `return null;` with a TODO. PHPCS swallowed it, PHPUnit had no test for it, code review read it as "in scope", and it broke in production. The set grows; it never shrinks silently.
 
 ## Gate-19: where specs meet the browser
 
@@ -113,7 +114,7 @@ The exact annotation mechanics — how a `#### Scenario:` heading becomes a slug
 
 ## ADR-020: gate scope is the PR diff
 
-An important rule you already brushed against in part 2: **gates run on the PR diff, not on the whole repo**. That's in [ADR-020](https://codeberg.org/Conduction/hydra/src/branch/main/openspec/architecture/adr-020-gate-scope-to-pr-diff.md).
+An important rule you already brushed against in part 2: **gates run on the PR diff, not on the whole repo**. That's in [ADR-020](https://github.com/ConductionNL/hydra/blob/main/openspec/architecture/adr-020-gate-scope-to-pr-diff.md).
 
 Why? Because many of our repos carry a backlog of technical debt. If you turn `phpcs` loose on the whole repo you get hundreds of findings that have nothing to do with the current PR — and every PR ends up red. By limiting the scope to the lines touched in the PR diff, the gate only fires on *what the current builder just added or changed*.
 
@@ -142,7 +143,7 @@ If the recheck goes red, the issue moves to `needs-input`. No retry. The reviewe
 
   The builder forgets, in one file, a gate rule he applies correctly in other files (in practice usually the <code>spdx-headers</code> licence header). The reviewer doesn't pick it up, because he reads the file as "existing boilerplate" and skims past it. The mechanical recheck then goes red, the issue goes back to the builder, and on the retry he makes the exact same mistake again. The same gate issue keeps coming back.
 
-  **What to do:** if you see 3 or more retries on the exact same gate issue, stop the loop. Two options — fix it by hand, or tighten the gate detection so the reviewer can no longer dismiss it as boilerplate. The full post-mortem of this pattern (incidents from 19–23 April 2026) is in <a href="https://codeberg.org/Conduction/hydra/src/branch/main/docs/retrospectives/decidesk-44-45-phase-g.md">decidesk-44-45-phase-g</a>.
+  **What to do:** if you see 3 or more retries on the exact same gate issue, stop the loop. Two options — fix it by hand, or tighten the gate detection so the reviewer can no longer dismiss it as boilerplate. The full post-mortem of this pattern (incidents from 19–23 April 2026) is in <a href="https://github.com/ConductionNL/hydra/blob/main/docs/retrospectives/decidesk-44-45-phase-g.md">decidesk-44-45-phase-g</a>.
 </HexCard>
 
 ## Test yourself
@@ -257,7 +258,7 @@ The **quality recheck** reruns all mechanical gates on the final PR state to mak
   />
   <NextStep
     title="ADR-020 — gate scope = PR diff"
-    href="https://codeberg.org/Conduction/hydra/src/branch/main/openspec/architecture/adr-020-gate-scope-to-pr-diff.md"
+    href="https://github.com/ConductionNL/hydra/blob/main/openspec/architecture/adr-020-gate-scope-to-pr-diff.md"
     description="The official motivation behind the diff-only scope."
   />
 </NextSteps>

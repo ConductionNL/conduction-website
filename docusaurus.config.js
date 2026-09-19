@@ -40,21 +40,74 @@ module.exports = createConfig({
   organizationName: 'ConductionNL',
   projectName: 'conduction-website',
 
-  /* Public lead-intake endpoint. The support + partner forms POST here to
-     create a `lead` object in the Pipelinq CRM (OpenRegister, public-create
-     schema, anonymous rate-limited). Set PIPELINQ_LEAD_ENDPOINT at build time
-     to point at a real instance.
+  /* The hidden mini-games keep their scores in the player's own
+     browser: there is no leaderboard to submit to and no account to
+     make, so a run is only worth something once it is posted. This is
+     the campaign copy the game-over dialog shows under its share
+     buttons. It is time-bound (Nextcloud Contributor Week, closing
+     Friday 25 September 2026 at 17:00 CEST), so when the giveaway ends
+     the prize lines come out and the share buttons stay. */
+  /* The games this site ships. The dialog counts "found" and the total
+     against this list, so a game added here must actually exist on a
+     page, and a game removed from the site must come out. Labels are
+     per locale because themeConfig is never translated. */
+  minigamesRoster: [
+    {id: 'hexrain', label: {en: 'Twelve apps · hex rain', nl: 'Twaalf apps · hexregen'}},
+    {id: 'boats', label: {en: 'Sink the boats · footer canal', nl: 'Boten kelderen · gracht in de footer'}},
+    {id: 'invaders', label: {en: 'Hex-vaders · cookie CLI', nl: 'Hex-vaders · cookieconsole'}},
+    {id: 'logo-memory', label: {en: 'Logo memory · clients marquee', nl: 'Logomemory · klantenmarquee'}},
+    {id: 'kade-cyclist', label: {en: 'Kade cyclist · footer kade', nl: 'Kadefietser · kade in de footer'}},
+    {id: 'stamp-rush', label: {en: 'Stamp rush · Decidiq page', nl: 'Stempelrace · Decidiq-pagina'}},
+    {id: 'deadline-defender', label: {en: 'Deadline defender · Dossiq page', nl: 'Deadlineverdediger · Dossiq-pagina'}},
+    {id: 'blueprint-rush', label: {en: 'Blueprint rush · Buildiq page', nl: 'Bouwtekeningrace · Buildiq-pagina'}},
+    {id: 'record-run', label: {en: 'Record run · Connext page', nl: 'Recordrun · Connext-pagina'}},
+    {id: 'lock-pick', label: {en: 'Lock pick · Keepiq page', nl: 'Slot openen · Keepiq-pagina'}},
+    {id: 'paint-by-tokens', label: {en: 'Paint by tokens · Thematiq page', nl: 'Kleuren op token · Thematiq-pagina'}},
+    {id: 'redaction', label: {en: 'Black it out · Filinq page', nl: 'Zwart lakken · Filinq-pagina'}},
+    {id: 'monster-run', label: {en: 'Monster run · La Frankendesk', nl: 'Monsterloop · La Frankendesk'}},
+    {id: 'dice-duel', label: {en: 'Dice duel · Larpinq page', nl: 'Dobbelduel · Larpinq-pagina'}},
+    {id: 'reconcile', label: {en: 'Match the bank · Shillinq page', nl: 'Bank matchen · Shillinq-pagina'}},
+    {id: 'pipe-fit', label: {en: 'Make the connection · Integriq page', nl: 'Koppeling leggen · Integriq-pagina'}},
+  ],
+
+  minigamesShare: {
+    hashtag: '#IReadTheKit',
+    /* themeConfig is not translated by Docusaurus, so campaign copy is
+       given per locale and the dialog picks the active one. */
+    prize: {
+      en: 'Best total score on Friday 25 September at 17:00 wins a box of Amsterdam beer.',
+      nl: 'De hoogste totaalscore op vrijdag 25 september om 17:00 wint een doos Amsterdams bier.',
+    },
+    prizeHref: '/arcade',
+    prizeLinkLabel: {en: 'How the giveaway works', nl: 'Zo werkt de actie'},
+  },
+
+  /* Public enquiry-intake endpoint. The website forms POST here to create an
+     `enquiry` object in the Pipelinq CRM. Set PIPELINQ_ENQUIRY_ENDPOINT at
+     build time to point at a real instance.
+
+     THIS IS PIPELINQ'S OWN ENDPOINT, NOT OPENREGISTER'S OBJECT API, and the
+     difference is not cosmetic. It used to be
+     `/apps/openregister/api/objects/pipelinq/lead`, and OpenRegister cannot
+     scope WHICH properties a public create may set (`readOnly` is a documented
+     no-op on that path), so anyone could have set the record's own `status` or
+     `handledBy`. Pipelinq's endpoint whitelists what a submitter may send.
+
+     It also stopped being `lead` on purpose. A lead is a deal, with a value and
+     a pipeline stage, and its schema requires a `client` no anonymous visitor
+     has. An enquiry is what arrives before any of that is known.
 
      The fallback below is a DEV-ONLY convenience so the forms work out of the
      box against a local docker environment. It is NOT a production value:
      `localhost` is the visitor's own machine, and an http endpoint on an https
-     page is blocked as mixed content. LeadForm detects that at runtime and
+     page is blocked as mixed content. EnquiryForm detects that at runtime and
      degrades to an email fallback rather than accepting a submit it cannot
-     deliver — so shipping without PIPELINQ_LEAD_ENDPOINT is safe, just inert. */
+     deliver. That fallback is not hypothetical: production shipped without the
+     variable set, so every visitor saw it and no form ever submitted. */
   customFields: {
-    pipelinqLeadEndpoint:
-      process.env.PIPELINQ_LEAD_ENDPOINT
-      || 'http://localhost:8080/index.php/apps/openregister/api/objects/pipelinq/lead',
+    pipelinqEnquiryEndpoint:
+      process.env.PIPELINQ_ENQUIRY_ENDPOINT
+      || 'http://localhost:8080/index.php/apps/pipelinq/api/enquiry',
   },
 
   /* Two locales, English default. URL shape:
@@ -167,8 +220,8 @@ module.exports = createConfig({
         items: [
           {label: 'OpenCatalogi',  href: 'https://opencatalogi.conduction.nl/'},
           {label: 'OpenRegister',  href: 'https://openregister.conduction.nl/'},
-          {label: 'OpenConnector', href: 'https://openconnector.conduction.nl/'},
-          {label: 'DocuDesk',      href: 'https://docudesk.conduction.nl/'},
+          {label: 'Integriq',      href: 'https://openconnector.conduction.nl/'},
+          {label: 'Filinq',        href: 'https://docudesk.conduction.nl/'},
           {label: 'LaunchPad',        href: 'https://launchpad.conduction.nl/'},
         ],
       },
@@ -200,7 +253,15 @@ module.exports = createConfig({
           {label: 'Team',           to: '/about#team'},
           {label: 'Way of Work',    href: 'https://docs.conduction.nl/WayOfWork/way-of-work/'},
           {label: 'Quality',        to: '/quality'},
+          {label: 'How we use AI',  to: '/ai'},
           {label: 'Identity',       href: 'https://identity.conduction.nl/'},
+          /* Cookies belongs in the legal bar next to Privacy / Terms,
+             but the preset's Footer hardcodes exactly three legal slots
+             (privacyTo / termsTo / isoTo) — adding a `cookies` key to
+             themeConfig.legalLinks renders nothing at all. Until the
+             preset grows a slot, the link lives here so the consent
+             banner is reachable after a choice has been stored. */
+          {label: 'Cookies',        to: '/privacy#cookies'},
         ],
       },
     ],
@@ -209,6 +270,40 @@ module.exports = createConfig({
 
   /* OpenCatalogi content plugin slot, wired in via env once it exists. */
   plugins: [
+    /* First-party traffic measurement, from our own Portaliq portal. No
+       Google, no vendor script, and nothing sent to anyone else: the
+       collector is a Portaliq endpoint and the client is served by the same
+       portal that receives the events.
+
+       `content: false` is the point of the option. This site writes its own
+       57 pages and takes NOTHING from the portal but the measuring, and
+       without that flag the plugin fetches the whole content contract at
+       build time. An unreachable content API deliberately fails the build,
+       so a portal being down would have stopped this site publishing pages
+       it does not even get from that portal.
+
+       WIRED ONLY WHEN THE ORIGIN IS SET, deliberately. Emitting the script
+       tag unconditionally would put a 404 on every page of the site until
+       Portaliq is installed and a portal exists, and a console error on
+       every page load is not a neutral default. Set
+       PORTALIQ_TRAFFIC_ORIGIN and measurement starts on the next deploy;
+       leave it unset and this is exactly as it was.
+
+       The portal still holds its own switch: `traffic.enabled` is false
+       until an operator turns it on, so this variable alone does not start
+       recording anyone. Two switches, both of which must be on, because the
+       site's operator and the portal's operator can be different people. */
+    ...(process.env.PORTALIQ_TRAFFIC_ORIGIN
+      ? [[
+        require.resolve('@conduction/docusaurus-plugin-portaliq'),
+        {
+          baseUrl: process.env.PORTALIQ_TRAFFIC_ORIGIN,
+          portal: process.env.PORTALIQ_TRAFFIC_PORTAL || 'conduction',
+          content: false,
+          traffic: true,
+        },
+      ]]
+      : []),
     /* academy-modules: scans academy/*\/index.mdx frontmatter and emits
        module → ordered parts global data. Consumed by BlogListPage
        (composite ModuleCards + module pill row) and per-module MDX
@@ -217,6 +312,12 @@ module.exports = createConfig({
       require.resolve('./plugins/academy-modules'),
       {contentDir: 'academy', routeBasePath: '/academy'},
     ],
+    /* INTERIM: Hermiq glyph override until the preset can publish to npm
+       again (trusted publishing not configured). See the plugin header. */
+    require.resolve('./plugins/hermiq-glyph-interim'),
+    /* INTERIM: apps-registry descriptions + AppCrossLinks description
+       rendering until the preset ships both. See the plugin header. */
+    require.resolve('./plugins/apps-registry-interim'),
     // [
     //   '@conduction/docusaurus-plugin-opencatalogi',
     //   {
@@ -237,6 +338,63 @@ module.exports = createConfig({
       '@docusaurus/plugin-client-redirects',
       {
         redirects: [
+          /* -iq product rename (2026-08-23): the twelve renamed apps moved
+             from /apps/<old-repo-slug> to /apps/<new-name>. Every one of these
+             URLs was live and is linked from the apps grid, the academy product
+             filter and the apps-registry shipped by
+             @conduction/docusaurus-preset — which still points at the old
+             paths, so these redirects are what keeps the preset's cross-links
+             working until it ships a release with the new ones.
+
+             The PRESENTATION keys in src/data/apps-catalog.js deliberately did
+             NOT move. They are the join key against `apps[].id` in
+             data/app-downloads.json, which is the NEXTCLOUD APP-STORE id, not
+             the GitHub repo slug — and the store still lists the old ids.
+             getApps() filters out any entry with no store match and no
+             downloads, so renaming those keys would have removed all twelve
+             apps from /apps entirely, silently. Only the href moved. */
+          {from: '/apps/openconnector', to: '/apps/integriq'},
+          {from: '/apps/app-versions', to: '/apps/versioniq'},
+          {from: '/apps/decidesk', to: '/apps/decidiq'},
+          {from: '/apps/docudesk', to: '/apps/filinq'},
+          {from: '/apps/doriath', to: '/apps/keepiq'},
+          {from: '/apps/hrmq', to: '/apps/humaniq'},
+          {from: '/apps/larpingapp', to: '/apps/larpinq'},
+          {from: '/apps/nldesign', to: '/apps/thematiq'},
+          {from: '/apps/openbuild', to: '/apps/buildiq'},
+          {from: '/apps/planix', to: '/apps/planninq'},
+          {from: '/apps/procest', to: '/apps/dossiq'},
+          {from: '/apps/scholiq', to: '/apps/learniq'},
+          {from: '/apps/softwarecatalog', to: '/apps/stackiq'},
+          /* Governance blog retitled to the two-wolves frame (2026-08-10).
+             Both earlier URLs were briefly live; point each straight at the
+             final slug, no chains. */
+          {from: '/academy/governance-open-source-nix-implosion', to: '/academy/opinion/feed-the-wolf-that-ships'},
+          {from: '/academy/opinion/governance-is-the-silent-killer-of-open-source', to: '/academy/opinion/feed-the-wolf-that-ships'},
+          /* "This is going to hurt" reclassified from opinion to blog
+             (2026-08-11). The six parts shipped at /academy/opinion/… on
+             2026-08-10 and were live for a day, so every old URL points at
+             its new /academy/blog/ address. /academy/blog/ itself is a
+             static stub → /academy/?type=blog (see static/academy/blog/,
+             same pattern as static/academy/opinion/). */
+          {from: '/academy/opinion/this-is-going-to-hurt-part-1-your-work', to: '/academy/blog/this-is-going-to-hurt-part-1-your-work'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-2-the-big-three', to: '/academy/blog/this-is-going-to-hurt-part-2-the-big-three'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership', to: '/academy/blog/this-is-going-to-hurt-part-3-the-end-of-ownership'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed', to: '/academy/blog/this-is-going-to-hurt-part-4-security-at-machine-speed'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-5-the-singularity', to: '/academy/blog/this-is-going-to-hurt-part-5-the-singularity'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help', to: '/academy/blog/this-is-going-to-hurt-part-6-actually-it-might-help'},
+          /* All opinion posts moved under /academy/opinion/ (2026-08-10).
+             Keep the published URLs working. /academy/opinion/ itself is a
+             static stub → /academy/?type=opinion (see static/academy/opinion/,
+             same pattern as the /blog/* legacy stubs). */
+          {from: '/academy/the-platform-moment', to: '/academy/opinion/the-platform-moment'},
+          {from: '/academy/government-open-source-needs-an-engine', to: '/academy/opinion/government-open-source-needs-an-engine'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-1-your-work', to: '/academy/blog/this-is-going-to-hurt-part-1-your-work'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-2-the-big-three', to: '/academy/blog/this-is-going-to-hurt-part-2-the-big-three'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-3-the-end-of-ownership', to: '/academy/blog/this-is-going-to-hurt-part-3-the-end-of-ownership'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-4-security-at-machine-speed', to: '/academy/blog/this-is-going-to-hurt-part-4-security-at-machine-speed'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-5-the-singularity', to: '/academy/blog/this-is-going-to-hurt-part-5-the-singularity'},
+          {from: '/academy/opinion/this-is-going-to-hurt-part-6-actually-it-might-help', to: '/academy/blog/this-is-going-to-hurt-part-6-actually-it-might-help'},
           /* OpenSpec academy series moved from Dutch to English slugs
              (2026-06-11). Parts 1 and 2 were already published, so keep
              inbound links working. Parts 0/3/4 are new and never shipped a
@@ -292,7 +450,7 @@ module.exports = createConfig({
              search engines and shipped on partner sites; redirect them to
              the new canonical app pages. */
           {from: '/apps/mydash', to: '/apps/launchpad'},
-          {from: '/apps/openbuilt', to: '/apps/openbuild'},
+          {from: '/apps/openbuilt', to: '/apps/buildiq'},
           /* Academy series rename 2026-06-01: deskdesk-tutorial →
              build-an-app-tutorial. The seven existing parts (0–6) were
              linked from earlier blog posts, partner decks, and the

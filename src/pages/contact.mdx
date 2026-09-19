@@ -5,6 +5,13 @@ hide_table_of_contents: true
 ---
 
 import {Section, SectionHead, TeamGrid, EmployeeCard} from '@conduction/docusaurus-preset/components';
+import PageHeading from '@site/src/components/PageHeading';
+import EnquiryForm from '@site/src/components/EnquiryForm';
+
+export const contactEnquiryTitle = (f) =>
+  `Contact: ${[f.firstName, f.lastName].filter(Boolean).join(' ') || 'Website visitor'}${f.organisation ? ` (${f.organisation})` : ''}`;
+
+<PageHeading>Talk to a person. Not a ticket queue.</PageHeading>
 
 <Section spacing="default">
   <SectionHead
@@ -64,6 +71,49 @@ import {Section, SectionHead, TeamGrid, EmployeeCard} from '@conduction/docusaur
   </TeamGrid>
 </Section>
 
+<Section spacing="default" id="write">
+  <SectionHead
+    eyebrow="Write to us"
+    title="Rather type than call?"
+    align="stack"
+    lede="Send it here and it lands with the person who can answer it. We reply within two business days."
+  />
+  <div style={{maxWidth: 640, margin: '0 auto'}}>
+    <EnquiryForm source="website-contact" buildTitle={contactEnquiryTitle} successText="We'll come back to you within two business days." style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 'var(--radius-lg)', padding: 36}}>
+      <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14}}>
+        <label style={{display: 'block'}}>
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)', marginBottom: 6}}>First name</span>
+          <input type="text" name="firstName" placeholder="Sanne" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'white', color: 'var(--c-cobalt-900)'}} />
+        </label>
+        <label style={{display: 'block'}}>
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)', marginBottom: 6}}>Last name</span>
+          <input type="text" name="lastName" placeholder="de Vries" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'white', color: 'var(--c-cobalt-900)'}} />
+        </label>
+      </div>
+
+      <label style={{display: 'block', marginBottom: 14}}>
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)', marginBottom: 6}}>Email</span>
+        <input type="email" name="email" required placeholder="je@bedrijf.nl" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'white', color: 'var(--c-cobalt-900)'}} />
+      </label>
+
+      <label style={{display: 'block', marginBottom: 14}}>
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)', marginBottom: 6}}>Organisation</span>
+        <input type="text" name="organisation" placeholder="Gemeente, MKB, ziekenhuis" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'white', color: 'var(--c-cobalt-900)'}} />
+      </label>
+
+      <label style={{display: 'block', marginBottom: 14}}>
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)', marginBottom: 6}}>What can we help with?</span>
+        <textarea name="message" required placeholder="Bijv: we willen weten of OpenRegister past op onze bestaande Nextcloud." style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'white', color: 'var(--c-cobalt-900)', resize: 'vertical', minHeight: 100}}></textarea>
+      </label>
+
+      <p style={{fontSize: 12, color: 'var(--c-cobalt-400)', lineHeight: 1.5, margin: '16px 0 18px'}}>We use what you type here to answer you, and for nothing else. <a href="/privacy">Privacy statement</a>.</p>
+      <button type="submit" style={{background: 'var(--c-blue-cobalt)', color: 'white', border: 'none', padding: '13px 28px', borderRadius: 'var(--radius-md)', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', cursor: 'pointer'}}>
+        Send it
+      </button>
+    </EnquiryForm>
+  </div>
+</Section>
+
 <Section spacing="default" id="office">
   <SectionHead
     eyebrow="Office"
@@ -73,24 +123,21 @@ import {Section, SectionHead, TeamGrid, EmployeeCard} from '@conduction/docusaur
   />
   <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-8)', maxWidth: 760, margin: '0 auto'}}>
     <div>
-      <h3 style={{fontSize: 22, fontWeight: 700, color: 'var(--c-cobalt-900)', margin: '0 0 var(--space-3)'}}>Conduction B.V.</h3>
-      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 0}}>
-        Lauriergracht 14h<br/>
-        1016 RR Amsterdam<br/>
-        Nederland
-      </p>
-      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 'var(--space-3) 0 0'}}>
-        <a href="tel:+31853036840">+31 85 303 6840</a><br/>
-        <a href="mailto:info@conduction.nl">info@conduction.nl</a>
-      </p>
+      {/* These paragraphs are one line each on purpose, and the email is a
+          JSX string rather than bare text. Written across several lines,
+          MDX parses the contents of a block-level tag as markdown and wraps
+          them in a paragraph of its own, so <p> ends up inside <p>; the
+          browser's parser then splits that into siblings and the page fails
+          to hydrate. Bare text like info@conduction.nl is separately
+          auto-linked by MDX, which nested an <a> inside this <a>. Both were
+          live on /contact/ and /nl/contact/ until 2026-08-06. */}
+      <h3 style={{fontSize: 22, fontWeight: 700, color: 'var(--conduction-color-text-strong)', margin: '0 0 var(--space-3)'}}>Conduction B.V.</h3>
+      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--conduction-color-text-body)', margin: 0}}>Lauriergracht 14h<br/>1016 RR Amsterdam<br/>Nederland</p>
+      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--conduction-color-text-body)', margin: 'var(--space-3) 0 0'}}><a href="tel:+31853036840">+31 85 303 6840</a><br/><a href="mailto:info@conduction.nl">{'info@conduction.nl'}</a></p>
     </div>
     <div>
-      <h3 style={{fontSize: 22, fontWeight: 700, color: 'var(--c-cobalt-900)', margin: '0 0 var(--space-3)'}}>Company details</h3>
-      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--c-cobalt-700)', margin: 0}}>
-        KvK: 76741850<br/>
-        BTW: NL860784241B01<br/>
-        IBAN: NL51 ABNA 0868951550
-      </p>
+      <h3 style={{fontSize: 22, fontWeight: 700, color: 'var(--conduction-color-text-strong)', margin: '0 0 var(--space-3)'}}>Company details</h3>
+      <p style={{fontSize: 16, lineHeight: 1.7, color: 'var(--conduction-color-text-body)', margin: 0}}>KvK: 76741850<br/>BTW: NL860784241B01<br/>IBAN: NL51 ABNA 0868951550</p>
     </div>
   </div>
 </Section>

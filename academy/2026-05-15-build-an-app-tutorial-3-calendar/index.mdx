@@ -2,6 +2,7 @@
 slug: build-an-app-tutorial-3-calendar
 title: "Build a Nextcloud app on the Conduction stack — Part 3: Schema-driven integrations"
 contentType: tutorial
+heroIcon: blocks
 authors: [conduction]
 date: 2026-05-15
 summary: One calendarProvider block on the order schema. Order ship-dates appear in NC Calendar with no controller, no event listener, no per-app glue.
@@ -39,11 +40,11 @@ The trick: OpenRegister already ships an `ICalendarProvider` (`RegisterCalendarP
   <PrerequisiteItem>NC Calendar enabled (Apps → search "Calendar" → Download). Out of the box it'll pick up new ICalendarProviders automatically, no extra wiring on your end.</PrerequisiteItem>
 </Prerequisites>
 
-## Why not OpenConnector or a custom listener?
+## Why not Integriq or a custom listener?
 
 When you first hear "sync PetStore order ship-dates to Nextcloud Calendar" your instinct is probably one of:
 
-1. **Write an OpenConnector flow** that listens to `OrderCreatedEvent` and POSTs to the CalDAV endpoint
+1. **Write an Integriq flow** that listens to `OrderCreatedEvent` and POSTs to the CalDAV endpoint
 2. **Subclass `IEventListener<OrderCreatedEvent>`** in PHP and create a CalDAV event by hand
 3. **Have the frontend `POST /remote.php/dav/...`** when the user clicks Place Order
 
@@ -134,7 +135,7 @@ OpenRegister's `RegisterCalendarProvider` implements Nextcloud's `ICalendarProvi
 
 Per-object ACLs gate event content. The provider bypasses multi-tenancy when listing schemas (so cross-tenant calendars work), but every individual event is still gated by RBAC.
 
-The same pattern is followed by [the spec](https://codeberg.org/Conduction/openregister/src/branch/main/openspec/specs/calendar-provider/spec.md).
+The same pattern is followed by [the spec](https://github.com/ConductionNL/openregister/blob/development/openspec/specs/calendar-provider/spec.md).
 
 ## What you've now bought yourself
 
@@ -168,7 +169,7 @@ You've effectively integrated PetStore into four Nextcloud apps with one JSON bl
   <NextStep
     title="Part 4: External knowledge + ship"
     href="/academy/build-an-app-tutorial-4-knowledge-and-ship"
-    description="Author the category care-guides in xWiki, wire OpenConnector to surface them per pet in CnObjectSidebar, package the app, publish to apps.conduction.nl."
+    description="Author the category care-guides in xWiki, wire Integriq to surface them per pet in CnObjectSidebar, package the app, publish to apps.conduction.nl."
   />
   <NextStep
     title="OpenRegister platform capabilities"

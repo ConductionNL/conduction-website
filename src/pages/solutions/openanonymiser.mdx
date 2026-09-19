@@ -1,6 +1,6 @@
 ---
-title: OpenAnonymiser, Conduction
-description: OpenAnonymiser, lightweight Dutch PII detection that ships as a Nextcloud ExApp. Detect persons, addresses, IBANs in any document or register before it leaves your organisation. CPU and GPU variants, Presidio under the hood.
+title: Anonymiq, Conduction
+description: Anonymiq, lightweight Dutch PII detection that ships as a Nextcloud ExApp. Detect persons, addresses, IBANs in any document or register before it leaves your organisation. CPU and GPU variants, Presidio under the hood.
 hide_table_of_contents: true
 ---
 
@@ -8,11 +8,11 @@ import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, Pipeline, Pa
 import {PartnersForSolution} from '@site/src/components/PartnersFor';
 
 <DetailHero
-  crumb={[{label: 'Solutions', href: '/solutions'}, 'OpenAnonymiser']}
+  crumb={[{label: 'Solutions', href: '/solutions'}, 'Anonymiq']}
   status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
   version="Sector: Public & SMB"
-  title="OpenAnonymiser. Strip PII before it ships."
-  tagline={<>A Dutch-first PII detection service for <span className="next-blue">Nextcloud</span>. OpenAnonymiser reads any text or document, finds persons, addresses, IBANs, BSNs, and case numbers, then hands DocuDesk the spans to redact. Ships as a Nextcloud ExApp with a CPU-only build (Light) and a GPU build. Presidio under the hood, EUPL-1.2.</>}
+  title="Anonymiq. Strip PII before it ships."
+  tagline={<>A Dutch-first PII detection service for <span className="next-blue">Nextcloud</span>. Anonymiq (formerly OpenAnonymiser) reads any text or document, finds persons, addresses, IBANs, BSNs, and case numbers, then hands Filinq the spans to redact. Ships as a Nextcloud ExApp with a CPU-only build (Light) and a GPU build. Presidio under the hood, EUPL-1.2.</>}
   primaryCta={{label: 'Talk to a partner', href: '/partners'}}
   secondaryCta={{label: 'Read the docs', href: 'https://openanonymiser.conduction.nl/'}}
   iconColor="var(--c-blue-cobalt)"
@@ -24,7 +24,7 @@ import {PartnersForSolution} from '@site/src/components/PartnersFor';
     eyebrow="The outcome"
     title="Nothing personal leaves without your knowledge."
     align="stack"
-    lede="Install the ExApp, point your DocuDesk and OpenRegister flows at it, and every document and record gets scanned for PII before it publishes, exports, or syncs out. The findings come back with explainable spans you can review or auto-redact."
+    lede="Install the ExApp, point your Filinq and OpenRegister flows at it, and every document and record gets scanned for PII before it publishes, exports, or syncs out. The findings come back with explainable spans you can review or auto-redact."
   />
 
   <FeatureList>
@@ -36,12 +36,12 @@ import {PartnersForSolution} from '@site/src/components/PartnersFor';
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8M12 8v8"/></svg>}
       title="Two builds for two budgets."
-      desc="OpenAnonymiser Light runs on CPU only and ships at ~250 MB. The GPU build adds the heavier transformer pipeline for higher recall on longer documents. Pick by use case."
+      desc="Anonymiq Light runs on CPU only and ships at ~250 MB. The GPU build adds the heavier transformer pipeline for higher recall on longer documents. Pick by use case."
     />
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>}
-      title="Wired to DocuDesk and OpenRegister."
-      desc="DocuDesk hands documents to OpenAnonymiser before publication. OpenRegister calls it on every field that lands in a public register. The findings live alongside the record so a human can review or override."
+      title="Wired to Filinq and OpenRegister."
+      desc="Filinq hands documents to Anonymiq before publication. OpenRegister calls it on every field that lands in a public register. The findings live alongside the record so a human can review or override."
     />
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>}
@@ -51,12 +51,12 @@ import {PartnersForSolution} from '@site/src/components/PartnersFor';
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
       title="Async by default."
-      desc="The API is synchronous for short text and async for documents. Long PDFs go through a queue so your DocuDesk pipeline stays responsive."
+      desc="The API is synchronous for short text and async for documents. Long PDFs go through a queue so your Filinq pipeline stays responsive."
     />
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/></svg>}
       title="Two minutes to install."
-      desc="Both builds ship as Nextcloud ExApps. <code>occ app_api:app:register openanonymiser-light-exapp</code> or the GPU variant, then point DocuDesk's anonymisation step at the new endpoint."
+      desc="Both builds ship as Nextcloud ExApps. <code>occ app_api:app:register openanonymiser-light-exapp</code> or the GPU variant, then point Filinq's anonymisation step at the new endpoint."
     />
   </FeatureList>
 </Section>
@@ -66,7 +66,7 @@ import {PartnersForSolution} from '@site/src/components/PartnersFor';
     eyebrow="The pipeline"
     title="From any source to a clean publication."
     align="stack"
-    lede="OpenAnonymiser sits as a sidecar to your existing Conduction flow. DocuDesk normalises the document, OpenAnonymiser finds the PII, OpenRegister stores the redacted version, OpenCatalogi publishes."
+    lede="Anonymiq sits as a sidecar to your existing Conduction flow. Filinq normalises the document, Anonymiq finds the PII, OpenRegister stores the redacted version, OpenCatalogi publishes."
   />
   <Pipeline
     start={{label: 'Sources', items: [
@@ -76,9 +76,9 @@ import {PartnersForSolution} from '@site/src/components/PartnersFor';
       {label: 'Email and chat', icon: 'legacy'},
     ]}}
     steps={[
-      {number: '01', kicker: 'Normalise', name: 'DocuDesk',         caption: 'Extracts plain text from Word, PDF, scans, and email. Hands it to OpenAnonymiser.'},
-      {number: '02', kicker: 'Detect',    name: 'OpenAnonymiser',   caption: 'Finds PERSON, LOCATION, IBAN, BSN, ZAAKNUMMER, KENTEKEN, EMAIL. Returns spans plus confidence.'},
-      {number: '03', kicker: 'Redact',    name: 'DocuDesk',         caption: 'Applies the spans. Stores both the redacted and the original alongside the audit log.'},
+      {number: '01', kicker: 'Normalise', name: 'Filinq',         caption: 'Extracts plain text from Word, PDF, scans, and email. Hands it to Anonymiq.'},
+      {number: '02', kicker: 'Detect',    name: 'Anonymiq',   caption: 'Finds PERSON, LOCATION, IBAN, BSN, ZAAKNUMMER, KENTEKEN, EMAIL. Returns spans plus confidence.'},
+      {number: '03', kicker: 'Redact',    name: 'Filinq',         caption: 'Applies the spans. Stores both the redacted and the original alongside the audit log.'},
       {number: '04', kicker: 'Publish',   name: 'OpenCatalogi',     caption: 'The redacted version goes public. The original stays inside your Nextcloud, locked behind RBAC.'},
     ]}
     end={{label: 'Consumers', items: [
@@ -94,26 +94,26 @@ import {PartnersForSolution} from '@site/src/components/PartnersFor';
     eyebrow="Built on"
     title="Four apps, one configuration."
     align="stack"
-    lede="OpenAnonymiser is one app in a chain. Every other part is an existing Conduction app you can install separately and use for other things."
+    lede="Anonymiq is one app in a chain. Every other part is an existing Conduction app you can install separately and use for other things."
   />
   <PairRow>
     <PairCard
       href="https://openanonymiser.conduction.nl/"
       icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/><path d="M9 8h6"/></svg>}
-      name="OpenAnonymiser"
+      name="Anonymiq"
       why="Detects Dutch PII with explainable, auditable spans. CPU (Light) and GPU builds."
     />
     <PairCard
-      href="/apps/docudesk"
+      href="/apps/filinq"
       icon={<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>}
-      name="DocuDesk"
-      why="Normalises Word, PDF, and scans into plain text. Calls OpenAnonymiser. Stores both the redacted and the original."
+      name="Filinq"
+      why="Normalises Word, PDF, and scans into plain text. Calls Anonymiq. Stores both the redacted and the original."
     />
     <PairCard
       href="/apps/openregister"
       icon={<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>}
       name="OpenRegister"
-      why="Stores the redacted records, the original, the OpenAnonymiser findings, and the audit log side by side."
+      why="Stores the redacted records, the original, the Anonymiq findings, and the audit log side by side."
     />
     <PairCard
       href="/apps/opencatalogi"
@@ -129,7 +129,7 @@ import {PartnersForSolution} from '@site/src/components/PartnersFor';
     eyebrow="Live in pilot"
     title="Public bodies and SMBs testing the pipeline."
     align="stack"
-    lede="OpenAnonymiser is in beta and a handful of organisations are running it in production today. Recall on Dutch PII is at parity with the upstream Presidio recognisers; the Conduction NER models lift recall on case numbers and licence plates that Presidio misses out of the box."
+    lede="Anonymiq is in beta and a handful of organisations are running it in production today. Recall on Dutch PII is at parity with the upstream Presidio recognisers; the Conduction NER models lift recall on case numbers and licence plates that Presidio misses out of the box."
   />
   <PartnersForSolution solution="anonimiseren" />
 </Section>
@@ -145,20 +145,20 @@ import {PartnersForSolution} from '@site/src/components/PartnersFor';
   <FeatureList>
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 12l2 2 4-4"/></svg>}
-      title="OpenAnonymiser Light"
+      title="Anonymiq Light"
       desc="CPU-only Python service, ~250 MB image, Presidio plus the Conduction NER models. Recommended for &lt; 500 documents per day. Ships as `openanonymiser-light-exapp`."
     />
     <FeatureItem
       icon={<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>}
-      title="OpenAnonymiser GPU"
+      title="Anonymiq GPU"
       desc="GPU-accelerated transformer pipeline on top of Light. Higher recall on long documents and noisy OCR. Recommended for &gt; 500 documents per day or batch processing. Ships as `openanonymiser-exapp`."
     />
   </FeatureList>
 </Section>
 
 <CtaBanner
-  title="OpenAnonymiser. Strip PII before it ships."
-  subheading="Talk to a Conduction partner to wire OpenAnonymiser into your DocuDesk and OpenRegister flow. Beta install includes the model evaluation and the cutover plan."
+  title="Anonymiq. Strip PII before it ships."
+  subheading="Talk to a Conduction partner to wire Anonymiq into your Filinq and OpenRegister flow. Beta install includes the model evaluation and the cutover plan."
   ctaText="Find a partner"
   ctaHref="/partners"
 />

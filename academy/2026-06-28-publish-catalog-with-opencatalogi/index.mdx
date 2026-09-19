@@ -2,6 +2,7 @@
 slug: publish-catalog-with-opencatalogi
 title: "Publish a public catalog with OpenCatalogi"
 contentType: tutorial
+heroIcon: catalog
 authors: [conduction]
 date: 2026-06-28
 summary: Take your OpenRegister Pet Store public without writing a line of code. You scope a catalog to your register, learn exactly how OpenCatalogi decides what an anonymous visitor may see (an OpenRegister RBAC rule that grants the public group read only when a publication date is in the past), publish nine pets while keeping one future-dated pet hidden, verify the rule from a genuinely logged-out browser against the public publications API, and expose the catalog as a DCAT-AP-NL feed that national open-data harvesters can read. Pet Store domain, with UI, API and PHP tabs throughout.
@@ -31,7 +32,7 @@ import publishedConceptImg from './images/05-dashboard-published-concept.png';
 import anonPublicationsImg from './images/06-anon-publications.png';
 import dcatFeedImg from './images/07-anon-dcat-feed.png';
 
-OpenCatalogi is the publishing layer for Conduction apps. Where OpenRegister stores your data and OpenConnector fills it from elsewhere, OpenCatalogi turns a register you own into a **public, browsable, harvestable catalog**: a set of API endpoints that anyone on the internet can read, and a [DCAT-AP-NL](https://data.overheid.nl/dcat-ap-nl) feed that national portals like [data.overheid.nl](https://data.overheid.nl) and [data.europa.eu](https://data.europa.eu) can harvest. It does this without a "publish" button and without copying your data anywhere — publishing is a *rule on the data*, enforced by OpenRegister, and a catalog is just a *filter* that says which data belongs in the shop window.
+OpenCatalogi is the publishing layer for Conduction apps. Where OpenRegister stores your data and Integriq fills it from elsewhere, OpenCatalogi turns a register you own into a **public, browsable, harvestable catalog**: a set of API endpoints that anyone on the internet can read, and a [DCAT-AP-NL](https://data.overheid.nl/dcat-ap-nl) feed that national portals like [data.overheid.nl](https://data.overheid.nl) and [data.europa.eu](https://data.europa.eu) can harvest. It does this without a "publish" button and without copying your data anywhere — publishing is a *rule on the data*, enforced by OpenRegister, and a catalog is just a *filter* that says which data belongs in the shop window.
 
 This tutorial takes the **Pet Store** register you built in the first two parts and makes it public. You scope a catalog to the register, set up the visibility rule, publish nine pets while deliberately keeping one hidden, prove the rule from a logged-out browser, and expose the whole thing as a DCAT-AP-NL feed. No code, no second server, no export.
 
@@ -41,7 +42,7 @@ This tutorial takes the **Pet Store** register you built in the first two parts 
 You are at the end of a full data pipeline, all in the Pet Store domain:
 
 1. [Model your data with OpenRegister](/academy/model-data-with-openregister) — design the schemas and store records.
-2. [Pull external data in with OpenConnector](/academy/pull-data-with-openconnector) — feed the register from an external API on a schedule.
+2. [Pull external data in with Integriq](/academy/pull-data-with-openconnector) — feed the register from an external API on a schedule.
 3. **OpenCatalogi (you are here)** — expose the register as an open, harvestable catalog.
 
 Each tutorial stands on its own, but together they take a record from "modelled" to "public". This part assumes the `petstore-academy` register and its `pet-academy` schema from Part 1, with some pets in it; if you do not have them, run Part 1 first.
@@ -409,11 +410,11 @@ You have published the catalog if all of these are true:
 
 ## Where to go from here
 
-Your Pet Store has travelled the whole pipeline: modelled in OpenRegister, filled by OpenConnector, and now public and harvestable through OpenCatalogi. The data you own is, on your terms, data the world can read.
+Your Pet Store has travelled the whole pipeline: modelled in OpenRegister, filled by Integriq, and now public and harvestable through OpenCatalogi. The data you own is, on your terms, data the world can read.
 
 <NextSteps>
   <NextStep href="/academy/model-data-with-openregister">Part 1 — Revisit how the Pet Store register, schemas and the RBAC Security tab were built; the publish rule is one more entry on that same Security tab.</NextStep>
   <NextStep href="/academy/pull-data-with-openconnector">Part 2 — See how the register fills itself from an external API on a schedule, so your public catalog stays current without anyone re-typing a record.</NextStep>
-  <NextStep href="/academy/build-a-nextcloud-app-with-openbuild">Build a full Nextcloud app on top of a register like this one, no code required, with OpenBuild.</NextStep>
+  <NextStep href="/academy/build-a-nextcloud-app-with-openbuild">Build a full Nextcloud app on top of a register like this one, no code required, with Buildiq.</NextStep>
   <NextStep href="https://conduction.nl/products/opencatalogi">Browse the OpenCatalogi documentation for catalogs, directories, themes and DCAT-AP-NL harvesting in depth.</NextStep>
 </NextSteps>

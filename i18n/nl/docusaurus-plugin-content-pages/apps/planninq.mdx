@@ -1,0 +1,275 @@
+---
+title: Planninq, Conduction
+description: Borden, backlog en uren voor teams die dingen bouwen en repareren, op je eigen Nextcloud. Een kolom houdt maar zoveel kaarten, dus het team maakt af voordat het begint. Beta.
+hide_table_of_contents: true
+---
+
+import {DetailHero, Section, SectionHead, FeatureList, FeatureItem, PairRow, PairCard, CtaBanner, AppMock, RotatingCards, WidgetShelf, Showcase, AgentTrace, AppCrossLinks, FlowMock, BuildMock, KanbanMock} from '@conduction/docusaurus-preset/components';
+import {PartnersForApp} from '@site/src/components/PartnersFor';
+
+<DetailHero
+  background="cobalt"
+  appId="planix"
+  crumb={[{label: 'Apps', href: '/apps'}, 'Planninq']}
+  status={{label: 'Beta', color: 'var(--c-orange-knvb)'}}
+  version="v0.2.11"
+  locales="NL · EN"
+  title="Planninq"
+  tagline={<>Borden, backlog en uren voor teams die dingen bouwen en repareren, op je eigen <span className="next-blue">Nextcloud</span>. Maak af voordat je begint.</>}
+  intro={<>Planninq (voorheen Planix) is een open-source projectbord voor het team dat je product bouwt of je systemen draaiende houdt. Elk project krijgt een bord met kolommen die jij kiest. Een kolom houdt maar zoveel kaarten, dus de zesde wacht en de bottleneck laat zichzelf zien. Ideeën gaan in de backlog, niet in iemands hoofd. De uren op de taak zijn aan het eind van de maand de uren per project. Gemaakt voor ontwikkel- en IT-teams, simpel genoeg voor iedereen die werk in fases doet. Uitgebracht onder EUPL-1.2 en onderhouden door Conduction.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=planix'}}
+  tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/planninq'}}
+  illustration={<KanbanMock />}
+/>
+
+<Section spacing="default">
+  <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 'var(--space-8)', alignItems: 'start'}}>
+    <div style={{minWidth: 0}}>
+      <SectionHead
+        eyebrow="Wat het doet"
+        title="Bord, backlog, uren, afhankelijkheden. Eén plek per project."
+        align="stack"
+        lede="Planninq houdt het werk van een project op één bord. Sleep een kaart van links naar rechts terwijl het vordert. Bewaar de ideeën voor later in de backlog. Schrijf de uren op de taak waarvoor je ze maakte. Zie wat vastzit, en waarom, zonder statusoverleg."
+      />
+      <FeatureList>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="6" height="16"/><rect x="10" y="4" width="6" height="10"/><rect x="17" y="4" width="4" height="7"/></svg>}
+      title="Een kolom houdt vijf kaarten. De zesde wacht."
+    >
+      Vandaag begint iedereen aan alles en wordt niets afgemaakt. In plaats daarvan geef je een kolom een limiet. Staan er al vijf kaarten in "Mee bezig", dan kleurt de kolom rood en wacht de zesde. Het team maakt af voordat het begint, en jij ziet de bottleneck op het bord in plaats van erover te horen in een overleg. De limiet is een waarschuwing, geen muur: een kaart kan er nog altijd overheen als het moet.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 5l8 5-8 5"/><path d="M14 5h6v14h-6z"/></svg>}
+      title="Ideeën gaan in de backlog, niet in iemands hoofd."
+    >
+      Een klant vraagt iets tijdens een telefoongesprek. Vandaag leeft dat in het geheugen van wie toevallig opnam. In plaats daarvan gaat het in de backlog met een prioriteit en een deadline. Sorteer op wat het belangrijkst is, en sleep het op het bord op de dag dat het team ruimte heeft. Niets raakt kwijt tussen "goed idee" en "op het bord".
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>}
+      title="De uren op de taak zijn aan het eind van de maand de uren per project."
+    >
+      Geef een taak een schatting, schrijf de uren die je eraan besteedde, en je urenstaat groepeert ze per dag en week. Aan het eind van de maand staan de uren per project er al, niets reconstrueren uit je geheugen of de chatgeschiedenis. Schatting tegenover werkelijkheid laat zien waar de planning optimistisch was.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.2 7.2L12 15.8M15.8 7.2L12 15.8"/></svg>}
+      title="Een taak die op een andere wacht, draagt een badge. Niemand begint aan het dak voor de muren."
+    >
+      Markeer een taak als geblokkeerd door een andere. De kaart toont een badge "Geblokkeerd" tot de andere klaar is, op het bord en in de lijst, zodat niemand hem te vroeg oppakt. Planninq weigert een lus waarin twee taken op elkaar wachten, dus de badge spreekt altijd de waarheid.
+    </FeatureItem>
+    <FeatureItem
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>}
+      title="Morgen af komt in beeld voordat het gisteren af had gemoeten."
+    >
+      Elke kaart draagt zijn deadline als een badge die van kleur verandert naarmate de dag dichterbij komt. De persoon aan wie de taak is toegewezen krijgt een Nextcloud-melding vóór de deadline, met een voorlooptijd die jij instelt. Over alle projecten heen laat de tijdlijn zien wat wanneer loopt.
+    </FeatureItem>
+  </FeatureList>
+    </div>
+    <AppCrossLinks
+      variant="rail"
+      apps={['planix']}
+      surface="product"
+    />
+  </div>
+</Section>
+
+<RotatingCards
+  eyebrow="Vier manieren waarop Planninq zijn plek verdient"
+  title="Het werkt zoals jij werkt. En het werkt voor jou."
+  lede="Vier dingen waar je normaal extra voor betaalt. In Planninq zitten ze ingebouwd."
+  cards={[
+    {
+      tone: 'forest',
+      eyebrow: 'Automatiseer',
+      title: 'Een kaart bereikt "Klaar". De rest gebeurt vanzelf.',
+      summary: 'Vandaag: een taak is af en iemand moet eraan denken de klant te informeren, de sheet bij te werken en de volgende te starten. In plaats daarvan stel je het één keer in. Zodra een kaart naar "Klaar" gaat, verliest de taak die erop wachtte zijn badge en landt hij op de lijst van de volgende persoon. Een kaart die langer dan drie dagen in "Review" staat, zet een seintje op het bureau van de lead. Elke vrijdag een lijst met taken zonder geschreven uren. Niets vergeten, geen nabellen, geen programmeerwerk.',
+      cta: {label: 'Zo werkt automatiseren', href: '/apps/openregister'},
+      panel: <FlowMock />,
+    },
+    {
+      tone: 'lavender',
+      eyebrow: 'Maak het van jou',
+      title: 'Jouw kolommen, jouw labels, jouw limieten.',
+      summary: 'Een supportteam wil "Wacht op klant" als kolom. Een bouwteam wil "Testen" tussen "Mee bezig" en "Klaar". Een studio wil een label per klant. Voeg de kolom toe, stel de limiet in, voeg het label toe, en geef elk project een eigen kleur. In de draaiende app, in minuten, en je wijzigingen blijven bij elke update bewaard. Een bord dat past bij hoe je team echt werkt, niet een waar je het team omheen buigt.',
+      cta: {label: 'Zo werkt aanpassen', href: '/apps/buildiq'},
+      panel: <BuildMock />,
+    },
+    {
+      tone: 'workspace',
+      eyebrow: 'Praat ermee',
+      title: 'Vraag wat vastzit. Krijg de lijst, geen overleg.',
+      summary: 'Vraag "wat loopt achter op het websiteproject?" en je krijgt de kaarten, met wie ze heeft. Vraag "hoeveel uur ging er deze maand in de app?" en het getal staat er. De assistent leest dezelfde taken en uren die jij mag zien, en vraagt het voordat hij iets wijzigt. Kaarten verplaatsen en uren schrijven blijft bij jou.',
+      cta: {label: 'Maak kennis met de assistent', href: '/apps/hermiq'},
+      panel: <AgentTrace lines={[
+        'jij: wat loopt achter op het websiteproject?',
+        'assistent: 3 taken over tijd, 2 bij Sanne, 1 geblokkeerd op het logo',
+        'jij: hoeveel uur ging erin deze maand?',
+        'assistent: 46 uur geschreven, 52 geschat',
+      ]} cursor mode="leest alleen, vraagt het voordat hij iets wijzigt" />,
+    },
+    {
+      tone: 'mint',
+      eyebrow: 'Laat klanten zichzelf helpen',
+      title: 'Je klant volgt het project zonder jou te bellen.',
+      summary: <>De klant die de website bestelde heeft geen plek in je Nextcloud nodig. Via <a href="/apps/portaliq">Portaliq</a> logt hij in op zijn eigen portaal en ziet hij zijn projecten en hoe ver elk project is, de taken die op hem wachten, en de uren die al zijn besteed tegenover de schatting. De externe die je inhuurde schrijft vanuit hetzelfde portaal uren op zijn eigen taken. Minder "hoe staat het ervoor?"-telefoontjes, en het antwoord is altijd het bord van vandaag, niet de mail van vorige week.</>,
+      cta: {label: 'Bekijk het klantportaal', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<WidgetShelf
+  eyebrow="Wat je als eerste ziet"
+  title="We leveren de widgets die je nodig hebt"
+  lede={<>Open Planninq en je dashboard toont je open taken en taken over tijd, de projecten die je het laatst aanraakte, en wat deze week af moet. Klik op een getal en je staat in de lijst. Ontwerp je eigen widgets met <a href="/apps/buildiq">Buildiq</a>, of bouw je eigen dashboard van al je gegevens met <a href="/apps/launchpad">LaunchPad</a>.</>}
+  widgets={[
+    {
+      title: 'Mijn open taken en taken over tijd',
+      desc: 'Open, over tijd, mee bezig en vandaag afgerond. Vier getallen, elk één klik verwijderd van de taken erachter.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4}}>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 28, fontWeight: 700, color: 'var(--c-orange-knvb)'}}>2</div>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)'}}>over tijd</div>
+          </div>
+          {[
+            {label: 'open', val: '70%', tone: 'var(--c-cobalt-300)'},
+            {label: 'mee bezig', val: '40%', tone: 'var(--c-lavender-300)'},
+            {label: 'vandaag klaar', val: '25%', tone: 'var(--c-mint-500)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Deze week af',
+      desc: 'Taken die de komende zeven dagen af moeten, dichtstbij eerst, met het project waar ze bij horen. Vandaag en morgen zijn uitgelicht.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {tone: 'var(--c-orange-knvb)', stage: 'vandaag'},
+            {tone: 'var(--c-orange-knvb)', stage: 'morgen'},
+            {tone: 'var(--c-lavender-300)', stage: 'do'},
+            {tone: 'var(--c-mint-500)', stage: 'vr'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderBottom: i < 3 ? '1px solid var(--c-cobalt-50)' : 'none'}}>
+              <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: row.tone}}></span>
+              <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+                <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+              </div>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)'}}>{row.stage}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Recente projecten',
+      desc: 'De vijf projecten waarin je het laatst werkte, elk met het aantal taken en hoe ver het is.',
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+          {[
+            {label: 'website', val: '80%', tone: 'var(--c-mint-500)'},
+            {label: 'app v2', val: '45%', tone: 'var(--c-lavender-300)'},
+            {label: 'migratie', val: '20%', tone: 'var(--c-cobalt-300)'},
+            {label: 'support', val: '60%', tone: 'var(--c-forest-300)'},
+          ].map((row, i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 6}}>
+              <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 8, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--c-cobalt-500)', width: 56}}>{row.label}</div>
+              <div style={{flex: 1, height: 6, background: 'var(--c-cobalt-100)', borderRadius: 1}}>
+                <div style={{height: '100%', width: row.val, background: row.tone, borderRadius: 1}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ]}
+/>
+
+<Showcase
+  eyebrow="Zo sluit Planninq aan op je werkplek"
+  title="Meldingen, activiteit en de mensen buiten. Al van jou."
+  lede="Het bord staat waar je team al zijn meldingen en zijn activiteitenoverzicht leest. Dat is het punt van een werkplek."
+  layout="side"
+  defaultOpen="notify"
+  items={[
+    {
+      id: 'notify',
+      title: 'Een herinnering in het Nextcloud-belletje, niet in weer een andere app',
+      summary: 'Een taak moet over twee dagen af. De persoon aan wie hij is toegewezen ziet het in dezelfde Nextcloud-meldingen als een gedeeld bestand of een vermelding in de chat. Jij stelt de voorlooptijd in, zij kunnen het uitzetten. Elke wijziging aan een taak verschijnt in het activiteitenoverzicht, dus "wie heeft deze kaart verplaatst?" heeft een antwoord.',
+      cta: {label: 'Lees de docs', href: 'https://planix.conduction.nl'},
+      panel: (
+        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 10px', border: '1px solid var(--c-cobalt-100)', borderRadius: 6}}>
+            <div style={{height: 4, width: '70%', background: 'var(--c-cobalt-700)', borderRadius: 1}}></div>
+            <div style={{height: 3, width: '50%', background: 'var(--c-cobalt-200)', borderRadius: 1}}></div>
+          </div>
+          <div style={{alignSelf: 'flex-start', padding: '6px 12px', background: 'var(--c-blue-cobalt)', color: '#fff', borderRadius: 6, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, letterSpacing: '0.04em'}}>Over 2 dagen af</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 6}}>
+            <span style={{width: 10, height: 11, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-mint-500)'}}></span>
+            <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 9, color: 'var(--c-cobalt-500)'}}>Nieuwe kassa live zetten, project Webshop</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'procest',
+      title: 'Een zaak wordt een project op het bord',
+      summary: <>Een vergunningaanvraag of een klacht in <a href="/apps/dossiq">Dossiq</a> vraagt om echt werk. Geef het project en zijn taken het zaaknummer, en iedereen op het bord weet voor welke zaak het werk is. Vanuit de taak spring je naar de zaak. Een project rechtstreeks vanuit de zaak starten staat op de planning.</>,
+      cta: {label: 'Bekijk Dossiq', href: '/apps/dossiq'},
+      panel: <AppMock app="procest" />,
+    },
+    {
+      id: 'portal',
+      title: 'Een externe schrijft zijn uren vanuit het portaal',
+      summary: <>De freelancer of het bureau dat je inhuurde heeft geen plek in je Nextcloud nodig. Via <a href="/apps/portaliq">Portaliq</a> zien ze de taken en projecten die van hen zijn, en schrijven ze daar hun uren op. Jij ziet de uren op dezelfde taak als die van je eigen team, en verder is niets van jou voor hen zichtbaar.</>,
+      cta: {label: 'Bekijk Portaliq', href: '/apps/portaliq'},
+      panel: <AppMock app="portaliq" />,
+    },
+  ]}
+/>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Past goed bij"
+    title="Bouw ermee, vraag ernaar, zie het op je dashboard."
+    align="stack"
+  />
+  <PairRow>
+    <PairCard
+      href="/apps/buildiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
+      name="Buildiq"
+      why="Vorm je eigen kolommen, labels en schermen zonder ontwikkelaar. Het bord past bij je team, niet andersom."
+    />
+    <PairCard
+      href="/apps/hermiq"
+      icon={<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7v3a7 7 0 0 1-14 0V9a7 7 0 0 1 7-7Z"/><path d="M9 22h6"/><circle cx="9.5" cy="10" r="1"/><circle cx="14.5" cy="10" r="1"/></svg>}
+      name="Hermiq"
+      why="De assistent voor je werkplek. Vraag wat vastzit of hoeveel uur een project kostte, en krijg de lijst, geen overleg."
+    />
+    <PairCard
+      href="/apps/launchpad"
+      icon={<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>}
+      name="LaunchPad"
+      why="Je eigen dashboard over al je apps. Je taken over tijd en de deadlines van deze week, naast de rest van je dag."
+    />
+  </PairRow>
+</Section>
+
+<PartnersForApp slug="planix" />
+
+<CtaBanner
+  title="Projectborden op je eigen Nextcloud."
+  lede={<>Open source. Gratis te installeren. Je projecten en uren blijven op je eigen server. Planninq draait op dezelfde <span className="next-blue">Nextcloud</span> waar je team al werkt.</>}
+  primaryCta={{label: 'Installeer uit de Nextcloud app store', href: '/install'}}
+  secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=planix'}}
+/>
