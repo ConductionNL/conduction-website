@@ -76,7 +76,7 @@ export default function CookieSettings({
     : [];
 
   return (
-    <div style={{marginTop: 28, padding: '22px 24px', background: 'var(--c-cobalt-50)', border: '1px solid var(--c-cobalt-100)', borderRadius: 8}}>
+    <div style={{marginTop: 28, padding: '22px 24px', background: 'var(--conduction-color-surface-subtle)', border: '1px solid var(--c-cobalt-100)', borderRadius: 8}}>
       <div style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-orange-knvb)', marginBottom: 10}}>
         {heading}
       </div>
@@ -87,9 +87,9 @@ export default function CookieSettings({
       {rows.length > 0 && (
         <dl style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '10px 24px', margin: '0 0 16px'}}>
           {rows.map(([name, verdict]) => (
-            <div key={name} style={{background: 'white', padding: '10px 12px', borderRadius: 4, border: '1px solid var(--c-cobalt-100)', display: 'flex', justifyContent: 'space-between', gap: 12}}>
-              <dt style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, fontWeight: 700, color: 'var(--c-cobalt-700)'}}>{name}</dt>
-              <dd style={{margin: 0, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, color: 'var(--c-cobalt-900)'}}>{verdict}</dd>
+            <div key={name} style={{background: 'var(--conduction-color-surface-card)', padding: '10px 12px', borderRadius: 4, border: '1px solid var(--c-cobalt-100)', display: 'flex', justifyContent: 'space-between', gap: 12}}>
+              <dt style={{fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, fontWeight: 700, color: 'var(--conduction-color-text-body)'}}>{name}</dt>
+              <dd style={{margin: 0, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, color: 'var(--conduction-color-text-strong)'}}>{verdict}</dd>
             </div>
           ))}
         </dl>
