@@ -26,6 +26,11 @@ export const app = {...getApp('docudesk'), name: 'Filinq'};
   secondaryCta={{label: 'Vraag een demo aan bij een partner', href: '/partners/?app=docudesk'}}
   tertiaryCta={{label: 'Bekijk op GitHub', href: 'https://github.com/ConductionNL/docudesk'}}
   illustration={<AppMock app="docudesk" />}
+  game={
+    <HiddenGame id="redaction" unlock={{kind: 'select', minLength: 14}}>
+      <Redaction />
+    </HiddenGame>
+  }
 />
 
 <Section spacing="default">
@@ -262,13 +267,6 @@ export const app = {...getApp('docudesk'), name: 'Filinq'};
       why="Stel je eigen dashboard samen uit de documentwidgets hierboven, naast alles wat je organisatie verder draait."
     />
   </PairRow>
-</Section>
-
-{/* Het eigen mini-game van de app, op dezelfde plek als elders. */}
-<Section spacing="default">
-  <HiddenGame id="redaction" unlock={{kind: 'select', minLength: 14}}>
-    <Redaction />
-  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="docudesk" />

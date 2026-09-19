@@ -21,6 +21,11 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=shillinq'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/shillinq'}}
   illustration={<AppMock app="shillinq" />}
+  game={
+    <HiddenGame id="reconcile" unlock={{kind: 'clicks', target: 'app-glyph', count: 5}}>
+      <Reconcile />
+    </HiddenGame>
+  }
 />
 
 <Section spacing="default">
@@ -453,13 +458,6 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       why="Your cash, debtors and turnover on the start screen the whole team opens."
     />
   </PairRow>
-</Section>
-
-{/* The app's own mini-game, hidden like the rest. */}
-<Section spacing="default">
-  <HiddenGame id="reconcile" unlock={{kind: 'clicks', target: 'app-glyph', count: 5}}>
-    <Reconcile />
-  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="shillinq" />

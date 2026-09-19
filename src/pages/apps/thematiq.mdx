@@ -21,6 +21,11 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
   secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=nldesign'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/nldesign'}}
   illustration={<AppMock app="nldesign" />}
+  game={
+    <HiddenGame id="paint-by-tokens" unlock={{kind: 'type', word: 'paint'}}>
+      <PaintByTokens />
+    </HiddenGame>
+  }
 />
 
 <Section spacing="default">
@@ -242,13 +247,6 @@ import {PartnersForApp} from '@site/src/components/PartnersFor';
       why="Dashboards for aldermen and directors, in the same house style as everything else they see."
     />
   </PairRow>
-</Section>
-
-{/* The app's own mini-game, in the slot the other product pages use. */}
-<Section spacing="default">
-  <HiddenGame id="paint-by-tokens" unlock={{kind: 'type', word: 'paint'}}>
-    <PaintByTokens />
-  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="nldesign" />

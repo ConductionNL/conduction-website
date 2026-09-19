@@ -26,6 +26,11 @@ export const app = {...getApp('openbuild'), name: 'Buildiq'};
   secondaryCta={{label: 'Request a demo from a partner', href: '/partners/?app=openbuild'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL/openbuild'}}
   illustration={<AppMock app="openbuild" />}
+  game={
+    <HiddenGame id="blueprint-rush" unlock={{kind: 'type', word: 'build'}}>
+      <BlueprintRush />
+    </HiddenGame>
+  }
 />
 
 <Section spacing="default">
@@ -254,14 +259,6 @@ export const app = {...getApp('openbuild'), name: 'Buildiq'};
       why="A client portal on the records behind your apps. Clients help themselves, in your house style."
     />
   </PairRow>
-</Section>
-
-{/* The app's own mini-game, in the slot the other product pages use:
-    after the feature story, before the partners. */}
-<Section spacing="default">
-  <HiddenGame id="blueprint-rush" unlock={{kind: 'type', word: 'build'}}>
-    <BlueprintRush />
-  </HiddenGame>
 </Section>
 
 <PartnersForApp slug="openbuild" />
