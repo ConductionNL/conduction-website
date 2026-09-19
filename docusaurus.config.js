@@ -82,21 +82,32 @@ module.exports = createConfig({
     prizeLinkLabel: {en: 'How the giveaway works', nl: 'Zo werkt de actie'},
   },
 
-  /* Public lead-intake endpoint. The support + partner forms POST here to
-     create a `lead` object in the Pipelinq CRM (OpenRegister, public-create
-     schema, anonymous rate-limited). Set PIPELINQ_LEAD_ENDPOINT at build time
-     to point at a real instance.
+  /* Public enquiry-intake endpoint. The website forms POST here to create an
+     `enquiry` object in the Pipelinq CRM. Set PIPELINQ_ENQUIRY_ENDPOINT at
+     build time to point at a real instance.
+
+     THIS IS PIPELINQ'S OWN ENDPOINT, NOT OPENREGISTER'S OBJECT API, and the
+     difference is not cosmetic. It used to be
+     `/apps/openregister/api/objects/pipelinq/lead`, and OpenRegister cannot
+     scope WHICH properties a public create may set (`readOnly` is a documented
+     no-op on that path), so anyone could have set the record's own `status` or
+     `handledBy`. Pipelinq's endpoint whitelists what a submitter may send.
+
+     It also stopped being `lead` on purpose. A lead is a deal, with a value and
+     a pipeline stage, and its schema requires a `client` no anonymous visitor
+     has. An enquiry is what arrives before any of that is known.
 
      The fallback below is a DEV-ONLY convenience so the forms work out of the
      box against a local docker environment. It is NOT a production value:
      `localhost` is the visitor's own machine, and an http endpoint on an https
-     page is blocked as mixed content. LeadForm detects that at runtime and
+     page is blocked as mixed content. EnquiryForm detects that at runtime and
      degrades to an email fallback rather than accepting a submit it cannot
-     deliver — so shipping without PIPELINQ_LEAD_ENDPOINT is safe, just inert. */
+     deliver. That fallback is not hypothetical: production shipped without the
+     variable set, so every visitor saw it and no form ever submitted. */
   customFields: {
-    pipelinqLeadEndpoint:
-      process.env.PIPELINQ_LEAD_ENDPOINT
-      || 'http://localhost:8080/index.php/apps/openregister/api/objects/pipelinq/lead',
+    pipelinqEnquiryEndpoint:
+      process.env.PIPELINQ_ENQUIRY_ENDPOINT
+      || 'http://localhost:8080/index.php/apps/pipelinq/api/enquiry',
   },
 
   /* Two locales, English default. URL shape:
