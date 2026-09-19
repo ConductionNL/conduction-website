@@ -107,6 +107,17 @@ test.describe('stamp rush, on the Decidiq page', () => {
   test('stays hidden until the logo is knocked on, then deals decisions', async ({page}) => {
     const game = page.locator('section[class*="rush"]');
     await findGame(page, 'stamp-rush', game);
+
+    /* In the hero, not somewhere down the page: the way in is the logo
+       at the top, so the reward cannot be a screen you have to go
+       looking for. `withIllustration` is the product hero's own class;
+       the games carry a `head` of their own, so matching on that would
+       find the game inside itself. */
+    await expect(
+      page.locator('section[class*="withIllustration"] section[class*="rush"]'),
+      'the game opened somewhere other than the hero',
+    ).toBeVisible();
+
     await game.getByRole('button', {name: /take the pen/i}).click();
 
     /* A desk holding a decision, whichever kind it is. */
