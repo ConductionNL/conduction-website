@@ -77,10 +77,45 @@ jobs:
       # committed, and the build goes green with frozen numbers. Since
       # refreshing those numbers is the entire purpose of the nightly run,
       # a silent fallback would make this job theatre.
+      # PIPELINQ_ENQUIRY_ENDPOINT is what makes the forms work at all. Without
+      # it the build falls back to the localhost dev default, EnquiryForm sees
+      # an http endpoint on an https page, and every visitor is shown the email
+      # fallback instead of a form that submits. That is not hypothetical: it
+      # is what production did until this line existed, which is why no website
+      # enquiry ever reached the CRM.
+      #
+      # A repository VARIABLE, not a secret: it is a public URL that every
+      # visitor's browser sends a request to, so hiding it buys nothing and
+      # costs the ability to read the deploy log and see where leads went.
       - name: Build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PIPELINQ_ENQUIRY_ENDPOINT: ${{ vars.PIPELINQ_ENQUIRY_ENDPOINT }}
         run: npm run build
+
+      # The build cannot fail on a missing endpoint, because a preview build of
+      # a docs-only PR has no reason to carry one. It CAN refuse to deploy a
+      # production build that would ship forms nobody can submit, which is the
+      # failure this whole change exists to end.
+      - name: The production build must carry a real enquiry endpoint
+        # Same condition as the Deploy step below, deliberately: this guards
+        # what actually ships, so if the two ever disagree the guard is either
+        # blocking a build nobody deploys or waving through one they do.
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/development'
+        run: |
+          # Matched on the CONFIG KEY, never on the bare host. `localhost:8080`
+          # on its own appears in 19 bundle files, because the academy
+          # tutorials are full of "Host http://localhost:8080, basic auth
+          # admin:admin" and they are supposed to be. Grepping for the host
+          # alone made this step fail every single deploy while looking like a
+          # careful safety check, which is worse than not having one. Measured
+          # against a real build, not assumed: key+host matches exactly one
+          # file, the config in main.*.js.
+          if grep -rqF 'pipelinqEnquiryEndpoint:"http://localhost' build/assets/js/; then
+            echo "::error::The build baked in the localhost dev endpoint. Set the PIPELINQ_ENQUIRY_ENDPOINT repository variable, or every form on the site degrades to the email fallback and no enquiry reaches the CRM."
+            exit 1
+          fi
+          echo "Enquiry endpoint is not the dev default."
 
       - name: Check the build produced both locales
         run: |

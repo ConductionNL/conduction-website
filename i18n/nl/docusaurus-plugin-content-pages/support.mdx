@@ -5,6 +5,12 @@ hide_table_of_contents: true
 ---
 
 import {Section, SectionHead, HowSteps, HowStep, Card, Pill, HexBullet, HexNetwork, FeatureList, FeatureItem, PairRow, PairCard, Button, ManagedCommonGround} from '@conduction/docusaurus-preset/components';
+import EnquiryForm from '@site/src/components/EnquiryForm';
+
+export const supportLeadTitle = (f) =>
+  `Support enquiry: ${[f.firstName, f.lastName].filter(Boolean).join(' ') || 'Websitebezoeker'}${f.organisation ? ` (${f.organisation})` : ''}`;
+export const partnerLeadTitle = (f) =>
+  `Partner application: ${f.company || 'Onbekend bedrijf'}`;
 
 <Section spacing="default">
   <div style={{display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: 'var(--space-10)', alignItems: 'center'}} className="support-hero">
@@ -184,5 +190,140 @@ import {Section, SectionHead, HowSteps, HowStep, Card, Pill, HexBullet, HexNetwo
         <li><HexBullet size="sm" color="var(--c-mint-500)" /> Tweewekelijkse leadership-sync</li>
       </ul>
     </Card>
+  </div>
+</Section>
+
+<Section spacing="default" background="tinted">
+  <SectionHead
+    eyebrow="Neem contact op"
+    title="Twee deuren. Kies die past."
+    align="stack"
+  />
+  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24}} className="cn-stack-mobile support-forms">
+
+    <EnquiryForm source="website-support" buildTitle={supportLeadTitle} successText="We sturen je vraag door naar een tot drie passende partners en nemen snel contact op." style={{background: 'var(--conduction-color-surface-card)', border: '1px solid var(--c-cobalt-100)', borderRadius: 'var(--radius-lg)', padding: 36}}>
+      <div style={{display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 12}}>
+        <span style={{width: 10, height: 12, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-orange-knvb)'}}></span>
+        Ik zoek hulp
+      </div>
+      <h3 style={{fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', margin: '0 0 12px', lineHeight: 1.2, color: 'var(--conduction-color-text-strong)'}}>Koppel me aan een partner.</h3>
+      <p style={{fontSize: 14, color: 'var(--conduction-color-text-body)', lineHeight: 1.55, margin: '0 0 24px', maxWidth: '44ch'}}>Vertel ons wat je wilt bereiken. We sturen de vraag door naar een tot drie partners die passen bij je sector, je omvang en de apps die je op het oog hebt. Geen commissie, geen exclusiviteit.</p>
+
+      <div className="cn-stack-mobile" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14}}>
+        <label style={{display: 'block'}}>
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Voornaam</span>
+          <input type="text" name="firstName" placeholder="Sanne" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-strong)'}} />
+        </label>
+        <label style={{display: 'block'}}>
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Achternaam</span>
+          <input type="text" name="lastName" placeholder="de Vries" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-strong)'}} />
+        </label>
+      </div>
+
+      <label style={{display: 'block', marginBottom: 14}}>
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Werk-e-mailadres</span>
+        <input type="email" name="email" placeholder="je@bedrijf.nl" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-strong)'}} />
+      </label>
+
+      <label style={{display: 'block', marginBottom: 14}}>
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Organisatie</span>
+        <input type="text" name="organisation" placeholder="Gemeente, MKB, ziekenhuis…" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-strong)'}} />
+      </label>
+
+      <div className="cn-stack-mobile" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14}}>
+        <label style={{display: 'block'}}>
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Sector</span>
+          <select name="sector" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-strong)'}}>
+            <option>Publieke sector</option>
+            <option>MKB</option>
+            <option>Zorg</option>
+            <option>Onderwijs</option>
+            <option>Anders</option>
+          </select>
+        </label>
+        <label style={{display: 'block'}}>
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Apps op het oog</span>
+          <select name="apps" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-strong)'}}>
+            <option>Niet zeker, adviseer me</option>
+            <option>OpenCatalogi</option>
+            <option>OpenRegister</option>
+            <option>Integriq</option>
+            <option>Filinq</option>
+            <option>Combinatie</option>
+          </select>
+        </label>
+      </div>
+
+      <label style={{display: 'block', marginBottom: 14}}>
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Wat wil je bereiken?</span>
+        <textarea name="message" placeholder="Bijv: WOO-publicatie inrichten op onze huidige Nextcloud, met koppeling naar ons DMS." style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-strong)', resize: 'vertical', minHeight: 80}}></textarea>
+      </label>
+
+      <p style={{fontSize: 12, color: 'var(--conduction-color-text-muted)', lineHeight: 1.5, margin: '16px 0 18px'}}>Door te versturen ga je ermee akkoord dat Conduction en maximaal drie passende partners eenmalig contact opnemen. We delen alleen wat je hierboven hebt ingevuld. <a href="/nl/privacy">Privacyverklaring</a>.</p>
+      <button type="submit" style={{background: 'var(--c-blue-cobalt)', color: 'white', border: 'none', padding: '13px 28px', borderRadius: 'var(--radius-md)', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', cursor: 'pointer'}}>
+        Vind een partner voor me →
+      </button>
+    </EnquiryForm>
+
+    <EnquiryForm source="website-partner" buildTitle={partnerLeadTitle} successText="We beoordelen partneraanmeldingen binnen vijf werkdagen en koppelen per e-mail terug." id="become-a-partner" style={{background: 'var(--c-cobalt-900)', color: 'white', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-lg)', padding: 36}}>
+      <div style={{display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: 12}}>
+        <span style={{width: 10, height: 12, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-orange-knvb)'}}></span>
+        Ik wil partner worden
+      </div>
+      <h3 style={{fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', margin: '0 0 12px', lineHeight: 1.2, color: 'white'}}>Meld je aan voor het partnerprogramma.</h3>
+      <p style={{fontSize: 14, color: 'rgba(255,255,255,0.72)', lineHeight: 1.55, margin: '0 0 24px', maxWidth: '44ch'}}>If your team installs and operates Conduction apps for clients, the Partner tier is open. No fee, no exclusivity. The bar is one production deployment and a public reference.</p>
+
+      <div className="cn-stack-mobile" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14}}>
+        <label style={{display: 'block'}}>
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginBottom: 6}}>Bedrijfsnaam</span>
+          <input type="text" name="company" placeholder="Acme Hosting" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.08)', color: 'white'}} />
+        </label>
+        <label style={{display: 'block'}}>
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginBottom: 6}}>Land</span>
+          <input type="text" name="country" placeholder="NL · BE · DE" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.08)', color: 'white'}} />
+        </label>
+      </div>
+
+      <label style={{display: 'block', marginBottom: 14}}>
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginBottom: 6}}>E-mailadres</span>
+        <input type="email" name="email" placeholder="partners@yourcompany.nl" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.08)', color: 'white'}} />
+      </label>
+
+      <div className="cn-stack-mobile" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14}}>
+        <label style={{display: 'block'}}>
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginBottom: 6}}>Productie-implementaties</span>
+          <select name="deployments" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.08)', color: 'white'}}>
+            <option>1</option>
+            <option>2–5</option>
+            <option>6–10</option>
+            <option>10+</option>
+          </select>
+        </label>
+        <label style={{display: 'block'}}>
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginBottom: 6}}>Tier waarvoor je je aanmeldt</span>
+          <select name="tier" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.08)', color: 'white'}}>
+            <option>Host</option>
+            <option>Service</option>
+            <option>Gecertificeerd (op uitnodiging)</option>
+          </select>
+        </label>
+      </div>
+
+      <label style={{display: 'block', marginBottom: 14}}>
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginBottom: 6}}>Apps die je uitrolt en beheert</span>
+        <input type="text" name="apps" placeholder="OpenCatalogi · OpenRegister · …" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.08)', color: 'white'}} />
+      </label>
+
+      <label style={{display: 'block', marginBottom: 14}}>
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginBottom: 6}}>Publieke referentie (URL)</span>
+        <input type="url" name="reference" placeholder="https://gemeente-x.nl/woo" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.08)', color: 'white'}} />
+      </label>
+
+      <p style={{fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5, margin: '16px 0 18px'}}>We review applications within five business days. Approved partners get a directory listing, a Slack invite, and a slot in the next quarterly office hours.</p>
+      <button type="submit" style={{background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-default)', border: 'none', padding: '13px 28px', borderRadius: 'var(--radius-md)', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', cursor: 'pointer'}}>
+        Aanmelding versturen →
+      </button>
+    </EnquiryForm>
+
   </div>
 </Section>
