@@ -12,7 +12,7 @@
   justify-content: space-between;
   padding: 22px 56px;
   border-bottom: 1px solid var(--c-cobalt-100);
-  background: white;
+  background: var(--conduction-color-surface-card);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -32,10 +32,10 @@
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: var(--c-blue-cobalt);
+  color: var(--conduction-color-text-default);
   text-decoration: none;
 }
-.wordmark:hover { color: var(--c-blue-cobalt); text-decoration: none; }
+.wordmark:hover { color: var(--conduction-color-text-default); text-decoration: none; }
 
 /* App-glyph hex next to the wordmark. Every product navbar shows the
    app's icon (sourced from navbar.logo); sized to match the wordmark's
@@ -43,9 +43,16 @@
 .wordmarkIcon {
   width: 32px;
   height: 32px;
-  display: block;
   flex-shrink: 0;
   object-fit: contain;
+}
+/* `display: block` only when the wordmark holds one image. With
+   `logo.srcDark` set, ThemedImage puts both cuts here and hides one with
+   its own `.themedComponent { display: none }` — a single class selector
+   that a blanket `.wordmarkIcon { display: block }` would outrank, leaving
+   both marks stacked in the bar until hydration. */
+img.wordmarkIcon:only-of-type {
+  display: block;
 }
 
 /* Wordmark text wrapper; gives us a single hook for tweaks like
@@ -60,7 +67,7 @@
    so "OpenRegister" reads as muted-"Open" + bold-"Register" and the
    eye lands on the noun, not the brand prefix. */
 .wordmarkPrefix {
-  color: var(--c-cobalt-400);
+  color: var(--conduction-color-text-muted);
   font-weight: 400;
 }
 
@@ -70,7 +77,7 @@
 }
 
 .link {
-  color: var(--c-cobalt-700);
+  color: var(--conduction-color-text-body);
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -92,13 +99,13 @@
 }
 
 .ghost {
-  color: var(--c-cobalt-700);
+  color: var(--conduction-color-text-body);
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
 }
 .ghost:hover {
-  color: var(--c-orange-knvb);
+  color: var(--conduction-color-text-body);
   text-decoration: none;
 }
 
@@ -124,12 +131,37 @@
   font-size: 14px;
 }
 .localeWrapper :global(.navbar__link) {
-  color: var(--c-cobalt-700);
+  color: var(--conduction-color-text-body);
   font-weight: 500;
   padding: 0 8px;
 }
 .localeWrapper :global(.navbar__link:hover) {
-  color: var(--c-orange-knvb);
+  color: var(--conduction-color-text-body);
+}
+/* The hover chip. Only a dark-mode rule existed, so light had no hover
+   background at all; this is the light half of the same pair. Dark keeps
+   its own override below because `surface-subtle` resolves to the same
+   cobalt-800 as the bar there, which would show nothing. */
+.localeWrapper:hover {
+  background: var(--conduction-color-surface-subtle);
+  border-radius: var(--radius-sm);
+}
+/* The dropdown panel, per preview/components/top-navbar.html (.locale-menu):
+   card surface, a cobalt-100 hairline, and --shadow-2. Infima's default is
+   `0 5px 40px rgba(0,0,0,0.2)` — a 40px black blur that reads as a grey
+   halo on the light bar and vanishes on the dark one. --shadow-2 is
+   `0 2px 8px rgba(33,70,139,0.10)`: cobalt-tinted and tight, so it sits
+   the same in both themes. */
+.localeWrapper :global(.dropdown__menu) {
+  background: var(--conduction-color-surface-card);
+  border: 1px solid var(--c-cobalt-100);
+  box-shadow: var(--shadow-2);
+}
+/* Menu rows: background hover, not an orange one. Orange is reserved for
+   "you are here" / "you are about to go here" on the section links. */
+.localeWrapper :global(.dropdown__link:hover) {
+  background: var(--conduction-color-surface-subtle);
+  color: var(--conduction-color-text-default);
 }
 
 /* Inline SVG slot used by `github` and `apiDocs` items. The icon
@@ -157,14 +189,14 @@
   width: 34px;
   height: 34px;
   border-radius: var(--radius-sm);
-  color: var(--c-cobalt-700);
+  color: var(--conduction-color-text-body);
   font-size: 18px;
   text-decoration: none;
   transition: color 160ms ease, background 160ms ease;
 }
 .iconLink:hover {
-  color: var(--c-blue-cobalt);
-  background: var(--c-cobalt-50);
+  color: var(--conduction-color-text-default);
+  background: var(--conduction-color-surface-subtle);
   text-decoration: none;
 }
 
@@ -188,8 +220,8 @@
   font-family: var(--conduction-typography-font-family-code);
   font-size: 11px;
   letter-spacing: 0.04em;
-  color: var(--c-cobalt-400);
-  background: var(--c-cobalt-50);
+  color: var(--conduction-color-text-muted);
+  background: var(--conduction-color-surface-subtle);
   border-radius: var(--radius-pill);
   padding: 4px 10px;
   white-space: nowrap;
@@ -215,7 +247,7 @@
   border: 0;
   border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--c-cobalt-700);
+  color: var(--conduction-color-text-body);
   font-size: 24px;
   cursor: pointer;
   transition: color 160ms ease, background 160ms ease;
@@ -225,8 +257,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 .burger:hover {
-  color: var(--c-blue-cobalt);
-  background: var(--c-cobalt-50);
+  color: var(--conduction-color-text-default);
+  background: var(--conduction-color-surface-subtle);
 }
 .burgerGlyph {
   display: inline-flex;
@@ -247,7 +279,7 @@
   z-index: 200;
   display: flex;
   flex-direction: column;
-  background: white;
+  background: var(--conduction-color-surface-card);
   overflow-y: auto;
   overscroll-behavior: contain;
   font-family: var(--conduction-typography-font-family-body);
@@ -271,7 +303,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 14px 20px;
-  border-bottom: 1px solid var(--c-cobalt-100);
+  border-bottom: 1px solid var(--conduction-color-surface-sunken);
   flex-shrink: 0;
 }
 
@@ -294,8 +326,8 @@
   align-items: center;
   gap: 10px;
   padding: 16px 0;
-  border-bottom: 1px solid var(--c-cobalt-100);
-  color: var(--c-cobalt-700);
+  border-bottom: 1px solid var(--conduction-color-surface-sunken);
+  color: var(--conduction-color-text-body);
   font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -346,9 +378,9 @@
   justify-content: center;
   gap: 8px;
   padding: 13px 20px;
-  border: 1px solid var(--c-cobalt-100);
+  border: 1px solid var(--conduction-color-border-default);
   border-radius: var(--radius-md);
-  color: var(--c-cobalt-700);
+  color: var(--conduction-color-text-body);
   font-size: 16px;
   font-weight: 600;
   text-decoration: none;
@@ -369,14 +401,14 @@
   gap: 12px;
   margin-top: 28px;
   padding-top: 20px;
-  border-top: 1px solid var(--c-cobalt-100);
+  border-top: 1px solid var(--conduction-color-surface-sunken);
 }
 
 .drawerMetaLink {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: var(--c-cobalt-400);
+  color: var(--conduction-color-text-muted);
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
@@ -396,7 +428,7 @@
 }
 .drawerLocale :global(.menu__link) {
   padding: 6px 0;
-  color: var(--c-cobalt-700);
+  color: var(--conduction-color-text-body);
   font-size: 14px;
   font-weight: 500;
   background: transparent;
@@ -439,4 +471,44 @@
    covering a desktop layout. */
 @media (min-width: 901px) {
   .drawer { display: none; }
+}
+
+/* Dark mode, carried over from the preset's own navbar (3.47.1).
+
+   Everything above resolves through the semantic tokens, which already
+   flip under [data-theme='dark'], so the bar, the drawer and the text
+   follow the theme on their own. These three are the exceptions the
+   preset also had to spell out:
+
+   - the locale dropdown's hover fill needs to lift rather than tint,
+     because surface-subtle and surface-card resolve to the same cobalt
+     in dark and the hover would read as no hover at all;
+   - the brand marks are literal black in the icon row, so a palette
+     change cannot reach a trademark -- in dark they go literal white
+     for the same reason;
+   - the version pill needs the same lift as the locale hover. */
+[data-theme='dark'] .localeWrapper:hover,
+[data-theme='dark'] .localeWrapper :global(.dropdown__link:hover) {
+  background: var(--conduction-color-surface-sunken);
+}
+
+[data-theme='dark'] .iconLink svg {
+  fill: #FFFFFF;
+}
+
+[data-theme='dark'] .versionPill {
+  background: var(--conduction-color-surface-sunken);
+}
+
+/* The icon row and the burger get a visible hover again.
+
+   Their resting chip is `surface-subtle`, which in dark resolves to
+   --c-cobalt-800 -- the same value as `surface-card`, the bar behind
+   them. That is 1.00:1: no chip at all, so hovering them did nothing
+   visible. Lifting to `surface-sunken` (--c-cobalt-700) is the same one
+   step the preset already applies to .localeWrapper:hover and
+   .versionPill, so the whole right-hand cluster now reacts alike. */
+[data-theme='dark'] .iconLink:hover,
+[data-theme='dark'] .burger:hover {
+  background: var(--conduction-color-surface-sunken);
 }

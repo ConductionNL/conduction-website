@@ -41,6 +41,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import {useThemeConfig} from '@docusaurus/theme-common';
 import {translate} from '@docusaurus/Translate';
 import LocaleDropdownNavbarItem from '@theme/NavbarItem/LocaleDropdownNavbarItem';
+import ThemedImage from '@theme/ThemedImage';
 import styles from './styles.module.css';
 
 /**
@@ -308,6 +309,8 @@ export default function Navbar() {
      the current page's path and 404s on every sub-route. */
   const logoSrcRaw = navbar.logo?.src;
   const logoSrc = useBaseUrl(logoSrcRaw || '');
+  const logoSrcDarkRaw = navbar.logo?.srcDark;
+  const logoSrcDark = useBaseUrl(logoSrcDarkRaw || '');
   const logoAlt = navbar.logo?.alt || translate(
     {id: 'preset.navbar.logoAlt', message: '{title} avatar', description: 'Default alt text for the navbar logo. {title} is the site title.'},
     {title: navbar.title},
@@ -327,14 +330,32 @@ export default function Navbar() {
   const drawerActions = rightItems.filter(i => !META_TYPES.has(i.type));
   const drawerMeta = rightItems.filter(i => META_TYPES.has(i.type));
 
+  /* `logo.srcDark` is Docusaurus' own convention and createConfig() has
+     always set it, but this swizzle only ever read `src` — so the dark
+     mark the preset declares has never rendered, and the light-ground
+     avatar sat on the dark bar. ThemedImage follows `data-theme` rather
+     than the OS, so the pair still holds wherever the colour mode is
+     chosen rather than inherited, and it emits both sources during SSR
+     with one hidden by class — see the `:only-of-type` rule in the
+     stylesheet, which keeps that hiding from being overridden. */
   const logo = logoSrcRaw ? (
-    <img
-      src={logoSrc}
-      alt={logoAlt}
-      className={styles.wordmarkIcon}
-      width="32"
-      height="32"
-    />
+    logoSrcDarkRaw ? (
+      <ThemedImage
+        sources={{light: logoSrc, dark: logoSrcDark}}
+        alt={logoAlt}
+        className={styles.wordmarkIcon}
+        width="32"
+        height="32"
+      />
+    ) : (
+      <img
+        src={logoSrc}
+        alt={logoAlt}
+        className={styles.wordmarkIcon}
+        width="32"
+        height="32"
+      />
+    )
   ) : null;
 
   return (
