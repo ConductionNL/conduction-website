@@ -229,7 +229,7 @@ export const RUN_CHECKS = async ({theme}) => {
     const isMedia = el.matches('img, svg, video, canvas, picture, table, pre');
     if (!isControl && !isMedia && text.length < 8) continue;
     if (SKIP.includes((el.textContent || '').trim())) continue;
-    if (el.closest && el.closest('#navbar-drawer[hidden]')) continue;
+    if (el.closest && el.closest('[id$="navbar-drawer"][hidden]')) continue;
     const s = getComputedStyle(el);
     if (!seen(el, s)) continue;
     const r = el.getBoundingClientRect();
@@ -261,7 +261,7 @@ export const RUN_CHECKS = async ({theme}) => {
   for (const el of els.filter((e) => e.matches && e.matches(CONTROL))) {
     const s = getComputedStyle(el);
     if (!seen(el, s)) continue;
-    if (el.closest && el.closest('#navbar-drawer[hidden]')) continue;
+    if (el.closest && el.closest('[id$="navbar-drawer"][hidden]')) continue;
     if (SKIP.includes((el.textContent || '').trim())) continue;
     const r = el.getBoundingClientRect();
     if (!r.width || !r.height) continue;
