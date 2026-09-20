@@ -83,6 +83,16 @@ const PAGES = [
   ['contact', '/contact/'],
   ['install', '/install/'],
   ['about', '/about/'],
+
+  /* The Dutch locale. It is a separate set of source files, it is live,
+     and it is NOT in sitemap.xml, so every sweep that used the sitemap as
+     "all pages" measured only English. /nl/apps/ was carrying 22
+     unreachable controls and /nl/terms/ 88 invisible elements the whole
+     time the English suite was green. Four pages is a sample, not
+     coverage, but it is enough to fail if the locale is forgotten again. */
+  ['nl home', '/nl/'],
+  ['nl apps listing', '/nl/apps/'],
+  ['nl support', '/nl/support/'],
 ];
 
 /**
@@ -111,8 +121,8 @@ async function offscreenControls(page) {
     const out = [];
     const selector = 'a[href], button, input, select, textarea, [role="button"]';
     for (const el of document.querySelectorAll(selector)) {
-      if (el.closest('#navbar-drawer[hidden]')) continue;
-      if ((el.textContent || '').trim() === 'Skip to main content') continue;
+      if (el.closest('[id$="navbar-drawer"][hidden]')) continue;
+      if (['Skip to main content', 'Ga naar hoofdinhoud'].includes((el.textContent || '').trim())) continue;
       const style = getComputedStyle(el);
       if (style.visibility === 'hidden' || style.display === 'none') continue;
       const r = el.getBoundingClientRect();
@@ -171,19 +181,19 @@ for (const [name, path] of PAGES) {
 test('the navbar drawer opens and exposes every navigation item', async ({page}) => {
   await page.goto('/');
 
-  const toggle = page.locator('button[aria-controls="navbar-drawer"]');
+  const toggle = page.locator('button[aria-controls$="navbar-drawer"]');
   await expect(toggle, 'the drawer toggle should be visible on a phone').toBeVisible();
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
 
   /* Closed: the drawer must be out of the accessibility tree, not just
      visually hidden, or its links stay in the tab order behind the
      page. */
-  await expect(page.locator('#navbar-drawer')).toBeHidden();
+  await expect(page.locator('[id$="navbar-drawer"]')).toBeHidden();
 
   await toggle.click();
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
 
-  const drawer = page.locator('#navbar-drawer');
+  const drawer = page.locator('[id$="navbar-drawer"]');
   await expect(drawer).toBeVisible();
 
   /* Support and About are the two items that used to fall off the bar,
@@ -200,10 +210,10 @@ test('the navbar drawer opens and exposes every navigation item', async ({page})
 
 test('the drawer closes when a link inside it is followed', async ({page}) => {
   await page.goto('/');
-  await page.locator('button[aria-controls="navbar-drawer"]').click();
-  await page.locator('#navbar-drawer').getByRole('link', {name: 'About'}).click();
+  await page.locator('button[aria-controls$="navbar-drawer"]').click();
+  await page.locator('[id$="navbar-drawer"]').getByRole('link', {name: 'About'}).click();
   await expect(page).toHaveURL(/\/about\/?$/);
-  await expect(page.locator('#navbar-drawer')).toBeHidden();
+  await expect(page.locator('[id$="navbar-drawer"]')).toBeHidden();
 });
 
 test('every footer link sits inside the viewport', async ({page}) => {
@@ -279,8 +289,8 @@ for (const path of ['/apps/', '/support/', '/']) {
     const small = await page.evaluate((min) => {
       const out = [];
       for (const el of document.querySelectorAll('a[href], button, input, select, [role="button"]')) {
-        if (el.closest('#navbar-drawer[hidden]')) continue;
-        if ((el.textContent || '').trim() === 'Skip to main content') continue;
+        if (el.closest('[id$="navbar-drawer"][hidden]')) continue;
+        if (['Skip to main content', 'Ga naar hoofdinhoud'].includes((el.textContent || '').trim())) continue;
         const style = getComputedStyle(el);
         if (style.visibility === 'hidden' || style.display === 'none') continue;
         if (style.display === 'inline' && el.closest('p, li')) continue;

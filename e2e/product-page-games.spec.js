@@ -118,6 +118,12 @@ test.describe('stamp rush, on the Decidiq page', () => {
       'the game opened somewhere other than the hero',
     ).toBeVisible();
 
+    /* And in the mock's place, not beside it. */
+    await expect(
+      page.locator('[class*="illustration_"]'),
+      'the app mock is still there, so the game is not where it should be',
+    ).toBeHidden();
+
     await game.getByRole('button', {name: /take the pen/i}).click();
 
     /* A desk holding a decision, whichever kind it is. */
@@ -436,6 +442,15 @@ test('a direct play link opens a game without solving its riddle', async ({page}
   await clearScores(page);
   await page.goto('/apps/thematiq/#play-paint-by-tokens');
   await expect(page.getByRole('region', {name: 'Paint by tokens'})).toBeVisible({timeout: 5000});
+});
+
+test('the app mock has the hero to itself until a game is found', async ({page}) => {
+  /* The other half of the swap: a page whose game nobody has found
+     looks exactly like a page with no game at all. */
+  await clearScores(page);
+  await page.goto('/apps/decidiq/');
+  await expect(page.locator('[class*="illustration_"]')).toBeVisible();
+  await expect(page.locator('section[class*="rush"]')).toHaveCount(0);
 });
 
 test('one riddle does not open another page game', async ({page}) => {

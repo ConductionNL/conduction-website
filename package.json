@@ -12,7 +12,7 @@
     "preview": "docusaurus build && docusaurus serve",
     "prebuild": "python3 .github/scripts/app_downloads.py && node scripts/sync-app-downloads.js",
     "build": "docusaurus build",
-    "postbuild": "node scripts/validate-ai-baseline.mjs",
+    "postbuild": "node scripts/validate-ai-baseline.mjs && node scripts/lint-color-roles.mjs",
     "validate:ai-baseline": "node scripts/validate-ai-baseline.mjs",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
@@ -22,11 +22,13 @@
     "write-heading-ids": "docusaurus write-heading-ids",
     "ci": "npm ci --legacy-peer-deps && npm run build",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "lint:colors": "node scripts/lint-color-roles.mjs",
+    "lint": "node scripts/lint-color-roles.mjs"
   },
   "dependencies": {
     "@conduction/docusaurus-plugin-portaliq": "git+https://github.com/ConductionNL/docusaurus-plugin-portaliq.git#1bed5e053637024e1a86b2bc1515e25bc8840123",
-    "@conduction/docusaurus-preset": "^3.45.1",
+    "@conduction/docusaurus-preset": "^3.47.1",
     "@docusaurus/core": "^3.10.2",
     "@docusaurus/plugin-client-redirects": "^3.10.2",
     "@docusaurus/preset-classic": "^3.10.2",
