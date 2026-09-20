@@ -87,6 +87,7 @@ const footerReady = () => {
 const all = routes(BUILD);
 const findings = [];
 const errors = [];
+const redirects = [];
 let done = 0;
 
 async function lane(browser, slice) {
@@ -107,6 +108,21 @@ async function lane(browser, slice) {
         try {
           const resp = await page.goto(BASE + url, {waitUntil: 'networkidle', timeout: 45000});
           if (!resp || resp.status() >= 400) throw new Error(`HTTP ${resp && resp.status()}`);
+          /* 118 of these routes are redirect stubs: a meta-refresh plus a
+             location assignment. The browser follows them, so without this
+             check the sweep measures whatever it lands on and files the
+             findings under the stub's URL. Off site that means reporting
+             another domain's defects as ours (/openconnector/ redirects to
+             openconnector.conduction.nl, which this repo does not control);
+             on site it means measuring the target twice and attributing one
+             copy to the wrong page. Either way the stub itself has no
+             content to check. */
+          const landed = page.url();
+          if (!landed.startsWith(BASE) || new URL(landed).pathname !== url) {
+            redirects.push({from: url, to: landed});
+            ok = true;
+            break;
+          }
           await page.waitForFunction(footerReady, null, {timeout: 20000});
           for (const f of await page.evaluate(RUN_CHECKS, {theme: combo.theme})) {
             findings.push({url, width: combo.width, theme: combo.theme, ...f});
@@ -154,11 +170,12 @@ const defects = [...uniq.values()].map((f) => ({
     : (f.widths.has(1280) ? 'all-widths' : 'narrow-only'),
 }));
 
-fs.writeFileSync(OUT, JSON.stringify({defects, errors}, null, 1));
+fs.writeFileSync(OUT, JSON.stringify({defects, errors, redirects}, null, 1));
 
 const pagesOf = (l) => new Set(l.map((f) => f.url)).size;
 console.log('');
-console.log(`SWEPT ${done} routes, ${errors.length} load failures`);
+const stubRoutes = new Set(redirects.map((r) => r.from)).size;
+console.log(`SWEPT ${done - stubRoutes} routes with content, skipped ${stubRoutes} redirect stubs, ${errors.length} load failures`);
 console.log(`raw ${findings.length}  ->  distinct defects ${defects.length}`);
 console.log('');
 console.log('check                   defects  pages   en/nl     attribution');
