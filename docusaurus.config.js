@@ -50,24 +50,31 @@ module.exports = createConfig({
   /* The games this site ships. The dialog counts "found" and the total
      against this list, so a game added here must actually exist on a
      page, and a game removed from the site must come out. Labels are
-     per locale because themeConfig is never translated. */
+     per locale because themeConfig is never translated.
+
+     `path` is the page a game lives on, and it makes the game's name
+     in the game-over roster a link back to it — but only once that
+     player has found it, so the list never gives a riddle away. The
+     first five have no path on purpose: they live in the footer, the
+     cookie bar and the apps grid, which are on every page, so there
+     is nowhere in particular to send anyone. Those stay plain text. */
   minigamesRoster: [
     {id: 'hexrain', label: {en: 'Twelve apps · hex rain', nl: 'Twaalf apps · hexregen'}},
     {id: 'boats', label: {en: 'Sink the boats · footer canal', nl: 'Boten kelderen · gracht in de footer'}},
     {id: 'invaders', label: {en: 'Hex-vaders · cookie CLI', nl: 'Hex-vaders · cookieconsole'}},
     {id: 'logo-memory', label: {en: 'Logo memory · clients marquee', nl: 'Logomemory · klantenmarquee'}},
     {id: 'kade-cyclist', label: {en: 'Kade cyclist · footer kade', nl: 'Kadefietser · kade in de footer'}},
-    {id: 'stamp-rush', label: {en: 'Stamp rush · Decidiq page', nl: 'Stempelrace · Decidiq-pagina'}},
-    {id: 'deadline-defender', label: {en: 'Deadline defender · Dossiq page', nl: 'Deadlineverdediger · Dossiq-pagina'}},
-    {id: 'blueprint-rush', label: {en: 'Blueprint rush · Buildiq page', nl: 'Bouwtekeningrace · Buildiq-pagina'}},
-    {id: 'lock-pick', label: {en: 'Lock pick · Keepiq page', nl: 'Slot openen · Keepiq-pagina'}},
-    {id: 'paint-by-tokens', label: {en: 'Paint by tokens · Thematiq page', nl: 'Kleuren op token · Thematiq-pagina'}},
-    {id: 'redaction', label: {en: 'Black it out · Filinq page', nl: 'Zwart lakken · Filinq-pagina'}},
-    {id: 'monster-run', label: {en: 'Monster run · La Frankendesk', nl: 'Monsterloop · La Frankendesk'}},
-    {id: 'dice-duel', label: {en: 'Dice duel · Larpinq page', nl: 'Dobbelduel · Larpinq-pagina'}},
-    {id: 'reconcile', label: {en: 'Match the bank · Shillinq page', nl: 'Bank matchen · Shillinq-pagina'}},
-    {id: 'pipe-fit', label: {en: 'Make the connection · Integriq page', nl: 'Koppeling leggen · Integriq-pagina'}},
-    {id: 'full-stack', label: {en: 'Full stack · Connext page', nl: 'Volle stack · Connext-pagina'}},
+    {id: 'stamp-rush', path: '/apps/decidiq/', label: {en: 'Stamp rush · Decidiq page', nl: 'Stempelrace · Decidiq-pagina'}},
+    {id: 'deadline-defender', path: '/apps/dossiq/', label: {en: 'Deadline defender · Dossiq page', nl: 'Deadlineverdediger · Dossiq-pagina'}},
+    {id: 'blueprint-rush', path: '/apps/buildiq/', label: {en: 'Blueprint rush · Buildiq page', nl: 'Bouwtekeningrace · Buildiq-pagina'}},
+    {id: 'lock-pick', path: '/apps/keepiq/', label: {en: 'Lock pick · Keepiq page', nl: 'Slot openen · Keepiq-pagina'}},
+    {id: 'paint-by-tokens', path: '/apps/thematiq/', label: {en: 'Paint by tokens · Thematiq page', nl: 'Kleuren op token · Thematiq-pagina'}},
+    {id: 'redaction', path: '/apps/filinq/', label: {en: 'Black it out · Filinq page', nl: 'Zwart lakken · Filinq-pagina'}},
+    {id: 'monster-run', path: '/academy/blog/la-frankendesk/', label: {en: 'Monster run · La Frankendesk', nl: 'Monsterloop · La Frankendesk'}},
+    {id: 'dice-duel', path: '/apps/larpinq/', label: {en: 'Dice duel · Larpinq page', nl: 'Dobbelduel · Larpinq-pagina'}},
+    {id: 'reconcile', path: '/apps/shillinq/', label: {en: 'Match the bank · Shillinq page', nl: 'Bank matchen · Shillinq-pagina'}},
+    {id: 'pipe-fit', path: '/apps/integriq/', label: {en: 'Make the connection · Integriq page', nl: 'Koppeling leggen · Integriq-pagina'}},
+    {id: 'full-stack', path: '/connext/', label: {en: 'Full stack · Connext page', nl: 'Volle stack · Connext-pagina'}},
   ],
 
   minigamesShare: {
@@ -78,8 +85,11 @@ module.exports = createConfig({
       en: 'Best total score on Friday 25 September at 17:00 wins a box of Amsterdam beer.',
       nl: 'De hoogste totaalscore op vrijdag 25 september om 17:00 wint een doos Amsterdams bier.',
     },
-    prizeHref: '/arcade',
-    prizeLinkLabel: {en: 'How the giveaway works', nl: 'Zo werkt de actie'},
+    /* No prizeHref on purpose. It pointed at /arcade, an index page we
+       would rather not send people to from here. The modal renders the
+       prize sentence on its own when there is no href, and
+       prizeLinkLabel is only read inside that link, so the two come out
+       together. The route still resolves for anyone holding the URL. */
   },
 
   /* Public enquiry-intake endpoint. The website forms POST here to create an
@@ -160,12 +170,22 @@ module.exports = createConfig({
            crawlers without locale-suffix discovery still see Dutch
            pages. /academy/tags/* is excluded because tag pages are
            thin and confuse AI summarisers more than they help SEO.
+           /arcade is excluded because it is an index page we would
+           rather not advertise. Note that this only keeps it out of the
+           sitemap and is not an access control: robots.txt is left open,
+           so anything that reaches the route another way can still read
+           it.
            ignorePatterns matches route paths *after* the locale prefix
-           is applied, so we list both forms. */
+           is applied, so we list both forms. trailingSlash is true, so
+           the route carries one; the bare form is listed too in case
+           that ever changes. */
         sitemap: {
           changefreq: 'weekly',
           priority: 0.5,
-          ignorePatterns: ['/academy/tags/**', '/nl/academy/tags/**'],
+          ignorePatterns: [
+            '/academy/tags/**', '/nl/academy/tags/**',
+            '/arcade', '/arcade/', '/nl/arcade', '/nl/arcade/',
+          ],
           filename: 'sitemap.xml',
         },
       },
@@ -318,6 +338,10 @@ module.exports = createConfig({
     /* INTERIM: apps-registry descriptions + AppCrossLinks description
        rendering until the preset ships both. See the plugin header. */
     require.resolve('./plugins/apps-registry-interim'),
+    /* DEV ONLY: puts @conduction back on webpack's watch list, so an
+       edit copied into the installed preset hot-reloads instead of
+       needing a server restart. No-op in a production build. */
+    require.resolve('./plugins/watch-preset-dev'),
     // [
     //   '@conduction/docusaurus-plugin-opencatalogi',
     //   {
