@@ -318,6 +318,10 @@ module.exports = createConfig({
     /* INTERIM: apps-registry descriptions + AppCrossLinks description
        rendering until the preset ships both. See the plugin header. */
     require.resolve('./plugins/apps-registry-interim'),
+    /* DEV ONLY: puts @conduction back on webpack's watch list, so an
+       edit copied into the installed preset hot-reloads instead of
+       needing a server restart. No-op in a production build. */
+    require.resolve('./plugins/watch-preset-dev'),
     // [
     //   '@conduction/docusaurus-plugin-opencatalogi',
     //   {
