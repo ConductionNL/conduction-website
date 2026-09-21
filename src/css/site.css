@@ -661,3 +661,44 @@ body {
 .hero--primary .hero__title {
   color: inherit;
 }
+
+/* ============================================================
+   EmployeeCard portraits · kill the cobalt ring, keep the size
+   ============================================================
+   The preset clips the avatar to a pointy-top hexagon and paints
+   --c-blue-cobalt behind it, assuming `photo` is bare artwork on
+   transparency. The team SVGs in static/img/team/ are not that: each one
+   bakes in its own background shape. Where that shape does not reach the
+   mask's edge, the cobalt ground shows through as a blue sliver down the
+   side. Both cuts carry the same baked shape, so light mode shows it just
+   as dark mode does -- it was never a dark-mode bug.
+
+   Only the ground is dropped, and only where the avatar actually holds an
+   image. The mask and the 72x83 / 44x50 slots stay exactly as the preset
+   sets them, so a portrait is the same size as an initials hexagon beside
+   it. An earlier version here also removed the mask and switched to
+   `contain`: that rendered the artwork whole, but at the size of whatever
+   padding each file happens to carry, which made the portraits visibly
+   smaller than the initials cards and differ from one another.
+
+   The padding really is per-file -- measured over the path geometry in a
+   512 viewBox: remko 440x508, thijn 430x496, barry 373x430, and ruben and
+   marleen draw through a group transform, so no single scale factor could
+   line them all up. That is why the fix is to let the mask define the
+   silhouette rather than the artwork.
+
+   :has(img) keeps this off the initials-only cards, which still need the
+   coloured fill -- including the three on /contact, which pass `initials`
+   and no `photo`. The selectors match the preset's CSS-module classes
+   (webpack emits [local]_[contenthash]); nothing in Infima is named
+   avatarLarge, and the plain `avatar_` form is narrowed to a div so
+   Infima's own .avatar / .avatar__photo blog-author classes cannot match.
+
+   REMOVE THIS BLOCK once the team SVGs are re-exported as bare art on
+   transparency, which is the real fix: then the mask alone draws the
+   hexagon and nothing has to be neutralised here.
+   ============================================================ */
+div[class*='avatarLarge_']:has(img),
+div[class*='avatar_']:has(img) {
+  background: transparent;
+}
