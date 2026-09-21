@@ -85,8 +85,11 @@ module.exports = createConfig({
       en: 'Best total score on Friday 25 September at 17:00 wins a box of Amsterdam beer.',
       nl: 'De hoogste totaalscore op vrijdag 25 september om 17:00 wint een doos Amsterdams bier.',
     },
-    prizeHref: '/arcade',
-    prizeLinkLabel: {en: 'How the giveaway works', nl: 'Zo werkt de actie'},
+    /* No prizeHref on purpose. It pointed at /arcade, an index page we
+       would rather not send people to from here. The modal renders the
+       prize sentence on its own when there is no href, and
+       prizeLinkLabel is only read inside that link, so the two come out
+       together. The route still resolves for anyone holding the URL. */
   },
 
   /* Public enquiry-intake endpoint. The website forms POST here to create an
@@ -167,12 +170,22 @@ module.exports = createConfig({
            crawlers without locale-suffix discovery still see Dutch
            pages. /academy/tags/* is excluded because tag pages are
            thin and confuse AI summarisers more than they help SEO.
+           /arcade is excluded because it is an index page we would
+           rather not advertise. Note that this only keeps it out of the
+           sitemap and is not an access control: robots.txt is left open,
+           so anything that reaches the route another way can still read
+           it.
            ignorePatterns matches route paths *after* the locale prefix
-           is applied, so we list both forms. */
+           is applied, so we list both forms. trailingSlash is true, so
+           the route carries one; the bare form is listed too in case
+           that ever changes. */
         sitemap: {
           changefreq: 'weekly',
           priority: 0.5,
-          ignorePatterns: ['/academy/tags/**', '/nl/academy/tags/**'],
+          ignorePatterns: [
+            '/academy/tags/**', '/nl/academy/tags/**',
+            '/arcade', '/arcade/', '/nl/arcade', '/nl/arcade/',
+          ],
           filename: 'sitemap.xml',
         },
       },
