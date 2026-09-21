@@ -4,7 +4,7 @@ description: Open-source apps that plug into Nextcloud. Catalogs, registers, int
 hide_table_of_contents: true
 ---
 
-import {Hero, StatsStrip, PlatformOverview, PlatformDiagram, HexRain, AppsPreview, CtaBanner, Showcase, AppMock, AgentTrace, ExternalAppShelf, Section, SectionHead, PairRow, PairCard, DownloadPanel, RecordRun, HiddenGame} from '@conduction/docusaurus-preset/components';
+import {Hero, StatsStrip, PlatformOverview, PlatformDiagram, HexRain, AppsPreview, CtaBanner, Showcase, AppMock, AgentTrace, ExternalAppShelf, Section, SectionHead, PairRow, PairCard, DownloadPanel, FullStack, HiddenGame} from '@conduction/docusaurus-preset/components';
 import {AppGlyph} from '@conduction/docusaurus-preset/components';
 import {totalDownloads, formatDownloads} from '@conduction/docusaurus-preset/data';
 import {totalPartners} from '@site/src/data/partners-catalog';
@@ -323,12 +323,12 @@ import {APP_COUNT, ECOSYSTEM_COUNT} from '@site/src/data/apps-catalog';
   </PairRow>
 </Section>
 
-{/* The stack's own mini-game: one record trying to get through it.
-    Sits above the closing CTA, so it is the last thing on the page
-    that is not a button. */}
+{/* Connext's other mini-game: the stack itself, as a well of app
+    tiles that only pays when the pieces fit together. Its own way in,
+    because one page's riddle must not open another's. */}
 <Section spacing="default">
-  <HiddenGame id="record-run" unlock={{kind: 'link'}}>
-    <RecordRun />
+  <HiddenGame id="full-stack" unlock={{kind: 'type', word: 'stack'}}>
+    <FullStack />
   </HiddenGame>
 </Section>
 
