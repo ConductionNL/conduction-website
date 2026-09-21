@@ -71,7 +71,7 @@ const UNLOCK = {
        in that shows itself, for a page with nothing else to poke at. */
     await page.getByRole('button', {name: /take a break/i}).click();
   },
-  'dice-duel': async (page) => { await page.keyboard.type('nat20'); },
+  'dice-duel': async (page) => { await page.keyboard.type('20'); },
   'monster-run': async (page) => { await page.keyboard.type('alive'); },
   reconcile: async (page) => {
     /* Five knocks, not three: Shillinq's logo wants more patience than
