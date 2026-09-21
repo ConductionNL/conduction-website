@@ -50,24 +50,31 @@ module.exports = createConfig({
   /* The games this site ships. The dialog counts "found" and the total
      against this list, so a game added here must actually exist on a
      page, and a game removed from the site must come out. Labels are
-     per locale because themeConfig is never translated. */
+     per locale because themeConfig is never translated.
+
+     `path` is the page a game lives on, and it makes the game's name
+     in the game-over roster a link back to it — but only once that
+     player has found it, so the list never gives a riddle away. The
+     first five have no path on purpose: they live in the footer, the
+     cookie bar and the apps grid, which are on every page, so there
+     is nowhere in particular to send anyone. Those stay plain text. */
   minigamesRoster: [
     {id: 'hexrain', label: {en: 'Twelve apps · hex rain', nl: 'Twaalf apps · hexregen'}},
     {id: 'boats', label: {en: 'Sink the boats · footer canal', nl: 'Boten kelderen · gracht in de footer'}},
     {id: 'invaders', label: {en: 'Hex-vaders · cookie CLI', nl: 'Hex-vaders · cookieconsole'}},
     {id: 'logo-memory', label: {en: 'Logo memory · clients marquee', nl: 'Logomemory · klantenmarquee'}},
     {id: 'kade-cyclist', label: {en: 'Kade cyclist · footer kade', nl: 'Kadefietser · kade in de footer'}},
-    {id: 'stamp-rush', label: {en: 'Stamp rush · Decidiq page', nl: 'Stempelrace · Decidiq-pagina'}},
-    {id: 'deadline-defender', label: {en: 'Deadline defender · Dossiq page', nl: 'Deadlineverdediger · Dossiq-pagina'}},
-    {id: 'blueprint-rush', label: {en: 'Blueprint rush · Buildiq page', nl: 'Bouwtekeningrace · Buildiq-pagina'}},
-    {id: 'lock-pick', label: {en: 'Lock pick · Keepiq page', nl: 'Slot openen · Keepiq-pagina'}},
-    {id: 'paint-by-tokens', label: {en: 'Paint by tokens · Thematiq page', nl: 'Kleuren op token · Thematiq-pagina'}},
-    {id: 'redaction', label: {en: 'Black it out · Filinq page', nl: 'Zwart lakken · Filinq-pagina'}},
-    {id: 'monster-run', label: {en: 'Monster run · La Frankendesk', nl: 'Monsterloop · La Frankendesk'}},
-    {id: 'dice-duel', label: {en: 'Dice duel · Larpinq page', nl: 'Dobbelduel · Larpinq-pagina'}},
-    {id: 'reconcile', label: {en: 'Match the bank · Shillinq page', nl: 'Bank matchen · Shillinq-pagina'}},
-    {id: 'pipe-fit', label: {en: 'Make the connection · Integriq page', nl: 'Koppeling leggen · Integriq-pagina'}},
-    {id: 'full-stack', label: {en: 'Full stack · Connext page', nl: 'Volle stack · Connext-pagina'}},
+    {id: 'stamp-rush', path: '/apps/decidiq/', label: {en: 'Stamp rush · Decidiq page', nl: 'Stempelrace · Decidiq-pagina'}},
+    {id: 'deadline-defender', path: '/apps/dossiq/', label: {en: 'Deadline defender · Dossiq page', nl: 'Deadlineverdediger · Dossiq-pagina'}},
+    {id: 'blueprint-rush', path: '/apps/buildiq/', label: {en: 'Blueprint rush · Buildiq page', nl: 'Bouwtekeningrace · Buildiq-pagina'}},
+    {id: 'lock-pick', path: '/apps/keepiq/', label: {en: 'Lock pick · Keepiq page', nl: 'Slot openen · Keepiq-pagina'}},
+    {id: 'paint-by-tokens', path: '/apps/thematiq/', label: {en: 'Paint by tokens · Thematiq page', nl: 'Kleuren op token · Thematiq-pagina'}},
+    {id: 'redaction', path: '/apps/filinq/', label: {en: 'Black it out · Filinq page', nl: 'Zwart lakken · Filinq-pagina'}},
+    {id: 'monster-run', path: '/academy/blog/la-frankendesk/', label: {en: 'Monster run · La Frankendesk', nl: 'Monsterloop · La Frankendesk'}},
+    {id: 'dice-duel', path: '/apps/larpinq/', label: {en: 'Dice duel · Larpinq page', nl: 'Dobbelduel · Larpinq-pagina'}},
+    {id: 'reconcile', path: '/apps/shillinq/', label: {en: 'Match the bank · Shillinq page', nl: 'Bank matchen · Shillinq-pagina'}},
+    {id: 'pipe-fit', path: '/apps/integriq/', label: {en: 'Make the connection · Integriq page', nl: 'Koppeling leggen · Integriq-pagina'}},
+    {id: 'full-stack', path: '/connext/', label: {en: 'Full stack · Connext page', nl: 'Volle stack · Connext-pagina'}},
   ],
 
   minigamesShare: {
