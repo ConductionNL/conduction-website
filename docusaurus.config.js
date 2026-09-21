@@ -60,7 +60,6 @@ module.exports = createConfig({
     {id: 'stamp-rush', label: {en: 'Stamp rush · Decidiq page', nl: 'Stempelrace · Decidiq-pagina'}},
     {id: 'deadline-defender', label: {en: 'Deadline defender · Dossiq page', nl: 'Deadlineverdediger · Dossiq-pagina'}},
     {id: 'blueprint-rush', label: {en: 'Blueprint rush · Buildiq page', nl: 'Bouwtekeningrace · Buildiq-pagina'}},
-    {id: 'record-run', label: {en: 'Record run · Connext page', nl: 'Recordrun · Connext-pagina'}},
     {id: 'lock-pick', label: {en: 'Lock pick · Keepiq page', nl: 'Slot openen · Keepiq-pagina'}},
     {id: 'paint-by-tokens', label: {en: 'Paint by tokens · Thematiq page', nl: 'Kleuren op token · Thematiq-pagina'}},
     {id: 'redaction', label: {en: 'Black it out · Filinq page', nl: 'Zwart lakken · Filinq-pagina'}},
@@ -68,6 +67,7 @@ module.exports = createConfig({
     {id: 'dice-duel', label: {en: 'Dice duel · Larpinq page', nl: 'Dobbelduel · Larpinq-pagina'}},
     {id: 'reconcile', label: {en: 'Match the bank · Shillinq page', nl: 'Bank matchen · Shillinq-pagina'}},
     {id: 'pipe-fit', label: {en: 'Make the connection · Integriq page', nl: 'Koppeling leggen · Integriq-pagina'}},
+    {id: 'full-stack', label: {en: 'Full stack · Connext page', nl: 'Volle stack · Connext-pagina'}},
   ],
 
   minigamesShare: {
