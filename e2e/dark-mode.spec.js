@@ -22,7 +22,7 @@
  *      this is a real invariant and not a hope.
  */
 
-import {test, expect} from '@playwright/test';
+import {test, expect} from './base.js';
 
 /* One page per layout archetype. The navbar and footer are on all of them,
    and these carry the distinct section and card treatments. */

@@ -7,7 +7,7 @@
  * had ever been observed failing, which is the same as not having them.
  */
 
-import {test, expect} from '@playwright/test';
+import {test, expect} from './base.js';
 import {REVEAL_ALL} from './a11y-reveal.js';
 import {FOCUS_CHECK} from './a11y-focus.js';
 import {RUN_CHECKS} from './a11y-checks.js';

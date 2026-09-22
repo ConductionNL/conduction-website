@@ -20,7 +20,7 @@
  *   screenshot perfectly (see smoke.spec.js's header).
  */
 
-import {test, expect} from '@playwright/test';
+import {test, expect} from './base.js';
 import {collectConsoleErrors, expectNoConsoleErrors} from './helpers.js';
 
 /*
