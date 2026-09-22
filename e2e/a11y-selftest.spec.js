@@ -14,7 +14,7 @@
  * cannot be broken by a content change.
  */
 
-import {test, expect} from '@playwright/test';
+import {test, expect} from './base.js';
 import {RUN_CHECKS} from './a11y-checks.js';
 
 const FIXTURE = `<!doctype html><html><head>

@@ -9,7 +9,7 @@
  * page looks wrong. Only the console says so.
  */
 
-import {test, expect} from '@playwright/test';
+import {test, expect} from './base.js';
 import {collectConsoleErrors, expectNoConsoleErrors} from './helpers.js';
 
 const LOCALES = [

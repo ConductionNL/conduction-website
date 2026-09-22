@@ -41,7 +41,7 @@
  * each of them against a page built to break it.
  */
 
-import {test, expect} from '@playwright/test';
+import {test, expect} from './base.js';
 import {RUN_CHECKS} from './a11y-checks.js';
 
 const BLOCKING = ['contrast-invisible', 'contrast-severe', 'offscreen-control', 'offscreen-content'];

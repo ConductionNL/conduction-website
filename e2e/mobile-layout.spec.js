@@ -20,7 +20,7 @@
  * cannot even scroll to it.
  */
 
-import {test, expect} from '@playwright/test';
+import {test, expect} from './base.js';
 
 /**
  * Wait until the footer's stylesheet has actually applied.

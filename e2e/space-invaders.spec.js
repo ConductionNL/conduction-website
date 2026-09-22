@@ -10,7 +10,7 @@
  * they were setting a preference is a worse outcome than letting them play.
  */
 
-import {test, expect} from '@playwright/test';
+import {test, expect} from './base.js';
 import {
   BANNER, clearConsent, openBannerFromFooter, typeCommand, terminalText,
   collectConsoleErrors, expectNoConsoleErrors,

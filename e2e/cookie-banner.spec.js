@@ -7,7 +7,7 @@
  * past the top of the viewport until the buttons were unreachable.
  */
 
-import {test, expect} from '@playwright/test';
+import {test, expect} from './base.js';
 import {
   BANNER, clearConsent, readConsent, openBannerFromFooter,
   collectConsoleErrors, expectNoConsoleErrors,

@@ -20,7 +20,7 @@
  * absence of the old one: an empty page passes an absence check.
  */
 
-import {test, expect} from '@playwright/test';
+import {test, expect} from './base.js';
 
 /* OLD slug -> [NEW slug, display name].
  *
@@ -92,19 +92,18 @@ test.describe('renamed products', () => {
 
   test('connext lists the renamed apps it builds on', async ({page}) => {
     await page.goto('/connext');
-    // The stack tiles are <pd-item name="…"> custom elements, so the
-    // names live in an attribute and never appear in innerText.
-    const names = await page.locator('pd-item[name]').evaluateAll((els) =>
-      els.map((el) => el.getAttribute('name')),
-    );
-    expect(names.length, 'connext should render stack tiles').toBeGreaterThan(0);
+
+    /* Asserted against the page, not against one container.
+       This used to read `pd-item[name]`, the platform diagram's custom
+       elements, and it stopped meaning anything twice over: that diagram
+       now lists the Nextcloud apps Connext runs on (Files, Mail, Calendar,
+       Talk, Office) rather than ours, and the custom elements are replaced
+       by the diagram's own script on hydration, so the selector matched
+       nothing at all. What the rename sweep actually cares about is that
+       the page says the new names somewhere. */
+    const body = page.locator('body');
     for (const name of ['Integriq', 'Filinq', 'Keepiq', 'Versioniq', 'Thematiq']) {
-      // Substring, not equality: some tiles qualify the product name
-      // with its role ("Thematiq Theme").
-      expect(
-        names.some((n) => n.includes(name)),
-        `/connext should name ${name}, got: ${names.join(', ')}`,
-      ).toBe(true);
+      await expect(body, `/connext should name ${name}`).toContainText(name);
     }
   });
 
