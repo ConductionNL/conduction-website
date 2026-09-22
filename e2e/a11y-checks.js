@@ -217,7 +217,14 @@ export const RUN_CHECKS = async ({theme}) => {
     if (ratio < 1.5) add('contrast-invisible', 'critical', text, `${ratio}:1`, meta);
     else if (ratio < 3) add('contrast-severe', 'serious', text, `${ratio}:1 needs ${required}:1`, meta);
     else if (ratio < required) add('contrast-aa', 'moderate', text, `${ratio}:1 needs ${required}:1`, meta);
-    if (size && size < 12) add('tiny-text', 'moderate', text, `${size.toFixed(1)}px`);
+    /* Severity by actual size, because one number for "under 12px" is
+       misleading. 11px is the brand's uppercase eyebrow, letter-spaced and
+       used as a label rather than as reading copy: 459 of the 520 findings
+       on a mobile sample were that, which buries the 61 that are smaller.
+       WCAG sets no minimum font size, so this is a readability heuristic and
+       it should say which half of it a finding is in. */
+    if (size && size < 11) add('tiny-text', 'moderate', text, `${size.toFixed(1)}px, below the readable floor`);
+    else if (size && size < 12) add('tiny-text', 'info', text, `${size.toFixed(1)}px, the eyebrow convention`);
   }
 
   /* ---------------- 3. reachability, all content ---------------- */
@@ -266,12 +273,32 @@ export const RUN_CHECKS = async ({theme}) => {
     const r = el.getBoundingClientRect();
     if (!r.width || !r.height) continue;
     const label = (el.textContent || '').trim() || el.getAttribute('aria-label') || el.tagName.toLowerCase();
+    /* A labelled control's target is the control PLUS its label, because
+       clicking the label activates it. Measured on /apps/ 2026-09-22: the
+       filter checkboxes are 16x16 and each has a `label[for]` of 305x44, so
+       judging the input alone reported 42 failures a finger never
+       experiences. SC 2.5.8 is about the target, and the label is part of
+       it. Take the union of the two boxes. */
+    const labelled = el.closest('label') ||
+      (el.id ? document.querySelector(`label[for="${CSS.escape(el.id)}"]`) : null);
+    let target = r;
+    if (labelled) {
+      const lr = labelled.getBoundingClientRect();
+      if (lr.width && lr.height) {
+        target = {
+          width: Math.max(r.right, lr.right) - Math.min(r.left, lr.left),
+          height: Math.max(r.bottom, lr.bottom) - Math.min(r.top, lr.top),
+        };
+      }
+    }
     boxes.push({el, r, label});
     /* The standard exempts a link sitting in a sentence, where shrinking the
        target would mean reflowing the prose around it. */
     if (el.tagName === 'A' && s.display.startsWith('inline') && el.parentElement && ownText(el.parentElement).length > 0) continue;
-    if (r.width < 24 || r.height < 24) {
-      add('target-size', 'moderate', label, `${Math.round(r.width)}x${Math.round(r.height)}, needs 24x24`);
+    if (target.width < 24 || target.height < 24) {
+      add('target-size', 'moderate', label,
+        `${Math.round(target.width)}x${Math.round(target.height)}, needs 24x24` +
+        (labelled ? ' (control plus its label)' : ''));
     }
   }
 

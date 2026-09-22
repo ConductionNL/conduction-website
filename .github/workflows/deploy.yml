@@ -159,18 +159,16 @@ jobs:
           test -f build/index.html || { echo "::error::build/index.html missing"; exit 1; }
           test -f build/nl/index.html || { echo "::error::build/nl/index.html missing"; exit 1; }
 
-      - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
-
       # WebKit is Safari's engine and therefore most phones. The suite ran
       # zero percent of it until 2026-09-22, because the mobile project was
       # pinned to chromium on the grounds that layout is engine-agnostic.
-      # Largely, not entirely. Installed separately so a WebKit packaging
-      # problem cannot block the chromium gate above.
-      - name: Install WebKit
-        id: webkit-install
-        continue-on-error: true
-        run: npx playwright install --with-deps webkit
+      # Largely, not entirely: the one difference that showed up was a race
+      # the drawer test was losing on WebKit and winning on Chromium.
+      # Both engines are installed in one step now that both gate the deploy.
+      # A failed install should look like the infrastructure problem it is,
+      # not like a silent gap in coverage.
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
 
       # Runs against the build produced above, not a dev server, because the
       # failures worth catching here only exist in a production build:
@@ -179,35 +177,7 @@ jobs:
       # This gates the deploy on purpose. A page that fails to hydrate looks
       # perfect in a screenshot, so "it built" is not evidence it works.
       - name: End-to-end tests
-        run: npx playwright test --project=chromium --project=mobile
-
-      # Warning-first, deliberately. This has never run anywhere: WebKit needs
-      # system libraries that the dev machine cannot install without sudo, so
-      # CI is the first place it executes and nobody knows yet what Safari
-      # says about these pages. Blocking the deploy on an unknown would stop
-      # releases for reasons unrelated to the change being deployed.
-      #
-      # Read the summary below on the first few runs. When it is green and
-      # understood, fold `--project=mobile-safari` into the gating step above
-      # and delete this one. If it stays red, the findings are real Safari
-      # bugs and belong in the backlog, not in a permanently-ignored step:
-      # a warning nobody promotes is the same as no check at all.
-      - name: End-to-end tests on WebKit (warning only)
-        id: webkit-e2e
-        continue-on-error: true
-        if: steps.webkit-install.outcome == 'success'
-        run: npx playwright test --project=mobile-safari
-
-      - name: Say what WebKit found
-        if: always()
-        run: |
-          if [ "${{ steps.webkit-install.outcome }}" != "success" ]; then
-            echo "::warning::WebKit could not be installed; Safari remains unmeasured."
-          elif [ "${{ steps.webkit-e2e.outcome }}" = "success" ]; then
-            echo "WebKit run passed. Promote it to the gating step."
-          else
-            echo "::warning::WebKit run failed. These are real Safari findings, not a broken config."
-          fi
+        run: npx playwright test --project=chromium --project=mobile --project=mobile-safari
 
       - name: Upload the Playwright report on failure
         if: failure()
