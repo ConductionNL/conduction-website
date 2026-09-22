@@ -60,16 +60,23 @@ const FOCUS_FIXTURE = `<!doctype html><html><head><style>
   a.faint:focus{outline:2px solid #f2f2f2}
   /* A correct one. */
   a.good:focus{outline:3px solid #0a172f}
+  /* Two-tone: the outline alone is 1.00:1 against the orange button, and the
+     halo behind it is 5.93:1. Judging the outline alone reports a failure the
+     reader does not experience, which is what the site's own focus treatment
+     relies on. */
+  a.twotone{background:#f36c21;display:inline-block}
+  a.twotone:focus{outline:2px solid #f36c21;box-shadow:0 0 0 4px rgb(10,23,47)}
 </style></head><body>
   <a class="stripped" href="#">stripped-focus link</a>
   <a class="faint" href="#">faint-focus link</a>
   <a class="good" href="#">good-focus link</a>
+  <a class="twotone" href="#">twotone-focus link</a>
 </body></html>`;
 
 test('focus that is removed, or too faint to see, is reported', async ({page}) => {
   await page.setContent(FOCUS_FIXTURE, {waitUntil: 'load'});
   const {findings, sampled} = await page.evaluate(FOCUS_CHECK, {limit: 20});
-  expect(sampled, 'all three links should have been sampled').toBe(3);
+  expect(sampled, 'all four links should have been sampled').toBe(4);
 
   const byText = (needle) => findings.find((f) => f.text.includes(needle));
   expect(byText('stripped-focus'), 'outline:none with nothing put back').toBeTruthy();
@@ -77,4 +84,9 @@ test('focus that is removed, or too faint to see, is reported', async ({page}) =
   expect(byText('faint-focus'), 'an indicator under 3:1 against the page').toBeTruthy();
   expect(byText('faint-focus').check).toBe('focus-contrast');
   expect(byText('good-focus'), 'a correct indicator must stay quiet').toBeFalsy();
+  expect(
+    byText('twotone-focus'),
+    'an indicator whose halo carries the contrast must stay quiet, or the ' +
+      "site's own two-ring focus treatment reports as broken",
+  ).toBeFalsy();
 });

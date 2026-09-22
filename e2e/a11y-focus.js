@@ -87,15 +87,32 @@ export const FOCUS_CHECK = async ({limit = 40}) => {
     if (before === after) {
       out.push({check: 'focus-invisible', severity: 'serious', text: label,
         detail: 'nothing changes when this takes focus'});
-    } else if (s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0) {
-      const oc = ch(s.outlineColor);
+    } else {
+      /* An indicator can be more than one ring. This site draws a brand
+         outline plus a halo of the opposite luminance behind it, precisely
+         because no single colour clears 3:1 on every surface. The criterion
+         is met if ANY part of the indicator is visible, so take the best of
+         them; judging the outline alone reports failures that a reader does
+         not experience. */
+      const parts = [];
+      if (s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0) {
+        parts.push({what: 'ring', color: s.outlineColor, rgb: ch(s.outlineColor)});
+      }
+      for (const m of String(s.boxShadow).matchAll(/rgba?\([^)]*\)/g)) {
+        parts.push({what: 'halo', color: m[0], rgb: ch(m[0])});
+      }
       const bg = behind(el);
-      if (oc.length === 3 && bg) {
-        const ratio = contrast(oc, bg);
-        if (ratio < 3) {
+      const usable = parts.filter((p) => p.rgb.length === 3);
+      if (bg && usable.length) {
+        let best = null;
+        for (const p of usable) {
+          const r = contrast(p.rgb, bg);
+          if (!best || r > best.ratio) best = {...p, ratio: r};
+        }
+        if (best.ratio < 3) {
           out.push({check: 'focus-contrast', severity: 'serious', text: label,
-            detail: `focus ring ${ratio.toFixed(2)}:1, needs 3:1`,
-            color: s.outlineColor, background: `rgb(${bg.join(',')})`});
+            detail: `focus indicator ${best.ratio.toFixed(2)}:1 at best (${usable.length} ring(s)), needs 3:1`,
+            color: best.color, background: `rgb(${bg.join(',')})`});
         }
       }
     }
