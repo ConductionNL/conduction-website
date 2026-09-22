@@ -31,7 +31,17 @@ const COLLECTOR = /\/api\/traffic(\?|$)/;
 
 export const test = base.extend({
 	page: async ({page}, use) => {
-		await page.route(COLLECTOR, (route) => route.abort());
+		/* Answer the beacon rather than aborting it. `route.abort()` stops the
+		   request reaching the collector, which is the point, but the browser
+		   then logs "Failed to load resource: net::ERR_FAILED" to the console,
+		   and `space-invaders.spec.js` asserts a page produces no console
+		   errors. That turned development red on 2026-09-22: the test failed
+		   all three attempts, so it read as a product fault rather than as the
+		   suite tripping over its own stub.
+		   204 is what the real endpoint returns for an accepted beacon, so the
+		   client stays on its success path and a client that throws on a real
+		   response would still fail this suite. */
+		await page.route(COLLECTOR, (route) => route.fulfill({status: 204, body: ''}));
 		await use(page);
 	},
 });
