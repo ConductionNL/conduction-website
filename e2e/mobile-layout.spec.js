@@ -210,10 +210,24 @@ test('the navbar drawer opens and exposes every navigation item', async ({page})
 
 test('the drawer closes when a link inside it is followed', async ({page}) => {
   await page.goto('/');
-  await page.locator('button[aria-controls$="navbar-drawer"]').click();
-  await page.locator('[id$="navbar-drawer"]').getByRole('link', {name: 'About'}).click();
+  const toggle = page.locator('button[aria-controls$="navbar-drawer"]');
+  await toggle.click();
+
+  /* Wait for the drawer to finish opening before reaching into it. On WebKit
+     this test spent its full 90s budget and failed with "element was detached
+     from the DOM, retrying": the link resolves while the drawer is still
+     re-rendering, so the node Playwright is about to click is replaced under
+     it. Chromium happened to win that race and Safari did not, which is the
+     kind of difference running one engine hides.
+     `aria-expanded` flipping to true is the component saying it has settled,
+     so it is a precondition rather than a sleep. */
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  const drawer = page.locator('[id$="navbar-drawer"]');
+  await expect(drawer).toBeVisible();
+
+  await drawer.getByRole('link', {name: 'About'}).click();
   await expect(page).toHaveURL(/\/about\/?$/);
-  await expect(page.locator('[id$="navbar-drawer"]')).toBeHidden();
+  await expect(drawer).toBeHidden();
 });
 
 test('every footer link sits inside the viewport', async ({page}) => {

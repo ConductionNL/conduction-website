@@ -65,6 +65,10 @@ const FIXTURE = `<!doctype html><html><head>
   <p class="overlapB">Second overlapping paragraph of text here</p>
   <div class="clipbox">This sentence is much wider than the box that holds it</div>
   <input class="faintborder" name="email" placeholder="Your email address">
+  <!-- A 16x16 checkbox with a big label: the target is the label, so this
+       must NOT be reported. Judging the input alone made 42 phantom findings
+       on a single page. -->
+  <input type="checkbox" id="labelled-box"><label for="labelled-box" style="display:inline-block;width:300px;height:44px">A comfortably large label</label>
   <div class="darkpanel"><input class="veilborder" name="translucent" placeholder="On a tinted panel"></div>
   <!-- Closed accordion. Its content keeps a full layout box and reports
        display:block / visibility:visible / opacity:1, so a checker that
@@ -127,6 +131,13 @@ test('content inside a closed accordion is never reported', async ({page}) => {
   await page.setViewportSize({width: 390, height: 844});
   await page.setContent(FIXTURE, {waitUntil: 'load'});
   const found = await page.evaluate(RUN_CHECKS, {theme: null});
+
+  const labelled = found.filter((f) => f.check === 'target-size' && /comfortably large label/.test(f.text));
+  expect(
+    labelled,
+    'a small control with a large associated label has a large target; ' +
+      'judging the control alone invents failures a finger never meets',
+  ).toEqual([]);
 
   const leaked = found.filter((f) => f.text.includes('collapsed-'));
   expect(

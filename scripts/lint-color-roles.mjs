@@ -55,6 +55,36 @@ const ROOTS = ['src', 'i18n', 'academy'];
 const EXTS = new Set(['.css', '.mdx', '.jsx', '.js']);
 const OPT_OUT = 'a11y-fixed-surface';
 
+/**
+ * Brand accent colours, whose whole job is to be a fixed ink.
+ *
+ * The advisory rule flags a fixed colour with no surface of its own, because
+ * it inherits a surface that is free to flip. That is the right default, and
+ * for these particular values it is noise: the design system defines them as
+ * accents with a named role ("coral = KNVB-orange accent for highlights",
+ * "gold = the Conduction Certified mark only"), and an accent that followed
+ * the theme would stop being the brand.
+ *
+ * 126 of the 163 advisory findings on 2026-09-22 were these, which is enough
+ * noise to make the other 37 invisible. The full 661-route runtime sweep
+ * reports zero contrast failures for any of them, so this is not hiding a
+ * known defect; if one of these ever does land on a surface it cannot read
+ * against, the sweep and the gate catch it as a contrast finding, which is
+ * the layer that measures rather than guesses.
+ *
+ * Listed by value so the exception stays narrow and reviewable. A greyscale
+ * or cobalt ink is deliberately NOT here: those are the ones picked to suit
+ * whatever surface the author happened to be looking at.
+ */
+const BRAND_ACCENT_INK = [
+  '--c-orange-knvb', '--c-coral-500', '--c-coral-600',
+  '--c-mint-500', '--c-mint-300',
+  '--c-amber-500', '--c-gold-500', '--c-gold-300',
+  '--c-nextcloud-blue', '--c-nextcloud-cyan', '--c-commonground-yellow',
+  '--c-red-vermillion', '--c-terracotta-500', '--c-lavender-500', '--c-forest-500',
+];
+const isBrandAccent = (v) => BRAND_ACCENT_INK.some((t) => v.includes(t));
+
 /** A colour value is theme-aware only if it comes from the semantic layer. */
 const isThemeAware = (v) => /var\(\s*--conduction-color-/.test(v);
 /** Fixed: a raw palette token, a hex, a named colour, or an rgb()/hsl() literal. */
@@ -145,6 +175,13 @@ const lineOf = (text, index) => text.slice(0, index).split('\n').length;
 function check(file) {
   const text = fs.readFileSync(file, 'utf8');
   const lines = text.split('\n');
+  /* A file-level opt-out, for a component that paints one fixed shell and
+     draws everything inside it: a terminal pane, an error page. Putting the
+     phrase in the file's header comment says "every ink in here sits on a
+     surface I control and that does not flip", which is a claim about the
+     file rather than about one block. It only counts in the header, so it
+     cannot be dropped in halfway down to silence something inconvenient. */
+  if (lines.slice(0, 40).join('\n').includes(OPT_OUT)) return [];
   const findings = [];
   for (const {body, index} of blocks(text, file)) {
     if (body.includes(OPT_OUT)) continue;
@@ -170,7 +207,7 @@ function check(file) {
         findings.push({file, line, kind: 'surface-flips-ink-cannot',
           detail: `background ${surface} follows the theme, color ${ink} cannot`});
       }
-    } else if (inkFixed) {
+    } else if (inkFixed && !isBrandAccent(ink)) {
       findings.push({file, line, kind: 'fixed-ink-inherited-surface',
         detail: `color ${ink} cannot follow the theme and this block sets no surface of its own`});
     }
@@ -258,7 +295,7 @@ const report = (title, list, cap) => {
 };
 
 report('BLOCKING - one half follows the theme, the other cannot:', blocking, 40);
-report(STRICT ? 'ALSO BLOCKING (--strict):' : 'ADVISORY - fixed ink, surface comes from an ancestor:', advisory, STRICT ? 40 : 5);
+report(STRICT ? 'ALSO BLOCKING (--strict):' : 'ADVISORY - fixed ink, surface comes from an ancestor:', advisory, STRICT ? Number.MAX_SAFE_INTEGER : 5);
 
 console.log('');
 const fail = blocking.length + (STRICT ? advisory.length : 0);

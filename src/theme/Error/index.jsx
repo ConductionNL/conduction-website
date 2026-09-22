@@ -1,4 +1,10 @@
 /**
+ * a11y-fixed-surface: the error page paints its own ground (`#f4f7fb`, and
+ * `#0a2540` on the button) rather than inheriting the site surface, because
+ * it renders when the theme layer may not have loaded at all.
+ */
+
+/**
  * Conduction-flavoured top-level error fallback.
  *
  * Wraps the same dyke-break scene we use in ErrorPageContent. The
