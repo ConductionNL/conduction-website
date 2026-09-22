@@ -85,6 +85,18 @@ export default defineConfig({
       use: {...devices['iPhone 13'], browserName: 'chromium'},
       testMatch: /mobile-layout\.spec\.js/,
     },
+    /* The same assertions on the engine most phones actually use.
+       The comment above is right that layout and reachability are largely
+       engine-agnostic, and that argument was used to justify never running
+       WebKit at all. "Largely" is not "entirely": Safari is the dominant
+       mobile browser, and the September 2026 review covered zero percent of
+       it. WebKit is installed now, so the excuse is gone.
+       CI installs it alongside chromium in .github/workflows/deploy.yml. */
+    {
+      name: 'mobile-safari',
+      use: {...devices['iPhone 13']},
+      testMatch: /mobile-layout\.spec\.js|a11y\.spec\.js/,
+    },
   ],
 
   ...(REMOTE ? {} : {

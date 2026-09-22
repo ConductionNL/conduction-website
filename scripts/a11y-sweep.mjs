@@ -31,6 +31,14 @@ const OUT = process.env.SWEEP_OUT || 'a11y-findings.json';
 const BUILD = process.env.SWEEP_BUILD || 'build';
 
 const {RUN_CHECKS} = await import('../e2e/a11y-checks.js');
+const {REVEAL_ALL} = await import('../e2e/a11y-reveal.js');
+const {FOCUS_CHECK} = await import('../e2e/a11y-focus.js');
+
+/* Measuring a page only as it loads says nothing about anything behind a
+   click. Set SWEEP_REVEAL=0 to skip it; it roughly doubles the time per
+   route. FOCUS runs on the revealed page so it also covers controls that
+   only exist once a panel is open. */
+const REVEAL = process.env.SWEEP_REVEAL !== '0';
 
 /* Every directory in the build that holds an index.html is a route a
    visitor can reach. Docusaurus's own machinery (assets, the search index)
@@ -125,7 +133,32 @@ async function lane(browser, slice) {
           }
           await page.waitForFunction(footerReady, null, {timeout: 20000});
           for (const f of await page.evaluate(RUN_CHECKS, {theme: combo.theme})) {
-            findings.push({url, width: combo.width, theme: combo.theme, ...f});
+            findings.push({url, width: combo.width, theme: combo.theme, state: 'loaded', ...f});
+          }
+          /* Reveal costs a second full measure per combo and focus costs 40
+             focus calls, so neither runs on every combo. Layout behind a
+             disclosure matters most at the narrowest width and on the
+             desktop default; focus styling does not vary with width but
+             does with theme, so it runs once per theme. */
+          const doReveal = REVEAL && (combo.width === 320 || combo.width === 1280);
+          const doFocus = REVEAL && combo.width === 1280;
+          if (doReveal) {
+            /* Open every disclosure, tab and panel, then measure again. A
+               finding carries the state it was found in, so "only visible
+               after opening something" stays distinguishable from "on the
+               page as it loads". */
+            const opened = await page.evaluate(REVEAL_ALL);
+            if (opened.details + opened.expanded + opened.tabs + opened.listItems > 0) {
+              for (const f of await page.evaluate(RUN_CHECKS, {theme: combo.theme})) {
+                findings.push({url, width: combo.width, theme: combo.theme, state: 'revealed', ...f});
+              }
+            }
+          }
+          if (doFocus) {
+            const focus = await page.evaluate(FOCUS_CHECK, {limit: 40});
+            for (const f of focus.findings) {
+              findings.push({url, width: combo.width, theme: combo.theme, state: 'focus', ...f});
+            }
           }
           ok = true;
         } catch (e) {
@@ -156,7 +189,7 @@ await browser.close();
    defect that also occurs at 1280 is not a mobile defect. */
 const uniq = new Map();
 for (const f of findings) {
-  const k = `${f.url}|${f.check}|${f.text}`;
+  const k = `${f.url}|${f.check}|${f.text}|${f.state}`;
   if (!uniq.has(k)) uniq.set(k, {...f, themes: new Set(), widths: new Set()});
   uniq.get(k).themes.add(f.theme);
   uniq.get(k).widths.add(f.width);
@@ -190,6 +223,27 @@ for (const [check, sub] of Object.entries(byCheck).sort((a, b) => b[1].length - 
       Object.entries(b).map(([k, v]) => `${k}:${v}`).join(' '),
   );
 }
+const byState = {};
+for (const f of defects) (byState[f.state || 'loaded'] = byState[f.state || 'loaded'] || []).push(f);
+console.log('');
+console.log('by state:');
+for (const [st, list] of Object.entries(byState)) {
+  const bad = list.filter((f) => f.severity === 'critical' || f.severity === 'serious');
+  console.log(`  ${st.padEnd(10)} ${String(list.length).padStart(6)} defects, ${bad.length} critical or serious`);
+}
+
+const focusFindings = defects.filter((f) => f.check && f.check.startsWith('focus-'));
+if (focusFindings.length) {
+  const g = {};
+  for (const f of focusFindings) (g[f.check] = g[f.check] || []).push(f);
+  console.log('');
+  console.log('focus visibility:');
+  for (const [k, list] of Object.entries(g)) {
+    console.log(`  ${k}: ${list.length} on ${new Set(list.map((f) => f.url)).size} pages`);
+    for (const f of list.slice(0, 6)) console.log(`    ${f.url}  "${f.text}"  ${f.detail}`);
+  }
+}
+
 const crit = defects.filter((f) => f.severity === 'critical');
 console.log('');
 console.log(`=== critical: ${crit.length} on ${pagesOf(crit)} pages ===`);
