@@ -91,6 +91,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PIPELINQ_ENQUIRY_ENDPOINT: ${{ vars.PIPELINQ_ENQUIRY_ENDPOINT }}
+          # Traffic measurement, from our own Portaliq portal. Unset and the
+          # plugin is not wired at all, which is what production did until
+          # now: the app was installed on the portal and the site sent it
+          # nothing, so there was no measurement and nothing said so.
+          #
+          # A variable rather than a secret, for the same reason as the
+          # endpoint above: it is an origin every visitor's browser fetches a
+          # script from, so it is public by construction.
+          PORTALIQ_TRAFFIC_ORIGIN: ${{ vars.PORTALIQ_TRAFFIC_ORIGIN }}
+          PORTALIQ_TRAFFIC_PORTAL: ${{ vars.PORTALIQ_TRAFFIC_PORTAL }}
         run: npm run build
 
       # The build cannot fail on a missing endpoint, because a preview build of
@@ -116,6 +126,33 @@ jobs:
             exit 1
           fi
           echo "Enquiry endpoint is not the dev default."
+
+      # A variable that is set but does nothing is worse than one that is
+      # unset, because it reads as measurement being on. The plugin only
+      # emits its tag when the origin is present, so if the variable is set
+      # the built pages must carry the script; if it is unset, they must not.
+      # Both directions, because either way round is a lie about whether
+      # visitors are being measured.
+      - name: Traffic measurement is on exactly when it is configured
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/development'
+        run: |
+          # Matched on the client ROUTE, which nothing else on the site
+          # requests, rather than on the portal host: that host is also the
+          # enquiry endpoint and appears in the bundle regardless.
+          if grep -rqF 'api/traffic-client.js' build/index.html; then
+            found=yes
+          else
+            found=no
+          fi
+          if [ -n "${{ vars.PORTALIQ_TRAFFIC_ORIGIN }}" ] && [ "$found" = no ]; then
+            echo "::error::PORTALIQ_TRAFFIC_ORIGIN is set but the build carries no traffic client, so nothing is being measured."
+            exit 1
+          fi
+          if [ -z "${{ vars.PORTALIQ_TRAFFIC_ORIGIN }}" ] && [ "$found" = yes ]; then
+            echo "::error::The build carries a traffic client with no origin configured."
+            exit 1
+          fi
+          echo "Traffic client present: $found, which matches the configuration."
 
       - name: Check the build produced both locales
         run: |
