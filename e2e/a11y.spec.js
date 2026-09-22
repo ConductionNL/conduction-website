@@ -46,25 +46,24 @@ import {RUN_CHECKS} from './a11y-checks.js';
 
 const BLOCKING = ['contrast-invisible', 'contrast-severe', 'offscreen-control', 'offscreen-content'];
 
-/**
- * Brand colours cited as text, which miss the bar in LIGHT mode and have
- * done since long before dark mode existed.
+/*
+ * The brand-citation allowlist is gone, and this note is what replaced it.
  *
- * <CgYellow> renders Common Ground's own yellow (#F6AD00) and <KnvbOrange>
- * renders KNVB orange (#F36C21). As body text on a white or cobalt-50
- * ground those measure 1.93:1 and 2.68:1. That is a real accessibility
- * problem and it is also a brand decision: the fix is either a darker
- * citation colour or not colouring the word at all, and neither is a call
- * to make inside an accessibility sweep.
+ * It held two colours: Common Ground yellow (#F6AD00) cited as text at
+ * 1.93:1, and KNVB orange (#F36C21) at 2.68:1 on a cobalt-50 ground. The
+ * comment said the fix was a brand decision, not an accessibility one, and
+ * so the sweep should not make it.
  *
- * They are listed here by exact colour rather than suppressed by check, so
- * the exception is narrow, visible in review, and cannot quietly grow to
- * cover a genuine regression. Anything else at these ratios still fails.
+ * The decision was taken in the design system, from the kit's own rules.
+ * The kit only ever sanctions the yellow as a FILL with cobalt-900 ink on
+ * it, and it already published a text-safe orange for exactly this. Both
+ * citation classes now read a theme-aware token: a darker derived colour on
+ * a light ground, the real brand colour on a dark one. See design-system
+ * PRs #86 and #87.
+ *
+ * So there is nothing left to allow. If either raw colour shows up as text
+ * again, that is a regression and the gate should say so.
  */
-const BRAND_CITATION_DEBT = [
-  'rgb(246, 173, 0)', // --c-commonground-yellow, cited via <CgYellow>
-  'rgb(243, 108, 33)', // --c-orange-knvb, cited via <KnvbOrange>
-];
 
 /* One page per layout archetype, plus every page that actually carried a
    fixed defect, plus Dutch twins. A sample drawn only from layouts you
@@ -129,9 +128,7 @@ for (const [name, path] of PAGES) {
       await page.waitForFunction(footerReady);
 
       const found = await page.evaluate(RUN_CHECKS, {theme: combo.theme});
-      const blocking = found
-        .filter((f) => BLOCKING.includes(f.check))
-        .filter((f) => !BRAND_CITATION_DEBT.includes(f.color));
+      const blocking = found.filter((f) => BLOCKING.includes(f.check));
 
       expect(
         blocking.map((f) => `${f.check}  "${f.text}"  ${f.detail}${f.color ? `  ${f.color} on ${f.background}` : ''}`),
