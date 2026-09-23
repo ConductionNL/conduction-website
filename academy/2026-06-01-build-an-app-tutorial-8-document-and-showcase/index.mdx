@@ -1,0 +1,435 @@
+---
+slug: build-an-app-tutorial-8-document-and-showcase
+title: "Build a Nextcloud app on the Conduction stack — Part 8: Document and showcase"
+contentType: tutorial
+heroIcon: blocks
+authors: [conduction]
+date: 2026-06-01
+summary: Stand up the documentation site for the PetStore app you've built across Parts 1–7. Hosted from your Codeberg or GitHub repo via the central documentation workflow, illustrated with token-built screen mocks, and walked through with Playwright-captured screenshots. Every push to development rebuilds and republishes.
+tags: [App development, Documentation, Docusaurus, Cloudflare, Codeberg, Playwright, Tutorial series]
+apps: [openregister]
+durationMinutes: 45
+series: build-an-app-tutorial
+partNumber: 8
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  ContactCta,
+} from '@conduction/docusaurus-preset/components';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+A 45-minute tutorial that gives your PetStore app a documentation site. Hosted from your own Codeberg or GitHub repo via the central documentation workflow, illustrated with abstract screen mocks that compose from design tokens, and brought to life with real screenshots that Playwright captures from your running app. By the end, every push to `development` rebuilds and republishes.
+
+{/* truncate */}
+
+:::tip Recommended first: Part 7
+Part 8 assumes you've finished [Part 7: The nc-vue component library](/academy/build-an-app-tutorial-7-nc-vue). The screen mocks and capture flow build on the PetStore app from Parts 1–7.
+:::
+
+:::tip Also useful first: the Claude Skills tutorial series
+Three of the steps below run Conduction skills (`/journeydoc-init`, `/journeydoc-instrument`, `/journeydoc-add-story`). Skills are short, declarative Claude Code workflows. If you've never run one, take [Part 1 of the Claude Skills series](/academy/claude-skills-tutorial-1-what-are-claude-skills) first (10 minutes).
+:::
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>How to bootstrap a journeydoc-shaped Docusaurus site in your app repo with <code>/journeydoc-init</code>.</Outcome>
+  <Outcome>How to wire the central documentation workflow on Codeberg or GitHub so every push redeploys to Cloudflare.</Outcome>
+  <Outcome>How to compose token-built screen previews with <code>{`<AppMock>`}</code>, <code>{`<WidgetMock>`}</code>, and <code>{`<SidebarMock>`}</code> from <code>@conduction/docusaurus-preset</code>: no screenshots required.</Outcome>
+  <Outcome>How to add a tutorial story with <code>/journeydoc-add-story</code> and capture the real walkthrough as Playwright screenshots.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>Parts 1–7 completed: <a href="/academy/build-an-app-tutorial-1-scaffold">PetStore scaffolded</a>, schemas in OpenRegister, the manifest shipping, integrations wired, the nc-vue library mapped.</PrerequisiteItem>
+  <PrerequisiteItem>The app's repo on Codeberg (<code>Conduction/petstore</code>) or GitHub (<code>ConductionNL/petstore</code>). Both forges support the central workflow.</PrerequisiteItem>
+  <PrerequisiteItem>A Cloudflare account with two org-level secrets set: <code>CF_API_TOKEN</code> (Workers Scripts: Edit + Zone DNS: Edit scope) and <code>CF_ACCOUNT_ID</code>. Without these the deploy step skips silently.</PrerequisiteItem>
+  <PrerequisiteItem>Node 20+ and the Claude Code CLI installed locally. The journeydoc skills install Playwright on first run.</PrerequisiteItem>
+</Prerequisites>
+
+In the examples we use `petstore` as the app slug. Replace with your own slug throughout. Commands assume you have a Claude Code session open in the repo root.
+
+## Step 1: Bootstrap the docs scaffold
+
+In your Claude Code session, run:
+
+```bash
+/journeydoc-init petstore
+```
+
+The skill walks through five short prompts:
+
+1. Confirms the app slug (`petstore`).
+2. Confirms the docs domain (default `petstore.conduction.nl`).
+3. Asks for your user-track stories, one per line. For PetStore: *Open the app for the first time*, *Add a pet*, *Place an order*, *Search the catalogue*.
+4. Asks for admin-track stories, or skip if PetStore's admin UI is light.
+5. Audits the repo for the four canonical brown-field migrations (screenshots dir, relative image refs, stale Dutch locale, old docs domain) and applies fixes where needed.
+
+When it finishes you have:
+
+- `docs/` with a Docusaurus config that imports `createConfig` from `@conduction/docusaurus-preset`
+- `docs/tutorials/user/01-first-launch.md`, `02-add-pet.md`, `03-place-order.md`, `04-search-catalogue.md` as skeleton pages, one per story
+- `tests/e2e/docs-screenshots.spec.ts` with empty test stubs that match the markdown filenames
+- `playwright.config.ts` extended with a `docs-capture` Playwright project
+- `docs/static/CNAME` set to `petstore.conduction.nl`
+- A pull request opened against `development` with the diff
+
+**Verify:**
+
+```bash
+ls docs/tutorials/user/
+# 01-first-launch.md  02-add-pet.md  03-place-order.md  04-search-catalogue.md
+
+cat docs/static/CNAME
+# petstore.conduction.nl
+```
+
+Merge the PR before continuing. Part 8 builds on the scaffold.
+
+## Step 2: Wire the central documentation workflow
+
+The build and deploy are shared across the Conduction fleet via a reusable workflow in `Conduction/.github` (Codeberg) or `ConductionNL/.github` (GitHub). Your per-repo wrapper declares three things: the Cloudflare project name, the docs source folder, and the secrets to forward.
+
+<Tabs groupId="forge">
+  <TabItem value="codeberg" label="Codeberg (Forgejo Actions)">
+
+Create `.forgejo/workflows/documentation.yml`:
+
+```yaml
+name: Publish docs
+
+on:
+  push:
+    branches: [documentation, main, development]
+  pull_request:
+    branches: [documentation, main]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * *"
+
+jobs:
+  docs:
+    uses: https://codeberg.org/Conduction/.github/.forgejo/workflows/documentation.yml@main
+    with:
+      cf-project-name: petstore-docs
+      source-folder: docs
+    secrets:
+      CF_API_TOKEN:   ${{ secrets.CF_API_TOKEN }}
+      CF_ACCOUNT_ID:  ${{ secrets.CF_ACCOUNT_ID }}
+      CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
+```
+
+The central workflow runs on `codeberg-small` runners, builds Docusaurus, then deploys via `wrangler deploy` to Cloudflare Workers Static Assets.
+
+  </TabItem>
+  <TabItem value="github" label="GitHub Actions">
+
+Create `.github/workflows/documentation.yml`:
+
+```yaml
+name: Publish docs
+
+on:
+  push:
+    branches: [documentation, main, development]
+  pull_request:
+    branches: [documentation, main]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * *"
+
+jobs:
+  docs:
+    uses: ConductionNL/.github/.github/workflows/documentation.yml@main
+    with:
+      cf-project-name: petstore-docs
+      source-folder: docs
+    secrets:
+      CF_API_TOKEN:  ${{ secrets.CF_API_TOKEN }}
+      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+```
+
+The GitHub variant uses the same Cloudflare Workers Static Assets deploy step on the `ubuntu-latest` runner.
+
+  </TabItem>
+</Tabs>
+
+Commit and push the wrapper:
+
+```bash
+git add .forgejo/workflows/documentation.yml
+git commit -m "ci(docs): wire central docs workflow"
+git push origin development
+```
+
+**Verify** by opening the Actions tab on your forge. The workflow appears in the list, queued or already running.
+
+## Step 3: Set the Cloudflare secrets + trigger the first deploy
+
+Two org-level secrets unlock the deploy:
+
+- `CF_API_TOKEN`: create at [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens). Grant **Account: Workers Scripts: Edit** and **Zone: DNS: Edit**. Set a 1-day TTL while you test, then rotate.
+- `CF_ACCOUNT_ID`: copy from the Cloudflare dashboard sidebar.
+
+<Tabs groupId="forge">
+  <TabItem value="codeberg" label="Codeberg">
+
+Set at the org-secrets screen:
+
+```
+https://codeberg.org/org/Conduction/-/secrets/actions
+```
+
+Add three secrets:
+
+```
+CF_API_TOKEN   = <your token>
+CF_ACCOUNT_ID  = <your account id>
+CODEBERG_TOKEN = <a forge PAT, used to authenticate npm prebuild requests to the Codeberg API>
+```
+
+Trigger the workflow manually so you don't have to wait for the next push:
+
+```bash
+curl -sS -X POST \
+  -H "Authorization: token $CODEBERG_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"ref":"development"}' \
+  "https://codeberg.org/api/v1/repos/Conduction/petstore/actions/workflows/documentation.yml/dispatches"
+```
+
+  </TabItem>
+  <TabItem value="github" label="GitHub">
+
+Set at the org-secrets screen:
+
+```
+https://github.com/organizations/ConductionNL/settings/secrets/actions
+```
+
+Add two secrets:
+
+```
+CF_API_TOKEN  = <your token>
+CF_ACCOUNT_ID = <your account id>
+```
+
+Trigger the workflow manually:
+
+```bash
+gh workflow run documentation.yml -R ConductionNL/petstore --ref development
+```
+
+  </TabItem>
+</Tabs>
+
+**Verify** by watching the run finish. The build step prints the upload count, the deploy step prints a URL:
+
+```
+Uploaded petstore-docs (12.4 sec)
+Deployed petstore-docs triggers (1.9 sec)
+  https://petstore-docs.conduction-a2d.workers.dev
+```
+
+Open that URL. You see your Docusaurus site live. Binding the custom domain `petstore.conduction.nl` to the Worker is a one-time API call described in the central workflow's README.
+
+## Step 4: Embed an `<AppMock>` for context
+
+`@conduction/docusaurus-preset` ships token-built abstract previews of every fleet app. They paint with design tokens (no images, no real text) so they stay sharp at any zoom and never go stale when the real UI moves. Use them whenever a docs page needs to **show** an app without taking a screenshot.
+
+Open `docs/intro.md` (created by `/journeydoc-init`) and add the import plus a mock:
+
+```mdx
+import { AppMock } from '@conduction/docusaurus-preset/components';
+
+# PetStore on the Conduction stack
+
+PetStore is a typed-data app built on OpenRegister. The dashboard
+composes from the same widget chassis you see across the fleet, here
+illustrated with the LaunchPad reference:
+
+<AppMock app="launchpad" caption />
+```
+
+**Verify** by running the docs locally:
+
+```bash
+cd docs
+npm run start
+```
+
+Open `http://localhost:3000/docs/intro`. The LaunchPad mock renders with its caption, scaling cleanly at any zoom level.
+
+:::tip Showing your own app's chassis
+The `app` prop expects one of the predefined fleet variants (`launchpad`, `openregister`, `openconnector`, `procest`, `decidesk`, `docudesk`, `larpingapp`, `nldesign`, `openwoo`, `pipelinq`, `softwarecatalog`, `zaakafhandelapp`, `opencatalogi`). To ship an abstract mock of your PetStore dashboard, add `PetStoreMock.jsx` under `@conduction/docusaurus-preset/src/components/AppMock/variants/` and register it in the `VARIANTS` map. Follow the design-system repo's `SKILL.md` for the "app glyphs" and "status palette" conventions: one orange accent per variant, no images, design tokens only.
+:::
+
+## Step 5: Compose a deeper scene with `<WidgetMock>` and `<SidebarMock>`
+
+`<AppMock>` shows the whole app frame. `<WidgetMock>` shows one widget, typically a dashboard tile. `<SidebarMock>` shows a Nextcloud sidebar opened over an app (e.g. the OpenRegister "object detail" sidebar over a list).
+
+Add a new page `docs/architecture/dashboards.md`:
+
+```mdx
+import {
+  AppMock,
+  WidgetMock,
+  SidebarMock,
+} from '@conduction/docusaurus-preset/components';
+
+# Dashboard widgets
+
+PetStore's home dashboard ships three KPI widgets and an activity feed:
+
+<div className="hex-grid">
+  <WidgetMock kind="kpi-tile" caption />
+  <WidgetMock kind="activity-feed" caption />
+  <WidgetMock kind="status-rollup" caption />
+</div>
+
+Each row in the activity feed opens a detail sidebar in place, using
+the same chrome the rest of the fleet ships:
+
+<AppMock app="launchpad" sidebar={<SidebarMock kind="register-detail" />} />
+```
+
+**Verify** by reloading `http://localhost:3000/docs/architecture/dashboards`. Three widget tiles render in a hex grid, and the AppMock below renders with the sidebar overlay.
+
+The result is a docs page that shows the app pattern without a single screenshot. When the real UI changes, the mock does not need updating: it speaks in shapes, not pixels.
+
+## Step 6: Instrument your Vue components for capture
+
+Before the capture spec can find UI elements reliably, the relevant Vue components need stable `data-testid` attributes. The `/journeydoc-instrument` skill audits one component at a time and proposes the additions.
+
+Run it on the form for adding a pet:
+
+```bash
+/journeydoc-instrument src/components/PetForm.vue
+```
+
+The skill:
+
+1. Reads the component.
+2. Identifies the elements the capture spec will need (form fields, submit button, success and error notices).
+3. Proposes `data-testid` values following the `<component>.<element>` convention.
+4. Asks you to confirm before writing the edits.
+5. Runs Vitest after the edit to make sure no existing test breaks.
+
+**Verify:**
+
+```bash
+grep -n 'data-testid' src/components/PetForm.vue
+# 23:    <input data-testid="pet-form.name" v-model="form.name" />
+# 24:    <input data-testid="pet-form.category" v-model="form.category" />
+# 31:    <button data-testid="pet-form.submit" @click="save">Save</button>
+```
+
+The shared chrome (lists, modals, headers) is already instrumented in `@conduction/nextcloud-vue`. Run `/journeydoc-instrument` once per app-specific component, typically 3–5 files for a small app.
+
+## Step 7: Add a tutorial story with `/journeydoc-add-story`
+
+`/journeydoc-init` left the markdown skeletons empty. `/journeydoc-add-story` fleshes them out one at a time, dropping a markdown page plus a capture-spec test block, with the sidebar position auto-incremented.
+
+```bash
+/journeydoc-add-story petstore user "Add a pet"
+```
+
+The skill asks three short questions:
+
+| Question | Example answer |
+|---|---|
+| Goal, in one sentence, what does the user accomplish? | Register a new pet under their customer profile. |
+| Prerequisites, what must already be true? | A pet schema exists. The user is signed in. |
+| Steps, paste a numbered list of UI clicks. | 1. Open the PetStore app. 2. Click "Add pet". 3. Fill name + category. 4. Click Save. 5. See the new row in the list. |
+
+It then writes two files:
+
+- `docs/tutorials/user/02-add-pet.md`: the markdown page with five numbered steps, each with an image reference and a `TODO` HTML comment for verification and common issues
+- A new `test('U02 add-pet')` block at the end of `tests/e2e/docs-screenshots.spec.ts`, with one TODO per numbered step
+
+**Verify:**
+
+```bash
+ls docs/tutorials/user/
+# 01-first-launch.md  02-add-pet.md  03-place-order.md  04-search-catalogue.md
+
+grep -A1 "U02 add-pet" tests/e2e/docs-screenshots.spec.ts
+# test('U02 add-pet: REPLACE WITH ACTUAL FLOW', async ({ page }) => {
+#   // docs/tutorials/user/02-add-pet.md
+```
+
+## Step 8: Run the capture spec to populate the screenshots
+
+Open `tests/e2e/docs-screenshots.spec.ts` and fill the `U02` block. Each numbered TODO comment maps 1:1 to a step in the markdown. Use the `data-testid` attributes from Step 6 and the three helpers the template ships (`dismissOverlays`, `go`, `shoot`):
+
+```typescript
+test('U02 add-pet: Add a pet to the store', async ({ page }) => {
+  await dismissOverlays(page);
+  await go(page, '/apps/petstore');
+  await shoot(page, 'user', '02-step-1.png');
+
+  await page.getByTestId('pet-list.add').click();
+  await shoot(page, 'user', '02-step-2.png');
+
+  await page.getByTestId('pet-form.name').fill('Mochi');
+  await page.getByTestId('pet-form.category').fill('Cats');
+  await shoot(page, 'user', '02-step-3.png');
+
+  await page.getByTestId('pet-form.submit').click();
+  await page.getByTestId('pet-list.row').first().waitFor();
+  await shoot(page, 'user', '02-step-4.png');
+});
+```
+
+Run only the user-track tests so you don't trigger the full regression suite:
+
+```bash
+npm run test:e2e:docs -- --grep "U02"
+```
+
+Playwright launches a headless Chromium, runs the test, and writes the PNGs to `docs/static/screenshots/tutorials/user/`:
+
+```bash
+ls docs/static/screenshots/tutorials/user/02-*
+# 02-step-1.png  02-step-2.png  02-step-3.png  02-step-4.png
+```
+
+**Verify** by opening `http://localhost:3000/docs/tutorials/user/add-pet`. Each numbered step now renders its captured screenshot. The full capture run for all four stories takes about 90 seconds on a laptop.
+
+## What you ship at the end of Part 8
+
+- `petstore.conduction.nl` serving your Docusaurus site after the custom-domain bind
+- Intro and architecture pages illustrated with `<AppMock>` and `<WidgetMock>`, scaling cleanly without screenshots
+- Tutorials under `/docs/tutorials/user/` with real Playwright-captured screenshots
+- Every push to `development`, `main`, or `documentation` redeploys the site automatically
+
+## Where to go from here
+
+The journeydoc capture is the highest-leverage doc surface. Run `/journeydoc-add-story` once a sprint and your tutorials grow alongside the code. When the UI shifts, re-run `npm run test:e2e:docs` and the screenshots refresh in one pass.
+
+You have now finished the eight-part PetStore series: scaffolded, modelled, integrated, mastered the nc-vue library, and shipped a documentation site that grows with the code. The natural next move is publishing the app to the Nextcloud app store: signing the release, the `appstoreapp:create-app` flow, and shipping under your own brand. Until that part lands, the [Nextcloud app store docs](https://nextcloudappstore.readthedocs.io/) describe the upload protocol.
+
+<NextSteps>
+  <NextStep
+    title="Claude Skills tutorial series: Part 1"
+    href="/academy/claude-skills-tutorial-1-what-are-claude-skills"
+    summary="A companion read: how to author your own Claude Code skills, alongside the journeydoc family used here." />
+  <NextStep
+    title="OpenSpec tutorial series: Part 1"
+    href="/academy/openspec-tutorial-1-what-is-openspec"
+    summary="The other Conduction discipline that pairs with this build: write specifications before code, let the pipeline implement them." />
+  <NextStep
+    title="Full nc-vue component reference"
+    href="https://nextcloud-vue.conduction.nl/docs/components/"
+    summary="The capability tour from Part 7 maps to component-level reference docs here when you need prop tables." />
+</NextSteps>
+
+<ContactCta
+  heading="Stuck on the Cloudflare or Playwright setup?"
+  subheading="Bring the error message to a Conduction partner. The Cloudflare + journeydoc stack is what every Conduction app ships on, and the partner network has worked through every common failure mode."
+  ctaText="Find a partner"
+/>

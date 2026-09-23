@@ -1,0 +1,581 @@
+---
+slug: model-data-with-openregister
+title: "Model and manage your data with OpenRegister"
+contentType: tutorial
+heroIcon: database
+authors: [conduction]
+date: 2026-06-28
+summary: Build a complete Pet Store data model in OpenRegister without writing a line of code. You create a register, design a pet schema with typed and validated properties, add owner and category schemas with real relations between them, fill the register with objects through the interface, attach a photo to a pet, make pets findable in Nextcloud's unified search, watch OpenRegister version and audit every change, lock the data down with group permissions, and finally export the whole configuration so it travels between instances. Every step is done live in the app, with API and PHP equivalents alongside.
+tags: [OpenRegister, Data modelling, Schemas, Registers, Objects, No-code, Tutorial]
+apps: [openregister]
+durationMinutes: 35
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+  Troubleshooting,
+} from '@conduction/docusaurus-preset/components';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+import registersEmptyImg from './images/01-registers-empty.png';
+import createRegisterImg from './images/02-create-register-dialog.png';
+import registerCreatedImg from './images/03-register-created.png';
+import schemaEditorImg from './images/04-schema-editor-properties.png';
+import propertyMenuImg from './images/05-property-actions-menu.png';
+import schemaConfigImg from './images/06-schema-configuration-tab.png';
+import registerSchemasImg from './images/07-register-with-schemas.png';
+import addObjectImg from './images/08-add-object-form.png';
+import objectDetailImg from './images/09-object-detail.png';
+import objectsListImg from './images/10-objects-list.png';
+import unifiedSearchImg from './images/11-unified-search.png';
+import schemaSecurityImg from './images/12-schema-security-tab.png';
+import auditTrailsImg from './images/13-audit-trails.png';
+import addAttachmentImg from './images/14-add-attachment.png';
+import importConfigImg from './images/15-import-configuration.png';
+
+OpenRegister is the data engine behind every Conduction app. It stores your data not as rows in a hand-built table but as **objects** that follow a **schema** you design, grouped into a **register** you own. Where a traditional application bakes its data model into code and a database migration, OpenRegister lets you draw the model in the interface and start storing real records the same minute, with versioning, an audit trail, search, files and permissions all handled for you.
+
+This tutorial builds a **Pet Store** data model, the canonical Conduction sample domain. You will create a register, design a `pet` schema, add `owner` and `category` schemas with real relations between them, fill the register with pets through the interface, attach a photo to one, make pets findable in Nextcloud's search, and finally export the whole thing as a configuration file that travels to any other instance. No code, no database, no deploy.
+
+{/* truncate */}
+
+:::tip This is part one of a three-tutorial chain
+You are at the start of a full data pipeline, all in the Pet Store domain:
+
+1. **OpenRegister (you are here)** — model your data and store it.
+2. [Pull external data in with Integriq](/academy/pull-data-with-openconnector) — feed the register from an external API on a schedule.
+3. [Publish a public catalog with OpenCatalogi](/academy/publish-catalog-with-opencatalogi) — expose the register as an open, harvestable catalog.
+
+Each tutorial stands on its own, but together they take a record from "modelled" to "public".
+:::
+
+:::tip Choose how you work
+Several steps below have three tabs — **UI**, **API**, and **PHP** — so you can follow the click-path, automate it with `curl`, or call OpenRegister's `OCA\` services in code. The UI is the star; the API and PHP tabs show the same action as automation.
+:::
+
+<Outcomes title="What you'll have at the end">
+  <Outcome>A <strong>Pet Store register</strong> of your own, holding four schemas: <code>pet</code>, <code>owner</code>, <code>category</code> and <code>tag</code>.</Outcome>
+  <Outcome>A <strong>pet schema</strong> with typed, validated, formatted properties (string, number, boolean, a date), and three <strong>relations</strong> to the other schemas.</Outcome>
+  <Outcome>A register full of <strong>real objects</strong> created through the interface, with a photo attached to a pet.</Outcome>
+  <Outcome>Pets that turn up in <strong>Nextcloud's unified search</strong>, a full <strong>audit trail</strong> of every change, and <strong>group permissions</strong> on the data.</Outcome>
+  <Outcome>An <strong>exported configuration</strong> of the whole register that you can import into any other OpenRegister instance.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>A Nextcloud instance with <strong>OpenRegister</strong> enabled. The OpenRegister Docker dev environment is fine. If you do not have one yet, follow <a href="/academy/run-nextcloud-locally">Run Nextcloud locally with Docker</a>.</PrerequisiteItem>
+  <PrerequisiteItem>A user with admin rights, or a user allowed to create registers. For the permissions step you also create a Nextcloud group.</PrerequisiteItem>
+  <PrerequisiteItem>No coding. Open OpenRegister from the Nextcloud app menu and you are ready.</PrerequisiteItem>
+</Prerequisites>
+
+## The three things OpenRegister stores
+
+Before clicking, hold these three words in your head. Everything in OpenRegister is one of them:
+
+- A **register** is a container. It owns a set of schemas and all the objects that belong to them. "Pet Store" is a register.
+- A **schema** is the shape of one kind of thing. It lists the properties an object has, their types, what is required, and how they validate. `pet` is a schema.
+- An **object** is one real record that follows a schema: Rex the dog, Bella the beagle. Objects live in a register, under a schema.
+
+You build them top-down: register first, then schemas, then objects. That is exactly the order of this tutorial.
+
+## Step 1: Create a register
+
+Open **OpenRegister** from the Nextcloud app menu. In the left navigation open **Data → Registers**. This is the list of every register on the instance; yours will be empty (or full of other apps' registers). The toolbar carries an **Add Register** button.
+
+<figure>
+  <img src={registersEmptyImg} alt="The OpenRegister Registers page with an Add Register button in the toolbar and the Data submenu (Registers, Schemas, Templates, Search/views, Files) in the left navigation" />
+  <figcaption>Data → <strong>Registers</strong> is the home of your registers. <strong>Add Register</strong> creates a new one.</figcaption>
+</figure>
+
+<Tabs groupId="dp-how">
+<TabItem value="ui" label="UI">
+
+Click **Add Register**. A dialog asks for a **Title**, a **Slug**, and an optional **Description**. Name it `Pet Store`, give it the slug `petstore-academy` (a slug is the stable, lower-cased handle OpenRegister uses to resolve the register; pick a free one — plain `petstore` may already be taken on a shared instance), and add a short description. Leave the Schemas selector empty; you will add schemas in the next step. Click **Create**.
+
+<figure>
+  <img src={createRegisterImg} alt="The Create Register dialog with Title set to Pet Store, Slug set to petstore-academy, a description, and an empty Schemas selector" />
+  <figcaption>The <strong>Create Register</strong> dialog: a title, a unique slug, and a description. The Schemas field stays empty for now.</figcaption>
+</figure>
+
+</TabItem>
+<TabItem value="api" label="API">
+
+Host `http://localhost:8080`, basic auth `admin:admin`, and the header `OCS-APIRequest: true` on every call. Create the register:
+
+```bash
+curl -u admin:admin -X POST \
+  "http://localhost:8080/index.php/apps/openregister/api/registers" \
+  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
+  -d '{
+        "title": "Pet Store",
+        "slug": "petstore-academy",
+        "description": "A container for the pet shop'\''s data model."
+      }'
+```
+
+The response includes the register's numeric `id` and its `slug`. Keep both; you reference the register by either one from here on.
+
+</TabItem>
+<TabItem value="php" label="PHP">
+
+Registers, schemas and objects are all managed through OpenRegister's services. For registers there is a `RegisterMapper`; for objects (Step 4) there is the `ObjectService`:
+
+```php
+use OCA\OpenRegister\Service\ObjectService;
+use OCA\OpenRegister\Db\RegisterMapper;
+
+$registers = \OCP\Server::get(RegisterMapper::class);
+
+$register = $registers->createFromArray([
+    'title'       => 'Pet Store',
+    'slug'        => 'petstore-academy',
+    'description' => 'A container for the pet shop\'s data model.',
+]);
+```
+
+</TabItem>
+</Tabs>
+
+Your register opens on its detail page: a statistics panel that reads zero objects, zero schemas, zero files. That zero is the point; you are about to fill it.
+
+<figure>
+  <img src={registerCreatedImg} alt="The Pet Store register detail page showing Register Statistics with zero objects, files, logs and schemas, and a right sidebar with Statistics and Schemas tabs" />
+  <figcaption>The new register's detail page. Everything reads zero; the right sidebar's <strong>Statistics</strong> and <strong>Schemas</strong> tabs will fill up as you work.</figcaption>
+</figure>
+
+**Verify:** `Pet Store` appears in **Data → Registers**, and opening it shows a statistics panel with zero of everything. Note the slug and id it was given — you will need them for the connector tutorial.
+
+## Step 2: Design your first schema, `pet`
+
+A register is an empty container until it has a schema. Open **Data → Schemas** and click **Add Schema**. The schema editor opens with a **Title** field and three tabs: **Properties**, **Configuration** and **Security**. Title it `Pet`.
+
+<Tabs groupId="dp-how">
+<TabItem value="ui" label="UI">
+
+On the **Properties** tab, click **Add property** for each field. Each row takes a **name** and a **type** from a dropdown: `string`, `number`, `integer`, `boolean`, `array`, `object`, and a few more. Add these:
+
+| Property | Type | Notes |
+|---|---|---|
+| `name` | string | mark it **required** |
+| `species` | string | |
+| `status` | string | `available`, `sold`, `pending` |
+| `dateOfBirth` | string | with the **date** format (below) |
+| `weightKg` | number | a decimal |
+| `neutered` | boolean | a true/false flag |
+| `price` | number | a decimal |
+
+<figure>
+  <img src={schemaEditorImg} alt="The OpenRegister schema editor titled Add Schema, with Title set to Pet, the Properties / Configuration / Security tabs, and one property row 'name' of type string with an Add property button and a per-property actions menu" />
+  <figcaption>The schema editor on the <strong>Properties</strong> tab. <strong>Add property</strong> creates a row; you give it a name and pick a type. The <code>…</code> button on each row opens its full settings.</figcaption>
+</figure>
+
+</TabItem>
+<TabItem value="api" label="API">
+
+A schema is a JSON Schema. Each property declares its `type`; the `required` array names the mandatory ones. Create the `pet` schema:
+
+```bash
+curl -u admin:admin -X POST \
+  "http://localhost:8080/index.php/apps/openregister/api/schemas" \
+  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
+  -d '{
+        "title": "Pet",
+        "slug": "pet-academy",
+        "required": ["name"],
+        "properties": {
+          "name":        { "type": "string" },
+          "species":     { "type": "string" },
+          "status":      { "type": "string" },
+          "dateOfBirth": { "type": "string", "format": "date" },
+          "weightKg":    { "type": "number" },
+          "neutered":    { "type": "boolean" },
+          "price":       { "type": "number" }
+        },
+        "searchable": true
+      }'
+```
+
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+use OCA\OpenRegister\Db\SchemaMapper;
+
+$schemas = \OCP\Server::get(SchemaMapper::class);
+
+$pet = $schemas->createFromArray([
+    'title'      => 'Pet',
+    'slug'       => 'pet-academy',
+    'required'   => ['name'],
+    'properties' => [
+        'name'        => ['type' => 'string'],
+        'species'     => ['type' => 'string'],
+        'status'      => ['type' => 'string'],
+        'dateOfBirth' => ['type' => 'string', 'format' => 'date'],
+        'weightKg'    => ['type' => 'number'],
+        'neutered'    => ['type' => 'boolean'],
+        'price'       => ['type' => 'number'],
+    ],
+    'searchable' => true,
+]);
+```
+
+</TabItem>
+</Tabs>
+
+### Required, formats and validation: the property settings menu
+
+A type is the start. The **`…` actions menu** on a property row is where the field really gets defined. It is one menu with every setting in it: toggles for **Required**, **Immutable**, **Deprecated**, **Visible to end users** and **Facetable**; a **Format** dropdown; **Title**, **Description**, **Example** and **Order**; value constraints (a fixed **Constant**, an **enum** of allowed values); a **Default value**; and string limits (**minimum/maximum length**, a **pattern** regex).
+
+Open the menu on `dateOfBirth` and set its **Format** to **Date**. A date is stored as a `string`, but the `date` format tells OpenRegister (and every app that reads it) to treat it as a calendar date: the list view renders "March 2022" instead of a raw string, and the editor can offer a date picker. The format list is long and practical — `email`, `uuid`, `url`, `color-hex`, even Dutch government formats like `bsn` and `kvk` — so you rarely need a custom pattern.
+
+<figure>
+  <img src={propertyMenuImg} alt="The per-property actions menu open over the schema editor, showing a Facetable toggle, a Properties section with a Format dropdown set to 'date', and Description, Example and Order fields, with the property table behind it listing name (required), species, status and dateOfBirth" />
+  <figcaption>The property <strong>settings menu</strong> (the <code>…</code> on a row). Here <code>dateOfBirth</code>'s <strong>Format</strong> is set to <code>date</code>. The same menu holds Required, enums, defaults, length limits and per-property permissions.</figcaption>
+</figure>
+
+<HexCard title="Why one schema, not one table per field">
+  Every property you add lives in the schema as JSON Schema. There is no <code>ALTER TABLE</code>, no migration, no redeploy. Add a property and the very next object can use it; existing objects simply do not have it yet. The schema <em>is</em> the contract, and OpenRegister validates every object against it on save.
+</HexCard>
+
+### The Configuration tab: identity and behaviour
+
+The **Configuration** tab sets how the whole schema behaves. Give it a **Slug** (`pet-academy`). Pick the **Object name field** (`name`) so OpenRegister knows which property to show as an object's label in lists and search. Below that sit the **schema composition** controls (`allOf` / `oneOf` / `anyOf`, for inheriting from or combining other schemas), an **Allow files** toggle (needed for Step 5), and the **Searchable** flag you will use in Step 6.
+
+<figure>
+  <img src={schemaConfigImg} alt="The schema editor's Configuration tab showing Schema composition (allOf, oneOf, anyOf) selectors and the Object name field set to 'name', plus description, image and summary field selectors" />
+  <figcaption>The <strong>Configuration</strong> tab: the <strong>Object name field</strong> tells OpenRegister which property is an object's title, and the composition selectors let a schema inherit from others.</figcaption>
+</figure>
+
+Click **Create**. The `pet` schema is saved.
+
+**Verify:** the `Pet` schema appears in **Data → Schemas**, listing `name` (required), `species`, `status`, `dateOfBirth`, `weightKg`, `neutered` and `price` with their types.
+
+## Step 3: Add related schemas and relations
+
+A pet has an owner and belongs to a category. Those are things in their own right, so they get their own schemas. Add three more the same way you added `pet`:
+
+- `owner` — `firstName`, `lastName` (required), `email` (format email), `phone`, `city`.
+- `category` — `name` (required), `description`, `icon`.
+- `tag` — `name` (required), `color` (format color-hex).
+
+Then add the **relations** on `pet`. A relation is a property that points at another object instead of holding a plain value. In OpenRegister a relation is a `string` property with **format `uuid`** carrying an `x-openregister-relation` marker that names the target schema and the cardinality. A to-many relation (one pet, many tags) is an `array` of UUIDs with the same marker.
+
+Add three relation properties to `pet`:
+
+| Property | Points at | Cardinality |
+|---|---|---|
+| `owner` | `owner` | one |
+| `category` | `category` | one |
+| `tags` | `tag` | many |
+
+<Tabs groupId="dp-how">
+<TabItem value="ui" label="UI">
+
+Create the `owner`, `category` and `tag` schemas exactly as you created `pet` (Step 2): **Add Schema**, title it, add its properties, save. Then attach all four schemas to the register: open **Data → Registers**, open the **Pet Store** register's **Actions → View Details**, switch the right sidebar to the **Schemas** tab, and you will see the register's schemas listed there with an **Edit Schema** button on each.
+
+For the relations, open the `pet` schema and add a property for `owner`, `category` and `tags`. Give each the **uuid** format from the property settings menu; OpenRegister resolves a UUID in one of these fields to the real object it names. (The visual relation builder in Buildiq writes the full `x-openregister-relation` marker for you; in OpenRegister's own editor you set the format and link by UUID, which the API tab shows in full.)
+
+</TabItem>
+<TabItem value="api" label="API">
+
+Create the three related schemas:
+
+```bash
+curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openregister/api/schemas" \
+  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
+  -d '{ "title": "Owner", "slug": "owner-academy", "required": ["lastName"],
+        "properties": { "firstName": {"type":"string"}, "lastName": {"type":"string"},
+          "email": {"type":"string","format":"email"}, "phone": {"type":"string"},
+          "city": {"type":"string"} }, "searchable": true }'
+
+curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openregister/api/schemas" \
+  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
+  -d '{ "title": "Category", "slug": "category-academy", "required": ["name"],
+        "properties": { "name": {"type":"string"}, "description": {"type":"string"},
+          "icon": {"type":"string"} }, "searchable": true }'
+
+curl -u admin:admin -X POST "http://localhost:8080/index.php/apps/openregister/api/schemas" \
+  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
+  -d '{ "title": "Tag", "slug": "tag-academy", "required": ["name"],
+        "properties": { "name": {"type":"string"},
+          "color": {"type":"string","format":"color-hex"} } }'
+```
+
+Now add the relation properties to `pet` (a `PUT` replaces the schema's properties). This is the exact relation marker:
+
+```bash
+curl -u admin:admin -X PUT \
+  "http://localhost:8080/index.php/apps/openregister/api/schemas/<PET_SCHEMA_ID>" \
+  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
+  -d '{ "title": "Pet", "slug": "pet-academy", "required": ["name"],
+        "properties": {
+          "name": {"type":"string"}, "species": {"type":"string"},
+          "status": {"type":"string"}, "dateOfBirth": {"type":"string","format":"date"},
+          "weightKg": {"type":"number"}, "neutered": {"type":"boolean"},
+          "price": {"type":"number"},
+          "owner":    {"type":"string","format":"uuid",
+                       "x-openregister-relation": {"target":"owner-academy","cardinality":"one"}},
+          "category": {"type":"string","format":"uuid",
+                       "x-openregister-relation": {"target":"category-academy","cardinality":"one"}},
+          "tags":     {"type":"array","items":{"type":"string","format":"uuid"},
+                       "x-openregister-relation": {"target":"tag-academy","cardinality":"many"}}
+        }, "searchable": true }'
+```
+
+Finally, point the register at all four schemas:
+
+```bash
+curl -u admin:admin -X PUT \
+  "http://localhost:8080/index.php/apps/openregister/api/registers/<REGISTER_ID>" \
+  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
+  -d '{ "title": "Pet Store", "slug": "petstore-academy",
+        "schemas": [<PET_ID>, <OWNER_ID>, <CATEGORY_ID>, <TAG_ID>] }'
+```
+
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+// owner, category and tag are created with $schemas->createFromArray(...) as in Step 2.
+
+// Add relations to the pet schema. A relation = string + uuid + the marker.
+$pet->setProperties(array_merge($pet->getProperties(), [
+    'owner' => [
+        'type' => 'string', 'format' => 'uuid',
+        'x-openregister-relation' => ['target' => 'owner-academy', 'cardinality' => 'one'],
+    ],
+    'category' => [
+        'type' => 'string', 'format' => 'uuid',
+        'x-openregister-relation' => ['target' => 'category-academy', 'cardinality' => 'one'],
+    ],
+    'tags' => [
+        'type' => 'array', 'items' => ['type' => 'string', 'format' => 'uuid'],
+        'x-openregister-relation' => ['target' => 'tag-academy', 'cardinality' => 'many'],
+    ],
+]));
+$schemas->update($pet);
+
+// Attach every schema to the register.
+$register->setSchemas([$pet->getId(), $owner->getId(), $category->getId(), $tag->getId()]);
+$registers->update($register);
+```
+
+</TabItem>
+</Tabs>
+
+<HexCard title="What the relation marker buys you">
+  The <code>x-openregister-relation</code> marker is what turns a UUID string into a live link. With it, an object's <strong>Uses</strong> and <strong>Used by</strong> views resolve the UUID to the real owner or category and show its name, and a pet becomes a hub you can navigate, not a dead end. Without the marker the UUID is just text. The marker travels with the schema, so the relationship is part of the data model, not buried in an app.
+</HexCard>
+
+**Verify:** open the **Pet Store** register's detail page and switch the sidebar to the **Schemas** tab. All four schemas — `Pet`, `Owner`, `Category`, `Tag` — are listed under the one register.
+
+<figure>
+  <img src={registerSchemasImg} alt="The Registers page showing the Pet Store register card with its description and a schema table listing Pet, Owner, Category and Tag, each with an object count of zero" />
+  <figcaption>The Pet Store data model: one register holding four schemas — <code>Pet</code>, <code>Owner</code>, <code>Category</code>, <code>Tag</code> — with the relations between them declared on <code>pet</code>.</figcaption>
+</figure>
+
+## Step 4: Add objects through the interface
+
+A model with no data is hard to judge. Fill it. The fastest place to browse and add objects is **Data → Search / views**: in its sidebar, select the **Pet Store** register and then the **Pet** schema. The page now scopes to pets, and the toolbar's **Add** button reads **Add Pet**.
+
+<Tabs groupId="dp-how">
+<TabItem value="ui" label="UI">
+
+Click **Add Pet**. The **Add Object** form lists every property of the schema as an editable row — including the relation rows `owner`, `category` and `tags`. Click a value cell to edit it: type `Rex` for name, `Dog` for species, `available` for status, `12` for weight. Click **Create**.
+
+<figure>
+  <img src={addObjectImg} alt="The Add Object form for a pet showing editable rows: name set to Rex, species Dog, status available, dateOfBirth empty, weightKg 12, neutered false, with Close and Create buttons" />
+  <figcaption>The <strong>Add Object</strong> form: every schema property as an editable row. Fill the values and <strong>Create</strong>. The relation rows (owner, category, tags) take the UUID of a related object.</figcaption>
+</figure>
+
+Repeat for a handful of pets across the species — a sold beagle, an available parakeet, a pending iguana — and add a couple of owners (open the `owner` schema and **Add Owner**) and four categories (Dogs, Cats, Birds, Reptiles). Variety is what makes the list and, later, the dashboards worth looking at. Create roughly six pets, two owners, four categories and five tags.
+
+Creating an object opens it on its **detail view**: a property grid you can edit in place, plus a row of tabs — **Uses** and **Used by** (its resolved relations), **Files** (Step 5), **Metadata**, **Relations**, and more — and footer buttons for **Add File**, **Audit Trails** and **Save**.
+
+<figure>
+  <img src={objectDetailImg} alt="The Rex (Pet) object detail dialog showing a property grid (name Rex, species Dog, status available, weightKg 12) and a tab bar with Properties, Metadata, Data, Uses, Used by, Files, Relations and more, plus Add File, Audit Trails and Save buttons" />
+  <figcaption>An object's <strong>detail view</strong>: the property grid edits in place, and the tabs (Uses, Used by, Files, Relations, …) and footer buttons (Add File, Audit Trails) are the rest of this tutorial in one screen.</figcaption>
+</figure>
+
+</TabItem>
+<TabItem value="api" label="API">
+
+An object is created against its register and schema (by slug or id). Link it to related objects by their UUIDs:
+
+```bash
+curl -u admin:admin -X POST \
+  "http://localhost:8080/index.php/apps/openregister/api/objects/petstore-academy/pet-academy" \
+  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
+  -d '{ "name": "Bella", "species": "Dog", "status": "sold",
+        "dateOfBirth": "2022-03-14", "weightKg": 18.4, "neutered": true, "price": 450,
+        "owner": "<OWNER_UUID>", "category": "<DOGS_UUID>",
+        "tags": ["<FRIENDLY_UUID>", "<VACCINATED_UUID>"] }'
+```
+
+List a schema's objects (the response carries `total` and a `results` array):
+
+```bash
+curl -u admin:admin \
+  "http://localhost:8080/index.php/apps/openregister/api/objects/petstore-academy/pet-academy" \
+  -H "OCS-APIRequest: true"
+```
+
+</TabItem>
+<TabItem value="php" label="PHP">
+
+This is the one service you reach for most. `saveObject` creates or updates an object against a register and schema:
+
+```php
+use OCA\OpenRegister\Service\ObjectService;
+
+$objects = \OCP\Server::get(ObjectService::class);
+
+$bella = $objects->saveObject(
+    object: [
+        'name'        => 'Bella',
+        'species'     => 'Dog',
+        'status'      => 'sold',
+        'dateOfBirth' => '2022-03-14',
+        'weightKg'    => 18.4,
+        'neutered'    => true,
+        'price'       => 450,
+        'owner'       => $ownerUuid,
+        'category'    => $dogsUuid,
+        'tags'        => [$friendlyUuid, $vaccinatedUuid],
+    ],
+    register: 'petstore-academy',
+    schema:   'pet-academy',
+);
+
+// Read them back.
+$pets = $objects->findAll(register: 'petstore-academy', schema: 'pet-academy');
+```
+
+</TabItem>
+</Tabs>
+
+Back on **Search / views**, your pets fill the table — name, species, status, weight, owner — with the count reading "Showing 6 of 6". This list, its columns and its search box all come from the schema; you configured none of them by hand.
+
+<figure>
+  <img src={objectsListImg} alt="The Search / views object list showing six pets (Rex, Bella, Whiskers, Coco, Spike, Sunny) with category, dateOfBirth, neutered and owner columns, and a sidebar filtering to the Pet Store register and Pet schema" />
+  <figcaption>The pets, browsable. The columns, the date formatting and the search all come from the schema, scoped here to the Pet Store register and the Pet schema.</figcaption>
+</figure>
+
+**Verify:** the object count for `pet` reads 6, and a pet's detail view shows its values, with its `owner` and `category` resolving under the **Uses** tab.
+
+## Step 5: Attach a file to an object
+
+Structured fields belong in properties; documents belong in files. A pet's photo or vaccination certificate is a file you attach to the object. Open a pet's detail view and click **Add File**. (For this to work the schema's **Allow files** toggle, on the Configuration tab, must be on.)
+
+The **Add Attachment** dialog gives you a label selector, an **Auto share** toggle, and a drop zone with an **Add a file or files** button. Pick **No label**, drop or choose an image, and OpenRegister stores it against the object in Nextcloud Files. The dialog confirms "Files added successfully" and lists the attachment.
+
+<figure>
+  <img src={addAttachmentImg} alt="The Add Attachment dialog with a label selector set to No label, a drag-and-drop zone reading 'Drag a file or files here', an 'Add a file or files' button, a green 'Files added successfully' banner, and an uploaded PNG listed in the file table" />
+  <figcaption>The <strong>Add Attachment</strong> dialog. Drop a photo or certificate and it is stored against the object in Nextcloud Files — no upload code, no storage to wire.</figcaption>
+</figure>
+
+<HexCard title="Nextcloud only loads same-origin images">
+  Nextcloud's content-security policy loads images from the instance itself (<code>img-src 'self' data: blob:</code>). A photo URL pointing at an external stock-photo site will not render in the app. Upload the file into Nextcloud — attach it to the object as above, or drop it into Nextcloud Files — and reference the same-origin path. This is a real platform constraint, not an OpenRegister limitation.
+</HexCard>
+
+**Verify:** the file appears in the attachment table on the pet, and under the object's **Files** tab.
+
+## Step 6: Make objects findable
+
+You want a colleague to find Rex from the magnifier at the top of Nextcloud, next to files and messages. Two settings do it, both on the schema's **Configuration** tab: the **Searchable** flag (turn it on for `pet`, `owner` and `category`), and optionally an **Icon** so the result carries a recognisable glyph.
+
+With searchable on, OpenRegister feeds those objects to Nextcloud's **unified search** through a single fleet-wide provider. There is no search index to build and no search code to write. Open the top-bar search, type a pet's name, and after a moment's indexing it appears under an **Open Register Objects** heading, labelled with its register and schema.
+
+<figure>
+  <img src={unifiedSearchImg} alt="Nextcloud's unified search dialog with the query 'Rex' returning an 'Open Register Objects' section listing Rex labelled 'Open Register · Pet Store · Pet', alongside Files and Events results" />
+  <figcaption>One search for "Rex" surfaces the pet itself under <strong>Open Register Objects</strong>, labelled <em>Open Register · Pet Store · Pet</em>. The searchable flag is the only thing you set.</figcaption>
+</figure>
+
+<Troubleshooting>
+  <p><strong>The pet does not show in search straight after you create it.</strong> Unified search reads an index that updates asynchronously, so a brand-new object can take a few seconds to appear. Give it a moment and search again. If it never appears, confirm the schema's <strong>Searchable</strong> flag is on and that you are searching a value in a text property (the name), not a relation UUID.</p>
+</Troubleshooting>
+
+**Verify:** searching a pet's name returns it under **Open Register Objects**, with the result naming your Pet Store register.
+
+## Step 7: Versioning and the audit trail
+
+You did not switch anything on for this; OpenRegister versions and logs every object automatically. Every create, read, update and delete is recorded with who did it, when, and how large the object was. Change a pet's `price` and save: that is a new version, and a new audit entry.
+
+Open the **Audit Trails** page (from the **Audit** menu, or the **Audit Trails** button on an object's detail view). It is a filterable log of every action across your registers — `CREATE`, `READ`, `UPDATE`, `DELETE` — with the object, register and schema ids, the user, and the timestamp. Filter it by register and schema in the sidebar to see just your Pet Store's history, and **Export** it when you need an evidence trail.
+
+<figure>
+  <img src={auditTrailsImg} alt="The Audit Trails page showing a log of actions (READ, CREATE, UPDATE) with timestamps, object id, register id and user columns, an Export button, and a Filters sidebar set to the Pet Store register and Pet schema" />
+  <figcaption>The <strong>Audit Trails</strong> log: every change to every object, with who and when. Filter it to one register and schema, or export it as an evidence trail.</figcaption>
+</figure>
+
+<HexCard title="Versioned by default, not by feature flag">
+  Because OpenRegister stores objects through one service, it can version and audit all of them the same way — your Pet Store gets the same history machinery as a government case register. You never lose the previous state of an object, and you can always answer "who changed this, and when".
+</HexCard>
+
+**Verify:** edit a pet, save, and the Audit Trails log shows an `UPDATE` entry for that object under your user, on top of the earlier `CREATE`.
+
+## Step 8: Lock the data down with permissions
+
+The store's prices and a customer's contact details are not for everyone. OpenRegister puts access control on the **data itself**, not on a hidden menu. The schema's **Security** tab is a **role-based access control (RBAC)** matrix: per Nextcloud group, you grant **Create**, **Read**, **Update** and **Delete**.
+
+The rules, spelled out on the tab itself: if no group is named for an operation, every user may perform it; the `admin` group always has full access and cannot be locked out; the object's owner always has full access; and `public` represents unauthenticated access. So to make `owner` records readable only by a `staff` group, create that group in Nextcloud's user settings, then set the `owner` schema's **Read** (and Create/Update/Delete) to `staff`. A user outside the group now reads no owners — enforced by OpenRegister on every request, whatever app or API they come through.
+
+<figure>
+  <img src={schemaSecurityImg} alt="The schema editor's Security tab showing a Role-based access control (RBAC) panel explaining the rules (admin always has access, public is unauthenticated) and a Group permissions table with Create, Read, Update and Delete columns" />
+  <figcaption>The schema's <strong>Security</strong> tab: a per-group <strong>Create / Read / Update / Delete</strong> matrix. This is the wall — the data permission itself — not a menu you hide.</figcaption>
+</figure>
+
+<HexCard title="Hiding a menu is not security">
+  An app can hide a button, but the data is still one API call away. OpenRegister enforces the permission at the data layer, so a user outside the group reads nothing regardless of which app, which page, or which API they use. The Security tab is the real wall; any menu scoping on top of it is only presentation.
+</HexCard>
+
+**Verify:** put one test user in the group and one outside it, sign in as each, and confirm the outsider reads no objects of the locked schema while the member, the owner, and any admin do.
+
+## Step 9: Export and import the register's configuration
+
+Your whole data model — the register, its four schemas, the relations, the permissions — is **configuration**. It can leave this instance as a file and arrive on another exactly as you built it. That is how a register goes from your laptop to a colleague's, or from a dev instance to production, without rebuilding it by hand.
+
+Open **Administration → Configurations**. Each configuration card has an **Actions** menu with **Export** (and a register's own **Actions** menu offers **Download API Specification**), which hands you a JSON file describing the register and its schemas. To bring one in, click **Import Configuration**. The dialog offers four sources: **Discover**, **GitHub / GitLab**, **Import from File**, and **Import from URL** — paste a link to a configuration JSON and OpenRegister fetches it, recreating the register, its schemas and any seed objects in one transaction. You can even enable **automatic synchronisation** so the register tracks the source on a schedule.
+
+<figure>
+  <img src={importConfigImg} alt="The Import Configuration dialog with tabs Discover, GitHub/GitLab, Import from URL and Import from File; the Import from URL tab shows a Configuration URL field and Synchronization Settings with an 'Enable automatic synchronization' toggle and a 24-hour sync interval" />
+  <figcaption>The <strong>Import Configuration</strong> dialog: <strong>Import from URL</strong> recreates a register from a hosted JSON file, optionally re-syncing it on a schedule. Export is the same in reverse, from a configuration's Actions menu.</figcaption>
+</figure>
+
+This is exactly how the canonical Conduction registers travel. The [Woo register tutorial](/academy/woo-set-up-register), for instance, imports a published `woo_register.json` from a URL and gets ten ready-made schemas in one click. Your Pet Store can be shared the same way.
+
+<HexCard title="The model is data, so it travels like data">
+  Because a register and its schemas are configuration, not code, exporting and importing them is a file copy, not a deployment. Version it in git, host it at a URL, hand it to a partner — the receiving instance ends up with the identical model, validation, relations and permissions you designed here.
+</HexCard>
+
+**Verify:** export your Pet Store configuration and open the JSON; it lists the register, the four schemas and their properties. Importing that file into a fresh OpenRegister instance recreates the whole model.
+
+## Test yourself
+
+You have modelled the data if all of these are true:
+
+- The **Pet Store** register lists four schemas: `pet`, `owner`, `category`, `tag`.
+- The `pet` schema has `name` required, a `dateOfBirth` with the date format, and `owner`, `category` and `tags` as relations.
+- Six pets are browsable in **Search / views**, and a pet's detail view resolves its owner and category under **Uses**.
+- A file is attached to at least one pet.
+- Searching a pet's name in Nextcloud's top bar returns it under **Open Register Objects**.
+- The Audit Trails log shows a `CREATE` and an `UPDATE` for a pet you edited.
+- A schema's Security tab scopes read/write to a group.
+- Exporting the register produces a configuration JSON you could import elsewhere.
+
+## Where to go from here
+
+You have a register full of well-modelled, searchable, versioned, permissioned data. The next two tutorials take it further down the pipeline.
+
+<NextSteps>
+  <NextStep href="/academy/pull-data-with-openconnector">Part 2 — Pull external data into your Pet Store register with Integriq: a source, a mapping, and a scheduled synchronisation that fills the register from an external API.</NextStep>
+  <NextStep href="/academy/publish-catalog-with-opencatalogi">Part 3 — Publish your register as a public, harvestable catalog with OpenCatalogi.</NextStep>
+  <NextStep href="/academy/build-a-nextcloud-app-with-openbuild">Build a full Nextcloud app on top of a register like this one, no code required, with Buildiq.</NextStep>
+</NextSteps>

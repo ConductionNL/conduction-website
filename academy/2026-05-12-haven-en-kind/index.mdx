@@ -1,0 +1,482 @@
+---
+slug: haven-and-haven-plus
+title: Haven en Haven+ — van VNG-standaard naar lokale Kubernetes-praktijk
+contentType: tutorial
+heroIcon: cluster
+authors: [conduction]
+date: 2026-05-12
+summary: Wat Haven voorschrijft, waarom het bestaat en hoe je de bouwstenen lokaal namaakt met kind. Geen compliant cluster op je laptop, wel een werkende oefenomgeving waarin de standaard tastbaar wordt.
+tags: [Haven, Kubernetes, Common Ground, kind, Hosting, Architectuur]
+durationMinutes: 30
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, ContactCta} from '@conduction/docusaurus-preset/components';
+
+Haven is een VNG-standaard voor gemeentelijke Kubernetes-clusters. Deze module legt uit wat de standaard voorschrijft, waarom hij bestaat, en hoe je de bouwstenen lokaal nabootst met kind — zodat de term tastbaar wordt voordat je 'm in een aanbesteding tegenkomt.
+
+{/* truncate */}
+
+<Outcomes title="Wat je leert">
+  <Outcome>Wat Haven en Haven+ zijn en in welke context ze ontstaan (Common Ground, 342 gemeenten, "pas toe of leg uit").</Outcome>
+  <Outcome>Welke concrete Kubernetes-bouwstenen de standaard verwacht.</Outcome>
+  <Outcome>Het verschil tussen Haven en Haven+, en wanneer je welke kiest.</Outcome>
+  <Outcome>Wat een applicatie nodig heeft om op een Haven-cluster te kunnen draaien.</Outcome>
+  <Outcome>Hoe je een Haven-achtige oefenomgeving lokaal opzet met kind en Docker.</Outcome>
+  <Outcome>Waarom je de Haven Compliancy Checker níet zinvol op kind draait, en waar je 'm wél gebruikt.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Basiskennis Kubernetes (pods, services, ingress, manifests).</PrerequisiteItem>
+  <PrerequisiteItem>Docker lokaal draaiend.</PrerequisiteItem>
+  <PrerequisiteItem>`kubectl` en `kind` geïnstalleerd — installatie komt in stap 5.</PrerequisiteItem>
+</Prerequisites>
+
+## 1. Waarom Haven bestaat
+
+Nederland heeft 342 gemeenten en die hebben min of meer dezelfde primaire processen — vergunningen, meldingen, registers, aanvragen. Twintig jaar lang werden die processen toch elk apart uitgevraagd en ingekocht, leverancier per leverancier. Het resultaat: applicaties die niet uitwisselbaar zijn, elk met eigen runtime-aannames en elk met een leverancier die de touwtjes in handen houdt.
+
+[Common Ground](https://commonground.nl/) is de tegenbeweging: gedeelde standaarden, herbruikbare componenten, geen vendor lock-in. Een applicatie die voor één gemeente geschreven is, moet bij een andere gemeente kunnen draaien zonder dat de hostingomgeving opnieuw uitgevonden wordt. Daarvoor moet vaststaan wat een productiecluster minimaal kan — en daar gaat [Haven](https://haven.commonground.nl/) over.
+
+Haven is een door [VNG](https://vng.nl/projecten/haven) vastgestelde standaard voor gemeentelijke Kubernetes-clusters. De status is ["pas toe of leg uit"](https://developer.overheid.nl/kennisbank/devops/standaarden/haven): kies je als gemeente voor Kubernetes, dan volg je Haven — tenzij je gemotiveerd uitlegt waarom niet. Het is geen aanbestedingseis op zichzelf, maar wel de impliciete benchmark waarmee inkopers, architecten en leveranciers elkaar wegen.
+
+## 2. Wat schrijft Haven concreet voor
+
+Haven definieert compliancy als een lijst geautomatiseerde checks: een cluster is Haven Compliant zodra alle verplichte checks slagen. De canonieke lijst leeft in [`checks.yaml`](https://gitlab.com/commonground/haven/haven/-/blob/main/haven/cli/pkg/compliancy/static/checks.yaml) in de Haven-repo en is de single source of truth — de [Compliancy Checker-pagina](https://haven.commonground.nl/techniek/checks) rendert dezelfde lijst.
+
+Op hoofdlijnen, gegroepeerd zoals de checker dat zelf doet:
+
+**Infrastructuur**
+- Verkeer over meerdere availability zones (`multiaz`).
+- Minimaal drie master nodes (`hamasters`) — hoge beschikbaarheid van de control plane.
+- Minimaal drie worker nodes (`haworkers`) — ruimte voor high-availability workloads.
+- Hardening op node-niveau: SELinux, AppArmor, Grsecurity, LKRG, Talos of Flatcar (`nodehardening`).
+- Private networking-topologie — masters en workers niet direct aan het publieke internet (`privatenetworking`).
+
+**Cluster**
+- Recente Kubernetes-versie: laatste stable of maximaal drie minor versies erachter (`kubernetesversion`).
+- RBAC ingeschakeld (`rbac`).
+- `ReadWriteMany` persistent volume support (`rwxvolumes`) — gedeelde storage voor HA-deployments.
+
+**Externe conformiteit**
+- CNCF Kubernetes Conformance (`cncf`) — het cluster voldoet aan de standaard Kubernetes-API's.
+
+**Haven+ (categorie binnen Haven, geen aparte standaard — zie sectie 3)**
+- Automatisch HTTPS-certificaten kunnen uitgeven en vernieuwen (`autocerts`).
+- Log aggregation — alle container-logs naar een centrale bestemming (`logs`).
+- Metrics-server draait — Prometheus-compatibele cluster-metrics (`metrics`).
+
+Aanvullend draait de checker enkele zelf-checks: of de Haven CLI up-to-date is (`havenversion`), of de checker met cluster-admin-rechten draait (`clusteradmin`), en of de binary SHA-gevalideerd is (`shavalidation`).
+
+Optioneel — niet verplicht voor Haven Compliancy — zijn [CIS Kubernetes Benchmark](https://www.cisecurity.org/benchmark/kubernetes) en [Kubescape](https://kubescape.io/), die je expliciet aanzet met `--cis` of `--kubescape` in de checker.
+
+Wat Haven uitdrukkelijk **niet** is, volgens de officiële `wat-is-haven`-pagina:
+
+- **Geen "all inclusive" cloud-oplossing.** Haven richt zich specifiek op de hostingcomponent.
+- **Geen security baseline.** Letterlijk: *"Haven is ook geen security baseline. Dat kan ook niet, want security betreft de som der delen."* Voor het complete beveiligingsverhaal verwijst Haven naar BIO, ISO 2700x en CIS-benchmarks.
+- **Geen leveranciers- of cloud-keuze.** De standaard is platformonafhankelijk.
+
+> **Ingress en Gateway API.** De checker valideert geen specifieke ingress-implementatie. De Kubernetes-community schuift van de klassieke `Ingress`-resource naar [Gateway API](https://gateway-api.sigs.k8s.io/) (GA sinds 2024); `ingress-nginx` zit in maintenance mode. Voor nieuwe applicaties is Gateway API de toekomstvaste keuze, en dat is wat we in stap 5 lokaal opzetten.
+
+## 3. Eén standaard, geen aparte "Haven+"
+
+In sommige publicaties verschijnt "Haven+" als een aparte, strengere standaard naast Haven. **De officiële Haven-documentatie kent die scheiding niet.** Er is één standaard: Haven, [tot standaard verklaard door VNG op 25 maart 2022](https://vng.nl/nieuws/bestuur-vng-verklaart-haven-tot-standaard).
+
+De [Compliancy Checker](https://haven.commonground.nl/techniek/compliancy-checker) groepeert checks intern in categorieën — onder andere *Fundamental*, *Infrastructure*, *Cluster*, *External*, en een categorie die **`Haven+`** heet. Maar al die categorieën staan in dezelfde verplichte lijst (`compliancychecks` in [`checks.yaml`](https://gitlab.com/commonground/haven/haven/-/blob/main/haven/cli/pkg/compliancy/static/checks.yaml)). Een cluster is Haven Compliant zodra ze allemaal slagen.
+
+Drie veelvoorkomende misverstanden, naast elkaar gezet:
+
+- **"Haven+ is strenger qua infrastructuur (multi-AZ, 3 masters, private networking)."** Niet waar — die eisen zitten gewoon in baseline Haven, in de categorie *Infrastructure*.
+- **"De *Haven+*-categorie in de checker is een upgrade-pad."** Niet exact — het is een aanduiding voor operationele functies die later aan de standaard zijn toegevoegd: automatische HTTPS (`autocerts`), log aggregatie (`logs`) en metrics-server (`metrics`). Ze zijn verplicht, net als de rest.
+- **"[Project Haven+](https://blog.brightcubes.nl/nieuws/project-haven-plus) is een nieuwe standaard."** Het is een community- en adoptie-initiatief van Bright Cubes en gemeente Utrecht rond Haven, geen tweede formele standaard. Het [interview met het Haven+-team](https://developer.overheid.nl/blog/2025/06/25/interview-haven) gaat over diezelfde adoptie en doorontwikkeling.
+
+Praktische conclusie voor lezers, inkopers en architecten: **één Haven, één checklist, één checker.** Een cluster is óf Haven Compliant, óf niet. Wat wél evolueert is de versie — Haven werkt met major.minor.patch versionering, met ongeveer elk kwartaal een nieuwe major. Om compliant te blijven moet de checker minimaal elk kwartaal opnieuw slagen, met een venster van drie maanden om bij een nieuwe major bij te trekken.
+
+## 4. Wat betekent dit voor jouw applicatie
+
+Een Haven-cluster is breed inzetbaar, maar dat werkt twee kanten op: jouw applicatie moet ook ergens aan voldoen om er thuis op te zijn. Concreet:
+
+- **Containerized.** De applicatie draait als één of meer OCI-compatibele container-images. Geen `apt-get install` op de host, geen aannames over wat er op een specifieke node staat.
+- **Manifests of Helm chart.** Deployment-configuratie staat in `Deployment`, `Service`, `Ingress`-manifests of als Helm chart. Geen handmatige `kubectl create`-recepten.
+- **Metrics endpoint.** Een Prometheus-compatibel `/metrics`-endpoint, zodat de cluster-monitoring je applicatie kan bevragen zonder leveranciersspecifieke integratie.
+- **Replica-veilig.** Meerdere replica's tegelijk draaien zonder elkaar in de weg te zitten. Sessies in een gedeelde store (Redis, database), geen lokale geheugen-state die alleen voor één pod geldig is.
+- **Geen lokale filesystem-aannames.** Wat naar disk moet, gaat naar een `PersistentVolume` of object storage (S3-compatibel). Container filesystem is efemeer.
+- **Configuratie via environment of `ConfigMap`/`Secret`.** Geen hardcoded URLs, geen credentials in images.
+- **Liveness en readiness probes.** Het cluster moet kunnen meten of een pod draait en verkeer kan ontvangen.
+
+Voldoet je applicatie hier niet aan, dan is de migratie naar Haven feitelijk een herontwerp — niet een hosting-keuze.
+
+## 5. Lokaal oefenen: een Haven-achtig cluster met kind
+
+Doel van deze sectie: een lokaal Kubernetes-cluster dat de bouwstenen levert die Haven verwacht. Niet compliant — dat kan op één laptop niet — wel de structuur waarin je manifests kunt valideren, met de Common Ground-vriendelijke keuzes (Gateway API in plaats van klassieke Ingress).
+
+We gebruiken één control-plane en drie workers. Haven+ vraagt drie masters voor productie, maar dat heeft op een laptop geen meerwaarde — verlies van de hostmachine neemt alle masters tegelijk mee. Drie workers is wel zinvol: je kunt replica-spreiding en `topologySpreadConstraints` ermee uitproberen.
+
+Wat je gaat installeren:
+
+- **kind** — Kubernetes-in-Docker, een cluster in containers
+- **Gateway API CRDs + Envoy Gateway** — Gateway API als ingress-laag
+- **metrics-server** — Prometheus-compatibele cluster-metrics
+- Een testapplicatie om de keten te verifiëren
+
+### Stap 1: kind en kubectl installeren
+
+Op macOS via Homebrew:
+
+```bash
+brew install kind kubectl helm
+```
+
+Op Linux:
+
+```bash
+# kind
+curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.24.0/kind-linux-amd64
+chmod +x ./kind && sudo mv ./kind /usr/local/bin/kind
+
+# kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
+
+# helm (zie https://helm.sh/docs/intro/install/ voor jouw distributie)
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+```
+
+Verifieer:
+
+```bash
+kind version
+kubectl version --client
+helm version
+```
+
+### Stap 2: cluster-config schrijven
+
+Maak `kind-haven.yaml` aan:
+
+```yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: haven-oefen
+nodes:
+  - role: control-plane
+  - role: worker
+  - role: worker
+  - role: worker
+```
+
+Sober gehouden — geen `extraPortMappings`, want we exposen het verkeer straks via `kubectl port-forward`. Dat houdt het cluster dichter bij wat Haven in productie doet: een Gateway met een externe `LoadBalancer`, niet een poort die direct in de host hangt.
+
+### Stap 3: cluster opspinnen
+
+```bash
+kind create cluster --config kind-haven.yaml
+```
+
+Dit duurt ongeveer een minuut. Controleer:
+
+```bash
+kubectl get nodes
+```
+
+Je ziet vier nodes: één `control-plane` en drie `worker`.
+
+### Stap 4: Envoy Gateway installeren
+
+We gebruiken [Envoy Gateway](https://gateway.envoyproxy.io/) als Gateway API-implementatie — een CNCF-project op basis van de gegradueerde Envoy proxy, met Gateway API als enige API (geen erfenis-`Ingress`). De Helm chart installeert de Gateway API CRDs (`GatewayClass`, `Gateway`, `HTTPRoute`, etc.) zelf, dus je hoeft die niet apart te apply'en.
+
+```bash
+helm install eg oci://docker.io/envoyproxy/gateway-helm \
+  --version v1.2.0 \
+  -n envoy-gateway-system \
+  --create-namespace
+
+kubectl wait --timeout=5m -n envoy-gateway-system \
+  deployment/envoy-gateway --for=condition=Available
+```
+
+Controleer dat de CRDs er staan:
+
+```bash
+kubectl get crd | grep gateway.networking.k8s.io
+```
+
+Je ziet de standard channel-CRDs (`gatewayclasses`, `gateways`, `httproutes`, `grpcroutes`, `referencegrants`) plus de experimental-channel CRDs die Envoy Gateway meelevert (`tcproutes`, `tlsroutes`, `udproutes`, `backendlbpolicies`, `backendtlspolicies`).
+
+### Stap 5: metrics-server installeren
+
+Standaard manifest:
+
+```bash
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+```
+
+In een kind-cluster zijn de kubelet-certificaten self-signed. metrics-server moet daarom TLS-verificatie uitzetten — dat doe je met één patch op het deployment:
+
+```bash
+kubectl patch -n kube-system deployment metrics-server --type=json \
+  -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
+```
+
+Na een minuut werkt `kubectl top nodes` en levert het cluster metrics.
+
+### Stap 6: storage class verifiëren
+
+kind levert standaard een lokale storage class:
+
+```bash
+kubectl get storageclass
+```
+
+Je ziet `standard (default)`. Een `PersistentVolumeClaim` zonder expliciete `storageClassName` krijgt deze automatisch toegewezen — precies wat Haven verwacht.
+
+### Stap 7: testdeployment via Gateway API
+
+Een minimale nginx achter een `Gateway` met een `HTTPRoute`. Save dit als `test.yaml`:
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: eg
+spec:
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: eg
+  namespace: default
+spec:
+  gatewayClassName: eg
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello
+spec:
+  selector:
+    app: hello
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: hello
+spec:
+  parentRefs:
+    - name: eg
+  hostnames:
+    - "hello.localhost"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: hello
+          port: 80
+```
+
+Apply:
+
+```bash
+kubectl apply -f test.yaml
+```
+
+Envoy Gateway maakt op de achtergrond een `Service` van type `LoadBalancer` aan voor de data plane. In een productie-cluster geeft de cloud-provider die service een echt IP. In kind blijft dat IP `<pending>` — geen probleem, we testen met port-forward.
+
+Wacht eerst tot Envoy de Gateway heeft uitgerold en de data plane pod Ready is:
+
+```bash
+kubectl wait --timeout=3m -n envoy-gateway-system \
+  --for=condition=Ready pod \
+  -l gateway.envoyproxy.io/owning-gateway-name=eg
+```
+
+Daarna de service vinden (naam bevat een hash) en port-forwarden:
+
+```bash
+ENVOY_SVC=$(kubectl -n envoy-gateway-system get svc \
+  -l gateway.envoyproxy.io/owning-gateway-name=eg \
+  -o jsonpath='{.items[0].metadata.name}')
+
+kubectl -n envoy-gateway-system port-forward "svc/$ENVOY_SVC" 18080:80
+```
+
+In een ander shell-venster:
+
+```bash
+curl -H "Host: hello.localhost" http://localhost:18080/
+```
+
+Je ziet de nginx welcome-pagina. Dat betekent: Gateway API werkt, je deployment draait, en de routing van extern → gateway → service → pod is rond.
+
+> **Let op — Gateway-status in kind.** Wanneer je `kubectl get gateway eg` draait, ziet de Gateway er als volgt uit: `ACCEPTED=True`, `PROGRAMMED=False`, met reden `AddressNotAssigned`. Dat is verwacht in kind — er is geen cloud-provider die het LoadBalancer-IP toekent. Verkeer route't desondanks via de cluster-IP van de Envoy service. In een echt cluster gaat `PROGRAMMED` naar `True` zodra de cloud-provider een adres uitdeelt.
+
+### Wat je nu hebt
+
+Een cluster met de bouwstenen die Haven verwacht: een Gateway API-gebaseerde ingress-laag, metrics-server voor cluster-monitoring, een werkende default storage class, RBAC out of the box. Geen Haven-cluster, wel een omgeving waar je Haven-conforme manifests kunt schrijven en valideren.
+
+Opruimen wanneer je klaar bent:
+
+```bash
+kind delete cluster --name haven-oefen
+```
+
+## 6. De Compliancy Checker — installeren en draaien
+
+De [Haven Compliancy Checker](https://haven.commonground.nl/techniek/compliancy-checker) is een command-line tool, onderdeel van de **Haven CLI**. Geen registratie, geen tokens, geen agents — je downloadt de binary, geeft 'm een kubeconfig met cluster-admin-rechten, en draait `haven check`.
+
+### Installeren
+
+Download een release van de [Haven CLI packages](https://gitlab.com/commonground/haven/haven/-/packages). Binaries zijn er voor macOS, Linux en Windows.
+
+```bash
+# Voorbeeld voor Linux amd64 (controleer de actuele versie en jouw architectuur)
+unzip haven-v12.8.0-linux-amd64.zip
+sudo mv _dist/linux-amd64/haven /usr/local/bin/haven
+haven version
+```
+
+### Draaien
+
+Op een cluster waar je cluster-admin bent:
+
+```bash
+haven check
+```
+
+De checker loopt door de verplichte checks uit [`checks.yaml`](https://gitlab.com/commonground/haven/haven/-/blob/main/haven/cli/pkg/compliancy/static/checks.yaml) en print de uitslagen. Een cluster is Haven Compliant als alle verplichte checks slagen, inclusief de CNCF Kubernetes Conformance-check.
+
+Nuttige flags (uit `haven check --help`):
+
+- `haven check --rationale` — print de rationale per check en stop, zonder uit te voeren. Goed eerste commando om te zien wat de checker meet.
+- `haven check --output json` — JSON-uitvoer voor automatisering.
+- `haven --log-file output.log check` — uitgebreide logs naar bestand (aanrader bij JSON-output of lange runs).
+- `haven check --cis` — voeg de optionele CIS-benchmark toe.
+- `haven check --kubescape` — voeg de optionele Kubescape-benchmark toe.
+
+### Wat dit oplevert op een kind-cluster
+
+`haven check` draait gewoon op kind (de checker installeert ongevraagd de `compliancies.haven.commonground.nl` CRD om resultaten op te slaan) en geeft je een concreet beeld van wat al goed staat. Op de cluster die we in stap 5 hebben opgezet is de uitslag:
+
+```text
+[E] Results: 7 out of 15 checks passed, 1 checks skipped, 0 checks unknown.
+    This is NOT a Haven Compliant cluster.
+
+┌────────────────┬──────────────────────────────────────────────────────────────────────────┬─────────┐
+│    CATEGORY    │                                   NAME                                   │ PASSED  │
+├────────────────┼──────────────────────────────────────────────────────────────────────────┼─────────┤
+│ Fundamental    │ Self test: HCC version is latest major or within 3 months upgrade window │ YES     │
+│ Fundamental    │ Self test: does HCC have cluster-admin                                   │ YES     │
+│ Infrastructure │ Multiple availability zones in use                                       │ NO      │
+│ Infrastructure │ Running at least 3 master nodes                                          │ NO      │
+│ Infrastructure │ Running at least 3 worker nodes                                          │ YES     │
+│ Infrastructure │ Nodes have SELinux, Grsecurity, AppArmor, LKRG, Talos or Flatcar enabled │ NO      │
+│ Infrastructure │ Private networking topology                                              │ YES     │
+│ Cluster        │ Kubernetes version is latest stable or max 3 minor versions behind       │ NO      │
+│ Cluster        │ Role Based Access Control is enabled                                     │ YES     │
+│ Cluster        │ ReadWriteMany persistent volumes support                                 │ NO      │
+│ External       │ CNCF Kubernetes Conformance                                              │ SKIPPED │
+│ Haven+         │ Automated HTTPS certificate provisioning                                 │ NO      │
+│ Haven+         │ Log aggregation is running                                               │ NO      │
+│ Haven+         │ Metrics-server is running                                                │ YES     │
+│ Validation     │ SHA has been validated                                                   │ YES     │
+└────────────────┴──────────────────────────────────────────────────────────────────────────┴─────────┘
+```
+
+Lezing van de NO's:
+
+- **`multiaz`** — alle nodes draaien op één host. Niet op te lossen op een laptop.
+- **`hamasters`** — kind levert standaard één control-plane. Drie masters in één Docker host is niet zinvol om te oefenen.
+- **`nodehardening`** — kind-nodes zijn containers zonder SELinux/AppArmor/Talos/Flatcar profile.
+- **`kubernetesversion`** — kind v0.24 ships met Kubernetes v1.31; de checker verwacht binnen drie minor versies van de laatste stable. Op te lossen door een nieuwere `kindest/node`-image te kiezen.
+- **`rwxvolumes`** — de ingebouwde `local-path` storage class doet alleen `ReadWriteOnce`. Voor `ReadWriteMany` zou je iets als NFS-CSI of Rook moeten installeren.
+- **`autocerts`** — geen cert-manager + ClusterIssuer geïnstalleerd. Wel haalbaar op kind, maar buiten scope voor deze module.
+- **`logs`** — geen centrale log-aggregator. Ook haalbaar op kind (Loki, Fluent Bit), buiten scope.
+
+De **SKIPPED** CNCF-check is geen falen: de checker probeert het platform te matchen tegen de [CNCF-conformance lijst](https://github.com/cncf/k8s-conformance) en `kind` staat daar niet op, dus slaat hij de check over (`platform: Unknown could not be matched`). Op een gehoste provider (AKS, GKE, EKS) draait deze check wél.
+
+Wat slaagt op je kind-cluster — een goede sanity check voor je manifests:
+
+- Cluster-admin werkt (`clusteradmin`), Haven CLI versie up-to-date (`havenversion`), SHA validatie (`shavalidation`).
+- 3+ workers (`haworkers`) — dankzij de multi-node config uit stap 2.
+- Private networking (`privatenetworking`) — kind-nodes hebben geen publieke IPs.
+- RBAC out of the box (`rbac`).
+- Metrics-server na de TLS-patch uit stap 5 (`metrics`).
+
+Wat hier doorheen komt is nog steeds geen Haven Compliancy — daarvoor heb je een echte cluster nodig waar `multiaz`, `hamasters`, `nodehardening`, `kubernetesversion`, `rwxvolumes`, `autocerts` en `logs` allemaal slagen. Maar je hebt nu wel het patroon onder de knie, en `haven check` zelf werkt zoals het op productie zal werken.
+
+## 7. Grenzen van de simulatie
+
+Wat kind je leert is de *vorm* van Haven: welke manifests werken, welke patronen zijn herbruikbaar, hoe controllers naast elkaar leven. Wat het je niet leert:
+
+- **Multi-AZ-gedrag.** Alle nodes draaien op dezelfde host. Een echte zone-uitval test je hiermee niet.
+- **Private networking.** Haven vraagt om nodes zonder directe publieke IP's en netwerksegmentatie tussen control plane en workers (de `privatenetworking`-check). Op kind staat alles in één Docker-bridge.
+- **Geo-redundantie en failover.** Geen tweede datacenter, geen DNS-failover, geen disaster recovery te oefenen.
+- **Productie-load.** Een laptop is geen lasttest. Performance, latency en resource-pressure-gedrag zijn anders.
+- **LoadBalancer met extern IP.** In kind blijft de Gateway-service `<pending>`. Echte L4/L7-load balancing van een cloud-provider zit daar niet bij.
+- **Cloud-specifieke integraties.** Object storage, secret managers, identity providers — je hebt op kind alleen wat je zelf installeert.
+
+Praktisch: kind is goed om Haven-conforme manifests te schrijven en te valideren dat ze deployen. Het is geen vervanging van een staging-cluster bij een echte provider.
+
+## 8. Vervolgstappen naar een echte Haven-omgeving
+
+Werken je manifests op kind, dan is de volgende stap een echte cluster bij een provider die als Haven Compliant geverifieerd is. De [Aan de slag-pagina](https://haven.commonground.nl/techniek/aan-de-slag) en de [`reference/`-map in de Haven-repo](https://gitlab.com/commonground/haven/haven/-/tree/main/reference) zijn de canonieke bronnen. Op het moment van schrijven staan op de Aan de slag-pagina:
+
+- Amazon EKS
+- Avisi AME *(Nederlandse provider)*
+- Cyso Cloud *(Nederlandse provider)*
+- Edgeless Systems Constellation
+- Google GKE
+- Kops on OpenStack
+- Microsoft Azure AKS
+- OVHcloud Kubernetes
+- Oracle OKE
+- Previder *(Nederlandse provider)*
+- Red Hat OpenShift
+- SUSE Rancher Kubernetes Engine (RKE)
+- VMware Tanzu Kubernetes Grid
+
+Haven zegt expliciet "no preferences and/or recommendations are expressed" — de lijst is geen ranking en niet uitputtend. Controleer de Aan de slag-pagina voor de actuele stand.
+
+Wat verandert er ten opzichte van je kind-cluster:
+
+- De Gateway/LoadBalancer krijgt een echt extern IP via de cloud-provider; geen port-forward meer.
+- Multi-AZ-spreiding werkt — node pools in verschillende zones, en de `multiaz`-check uit Haven kan slagen.
+- Storage class wijst naar cloud-storage van de provider (Azure Disk, GCE PD, vSphere CSI), niet een lokaal volume. Voor `rwxvolumes` heb je een driver nodig die `ReadWriteMany` ondersteunt.
+- `haven check` kan volledig draaien en feitelijk vaststellen of het cluster Haven Compliant is.
+
+Voor het Haven-traject zelf is de [Haven GitLab-repo](https://gitlab.com/commonground/haven/haven) het canonieke startpunt — met de specificatie (`checks.yaml`), de checker (`haven/cli`), de reference implementations, en een issue tracker waar standaard-wijzigingen via een issue met label `Standard Change` worden voorgesteld.
+
+<ContactCta
+  title="Haven-traject overwegen?"
+  body="Een gemeente die naar Haven wil, een leverancier die compliant moet worden, of een applicatie die op een Haven-cluster moet draaien? Mail ons — we lopen het traject samen door."
+  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=Haven%20en%20Kubernetes" }}
+/>

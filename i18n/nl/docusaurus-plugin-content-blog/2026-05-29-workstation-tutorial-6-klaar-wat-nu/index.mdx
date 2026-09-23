@@ -1,0 +1,218 @@
+---
+slug: workstation-tutorial-6-done-what-next
+title: "Workstation Setup leerlijn — Deel 6: Klaar — wat nu?"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-29
+summary: Je workstation staat. Dit is de ereronde — een korte kaart van de volgende tutorials, gegroepeerd naar wat voor werk je gaat doen. OpenSpec, Claude Skills, Build an App, Hydra — waar elk voor is en waar je begint. Zesde en laatste van zes korte modules.
+tags: [Workstation, Onboarding, Roadmap, Tutorial series]
+apps: []
+durationMinutes: 8
+series: workstation-tutorial
+partNumber: 6
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, ContactCta, HexCard} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+Je workstation is klaar. WSL2, Docker, VS Code met de juiste extensies, Claude Code met de veiligheidshooks actief, de MCP-browserpool aangesloten, Nextcloud lokaal draaiend met de apps die je nodig hebt. Sta er even bij stil — vroeger verloren de meeste nieuwe Conduction-developers er een of twee dagen aan; jij hebt het in één avond gedaan. Dit laatste deel is een korte kaart van de *volgende* tutorials, gegroepeerd naar wat voor werk je gaat doen.
+
+{/* truncate */}
+
+<Outcomes title="Wat je meeneemt">
+  <Outcome>Een helder beeld van welke tutorial je hierna doet, afhankelijk van waar je aan gaat werken.</Outcome>
+  <Outcome>Wegwijzers naar de vier pijlers van de Conduction-manier van werken: OpenSpec, Claude Skills, Build an App en Hydra.</Outcome>
+  <Outcome>Een eerlijk gevoel voor hoe lang het duurt voor je productief bent op een Conduction-project (spoiler: nog een avond of twee).</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Delen 1–5 afgerond. Staat er nog iets op rood, los dat eerst op — de tutorials hieronder gaan uit van een werkende setup.</PrerequisiteItem>
+</Prerequisites>
+
+## De vier pijlers
+
+Bijna elke Conduction-tutorial leunt op een van vier pijlers. Kies degene die past bij je eerste echte taak:
+
+<HexCard title="OpenSpec — spec-first ontwikkelen">
+  Elke wijziging aan elke app start als een spec. Twee korte modules (~30 min in totaal) leren je de begrippen en lopen je door je eerste change.
+</HexCard>
+
+<HexCard title="Claude Skills — gebundeld AI-gedrag">
+  Custom slash-commando's die Claude Code op aanvraag laadt. Vier korte modules leren je skills lezen en schrijven, en het maturity-framework waarmee we ze meten.
+</HexCard>
+
+<HexCard title="Build an App — je eerste gepubliceerde app">
+  Een leerlijn van negen delen (Deel 0–8) die je van een verse Nextcloud naar een gepubliceerde, gedocumenteerde app brengt via het PetStore-domein. Start met de drie architecturale paden en leert het manifest-pad van begin tot eind.
+</HexCard>
+
+<HexCard title="Hydra — agentic CI/CD-pipeline">
+  Het platform dat OpenSpec-changes omzet in gereviewde, geteste PR's. Zes modules; pas echt relevant als je de eerste drie pijlers comfortabel beheerst.
+</HexCard>
+
+## Welke eerst?
+
+Eerlijk antwoord: **OpenSpec, dan Skills óf Build an App, en Hydra als laatste**. De volgorde doet ertoe omdat:
+
+- OpenSpec is de basislaag. Elke wijziging aan elke app — inclusief de changes uit de volgende vier tutorials — krijgt de vorm van een OpenSpec-change. Sla je dit over, dan wordt de rest moeilijker te lezen.
+- Skills en Build an App liggen naast elkaar. Kies degene die het dichtst bij je eerste taak ligt.
+- Hydra is het meest opinionated en het meest intern. Bewaar het voor wanneer je vertrouwd bent met de vorige drie.
+
+### Als je eerste taak echte code schrijven betreft
+
+Begin met **[OpenSpec Deel 1](/nl/academy/openspec-tutorial-1-what-is-openspec)** (~12 min) — wat OpenSpec is en de vier kernbegrippen. Dan **[OpenSpec Deel 2](/nl/academy/openspec-tutorial-2-first-change)** (~22 min) — je eerste change van begin tot eind.
+
+Daarna spring je naar **[Build an App tutorial — Deel 0](/nl/academy/build-an-app-tutorial-0-three-paths)** voor de eerlijke kaart van hoe Conduction-apps daadwerkelijk gebouwd worden (drie paden, en waarom we het manifest-pad onderwijzen). Daarna loop je Deel 1–8 — scaffold, schema's, kalender, integratie, ship — met het PetStore-domein als rode draad.
+
+### Als je eerste taak tooling of skills schrijven betreft
+
+Begin op dezelfde manier — **[OpenSpec Deel 1](/nl/academy/openspec-tutorial-1-what-is-openspec)** en **[Deel 2](/nl/academy/openspec-tutorial-2-first-change)** — want skills worden op dezelfde manier geversioneerd en gespecificeerd als app-code. Ga daarna naar **[Claude Skills Deel 1](/nl/academy/claude-skills-tutorial-1-what-are-claude-skills)** (~12 min) — wat een skill is, en wanneer je er juist géén schrijft. **Delen 2–4** van die leerlijn nemen je mee door je eerste skill schrijven en het maturity-framework dat "voelt goed" omzet in "gemeten goed".
+
+### Als je eerste taak over Hydra zelf gaat
+
+Toch wil je eerst OpenSpec op zak hebben. Daarna **[Hydra Deel 1](/nl/academy/hydra-tutorial-1-what-is-hydra)** (~10 min) — wat Hydra is, de vier container-persona's, wanneer je het juist niet inzet. De leerlijn telt zes delen; reken op een middag voor de volledige doorloop.
+
+> **Lees mee — kloon Hydra alvast.** Als je toegang hebt tot de private [`ConductionNL/hydra`](https://github.com/ConductionNL/hydra)-repo (vraag dit aan bij je teamlead als dat nog niet zo is), kloon hem dan nu zodat je tijdens het lezen direct de bestanden waar de leerlijn naar verwijst kunt openen:
+>
+> ```bash
+> git clone git@github.com:ConductionNL/hydra.git
+> cd hydra
+> ```
+>
+> Alleen lezen kan ook — de clone wordt pas een harde eis in [Hydra Deel 5](/nl/academy/hydra-tutorial-5-starting-a-run), waar je een echte run start.
+
+## Wat deze tutorials *niet* dekken
+
+Een paar onderwerpen die je bij Conduction tegenkomt en waar nog geen aparte tutorial-leerlijn voor is:
+
+- **De dagelijkse Claude Code-workflow** — het [getting-started.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/getting-started.md)-doc in `Conduction/.github` op Codeberg komt het dichtst in de buurt van een workflow-primer op één pagina.
+- **Frontend-standaarden** — beschreven in [frontend-standards.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/frontend-standards.md). Doorlezen voor je eerste Vue-PR is de moeite waard.
+- **Testing-skills in de diepte** — `/test-app`, `/test-counsel` en de rest van de test-workflow staan in [testing.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/testing.md). De `hydra-gate-*`-familie woont in `hydra/.claude/skills/` in de [hydra-repo](https://github.com/ConductionNL/hydra) — dichter bij de gates zelf. Op aanvraag lezen, niet vooraf.
+- **De lokale LLM-workflow (Ollama + Qwen)** — zie [local-llm.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/local-llm.md). Optioneel, handig als je 's nachts batch-jobs wilt draaien.
+
+Dit zijn naslagdocs, geen tutorials. Gebruik ze als er een concrete vraag opkomt; probeer ze niet vooraf door te lezen.
+
+## Een woord over de quizblokken
+
+Elk deel van deze leerlijn eindigt met een **Test jezelf**-quizblok — een paar korte vragen met Hint- en Antwoord-uitklappers. Het zijn geen examenvragen; het is een self-check of het deel ook echt is geland. Blank je op de meeste vragen, dan is het deel waarschijnlijk een herlezing waard.
+
+Voor deze leerlijn specifiek dekken de vragen:
+
+| Deel | Voorbeeldvraag |
+| --- | --- |
+| 1 — Overzicht | Welke OS + tooling-combinatie raadt Conduction aan, en waarom? |
+| 2 — Basis | Waarom installeer je Node en PHP in WSL en niet aan de Windows-kant? |
+| 3 — Claude Code | Wat is het verschil tussen globale en project-niveau Claude-instellingen? |
+| 4 — MCP | Welke twee instellingen pre-approven de MCP-browsers, zodat background-agenten niet geblokkeerd worden? |
+| 5 — Nextcloud | Wanneer reset je de lokale Nextcloud, en wanneer behoud je de bestaande state? |
+| 6 — Wat nu? | (de vragen hieronder) |
+
+Besteed een paar minuten aan de quizblokken voor je een deel "afgerond" verklaart — dat is de eenvoudigste manier om deze kennis te laten beklijven.
+
+## Hoe lang duurt dit allemaal?
+
+Een ruwe schatting, gebaseerd op de leestijden die de tutorials zelf opgeven:
+
+- **Deze workstation-leerlijn**: één avond (de zes delen samen zijn ruim onder het uur leestijd, maar reken op extra tijd voor installs en de eerste run van elk onderdeel).
+- **OpenSpec Delen 1+2**: ~35 minuten leestijd (12 + 22), plus de tijd om de eerste change ook echt te doen.
+- **Claude Skills Delen 1+2**: ~30 minuten leestijd (12 + 18). De volledige vierdelige track voegt Delen 3 en 4 daar bovenop toe.
+- **Build an App tutorial Deel 0**: ~15 minuten voor het architecturale overzicht. De volledige negen delen lopen over meerdere avonden.
+
+Voeg een Conduction-collega toe die met je pairt op een eerste echte change, en "schone laptop tot eerste gemergede PR" duurt realistisch een paar avonden van afwisselend lezen en doen. Het varieert met hoeveel terminal- en Git-spiergeheugen je meeneemt.
+
+## Test jezelf
+
+Drie korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
+
+<div className="tutorial-quiz">
+
+**1. Welke tutorial-leerlijn doe je als eerste *na* deze Workstation Setup-keten — en waarom die?**
+
+<Details summary="Hint">
+
+Het is de basislaag onder alles wat erna komt.
+
+</Details>
+
+<Details summary="Antwoord">
+
+**De [OpenSpec-leerlijn](/nl/academy/openspec-tutorial-1-what-is-openspec)** — twee korte delen, ~30 minuten in totaal.
+
+Waarom als eerste: elke wijziging aan elke Conduction-app — inclusief de tutorials *na* OpenSpec — krijgt de vorm van een OpenSpec-change. Sla je dit over, dan is de rest van de academy moeilijker te lezen, omdat je telkens moet raden naar de structuur van elke `proposal.md`, `tasks.md` en spec-delta die je tegenkomt.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Je eerste taak is het schrijven van een Claude Skill. Je bent in de verleiding OpenSpec over te slaan en meteen in de Skills-leerlijn te duiken — de taak gaat tenslotte niet over app-code. Waarom is dat waarschijnlijk een vergissing?**
+
+<Details summary="Hint">
+
+Hoe wordt een skill zelf bijgehouden, gereviewd en gewijzigd bij Conduction? Kijk eens hoe de bestaande skills in `hydra/.claude/skills/` onder versiebeheer staan.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Omdat skills op dezelfde manier geversioneerd en gespecificeerd worden als app-code. Elke skill bij Conduction woont in `.claude/skills/<name>/SKILL.md`, en een niet-triviale wijziging aan een skill doorloopt dezelfde OpenSpec-workflow als een app-feature: proposal → spec-delta → tasks → review.
+
+Sla je OpenSpec over, dan zie je de eerste keer dat je een skill-change voorstelt de reviewer vragen *"waar is de spec-delta?"* — en dan zit je achteraf concepten in te halen die 30 minuten OpenSpec Delen 1+2 je vooraf hadden gegeven. De Skills-leerlijn verwijst zelfs naar `proposal.md`, `tasks.md` en `spec-delta` alsof je al weet wat dat betekent — want ze gaat ervan uit dat je OpenSpec eerst hebt gedaan.
+
+Spec-first geldt voor *alles wat Conduction levert, inclusief de tooling die de dingen levert*. OpenSpec overslaan bij skill-werk is als Git overslaan bij solo-werk — het kan, maar je betaalt de prijs later in een minder handige vorm.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Waarom bewaar je de Hydra-leerlijn voor *na* OpenSpec, Skills en Build an App?**
+
+<Details summary="Hint">
+
+Twee redenen — één over voorkennis, één over scope.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Twee redenen:
+
+1. **Hydra bouwt voort op OpenSpec en Skills.** Het draait `/opsx-*`-skills tegen OpenSpec-changes in containers. Zonder die twee pijlers eerst lezen de Hydra-tutorials als een vreemde taal.
+2. **Het is de meest interne en meest opinionated pijler van de vier.** Veel nieuwe developers raken Hydra in hun eerste maand niet aan; degenen die dat wel doen, moeten al comfortabel zijn met de rest van de stack.
+
+Dus: OpenSpec → Skills (of Build an App) → Hydra. Wil je een one-pager preview voor je de volledige leerlijn leest, dan is de [hydra/README.md](https://github.com/ConductionNL/.github/blob/main/docs/hydra/README.md) in de `.github`-repo een goede opwarmer.
+
+</Details>
+
+</div>
+
+<NextSteps title="Volgende stappen" lede="Je bent klaar met de workstation-leerlijn. Hieronder staan de vier pijlers in de volgorde waarin de meeste nieuwe developers ze daadwerkelijk doen.">
+  <NextStep
+    title="OpenSpec-leerlijn — Deel 1"
+    href="/nl/academy/openspec-tutorial-1-what-is-openspec"
+    description="Wat OpenSpec is, waarom we spec-first werken, en de vier kernbegrippen. De basislaag onder al het andere."
+  />
+  <NextStep
+    title="Claude Skills-leerlijn — Deel 1"
+    href="/nl/academy/claude-skills-tutorial-1-what-are-claude-skills"
+    description="Wat een Claude Skill is, wanneer je er een schrijft (en wanneer niet), en hoe Claude ze triggert."
+  />
+  <NextStep
+    title="Build an App tutorial-leerlijn — Deel 0"
+    href="/nl/academy/build-an-app-tutorial-0-three-paths"
+    description="De eerlijke kaart van de drie manieren waarop Conduction-apps gebouwd worden. Deel 1–8 lopen het manifest-pad van begin tot eind met het PetStore-domein."
+  />
+  <NextStep
+    title="Hydra-leerlijn — Deel 1"
+    href="/nl/academy/hydra-tutorial-1-what-is-hydra"
+    description="Wat Hydra is, de vier container-persona's, en wanneer je het juist niet inzet. Bewaar dit voor later."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Tot hier gekomen?"
+  body="Stuur ons een berichtje — we horen graag van mensen die de keten afmaken. En als iets in de leerlijn onduidelijk was, horen we dat liever nu dan dat de volgende tegen dezelfde muur loopt."
+  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=Workstation%20setup%20tutorial%20deel%206%20%E2%80%94%20klaar" }}
+/>

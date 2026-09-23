@@ -1,0 +1,55 @@
+name: AI baseline validation
+
+# Runs on every pull request so the AI-crawler baseline (robots.txt,
+# llms.txt, sitemaps, JSON-LD on the homepage and per-app pages,
+# FAQPage on /support /install /iso, og:image, twitter meta) is
+# re-asserted at PR time, not just after merge. The centralised
+# ConductionNL/.github documentation workflow only builds on push,
+# so without this job, validation regressions reach development.
+#
+# What runs: `npm run ci` -> `npm ci --legacy-peer-deps && npm run build`,
+# which triggers prebuild (app-downloads sync) + docusaurus build +
+# postbuild (scripts/validate-ai-baseline.mjs). Any of the 15 checks
+# failing exits non-zero and the workflow fails.
+#
+# The build is the same one production uses, so a green check here
+# also tells reviewers the site actually builds with their changes.
+
+on:
+  pull_request:
+    branches: [development, documentation]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Build and validate AI baseline
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies and build
+        env:
+          # Pass the run-scoped token to the prebuild script's
+          # app-downloads fetch so it stays under GitHub's 60-req/hr
+          # unauthenticated limit. The token is auto-scoped to this
+          # job and expires when it ends.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run ci
+
+      - name: Confirm validation gate ran
+        # `npm run ci` -> `npm run build` -> postbuild runs the
+        # 15-check validator and exits non-zero on regression. This
+        # extra step is a belt-and-braces guarantee: if anyone ever
+        # removes the postbuild hook from package.json by accident,
+        # the explicit invocation here still catches it at PR time.
+        run: node scripts/validate-ai-baseline.mjs

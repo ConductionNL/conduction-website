@@ -1,0 +1,264 @@
+---
+slug: hydra-tutorial-3-quality-gates
+title: "Hydra tutorial series — Part 3: Quality gates"
+contentType: tutorial
+heroIcon: pipeline
+authors: [conduction]
+date: 2026-05-12
+summary: What are Hydra's mechanical quality gates, why do they deliberately NOT rely on AI judgement, and what do you do when a gate misfires? The third of six short modules.
+tags: [Hydra, Gates, Quality, Tutorial series]
+apps: []
+durationMinutes: 14
+series: hydra-tutorial
+partNumber: 3
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+In part 2 you saw that the three personas are backed up by **mechanical quality gates** — checks that pass or fail deterministically, without AI in the loop. This part explains which gates we have, why they are mechanical, and how to handle the exception: the false positive.
+
+{/* truncate */}
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>The two kinds of gates: <strong>generic</strong> code-quality tools and the <strong>22 Hydra-specific <code>hydra-gate-*</code></strong> checks.</Outcome>
+  <Outcome>Why mechanical checks alongside AI review are strictly necessary (and not "AI will sort that out").</Outcome>
+  <Outcome>How the <strong>traceability gates</strong> (gate-16 <code>spec-coverage</code> + gate-19 <code>e2e-coverage</code>) tie code and tests back to the spec.</Outcome>
+  <Outcome>How to recognise a false-positive gate and what the right fix is.</Outcome>
+  <Outcome>What ADR-020 means: <strong>gates run on the PR diff.</strong></Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>Parts 1 and 2 read: <a href="/academy/hydra-tutorial-1-what-is-hydra">What is Hydra?</a> and <a href="/academy/hydra-tutorial-2-three-pipelines">The three pipelines</a>.</PrerequisiteItem>
+  <PrerequisiteItem>Basic understanding of what a linter is and what a static analyser is.</PrerequisiteItem>
+</Prerequisites>
+
+## Why mechanical gates?
+
+AI review scales, but it's **not predictable.** Two runs on exactly the same diff can produce different findings. And AI is especially weak at the boring checking that doesn't require judgement — for example: "does every new PHP file have an SPDX licence header at the top?". You can do that kind of check much faster and cheaper with a simple `grep` command.
+
+The rule inside Hydra:
+
+> **Whatever can be checked objectively, a mechanical gate handles — one script that passes or fails per check. Only where judgement is required do we bring in a reviewer.**
+
+Concretely: before we let Juan Claude or Clyde waste expensive Sonnet time on "this function is called `doSomething` and that should be a verb-noun pair", we run PHPCS first. Only then do the AI extra pairs of eyes start their work, focused on what a tool can't catch.
+
+## Category 1: generic code-quality tools
+
+These checks run inside `scripts/run-quality.sh` in a Docker `php:X.Y-cli` container, with `--keep-server` to leave Nextcloud running afterwards for the browser tests:
+
+| Tool | What it catches |
+|---|---|
+| `lint` | Syntax errors in PHP. |
+| `phpcs` | Coding standard (PSR-12 + Nextcloud convention). |
+| `phpmd` | Code-mess detector (overlong methods, deep nesting, dead code). |
+| `psalm` | Static type analysis, level 4 baseline. |
+| `phpstan` | Second static type analyser (catches things Psalm misses and vice versa). |
+| `phpmetrics` | Complexity metrics (cyclomatic, maintainability index). |
+| `composer audit` | CVE check on `composer.lock` dependencies. |
+| `eslint` | JS/TS lint. |
+| `stylelint` | CSS/SCSS lint. |
+| `npm audit` | CVE check on `package-lock.json`. |
+| `PHPUnit` | Unit + integration tests with a containerised Nextcloud + SQLite. |
+| `Newman` | API tests against the PHP built-in server. |
+
+Each check is red or green. One red check → `build:fail` (in the pre-review phase) or `code-review:fail` / `security-review:fail` (post-fixes).
+
+## Category 2: Hydra-specific gates
+
+On top of the generic tools, Hydra has **its own set of `hydra-gate-*` skills** for things that are Conduction-specific. They live in `hydra/.claude/skills/`, but the single source of truth is the shell script [`scripts/run-hydra-gates.sh`](https://github.com/ConductionNL/hydra/blob/main/scripts/run-hydra-gates.sh). One dispatcher skill — `hydra-gates` — runs all of them one after another and produces a single pass/fail summary. The last line of a clean run reads:
+
+```text
+[hydra-gates] ALL 22 GATES GREEN
+```
+
+That's the current count: **22 gates**, numbered `gate-1` through `gate-22`. (Earlier versions of this tutorial listed 13 — the set has roughly doubled since, as new incidents produced new gates. When in doubt, the script is authoritative, not this table.)
+
+| # | Gate | What it checks |
+|---|---|---|
+| 1 | `spdx-headers` | Every `lib/**/*.php` file carries an EUPL-1.2 SPDX licence header. |
+| 2 | `forbidden-patterns` | No `var_dump` / `die` / `error_log` / `print_r` / `dd` / `dump` left behind in `lib/`. |
+| 3 | `stub-scan` | No "In a complete implementation" stubs, empty `run()` bodies, or auth methods that accept a caller-identity argument but never use it. |
+| 4 | `composer-audit` | No known CVEs or advisories in the `composer.lock` dependency tree. |
+| 5 | `route-auth` | Every controller method in `appinfo/routes.php` declares its auth posture (`#[PublicPage]` / `#[NoAdminRequired]` / `#[NoCSRFRequired]` / `#[AuthorizedAdminSetting]`). |
+| 6 | `orphan-auth` | Public `is*`/`requires*`/`validate*`/`authorize*`/`check*`/`ensure*`/`verify*`/`assert*` methods have at least one caller — no dead auth code. |
+| 7 | `no-admin-idor` | Every `#[NoAdminRequired]` method has a per-object or admin authorization guard in its body (blocks IDOR). |
+| 8 | `unsafe-auth-resolver` | No `catch (\Throwable) { return null; }` fail-open pattern in auth / permission / role resolvers. |
+| 9 | `semantic-auth` | The auth annotation **matches** the method body's actual authorization requirement (not just syntactically present). |
+| 10 | `initial-state` | Frontend uses `loadState()` from `@nextcloud/initial-state`, never `getElementById(...).dataset.*`. |
+| 11 | `admin-router` | Admin-settings Vue components are NOT registered as in-app vue-router routes (they render via `AdminSettings.php`). |
+| 12 | `nc-input-labels` | Every `<NcSelect>` declares an `inputLabel` or `ariaLabelCombobox` (WCAG 2.1 AA). |
+| 13 | `modal-isolation` | `<NcModal>` / `<NcDialog>` markup lives in its own `src/modals/` or `src/dialogs/` file, never inline in a parent. |
+| 14 | `route-reachability` | Every `Response`-returning controller method is registered in `appinfo/routes.php`, and every route resolves to an existing method. |
+| 15 | `dashboard-antipattern` | No dashboard-in-dashboard (`<CnDashboardPage>`) nesting. |
+| 16 | `spec-coverage` | Every changed public/protected + frontend method carries `@spec openspec/...` or `@spec exclude <reason>` (diff-scoped, ADR-020). |
+| 17 | `redundant-controller` | No pass-through CRUD methods that just wrap OpenRegister's `ObjectService` (ADR-022 — apps consume abstractions). |
+| 18 | `notification-dialect` | Register files use the canonical `x-openregister-notifications` dialect (ADR-031); the legacy dialect FAILs, imperative dispatch WARNs. |
+| 19 | `e2e-coverage` | Every Scenario added/changed in an openspec spec is referenced by a Playwright test via `@e2e`, or carries `@e2e exclude <reason>` (diff-scoped, ADR-020). |
+| 20 | `or-objectservice-api` | No calls to fabricated `ObjectService` methods — only `find` / `findAll` / `saveObject` / `createObject` / `updateObject` / `deleteObject` exist. |
+| 21 | `conflict-markers` | No unresolved git merge markers (`<<<<<<<`, `=======`, `>>>>>>>`) committed. |
+| 22 | `manifest-validation` | `src/manifest.json` validates against the `@conduction/nextcloud-vue` schema (ADR-024). |
+
+A large share of these were born out of incidents: a gate arises in response to a bug that slipped through all earlier checks. `stub-scan` (gate-3), for example, came out of the [`decidesk-44-45` retrospective](https://github.com/ConductionNL/hydra/blob/main/docs/retrospectives/decidesk-44-45-phase-g.md), where a builder delivered a method that just did `return null;` with a TODO. PHPCS swallowed it, PHPUnit had no test for it, code review read it as "in scope", and it broke in production. The set grows; it never shrinks silently.
+
+## Gate-19: where specs meet the browser
+
+Two gates in the list above don't check *style* or *security* — they check **traceability**, and they're the mechanical heart of spec-driven development:
+
+- **`spec-coverage` (gate-16)** enforces the *backward* link: every method you add or change must point at the requirement it implements with a `@spec openspec/...` annotation.
+- **`e2e-coverage` (gate-19)** enforces the *forward* link: every Scenario you add or change in an OpenSpec spec must be exercised by a Playwright test, tied back with an `@e2e` annotation — or explicitly excused with `@e2e exclude <reason>` (for pure-backend behaviour, which belongs in Newman or PHPUnit instead).
+
+Together they make the loop auditable in both directions: **scenario → `@e2e` → Playwright test**, and **code → `@spec` → requirement**. A builder can't quietly ship a feature that isn't specified, and can't quietly leave a specified UI scenario untested. Both gates are diff-scoped (ADR-020), so legacy debt in untouched files never blocks a PR.
+
+The exact annotation mechanics — how a `#### Scenario:` heading becomes a slug, the long vs. short `@e2e` forms, and the three exclusion scopes — live in the OpenSpec series: [From scenario to Playwright test](/academy/openspec-tutorial-4-scenario-to-playwright). That's the page to read if you want to understand *why* this is a safe sandbox for AI rather than free-for-all "vibe coding".
+
+## ADR-020: gate scope is the PR diff
+
+An important rule you already brushed against in part 2: **gates run on the PR diff, not on the whole repo**. That's in [ADR-020](https://github.com/ConductionNL/hydra/blob/main/openspec/architecture/adr-020-gate-scope-to-pr-diff.md).
+
+Why? Because many of our repos carry a backlog of technical debt. If you turn `phpcs` loose on the whole repo you get hundreds of findings that have nothing to do with the current PR — and every PR ends up red. By limiting the scope to the lines touched in the PR diff, the gate only fires on *what the current builder just added or changed*.
+
+Override mechanism: `HYDRA_REVIEW_SCOPE=full` in `secrets/.env` flips the scope to the whole repo. Use it when you onboard a new repo or do a dedicated tech-debt sweep. Expect a lot of red in any other case.
+
+## Recognising false positives
+
+Mechanical gates are deterministic, but not always correct. A homegrown classic: `hydra-gate-forbidden-patterns` searched for `dd(` without a word boundary and so falsely tripped on a legitimate `$builder->add(`. One wrong grep flag and you have a repeatable false positive.
+
+How to recognise a false positive:
+
+1. **The gate keeps firing on the same line** in every retry, while the line itself looks innocuous.
+2. **A manual test of the gate implementation** (open `scripts/run-quality.sh` or the associated skill, run it locally) confirms it: yes, the pattern matches, but not for the intended reason.
+3. **Nobody on the team can explain why this specific line should be complained about.**
+
+In that case the fix is **not** "another retry". The fix is: go to `scripts/run-quality.sh` or the gate skill and repair the detection. Example for `hydra-gate-forbidden-patterns`: from `grep 'dd('` to `grep -wE '(^|[^A-Za-z0-9_])dd\('`.
+
+## Recheck after reviewer fixes
+
+A subtle but important rule: after every reviewer-fix cycle the orchestrator **reruns** the mechanical gates on the final PR state. This is the "quality recheck" phase. Reason: during their bounded fix, a reviewer can repair a PHPCS-style error and accidentally introduce a new violation.
+
+If the recheck goes red, the issue moves to `needs-input`. No retry. The reviewer has stopped, the builder has stopped, a human looks.
+
+<HexCard title="Watch out: when the retry loop gets stuck">
+  The recheck above is your safety net — but that safety net can land in a loop of its own. One pattern to spot:
+
+  The builder forgets, in one file, a gate rule he applies correctly in other files (in practice usually the <code>spdx-headers</code> licence header). The reviewer doesn't pick it up, because he reads the file as "existing boilerplate" and skims past it. The mechanical recheck then goes red, the issue goes back to the builder, and on the retry he makes the exact same mistake again. The same gate issue keeps coming back.
+
+  **What to do:** if you see 3 or more retries on the exact same gate issue, stop the loop. Two options — fix it by hand, or tighten the gate detection so the reviewer can no longer dismiss it as boilerplate. The full post-mortem of this pattern (incidents from 19–23 April 2026) is in <a href="https://github.com/ConductionNL/hydra/blob/main/docs/retrospectives/decidesk-44-45-phase-g.md">decidesk-44-45-phase-g</a>.
+</HexCard>
+
+## Test yourself
+
+Four short questions to check whether you've understood this part. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. Why does Hydra have mechanical gates *and* AI reviewers, instead of just one of the two?**
+
+<Details summary="Hint">
+
+One kind of check is predictable and cheap, the other is expensive but can judge. What's the strength and weakness of each?
+
+</Details>
+
+<Details summary="Answer">
+
+They complement each other exactly where the other is weak.
+
+- **Mechanical gates** are **deterministic**: same input → same outcome, pass or fail. Perfect for boring, objective checking — for example "does every new PHP file have an SPDX header?". Cheap and repeatable.
+- **AI reviewers** do **judgement**: "does this authorisation logic semantically match the route's purpose", "is this a security risk in this context". Not predictable and more expensive, so you deploy them where judgement is needed.
+
+Mechanical-only misses context-dependent errors; AI-only is expensive, not predictable, and wastes Sonnet time on things a `grep` can do.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. What does ADR-020 say about gate scope, and when do you switch that off via `HYDRA_REVIEW_SCOPE=full`?**
+
+<Details summary="Hint">
+
+Think about what happens when you turn `phpcs` loose on a repo with lots of old technical debt. And when do you actually want that?
+
+</Details>
+
+<Details summary="Answer">
+
+ADR-020 says: **gates run on the PR diff, not on the whole repo**.
+
+Reason: many repos drag along technical debt. `phpcs` across all of it produces hundreds of findings that have nothing to do with the current PR — every PR would be red. By only checking the touched lines, the gate only fires on what the builder just added or changed.
+
+**`HYDRA_REVIEW_SCOPE=full`** in `secrets/.env` disables this — gates then run on the whole repo. Use for:
+- **Onboarding a new repo** into Hydra.
+- A **dedicated tech-debt sweep**.
+
+NOT for regular PRs — expect a lot of red.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. How do you recognise a false-positive gate, and what's the right fix? What is NOT?**
+
+<Details summary="Hint">
+
+Three signals together point at a false positive. And the "tempting but wrong" reflex is doing the same thing again.
+
+</Details>
+
+<Details summary="Answer">
+
+**Recognition** — three signals together:
+
+1. The gate fires on the **same line** in every retry, while that line looks innocuous.
+2. **Running the gate locally by hand** confirms: the pattern matches, but not for the intended reason (e.g. `grep 'dd('` also matches `$builder->add(`).
+3. Nobody on the team can explain why this specific line should be complained about.
+
+**Right fix:** tighten the **gate detection** in `scripts/run-quality.sh` or the associated skill. Example: `grep 'dd('` → `grep -wE '(^|[^A-Za-z0-9_])dd\('`.
+
+**NOT:** another `retry:queued`. That reproduces the same false positive and wastes cycles.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Why does Hydra rerun the mechanical gates AFTER the reviewer fixes (the "quality recheck" phase)?**
+
+<Details summary="Hint">
+
+The reviewers may fix within scope. What can go wrong while they do that?
+
+</Details>
+
+<Details summary="Answer">
+
+Reviewers (Juan + Clyde) may push mechanical fixes within scope (ADR-021). While doing so a reviewer can **accidentally introduce a new violation** — for instance a PHPCS-style fix that breaks a rule elsewhere.
+
+The **quality recheck** reruns all mechanical gates on the final PR state to make sure what's there now is also objectively clean. If the recheck goes red → `needs-input`, no retry. The reviewer has stopped, the builder has stopped, a human looks. It's the last deterministic gate before a human decision falls.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="In part 4 we look at the skills and commands the personas use during their work — including how you can add a new skill yourself.">
+  <NextStep
+    title="Part 4 — Skills & commands"
+    href="/academy/hydra-tutorial-4-skills"
+    description="How <code>opsx-*</code>, <code>hydra-gate-*</code> and <code>team-*</code> skills fit into the loop. When you write a new one yourself."
+  />
+  <NextStep
+    title="Previous step — The three pipelines"
+    href="/academy/hydra-tutorial-2-three-pipelines"
+    description="A short recap of the label state machine."
+  />
+  <NextStep
+    title="ADR-020 — gate scope = PR diff"
+    href="https://github.com/ConductionNL/hydra/blob/main/openspec/architecture/adr-020-gate-scope-to-pr-diff.md"
+    description="The official motivation behind the diff-only scope."
+  />
+</NextSteps>

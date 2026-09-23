@@ -1,0 +1,222 @@
+---
+slug: openspec-tutorial-0-why-spec-first
+title: "OpenSpec tutorial series — Part 0: Why spec-first"
+contentType: tutorial
+heroIcon: spec
+authors: [conduction]
+date: 2026-06-11
+summary: Before the how, the why. OpenSpec is the harness that turns vibe coding into spec coding, so we can put an LLM to work inside our development ecosystem instead of hoping it guesses right. This opener covers where the idea comes from, why "As a user I want..." stops being enough, how a contract lets you test-drive an LLM, and where the specs go next.
+tags: [OpenSpec, Spec-first, History, Tutorial series]
+apps: []
+durationMinutes: 13
+series: openspec-tutorial
+partNumber: 0
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+Most teams already write down what they are going to build. They open a ticket: *"As a user I want a search box, so that I can find pets quickly."* That sentence has served software teams for twenty years. At Conduction we write **specs** instead. The reason is simple: the developer reading the ticket is now an LLM, not a colleague, and an LLM needs a different kind of brief. This opener explains why, before the rest of the series gets into the how.
+
+{/* truncate */}
+
+<Outcomes title="What you'll take away">
+  <Outcome>Why OpenSpec is the harness that turns vibe coding into spec coding.</Outcome>
+  <Outcome>Where the spec-first idea comes from, and the older ideas it stands on.</Outcome>
+  <Outcome>Why the classic "As a user I want... so that..." story under-specifies for an LLM.</Outcome>
+  <Outcome>How building on a contract lets you test-drive an LLM against that contract.</Outcome>
+  <Outcome>That OpenSpec is also an open-source skill set, and where the specs feed next.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you'll need">
+  <PrerequisiteItem>Nothing technical. If you have ever written a Jira ticket or a GitHub issue, you are ready.</PrerequisiteItem>
+  <PrerequisiteItem>Curiosity about why teams that build with AI work differently.</PrerequisiteItem>
+</Prerequisites>
+
+## Vibe coding versus spec coding
+
+Hand an LLM a one-line request and let it run. It writes code from vibes. It guesses the intent, invents the parts you left out, and produces something plausible. Sometimes it is great. Sometimes it is subtly wrong, and you find out in production. That is **vibe coding**, and it does not scale past a toy.
+
+OpenSpec is the harness that turns vibe coding into **spec coding**. You write down what the feature must do, as a contract. The LLM implements against that contract. A review pipeline checks the result. The LLM still writes the code, but it moves inside walls you set on purpose. That shift is what lets us put an LLM to work as a real part of our development ecosystem, instead of treating it as a clever autocomplete we have to babysit.
+
+The rest of this series builds that harness piece by piece. This part is about why it has to exist.
+
+## The user story, and the part everyone dropped
+
+The format *"As a [role], I want [feature], so that [benefit]"* comes from Agile and Extreme Programming in the early 2000s. It was meant to keep requirements small and conversational. Its inventors never meant the card to be the whole story. Ron Jeffries described a user story as **three Cs**: a **Card** (the one-liner), a **Conversation** (the team talking it through), and a **Confirmation** (the acceptance criteria that say when it is done).
+
+Over the years most teams kept the Card, held the Conversation in a standup, and quietly dropped the Confirmation. The ticket became a reminder to have a conversation. That worked, because the conversation happened between humans who shared a lot of unwritten context. "Search box" did not need spelling out. Everyone knew it meant case-insensitive, debounced, empty-state handled, accessible.
+
+That unwritten context is exactly what breaks when the implementer is an LLM.
+
+## Why "As a user I want..." stops being enough
+
+Give the search-box ticket to a language model and watch it fill the gaps. It has to. It cannot ask the hallway. So it guesses: maybe the search is case-sensitive, maybe it hits a new endpoint it invented, maybe it skips the empty state, maybe it forgets the auth check. Each guess is plausible. Some are wrong. You will not know which until you read every line.
+
+A human colleague fills the same gaps with **shared context**. An LLM fills them with **plausible defaults**. The user-story format assumed a knowledgeable human would close the gap in conversation. The more capable your LLM implementer gets, the more that missing Confirmation hurts.
+
+<HexCard title="The fix is not 'write a longer ticket'">
+  You cannot out-prose ambiguity. A three-paragraph ticket is still a conversation starter, just vaguer in more words. What an LLM needs is the part the three-Cs model named and teams forgot: the Confirmation, written as concrete, testable acceptance criteria. That is what a spec is. OpenSpec does not replace the user story. It puts the dropped third C back and makes it the centre of gravity.
+</HexCard>
+
+## What a spec is, by contrast
+
+A spec keeps the intent of a user story and adds the precision an implementer can build against without guessing:
+
+| | User story | OpenSpec spec |
+|---|---|---|
+| Purpose | start a conversation | be a buildable contract |
+| Audience | the team, in a room | a reviewer and an LLM, on disk |
+| "Done" is... | agreed verbally, later | written as scenarios, up front |
+| Strength of words | informal | RFC 2119: `MUST` / `SHOULD` / `MAY` |
+| Acceptance | often implicit | `GIVEN / WHEN / THEN`, testable |
+
+So *"As a user I want a search box"* becomes a **requirement** with a strength word and a **scenario** that doubles as a test:
+
+```markdown
+### Requirement: Search pets by name
+Users MUST be able to find pets by typing part of the name.
+
+#### Scenario: Searching narrows the visible list
+- GIVEN the register contains "Rex", "Bella" and "Max"
+- WHEN the user types "be" into the search box
+- THEN only "Bella" is shown
+```
+
+No conversation is needed to know when this is done. The scenario says it. That is the difference between a starting point and a contract.
+
+## A contract you can test against
+
+Here is the payoff that vibe coding can never offer. A scenario written as `GIVEN / WHEN / THEN` is not just readable. It is an **executable acceptance test waiting to be written**. The contract gives you something concrete to test against.
+
+That changes how an LLM can build. Instead of "write the search feature and hope", the loop becomes test-driven:
+
+1. The spec fixes the behaviour: typing "be" shows only "Bella".
+2. A test asserts exactly that behaviour.
+3. The LLM writes code until the test passes.
+4. A gate confirms the test exists and is linked back to the scenario.
+
+The LLM is no longer steering by feel. It steers toward a target it can check itself. [Part 4](/academy/openspec-tutorial-4-scenario-to-playwright) shows how a scenario becomes a Playwright test and how a gate enforces the link, so every behaviour the spec promises has a test that proves it.
+
+## ADRs: the shared context, written down for agents
+
+We said a human colleague fills the gaps with shared context. An LLM has none of that by default. So we write the shared context down too, as **Architecture Decision Records**.
+
+A spec answers *what* one feature must do. An ADR answers *how* anything here must be built: which data layer, which frontend stack, where modals live, which auth pattern. These are the standing decisions a human teammate would carry in their head. Writing them as ADRs gives the agent the same shared context a senior colleague would have, so it makes the same calls a senior colleague would. [Part 3](/academy/openspec-tutorial-3-adrs) covers how ADRs work and how we split them across the fleet.
+
+## One spec, many uses
+
+A spec is not write-once. The same contract earns its keep several times over:
+
+- It is the **brief** the LLM implements against.
+- Its scenarios are the **tests** that prove the build (the section above).
+- It becomes the backbone of **feature documentation**. The behaviour you wrote as scenarios is the behaviour you describe to users, so the spec feeds the docs site. [Part 8 of the build-an-app series](/academy/build-an-app-tutorial-8-document-and-showcase) walks through standing that documentation up.
+
+Write the context once, and it pays for the build, the tests, and the docs.
+
+## Not just a convention: an open-source skill set
+
+OpenSpec is two things at once:
+
+1. A **convention**: the folder layout, the requirement and scenario format, the ADR tiers. You could follow it with a text editor.
+2. An **open-source skill set**: the `/opsx-*` skills (explore, new, ff, continue, plan-to-issues, apply, verify, archive) that teach an agent to operate the convention. They scaffold a change, write a spec-delta, implement against it, verify the result, and archive it.
+
+The second part is what makes it a harness and not a style guide. The skills are published and open. The convention lives at [openspec.dev](https://openspec.dev), and Conduction's skill implementations are on Codeberg. You can read exactly what the agent is told to do at each step, so there is no black box turning your idea into code. The rest of this series teaches you to drive those skills.
+
+## Where this series goes
+
+You now have the why. The rest builds the how:
+
+- **Part 1**: what a spec, requirement, scenario and change are, and how a repo is laid out.
+- **Part 2**: write your first change end to end with the `/opsx-*` skills.
+- **Part 3**: ADRs, the standing context every spec sits on.
+- **Part 4**: scenarios become Playwright tests, and the whole thing becomes a safe sandbox for AI.
+
+## Test yourself
+
+<div className="tutorial-quiz">
+
+**1. In one line, what does OpenSpec turn vibe coding into, and why does that matter?**
+
+<Details summary="Hint">
+
+Think about what the LLM can and cannot do once you give it a contract.
+
+</Details>
+
+<Details summary="Answer">
+
+It turns vibe coding into **spec coding**: the LLM implements against a written contract instead of guessing. That is what lets us use an LLM as a real part of the development ecosystem, instead of a clever autocomplete we have to re-check by hand.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. What were the "three Cs" of a user story, and which one do most teams drop?**
+
+<Details summary="Hint">
+
+A physical card, a thing the team does, and a thing that defines "done".
+
+</Details>
+
+<Details summary="Answer">
+
+**Card** (the one-line story), **Conversation** (the team discussing it), and **Confirmation** (the acceptance criteria). Most teams keep the card and the conversation but drop the **Confirmation**. That is the piece an LLM implementer needs most. A spec is the Confirmation, written down.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Why does writing the contract first let you test-drive an LLM?**
+
+<Details summary="Hint">
+
+What is a `GIVEN / WHEN / THEN` scenario, besides readable?
+
+</Details>
+
+<Details summary="Answer">
+
+A scenario is an executable acceptance test waiting to be written. The contract gives a concrete target, so the loop becomes: assert the scenario as a test, let the LLM write code until the test passes, and let a gate confirm the test is linked back to the scenario. The LLM steers toward a target it can check.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Why do we write ADRs as well as specs?**
+
+<Details summary="Hint">
+
+What does a human colleague have that an LLM does not?
+
+</Details>
+
+<Details summary="Answer">
+
+A human teammate carries shared context (which data layer, which stack, which patterns) in their head. An LLM has none by default. ADRs write that shared context down, so the agent makes the same standing decisions a senior colleague would. The spec says *what*; the ADRs say *how*.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="With the why in hand, start on the building blocks.">
+  <NextStep
+    title="Part 1 — What is OpenSpec?"
+    href="/academy/openspec-tutorial-1-what-is-openspec"
+    description="Spec, requirement, scenario, change: the four core concepts and the repo layout."
+  />
+  <NextStep
+    title="openspec.dev — the open convention"
+    href="https://openspec.dev"
+    description="The published OpenSpec convention this series follows."
+  />
+</NextSteps>
+
+<ContactCta />

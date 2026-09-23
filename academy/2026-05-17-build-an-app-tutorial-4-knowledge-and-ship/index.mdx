@@ -1,0 +1,465 @@
+---
+slug: build-an-app-tutorial-4-knowledge-and-ship
+title: "Build a Nextcloud app on the Conduction stack — Part 4: Knowledge + ship"
+contentType: tutorial
+heroIcon: blocks
+authors: [conduction]
+date: 2026-05-17
+summary: Spin up xWiki locally, author per-category care guides, surface them per pet via an OpenRegister care_guide schema, package the app, publish to the Conduction app store.
+tags: [App development, Integriq, xWiki, Knowledge management, Release, Tutorial series]
+apps: [openconnector, openregister]
+durationMinutes: 35
+series: build-an-app-tutorial
+partNumber: 4
+---
+
+import {
+  Outcomes,
+  Outcome,
+  Prerequisites,
+  PrerequisiteItem,
+  NextSteps,
+  NextStep,
+  HexCard,
+  Troubleshooting,
+  TroubleshootingItem,
+} from '@conduction/docusaurus-preset/components';
+
+Part 4 of the nine-part app-building tutorial series. Part 3 made orders appear in NC Calendar with one schema annotation. Part 4 brings external knowledge, category-specific care advice, husbandry notes, feeding tips, from xWiki into the pet detail sidebar via a `care_guide` OpenRegister schema. Then we package the app and ship it.
+
+External knowledge integration is the canonical case for Integriq. Pull data from a system you don't own (xWiki here, but the same applies to Confluence, Notion, SharePoint, Decos, Mendix), surface it inside Nextcloud-native UI without making the user context-switch.
+
+{/* truncate */}
+
+<Outcomes title="What you'll have at the end of Part 4">
+  <Outcome>A running xWiki instance on <code>http://localhost:8086</code>, on the same Docker network as Nextcloud, sharing the existing Postgres.</Outcome>
+  <Outcome>Four xWiki articles you author yourself, scoped by pet category (<code>PetStore.Dogs.CareBasics</code>, <code>.Cats.LitterSetup</code>, <code>.Fish.AquariumStarter</code>, <code>.Reptiles.HeatLamps</code>).</Outcome>
+  <Outcome>A new <code>care_guide</code> OpenRegister schema in PetStore, with seed data matching what xWiki holds.</Outcome>
+  <Outcome>A "Care guides" tab on every pet's detail page that lists the articles whose <code>category</code> matches the pet's category, without leaving PetStore.</Outcome>
+  <Outcome>A versioned, packaged PetStore release on the Conduction app store, installable from any Nextcloud's app browser.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Where you should be">
+  <PrerequisiteItem>Parts 1–3 done: PetStore shell, schemas + manifest, calendar integration all working.</PrerequisiteItem>
+  <PrerequisiteItem>A local Nextcloud + OpenRegister stack you can <code>docker exec</code> into. The reference stack at <a href="/academy/run-nextcloud-locally">Nextcloud lokaal draaien met Docker</a> is what we test against; it already ships the xWiki service we'll start in Step 0.</PrerequisiteItem>
+  <PrerequisiteItem><strong>Integriq</strong> installed and enabled, for when you switch from seed data to a live xWiki sync later in the tutorial.</PrerequisiteItem>
+</Prerequisites>
+
+:::note Repo creation
+The reference repo `Conduction/petstore` on Codeberg is the canonical home for this tutorial's code. At time of writing it may not exist yet, push your local clone to a fresh repo on Codeberg under that name once you've got something worth sharing.
+:::
+
+## Step 0: Spin up xWiki
+
+The Conduction dev stack already declares an xWiki service under the `xwiki` profile of `apps-extra/openregister/docker-compose.yml`:
+
+```yaml title="openregister/docker-compose.yml (excerpt)"
+  xwiki:
+    profiles: [xwiki, integrations]
+    image: xwiki:lts-postgres-tomcat
+    container_name: openregister-xwiki
+    ports: ["8086:8080"]
+    volumes: ["xwiki-data:/usr/local/xwiki"]
+    environment:
+      DB_USER: nextcloud
+      DB_PASSWORD: "!ChangeMe!"
+      DB_HOST: db
+      DB_DATABASE: xwiki
+    depends_on: [db]
+```
+
+xWiki shares the Postgres container with Nextcloud + OpenRegister, but uses a separate database called `xwiki`. Create it once:
+
+```bash
+docker exec openregister-postgres psql -U nextcloud -d postgres -c "CREATE DATABASE xwiki;"
+```
+
+Now start xWiki with the profile:
+
+```bash
+cd apps-extra/openregister
+docker compose --profile xwiki up -d xwiki
+```
+
+The first boot takes about a minute. xWiki initialises its schema in the empty Postgres database and unpacks bundled webapps. Wait for the health check to flip to healthy:
+
+```bash
+docker ps --filter name=openregister-xwiki --format '{{.Status}}'
+# Up 22 seconds (health: starting)   <- still booting
+# Up 1 minute (healthy)              <- ready
+```
+
+Open `http://localhost:8086`. xWiki redirects to its **Distribution Wizard** because the empty database has no admin user and no flavor.
+
+## Step 0a: Walk the Distribution Wizard
+
+1. **Continue** past the welcome screen.
+2. **Step 1 - Admin user.** Fill in:
+   ```
+   First Name:  Pet
+   Last Name:   Admin
+   Username:    admin
+   Password:    admin1234     (any 8+ chars works)
+   Confirm:     admin1234
+   Email:       admin@petstore.local
+   ```
+   Click **Register and login**. You're now signed in as `admin`.
+3. **Step 2 - Flavor.** Click **Let the wiki be empty** (the bundled Standard Flavor is a ~150 MB download we don't need for this tutorial). Confirm.
+4. **Step 5 - Report** lists the pages created (just `Home` and `XWiki`). Click **Continue** to land on the Main page.
+
+The wiki is now bootstrapped. Sanity-check the REST endpoint:
+
+```bash
+curl -u admin:admin1234 -H 'Accept: application/json' \
+  http://localhost:8086/rest/wikis/xwiki/spaces | head -c 200
+# {"links":[],"spaces":[{"links":[...,"id":"xwiki:XWiki", ...}]}
+```
+
+Two things to note about the URL: the REST API lives at `/rest`, **not** `/xwiki/rest` (the latter is the human view path), and basic auth is the default.
+
+## Step 1: Author the care guides
+
+For tutorial purposes we use a dedicated parent space **PetStore** with one subspace per category. The folder layout matches the pet's `category` enum (`dogs`, `cats`, `fish`, `reptiles`) so each pet maps cleanly to its category's guides.
+
+You can author the articles via xWiki's UI (Create Page → set parent space → write content). Faster path: drive xWiki's REST API directly. The same payload shape works from cURL, Integriq, or any HTTP client.
+
+```bash title="Four short articles, one PUT each"
+put() {
+  curl -s -u admin:admin1234 -X PUT \
+    -H "Content-Type: application/xml" \
+    -d "<page xmlns=\"http://www.xwiki.org\"><title>$3</title><syntax>xwiki/2.1</syntax><content>$4</content></page>" \
+    "http://localhost:8086/rest/wikis/xwiki/spaces/PetStore/spaces/$1/pages/$2" \
+    -o /dev/null -w "%{http_code} $1/$2\n"
+}
+put Dogs     CareBasics       "Dog care basics" \
+    "Daily walks 30 to 60 minutes depending on breed. Feed twice a day at consistent times. Fresh water always available. Annual vet check, monthly flea + tick prevention. Socialise early and often. Crate-train from day one."
+put Cats     LitterSetup      "Cat litter setup" \
+    "One litter box per cat plus one extra. Place in quiet, low-traffic spots away from food. Clumping clay litter is the default; scoop daily, full change weekly. Avoid scented litters, most cats hate them."
+put Fish     AquariumStarter  "Aquarium starter guide" \
+    "Cycle the tank for 4 to 6 weeks before adding fish. Test ammonia, nitrite, nitrate weekly. Stock slowly, one species at a time. 25% water change every two weeks. Match temperature and pH to the species, not the other way round."
+put Reptiles HeatLamps        "Reptile heat lamps" \
+    "Basking spot 35-40°C, cool end 24-26°C, drop to 20°C at night. UVB tube replaced every 6 months even if it still lights. Thermostat-controlled ceramic heat emitter for night warmth. Never put a heat rock in the enclosure, contact burns are common."
+```
+
+Each call returns `201`. Browse to `http://localhost:8086/xwiki/bin/view/PetStore/Dogs/CareBasics` to see the Dogs article in xWiki's standard view. The same content is also fetchable via REST:
+
+```bash
+curl -u admin:admin1234 \
+  http://localhost:8086/rest/wikis/xwiki/spaces/PetStore/spaces/Dogs/pages
+```
+
+Four short articles. Realistic enough that you'd actually write them in production. The key piece is the **subspace name**: that's what we'll pivot on from PetStore's side.
+
+Why the tutorial walks you through authoring instead of seeding programmatically: in real teams, the wiki articles are *organic*. Written by whoever notices the question come up twice, edited by the next person who learns something, archived when the species rotates out of the catalogue. The integration we build makes them findable from where the user already is, not the other way around.
+
+## Step 2: Add a care_guide schema to PetStore
+
+Before we sync from xWiki, give OpenRegister a place to put the articles. Add a fourth schema to `lib/Settings/petstore_register.json`:
+
+```json title="lib/Settings/petstore_register.json (excerpt)"
+"care_guide": {
+  "slug": "care_guide",
+  "icon": "BookOpenVariantOutline",
+  "version": "0.1.0",
+  "title": "Care guide",
+  "description": "An external care guide surfaced in PetStore via Integriq. Read-only, canonical source lives in xWiki.",
+  "type": "object",
+  "required": ["name", "category"],
+  "properties": {
+    "name":       { "type": "string" },
+    "category":   { "type": "string", "enum": ["dogs", "cats", "fish", "reptiles", "birds"] },
+    "body":       { "type": "string" },
+    "url":        { "type": "string", "format": "uri" },
+    "externalId": { "type": "string" }
+  }
+}
+```
+
+Important: the **JSON key** and the **`slug` field must match** (`care_guide` on both sides). OpenRegister builds the REST endpoint from the slug, so a mismatch yields `Schema not found: 'care_guide'` at fetch time.
+
+While you're in there, bump the register's `info.version` to `0.4.0` so the import handler picks the new schema up on next run:
+
+```json title="lib/Settings/petstore_register.json (info block)"
+"info": {
+  "title": "PetStore Register",
+  "description": "Categories, pets, orders, and care guides.",
+  "version": "0.4.0"
+}
+```
+
+Also seed four articles matching the xWiki content. The seeds make the app demo-able before you wire the sync, and serve as a reference shape for the Integriq mapping you'll build in Step 3.
+
+```json title="components.objects (excerpt)"
+"care-guide-dogs-basics": {
+  "@self": { "register": "petstore", "schema": "care_guide", "slug": "care-guide-dogs-basics" },
+  "name": "Dog care basics",
+  "category": "dogs",
+  "body": "Daily walks 30 to 60 minutes depending on breed...",
+  "url": "http://localhost:8086/xwiki/bin/view/PetStore/Dogs/CareBasics",
+  "externalId": "xwiki:PetStore.Dogs.CareBasics"
+}
+```
+
+Add the `care_guide` slug to the small list `SettingsService::SCHEMA_SLUGS` in [lib/Service/SettingsService.php](https://github.com/ConductionNL/petstore/blob/main/lib/Service/SettingsService.php) so `/api/settings` exposes its numeric id alongside the other schemas. Same in `src/store/store.js`:
+
+```js title="src/store/store.js"
+const SCHEMAS = ['category', 'pet', 'order', 'care_guide']
+```
+
+Reload the configuration so OpenRegister picks up the new schema + seeds:
+
+```bash
+docker exec nextcloud apache2ctl graceful
+# then from your Nextcloud session, POST /apps/petstore/api/settings/load
+# (the petstore admin page has a Reload button that does this for you)
+```
+
+## Step 3: Create an Integriq source for xWiki
+
+The seeds get the UI working immediately. For *live* data, when an article changes in xWiki you want to see the change in PetStore on the next sync, you wire Integriq.
+
+Go to `/apps/openconnector/sources` and create a new source.
+
+```
+Name:       xWiki Care Guides
+Type:       API
+Location:   http://openregister-xwiki:8080/rest
+            (container-to-container hostname; from the host you use http://localhost:8086/rest)
+Auth:       Basic
+Username:   admin
+Password:   admin1234
+Headers:    Accept: application/json
+Test:       GET /wikis/xwiki/spaces/PetStore/spaces/Dogs/pages
+```
+
+The Test should return the Dogs article. Integriq saves the source with a numeric id; we reference it from the synchronisation in the next step.
+
+## Step 4: Define the synchronisation
+
+Sources surface raw API responses. **Synchronisations** map them into OpenRegister objects. Create a synchronisation:
+
+```
+Name:             xWiki articles → OpenRegister
+Source:           xWiki Care Guides (the one you just made)
+Source endpoint:  /wikis/xwiki/spaces/PetStore/spaces/{category}/pages
+                  with category iterated over ['Dogs', 'Cats', 'Fish', 'Reptiles']
+Target register:  petstore
+Target schema:    care_guide
+Mapping:
+  title           → name
+  content         → body
+  spaces.last     → category   (lowercased)
+  id              → externalId
+  xwikiAbsoluteUrl → url
+Schedule:         every 30 minutes
+```
+
+Save and run once. You'll see four `care_guide` objects in OpenRegister whose `externalId` field starts with `xwiki:`. Delete the seed objects you added in Step 2, they're superseded by the synced ones.
+
+## Step 5: Surface guides in CnObjectSidebar
+
+The pet-detail page already mounts CnObjectSidebar. To add a **Care guides tab** on it, declare a custom tab in the manifest:
+
+```json title="src/manifest.json (excerpt)"
+{
+  "id": "pets-detail",
+  "route": "/pets/:id",
+  "type": "detail",
+  "title": "petstore.pets.detailTitle",
+  "config": {
+    "register": "petstore",
+    "schema": "pet",
+    "sidebar": {
+      "tabs": [
+        { "id": "data",      "label": "petstore.sidebar.data",       "widgets": [{ "type": "data" }] },
+        { "id": "careGuides","label": "petstore.sidebar.careGuides", "component": "care-guides-tab" },
+        { "id": "metadata",  "label": "petstore.sidebar.metadata",   "widgets": [{ "type": "metadata" }] }
+      ]
+    }
+  }
+}
+```
+
+A few things going on in that one config block:
+
+- **`config.sidebar` is in object form**, not the `sidebar: true` shorthand Part 2 used. The shorthand is the equivalent of `sidebar: {enabled: true}`, it gives you the lib's default tabs (Files / Notes / Tags / Tasks / Audit Trail). The object form lets you replace that default set with your own `tabs[]`. Use the shorthand whenever the defaults are enough; reach for the object form when you need a custom tab like `careGuides` here, or when you want to hide specific defaults with `hiddenTabs: ['files']`.
+- **`tabs[].widgets[]` vs `tabs[].component`** is the decision per-tab. Declare a list of *built-in widget types* (`{type: 'data'}`, `{type: 'metadata'}`, `{type: 'audit-trail'}`, the lib renders them for you), or declare *one custom component* (`component: 'care-guides-tab'`, looked up in your app's `customComponents` map). A tab uses one or the other, never both. Built-ins are the cheap path; a custom component is the escape hatch when no built-in fits.
+- **The care-guides tab is the escape hatch.** xWiki articles aren't a generic widget the lib could ship, they're a per-app integration. So we register a Vue component and point the tab at it.
+
+Create the tab component itself at `src/views/CareGuidesTab.vue`:
+
+```vue title="src/views/CareGuidesTab.vue"
+<template>
+  <div class="care-guides-tab">
+    <NcLoadingIcon v-if="loading" :size="32" />
+    <NcEmptyContent
+      v-else-if="!guides.length"
+      :name="t('petstore', 'No care guides for this category yet')" />
+    <article v-for="guide in guides" :key="guide.id" class="care-guides-tab__article">
+      <header class="care-guides-tab__head">
+        <h3>{{ guide.name }}</h3>
+        <a v-if="guide.url" :href="guide.url" target="_blank" rel="noopener noreferrer">
+          {{ t('petstore', 'Open in wiki') }} ↗
+        </a>
+      </header>
+      <p class="care-guides-tab__body">{{ guide.body }}</p>
+    </article>
+  </div>
+</template>
+
+<script>
+import { NcEmptyContent, NcLoadingIcon } from '@nextcloud/vue'
+import { useObjectStore } from '../store/store.js'
+
+export default {
+  name: 'CareGuidesTab',
+  components: { NcEmptyContent, NcLoadingIcon },
+  props: {
+    objectId:   { type: String, required: true },
+    objectType: { type: String, default: 'pet' },
+  },
+  setup() { return { objectStore: useObjectStore() } },
+  data() { return { guides: [], loading: true } },
+  watch: {
+    objectId: {
+      immediate: true,
+      async handler() {
+        this.loading = true
+        try {
+          const pet = await this.objectStore.fetchObject(this.objectType, this.objectId)
+          if (!pet?.category) { this.guides = []; return }
+          await this.objectStore.fetchCollection('care_guide', { category: pet.category, _limit: 25 })
+          this.guides = this.objectStore.collections.care_guide || []
+        } finally { this.loading = false }
+      },
+    },
+  },
+}
+</script>
+```
+
+Register the component in `src/App.vue` and pass it to `CnAppRoot` via the `:custom-components` prop:
+
+```vue title="src/App.vue (excerpt)"
+<script>
+import CareGuidesTab from './views/CareGuidesTab.vue'
+
+const customComponents = {
+  'care-guides-tab': CareGuidesTab,
+}
+
+export default {
+  /* ... */
+  data() {
+    return { customComponents, /* ... */ }
+  },
+}
+</script>
+
+<template>
+  <CnAppRoot
+    :app-id="appId"
+    :manifest="manifest"
+    :page-types="pageTypes"
+    :custom-components="customComponents">
+    <template #sidebar>
+      <CnObjectSidebar v-if="objectSidebarState.active" ... />
+    </template>
+  </CnAppRoot>
+</template>
+```
+
+(See the [reference repo](https://github.com/ConductionNL/petstore/blob/main/src/App.vue) for the complete file. App.vue also provides `objectSidebarState` so CnDetailPage's external-sidebar channel works.)
+
+Build, reload, navigate to a Dogs-category pet's detail URL. The right sidebar shows three tabs: Data, Care guides, Metadata. Click **Care guides**. The "Dog care basics" article appears, with the body rendered and a link back to the wiki for editing.
+
+Navigate to a Cats-category pet: same tab, different article ("Cat litter setup"). The category filter does the matching for free; you didn't write per-pet wiring.
+
+## Step 6: Package the app
+
+The release process is mechanical:
+
+1. **Bump the version** in `appinfo/info.xml` (`<version>0.1.0</version>` → `<version>0.4.0</version>`).
+2. **Run the production build:**
+   ```bash
+   composer install --no-dev --optimize-autoloader
+   npm install --legacy-peer-deps
+   npm run build
+   ```
+3. **Strip unwanted files**: vendor dev dependencies, node_modules, tests, openspec changes, .git, .github (your CI is already at the source level). The template ships a `Makefile` target for this; if not, the production tarball pattern is:
+   ```bash
+   tar --exclude=node_modules --exclude=vendor/bin \
+       --exclude=tests --exclude=openspec/changes \
+       --exclude=.git --exclude=.github \
+       -czf petstore-0.4.0.tar.gz petstore/
+   ```
+4. **Sign the tarball** with the EC key Nextcloud's app store expects (see [the Nextcloud docs](https://nextcloudappstore.readthedocs.io/en/latest/developer.html#publishing-your-app)).
+5. **Push to Codeberg** with a tag matching the version (`git tag v0.4.0 && git push origin v0.4.0`). The template ships a `.woodpecker/release.yml` (or `.github/workflows/release.yml` on GitHub-origin apps) that picks up the tag, builds the tarball, signs it, and publishes the release.
+
+For the **Conduction app store** (`apps.conduction.nl`), the same release pipeline pushes to that endpoint when the secret is configured. See the release workflows in [the template's `.github/workflows/`](https://github.com/ConductionNL/nextcloud-app-template/tree/main/.github/workflows) for reference.
+
+## Step 7: Submit to apps.nextcloud.com (optional)
+
+If you want PetStore in the public Nextcloud app store, register at [apps.nextcloud.com](https://apps.nextcloud.com), upload your signed tarball, fill out the form (description, screenshots, license, EUPL-1.2 is fine, categories `organization`), and wait for review. The cycle is usually 1 to 3 days for first-time apps.
+
+## What you've built
+
+You started Part 1 with an empty template. Forty-eight steps later, you have:
+
+- A real Nextcloud app with the canonical chassis
+- Four OpenRegister schemas with relations and seed data
+- A manifest-driven shell with two small wrappers (Index, Detail) that go away once the library wires auto-fetch into the default page types
+- Orders that appear in NC Calendar via a schema annotation
+- Care guides from xWiki that appear in the pet-detail sidebar via Integriq
+- A versioned, packaged, publishable release
+
+Total Vue you wrote: **three small files** (`IndexPageWrapper`, `DetailPageWrapper`, `CareGuidesTab`), about 100 lines together. Total PHP: the rename ritual + a path-resolution fix in SettingsService + the schema-slug list. Everything else is JSON.
+
+That ratio, JSON describing what you want, framework rendering it, is the entire point of the Conduction stack. Schemas drive both backend and frontend. Manifests drive the shell. Schema annotations drive cross-app integrations. You declare; the framework renders.
+
+## Troubleshooting
+
+<Troubleshooting>
+  <TroubleshootingItem problem={`"Schema not found: care_guide" at fetch time`}>
+    The schema's JSON key and the <code>slug</code> field must match. If you used <code>care-guide</code> (hyphen) for one and <code>care_guide</code> (underscore) for the other, OpenRegister's URL lookup fails. Pick one, use it both places.
+  </TroubleshootingItem>
+  <TroubleshootingItem problem="Sidebar tabs render but the pet body says 'No data available'">
+    CnPageRenderer forwards <code>page.config</code> and <code>$route.params</code> as raw props. The route param is <code>id</code> but CnDetailPage's prop is <code>objectId</code>. The DetailPageWrapper bridges the names + fetches the object via the store; without the wrapper, CnDetailPage just renders the empty state.
+  </TroubleshootingItem>
+  <TroubleshootingItem problem="xWiki Distribution Wizard wants to download Flavor and the container has no internet">
+    Pick <strong>Let the wiki be empty</strong> at Step 2. The empty flavor still supports REST + page creation, which is all the tutorial needs.
+  </TroubleshootingItem>
+  <TroubleshootingItem problem="Integriq source 'Test' returns HTML instead of JSON">
+    Set <code>Accept: application/json</code> in the source's Headers section. xWiki defaults to XML for REST responses, but content-negotiates JSON when asked.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+## Where to next
+
+<NextSteps lede="Parts 5 and 6 are parallel extensions of the shipped app. Take them in either order, or pick whichever your next app actually needs first. Part 5 deepens the manifest surface; Part 6 widens to other systems. Neither references the other for content.">
+  <NextStep
+    title="Part 5: Advanced manifest features"
+    href="/academy/build-an-app-tutorial-5-advanced-manifest"
+    description="Past the schema-driven CRUD basics: actionToggles, fieldWidgets, public-mode pages, and seven extra page types. The v2.7.0 manifest features Parts 1–4 deliberately skipped."
+  />
+  <NextStep
+    title="Part 6: Integrate"
+    href="/academy/build-an-app-tutorial-6-integrate"
+    description="Connect your shipped app to the rest of the workspace. Cross-register reads, Integriq sources, and a two-way webhook sync, three integration patterns layered from least to most invasive."
+  />
+  <NextStep
+    title="Reference repo (may not exist yet)"
+    href="https://github.com/ConductionNL/petstore"
+    description="Canonical PetStore reference. If the repo is still 404 at the time you read this, push your own fork to Codeberg under the same name."
+  />
+  <NextStep
+    title="The component reference"
+    href="https://nextcloud-vue.conduction.nl/docs/components/"
+    description="Browse every Cn* component the library ships. Live playgrounds, prop tables, slot reference."
+  />
+  <NextStep
+    title="Conduction app catalogue"
+    href="https://www.conduction.nl/apps"
+    description="See how Dossiq, OpenCatalogi, LaunchPad, and the rest compose the same patterns. PetStore now joins them."
+  />
+</NextSteps>
