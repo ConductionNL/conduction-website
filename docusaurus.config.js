@@ -16,34 +16,21 @@
  */
 
 const {createConfig} = require('@conduction/docusaurus-preset');
-const {themes: prismThemes} = require('prism-react-renderer');
 
-/* Palenight with a readable comment.
- *
- * Docusaurus falls back to Prism's palenight, and prism-react-renderer
- * writes every token colour as an INLINE style, so no stylesheet rule can
- * reach it. A `.token.comment { color: ... }` in site.css is a no-op; this
- * was measured, not assumed.
- *
- * Palenight's comment is rgb(105, 112, 152) on its own #292d3e block, which
- * is 2.84:1, under the 4.5:1 SC 1.4.3 asks. Measured on /demo/ and /nl/demo/
- * in the full-site sweep of 2026-09-22, where the line "# optional: drop
- * Conduction apps here for offline use" was the only thing on the page a
- * reader could not make out. #b6c2dd (cobalt-200) is 7.59:1 there and stays
- * dimmer than the code itself (#bfc7d5), so a comment still reads as one.
- *
- * Only the comment token is touched. The rest of palenight is untouched on
- * purpose: retheming every code block on the site is a design decision, not
- * an accessibility fix, and it belongs in the preset rather than here. Worth
- * knowing when that happens: brand.css already sets --ifm-pre-background to
- * cobalt-900, and palenight paints over it, so the kit's intended code-block
- * colour is not what any site actually renders. */
-const commentSafePalenight = {
-  ...prismThemes.palenight,
-  styles: prismThemes.palenight.styles.map((s) =>
-    s.types.includes('comment') ? {...s, style: {...s.style, color: '#b6c2dd'}} : s,
-  ),
-};
+/* Code blocks take the brand syntax theme from the preset now, so the
+   palenight override that used to sit here is gone. It existed to raise
+   one token, the comment, from 2.84:1 to 7.59:1. The preset replaces the
+   whole theme instead, which is the deeper fix: palenight was painting
+   its own #292d3e over the --ifm-pre-background brand.css has always set,
+   so no Conduction site rendered the kit's cobalt-900 block.
+
+   If this site ever needs to change a token again, extend the exported
+   theme rather than passing a whole one:
+
+     const {prismTheme} = require('@conduction/docusaurus-preset');
+
+   A wholesale themeConfig.prism silently drops every token the preset
+   sets, and palenight is no longer behind it to catch the difference. */
 
 /* AI-crawler baseline (Organization + WebSite JSON-LD, og:image,
    twitter meta, FAQPage schema from <FAQ>, SoftwareApplication schema
@@ -54,14 +41,6 @@ const commentSafePalenight = {
 module.exports = createConfig({
   title: 'Conduction',
   tagline: 'Open-source apps voor de Nextcloud-werkplek.',
-  /* createConfig merges opts.themeConfig last, so this wins over the
-     preset's defaults. See commentSafePalenight above. */
-  themeConfig: {
-    prism: {
-      theme: commentSafePalenight,
-      darkTheme: commentSafePalenight,
-    },
-  },
   /* Must match static/CNAME (www.conduction.nl) — GitHub Pages serves
      only on the CNAME host and 301-redirects the apex to it. Using the
      bare apex here made every canonical/og:url/sitemap entry point at

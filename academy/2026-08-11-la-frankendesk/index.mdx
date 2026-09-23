@@ -42,7 +42,13 @@ html[data-theme='dark'] .hfaw-chart { --chart-c1:#6E8FD0; --chart-c2:#9B8DEA; --
 .hfaw-chart .bxs { font: 600 8px var(--ifm-font-family-base); fill: #fff; }
 .hfaw-chart .pnl { font: 700 10px var(--ifm-font-family-base); fill: var(--ifm-font-color-base); }
 .hfaw-chart .pnl2 { font: 500 8.5px var(--ifm-font-family-base); fill: var(--ifm-color-emphasis-700); }
-.hfaw-chart .arw { stroke: var(--ifm-color-emphasis-600); stroke-width: 1.5; fill: none; }
+/* The kit's neutral grey, not Infima's. These arrows carry meaning (they
+   show which way a component flows), so SC 1.4.11 asks 3:1 of them, and
+   emphasis-600 is 2.83:1 on this panel. --c-gray-500 is 4.47:1.
+   It has to stay NEUTRAL: this chart's legend reads "Blue marks a
+   component that came from an existing project", so a muted-blue arrow
+   would make the figure contradict its own caption. */
+.hfaw-chart .arw { stroke: var(--c-gray-500); stroke-width: 1.5; fill: none; }
 .hfaw-chart figcaption { font-size: 0.8rem; color: var(--conduction-color-text-muted); margin-top: 0.5rem; text-align: center; }
 .hfaw-split { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; align-items:start; margin:2rem 0; }
 .hfaw-split .hfaw-chart { margin:0; background: var(--ifm-color-emphasis-100); border-radius: 12px; padding: 16px; }
@@ -173,7 +179,7 @@ So the portal is a place you leave. You land there, choose, and depart into an a
 <svg viewBox="0 0 240 175" role="img" aria-label="openDesk's Nubus portal: a bar of tiles above four apps. A tile is pressed, the service opens beside it, and the portal dims behind you" className="hfaw-anim hfaw-od">
   <defs>
     <marker id="ahD" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-      <path d="M0,0 L6,3 L0,6 z" fill="var(--ifm-color-emphasis-600)" />
+      <path d="M0,0 L6,3 L0,6 z" fill="var(--c-gray-500)" />
     </marker>
   </defs>
   <text x="6" y="14" className="pnl">openDesk</text>
@@ -333,7 +339,7 @@ Everywhere else the portal sends you somewhere. Here the work is pulled toward y
 <svg viewBox="0 0 240 175" role="img" aria-label="MijnBureau's Bureaublad: a dashboard that aggregates information inward from components of both origins. Records travel up from each component and land as rows in the dashboard" className="hfaw-anim hfaw-mb">
   <defs>
     <marker id="ahN" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-      <path d="M0,0 L6,3 L0,6 z" fill="var(--ifm-color-emphasis-600)" />
+      <path d="M0,0 L6,3 L0,6 z" fill="var(--c-gray-500)" />
     </marker>
   </defs>
   <text x="6" y="14" className="pnl">MijnBureau</text>
