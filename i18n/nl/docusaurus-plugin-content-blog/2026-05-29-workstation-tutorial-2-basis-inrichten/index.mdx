@@ -4,8 +4,8 @@ title: "Workstation Setup leerlijn — Deel 2: De basis inrichten"
 contentType: tutorial
 authors: [conduction]
 date: 2026-05-29
-summary: WSL2, Docker Desktop, VS Code met de juiste extensies, Node, PHP, Codeberg-auth (SSH-sleutel + tea CLI) plus de GitHub CLI, de OpenSpec CLI en de Playwright-browser. Het langste deel van de leerlijn — de meeste tijd gaat in downloads waar je naast iets anders kunt doen. Na dit deel heb je een werkend dev-workstation, alleen Claude Code is nog niet aangesloten.
-tags: [Workstation, Setup, WSL2, Docker, VS Code, Node, PHP, Codeberg, Tutorial series]
+summary: WSL2, Docker Desktop, VS Code met de juiste extensies, Node, PHP, GitHub-auth (de gh CLI via HTTPS), de OpenSpec CLI en de Playwright-browser. Het langste deel van de leerlijn — de meeste tijd gaat in downloads waar je naast iets anders kunt doen. Na dit deel heb je een werkend dev-workstation, alleen Claude Code is nog niet aangesloten.
+tags: [Workstation, Setup, WSL2, Docker, VS Code, Node, PHP, GitHub, Tutorial series]
 apps: []
 durationMinutes: 60
 series: workstation-tutorial
@@ -149,113 +149,64 @@ composer --version  # 2.x
 
 > **Gebruik phpcs v3, niet v4, als een project erom vraagt.** De CI is op v3 gepind en v4 breekt de gedeelde `phpcs.xml`-config. Probeert een latere `composer install` te upgraden, override dan met `composer require --dev "squizlabs/php_codesniffer:^3.9"`.
 
-## Stap 7: Codeberg-auth (SSH + tea)
+## Stap 7: GitHub-auth (gh CLI via HTTPS)
 
-Conduction is in mei 2026 verhuisd van `github.com/ConductionNL` naar `codeberg.org/Conduction` — **Codeberg is nu de primaire git-host**, GitHub blijft als secundaire mirror staan. In deze stap zet je twee dingen op: SSH (voor `git clone/push/pull`) en de `tea` CLI (voor PR's, issues, labels via de Codeberg REST-API). Beide blijven over reboots heen werken zodra ze geconfigureerd zijn.
+Het platform van Conduction is **GitHub**, onder de org [`ConductionNL`](https://github.com/ConductionNL). De verhuizing naar Codeberg van 2026-05-29 is teruggedraaid — besluit 2026-07-17, uitgevoerd 2026-07-23 — dus de GitHub CLI (`gh`) is degene die je echt nodig hebt. Hij doet twee dingen: PR's, issues en labels via de GitHub-API, en de credentials voor elke `git clone/push/pull` over HTTPS. Geen SSH-sleutel, geen passphrase, geen `keychain`.
 
-Dit is de condensed walkthrough. De volledige versie, met elke troubleshooting-case en diepere achtergrond, staat in [Codeberg Authentication Setup](https://github.com/ConductionNL/.github/blob/main/docs/claude/codeberg-auth-setup.md) in de `.github` repo. Lees die als hieronder iets niet werkt.
-
-### 7a. Genereer een SSH-sleutel en voeg hem toe aan Codeberg
-
-```bash
-ssh-keygen -t ed25519 -C "jouw.naam@conduction.nl" -f ~/.ssh/id_ed25519_codeberg
-```
-
-Geef een passphrase op als hij erom vraagt — `keychain` (volgende stap) zorgt dat je hem in de praktijk nauwelijks intikt, en een passphrase-loze sleutel op schijf is voor iedereen die het bestand kan lezen een complete credential.
-
-Kopieer de **publieke** sleutel (het `.pub`-bestand) naar Codeberg:
-
-```bash
-cat ~/.ssh/id_ed25519_codeberg.pub
-# of pijp direct naar het Windows-klembord vanuit WSL:
-cat ~/.ssh/id_ed25519_codeberg.pub | clip.exe
-```
-
-Ga naar [codeberg.org/user/settings/keys](https://codeberg.org/user/settings/keys) → **Add Key**, plak de hele regel, geef hem een herkenbare naam (bijv. `WSL Ubuntu — <laptop>`), klik **Add Key**.
-
-### 7b. Laat SSH de juiste sleutel kiezen voor Codeberg
-
-```bash
-cat >> ~/.ssh/config <<'EOF'
-
-Host codeberg.org
-  HostName codeberg.org
-  User git
-  IdentityFile ~/.ssh/id_ed25519_codeberg
-  IdentitiesOnly yes
-EOF
-chmod 600 ~/.ssh/config
-```
-
-`chmod 600` is **verplicht** — SSH negeert een config-bestand met ruimere rechten stilzwijgend.
-
-Verifieer:
-
-```bash
-ssh -T git@codeberg.org
-# Hi there, <JouwCodebergUsername>! You've successfully authenticated...
-```
-
-### 7c. Houd de sleutel geladen over shells heen met `keychain`
-
-Zonder `keychain` vraagt elke `git push` opnieuw om de passphrase. Met `keychain` geef je de passphrase één keer per WSL-boot op en elke volgende shell (inclusief Claude Code's Bash-tool) erft de ontgrendelde agent.
-
-```bash
-sudo apt install -y keychain
-cat >> ~/.bashrc <<'EOF'
-
-# Houd een ssh-agent in leven over shells heen, met de Codeberg-sleutel geladen
-eval $(keychain --eval --quiet --agents ssh ~/.ssh/id_ed25519_codeberg)
-EOF
-```
-
-Open een nieuwe terminal — `keychain` vraagt nu eenmalig om de passphrase. Daarna:
-
-```bash
-ssh-add -l
-# 256 SHA256:... jouw.naam@conduction.nl (ED25519)
-```
-
-### 7d. Installeer de `tea` CLI voor PR's, issues en labels
-
-SSH dekt het git-protocol. Alles wat daarbuiten valt (een PR aanmaken, issues lijsten, labels zetten) loopt via de Codeberg REST-API. `tea` is Gitea's officiële CLI — beschouw het als `gh` voor Codeberg.
-
-```bash
-sudo wget -O /usr/local/bin/tea https://dl.gitea.com/tea/0.11.0/tea-0.11.0-linux-amd64
-sudo chmod +x /usr/local/bin/tea
-tea --version
-```
-
-### 7e. Maak een Codeberg API-token en vertel `tea` ervan
-
-Ga naar [codeberg.org/user/settings/applications](https://codeberg.org/user/settings/applications) → **Generate New Token** met deze scopes (vink **write** waar van toepassing): `repository`, `issue`, `user`, `organization`. Zet de geldigheid op 90 dagen; roteer per kwartaal. **Kopieer de token meteen** — Codeberg toont hem maar één keer.
-
-```bash
-tea login add --name codeberg --url https://codeberg.org --token <plak-token-hier>
-tea login list
-# NAME=codeberg  URL=https://codeberg.org  USER=<JouwCodebergUsername>
-```
-
-De token zit vanaf nu in `~/.config/tea/config.yml`; elke `tea`-aanroep hergebruikt hem.
-
-### 7f. Installeer de GitHub CLI (secundair, nog steeds nuttig)
-
-Een handvol repo's leeft nog op GitHub en Hydra's cron-scripts zijn nog niet gemigreerd, dus `gh` blijft in de toolbox:
+### 7a. Installeer `gh` en log in
 
 ```bash
 sudo apt install -y gh
-gh auth login   # GitHub.com → HTTPS → Login with a web browser
+gh auth login
 ```
 
-Gebruikt je werk-GitHub SSO, zorg er dan voor dat je standaardbrowser Edge of Chrome is — Firefox-SSO-callbacks komen soms niet schoon terug.
+Beantwoord de vragen zo:
 
-Verifieer alledrie:
+- **Account** → `GitHub.com`
+- **Preferred protocol for Git operations** → `HTTPS`
+- **Authenticate Git with your GitHub credentials?** → `Yes`
+- **How would you like to authenticate** → `Login with a web browser`
+
+`gh` toont een eenmalige code en opent de browser. Opent er vanuit WSL geen browser, ga dan zelf naar [github.com/login/device](https://github.com/login/device) en plak de code daar. Gebruikt je werk-GitHub SSO, zorg er dan voor dat je standaardbrowser Edge of Chrome is — Firefox-SSO-callbacks komen soms niet schoon terug.
+
+Antwoordde je **No** op de git-vraag, of had je `gh` al eerder geïnstalleerd? Koppel hem dan achteraf aan git:
 
 ```bash
-ssh -T git@codeberg.org   # → "Hi there, <JouwCodebergUsername>!"
-tea login list            # → rij met NAME=codeberg
-gh auth status            # → groen vinkje + je GitHub-username
+gh auth setup-git
 ```
+
+Daarmee wordt `gh` de credential helper van git voor github.com, zodat `git push` dezelfde token gebruikt als `gh` — niets intikken, niets ontgrendelen na een reboot.
+
+### 7b. Verifieer
+
+```bash
+gh auth status
+# github.com
+#   ✓ Logged in to github.com account <JouwGitHubUsername> (keyring)
+#   - Git operations protocol: https
+```
+
+Beide regels tellen: de eerste zegt dat `gh` ingelogd is, de tweede dat git via hem over HTTPS gaat. Clone ConductionNL-repo's met de URL `https://github.com/ConductionNL/<repo>.git` — de rest van deze leerlijn doet dat ook.
+
+> **Een SSH-sleutel is optioneel.** Zet er alleen een op als je bewust `git@github.com:`-remotes wilt — `gh auth login` biedt aan er een te genereren en te uploaden als je SSH als protocol kiest. Een sleutel met passphrase heeft een agent als `keychain` nodig, en dat kost je één passphrase-prompt per WSL-boot. HTTPS via `gh` heeft daar geen last van, en dat is wat deze leerlijn aanneemt.
+
+:::note Codeberg en `tea` horen niet bij ConductionNL-werk
+
+Een SSH-sleutel voor Codeberg plus de `tea` CLI heb je alleen nodig voor een **niet-Conduction**-repo die echt op een Forgejo-host leeft (Codeberg, of een self-hosted Forgejo/Gitea van een klant). Voor dat geval staat de volledige walkthrough in de [Codeberg Authentication Setup](https://github.com/ConductionNL/.github/blob/main/docs/claude/codeberg-auth-setup.md)-guide in de `.github` repo.
+
+**Heb je een eerdere versie van deze stap gevolgd?** Dan vraagt elke nieuwe terminal om de passphrase van `~/.ssh/id_ed25519_codeberg`. Open `~/.bashrc` en zet deze regel in commentaar:
+
+```bash
+# eval $(keychain --eval --quiet --agents ssh ~/.ssh/id_ed25519_codeberg)
+```
+
+Heb je de sleutel later toch weer nodig? Laad hem eenmalig voor de WSL-sessie, of zet de regel terug:
+
+```bash
+keychain ~/.ssh/id_ed25519_codeberg
+```
+
+:::
 
 ## Stap 8: installeer de OpenSpec CLI
 
@@ -289,16 +240,13 @@ php --version             # 8.1+
 composer --version        # 2.x
 docker --version          # 24+
 docker compose version    # 2.x
-ssh -T git@codeberg.org   # "Hi there, <JouwCodebergUsername>!"
-tea --version             # 0.11+
-tea login list            # rij met NAME=codeberg
 gh --version              # 2.x
-gh auth status            # groen vinkje + je GitHub-username
+gh auth status            # "Logged in to github.com account <jij>" + "Git operations protocol: https"
 openspec --version        # 1.x
 npx playwright --version  # 1.x
 ```
 
-Geeft elk commando een echte versie terug en is `gh auth status` groen, dan ben je klaar met Deel 2. Zo niet, spring dan naar Troubleshooting hieronder.
+Geeft elk commando een echte versie terug en toont `gh auth status` dat je ingelogd bent met `https` als git-protocol, dan ben je klaar met Deel 2. Zo niet, spring dan naar Troubleshooting hieronder.
 
 <Troubleshooting title="Troubleshooting">
   <TroubleshootingItem symptom="WSL2 wil niet installeren: 'WSL is not supported on this version of Windows'">
@@ -313,14 +261,14 @@ Geeft elk commando een echte versie terug en is `gh auth status` groen, dan ben 
   <TroubleshootingItem symptom="gh auth login opent de verkeerde browser en SSO komt niet rond">
     Gebruikt je werk-GitHub SSO en is Firefox de standaardbrowser, dan komt de callback soms niet schoon terug. Zet Edge of Chrome als standaardbrowser en draai <code>gh auth login --web</code> opnieuw.
   </TroubleshootingItem>
-  <TroubleshootingItem symptom="ssh -T git@codeberg.org geeft 'Permission denied (publickey)'">
-    Of je publieke sleutel staat niet op Codeberg, of <code>&#126;/.ssh/config</code> heeft niet <code>chmod 600</code>. Plak <code>&#126;/.ssh/id_ed25519_codeberg.pub</code> opnieuw op <a href="https://codeberg.org/user/settings/keys">codeberg.org/user/settings/keys</a> en draai <code>chmod 600 ~/.ssh/config</code>. Probeer dan opnieuw.
+  <TroubleshootingItem symptom="git push vraagt om een gebruikersnaam en wachtwoord">
+    Git gebruikt <code>gh</code> niet als credential helper — je antwoordde <strong>No</strong> op <em>Authenticate Git with your GitHub credentials?</em>, of je bent uitgelogd. Draai <code>gh auth setup-git</code> (en eerst <code>gh auth login</code> als <code>gh auth status</code> zegt dat je niet ingelogd bent). Probeer dan opnieuw.
   </TroubleshootingItem>
-  <TroubleshootingItem symptom="Elke git push vraagt opnieuw om de SSH-passphrase">
-    <code>keychain</code> is niet geïnstalleerd, of de <code>eval $(keychain ...)</code>-regel staat niet in <code>&#126;/.bashrc</code>. Open een verse terminal na het editen van <code>&#126;/.bashrc</code> — <code>keychain</code> draait alleen bij shell-start. Verifieer met <code>ssh-add -l</code>; je hoort de Codeberg-sleutel in de lijst te zien.
+  <TroubleshootingItem symptom="git clone git@github.com:... geeft 'Permission denied (publickey)'">
+    Dat is een SSH-URL, en met de HTTPS-setup uit Stap 7 heb je geen SSH-sleutel op GitHub. Gebruik de HTTPS-URL (<code>https://github.com/ConductionNL/&lt;repo&gt;.git</code>). Een bestaande clone zet je om met <code>git remote set-url origin https://github.com/ConductionNL/&lt;repo&gt;.git</code>.
   </TroubleshootingItem>
-  <TroubleshootingItem symptom="tea pulls create geeft 401 Unauthorized">
-    De token in <code>&#126;/.config/tea/config.yml</code> mist <code>write:repository</code> of <code>write:issue</code>. Genereer de token opnieuw op <a href="https://codeberg.org/user/settings/applications">codeberg.org/user/settings/applications</a> met de juiste scopes (zie Stap 7e) en draai <code>tea login add</code> opnieuw.
+  <TroubleshootingItem symptom="Elke nieuwe terminal vraagt om de passphrase van id_ed25519_codeberg">
+    Een overblijfsel van een eerdere versie van Stap 7, die Codeberg opzette. Zet de regel <code>eval $(keychain ... id_ed25519_codeberg)</code> in <code>&#126;/.bashrc</code> in commentaar en open een verse terminal. Zie de notitie aan het eind van Stap 7.
   </TroubleshootingItem>
   <TroubleshootingItem symptom="npx playwright install chromium hangt of geeft een timeout">
     De download is ~300 MB. Op een trage verbinding lijkt het soms vast te zitten. Wacht hem uit, of draai hem op een snellere verbinding. Wil hij écht niet, zet dan <code>HTTPS_PROXY</code> en probeer opnieuw vanaf een netwerk waar de proxy resolvet.
@@ -393,11 +341,11 @@ Taal-extensies op Windows installeren terwijl de code in WSL staat geeft je kapo
 
 <div className="tutorial-quiz">
 
-**4. Je `git push` naar een Codeberg-repo hangt twee minuten stil en faalt dan met "Permission denied (publickey)". Wat zijn de twee meest waarschijnlijke oorzaken, en hoe onderscheid je ze?**
+**4. `git push` naar een ConductionNL-repo faalt. In de ene clone krijg je "Permission denied (publickey)"; in een andere vraagt git om een gebruikersnaam en wachtwoord. Wat veroorzaakt elk van beide, en welk enkel commando bevestigt dat auth werkt?**
 
 <Details summary="Hint">
 
-De één gaat erover of de sleutel *bekend is bij Codeberg*. De ander gaat erover of de sleutel *ontgrendeld is op je machine*. Twee aparte failure modes; twee aparte checks.
+De één gaat over de *remote-URL* van de clone. De ander gaat erover of git *weet dat hij `gh` om credentials moet vragen*. Twee aparte failure modes; twee aparte checks.
 
 </Details>
 
@@ -405,10 +353,10 @@ De één gaat erover of de sleutel *bekend is bij Codeberg*. De ander gaat erove
 
 De twee failure modes zijn:
 
-1. **De publieke sleutel is niet gekoppeld aan je Codeberg-account.** Diagnose: `cat ~/.ssh/id_ed25519_codeberg.pub` en vergelijk met de sleutels op [codeberg.org/user/settings/keys](https://codeberg.org/user/settings/keys). Staat hij er niet tussen, plak hem erin.
-2. **De sleutel staat op Codeberg, maar geen enkele ssh-agent heeft hem geladen op deze machine.** Diagnose: `ssh-add -l`. Als de output *"The agent has no identities"* is, is `keychain` of niet geïnstalleerd, of draait hij niet in deze shell. Draai eenmalig `keychain ~/.ssh/id_ed25519_codeberg` en open een verse terminal.
+1. **"Permission denied (publickey)" — de remote is een SSH-URL.** Diagnose: `git remote -v` toont `git@github.com:ConductionNL/...`. Met de HTTPS-setup uit Stap 7 staat er geen SSH-sleutel op je GitHub-account, dus SSH heeft niets aan te bieden. Fix: `git remote set-url origin https://github.com/ConductionNL/<repo>.git`.
+2. **Een prompt om gebruikersnaam/wachtwoord — git gebruikt `gh` niet als credential helper.** Je antwoordde *No* op *Authenticate Git with your GitHub credentials?*, of je bent uitgelogd. Fix: `gh auth setup-git` (na `gh auth login` als dat nodig is).
 
-In beide gevallen hoort `ssh -T git@codeberg.org` na de fix te antwoorden met *"Hi there, &lt;jouw username&gt;!"* — de meest waterdichte enkele bevestiging dat auth werkt.
+In beide gevallen hoort `gh auth status` na de fix *"Logged in to github.com account &lt;jouw username&gt;"* te melden met *"Git operations protocol: https"* — de meest waterdichte enkele bevestiging dat auth werkt.
 
 </Details>
 

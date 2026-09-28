@@ -65,13 +65,13 @@ The global settings live in the canonical [`ConductionNL/.github`](https://githu
 ```bash
 mkdir -p ~/code/conduction
 cd ~/code/conduction
-git clone git@github.com:ConductionNL/.github.git
+git clone https://github.com/ConductionNL/.github.git
 cd .github
 ```
 
-> **No SSH key yet?** [Part 2 — Codeberg auth](/academy/workstation-tutorial-2-base-setup#step-7-codeberg-auth-ssh--tea) walks through it. As a fallback you can also clone over HTTPS: `git clone https://github.com/ConductionNL/.github.git` — that works without auth but won't let you push.
+> **Push fails, or git asks for a password?** [Part 2 — GitHub auth](/academy/workstation-tutorial-2-base-setup#step-7-github-auth-gh-cli-over-https) sets up `gh` as git's credential helper; `gh auth status` tells you whether that worked. The `.github` repo is public, so the clone itself works without auth — you only need it to push.
 
-You only need to clone this once — the version-check hook fetches updates via the GitHub API after this (the settings repo is mirrored from Codeberg to `ConductionNL/.github` on GitHub for the hook), no further `git pull` needed.
+You only need to clone this once — the version-check hook fetches updates via the GitHub API after this, no further `git pull` needed.
 
 ## Step 4: install the global settings + hooks
 
