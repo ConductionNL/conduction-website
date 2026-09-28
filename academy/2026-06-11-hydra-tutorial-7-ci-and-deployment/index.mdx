@@ -5,7 +5,7 @@ contentType: tutorial
 heroIcon: pipeline
 authors: [conduction]
 date: 2026-06-11
-summary: Parts 5 and 6 ran Hydra on your own machine. This part zooms out to how Hydra runs unattended: flows that notice a labelled issue and start each stage, container images that GitHub Actions builds and pushes to GHCR, scoped credentials and token rotation. It lays out the three deployment models and marks honestly what is documented and what is infrastructure-only.
+summary: "Parts 5 and 6 ran Hydra on your own machine. This part zooms out to how Hydra runs unattended: flows that notice a labelled issue and start each stage, container images that GitHub Actions builds and pushes to GHCR, scoped credentials and token rotation. It lays out the three deployment models and marks honestly what is documented and what is infrastructure-only."
 tags: [Hydra, CI/CD, GitHub, Deployment, Operations, Tutorial series]
 apps: []
 durationMinutes: 14
@@ -48,7 +48,7 @@ So everything you learned about labels and the state machine still applies. You 
 
 ## Trigger: flows, not Actions
 
-Hydra's stage dispatch does not run in CI. It used to: `hydra-build.yml` fired `on: issues: [labeled]` and ran the builder as an Actions job, and `hydra-review.yml` did the same for the two reviews. Both were removed in [hydra#452](https://github.com/ConductionNL/hydra/pull/452) (2026-08-01). The people Hydra is built for have Nextcloud and LLM access on a Kubernetes environment someone else set up, and no forge account with Actions rights or cluster access of their own. So the stage now runs on what they already have: Nextcloud's job system, OpenRegister flows and the **hermiq ExApp**. Two flows in hydra's `flows/` folder, run by OpenRegister, decide what runs next:
+Hydra's stage dispatch does not run in CI. It briefly did: [hydra#448](https://github.com/ConductionNL/hydra/pull/448) (2026-07-31) ran the stage as an Actions job, `hydra-stage.yml`, and [hydra#452](https://github.com/ConductionNL/hydra/pull/452) (2026-08-01) removed it again. (The older `hydra-build.yml` and `hydra-review.yml` had already been retired in May.) The people Hydra is built for have Nextcloud and LLM access on a Kubernetes environment someone else set up, and no forge account with Actions rights or cluster access of their own. So the stage now runs on what they already have: Nextcloud's job system, OpenRegister flows and the **hermiq ExApp**. Two flows in hydra's `flows/` folder, run by OpenRegister, decide what runs next:
 
 - **`hydra-dispatch`** runs on a schedule (every five minutes), polls the forge for queued work and starts at most a fixed number of pipelines at once.
 - **`hydra-sequencer`** moves an issue from stage to stage, and runs the dependency and sibling checks before it dispatches a spec. It searches the whole `ConductionNL` organisation in one call rather than walking the repos one by one.
