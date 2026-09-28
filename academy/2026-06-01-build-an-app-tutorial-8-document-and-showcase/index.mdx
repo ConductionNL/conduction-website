@@ -5,8 +5,8 @@ contentType: tutorial
 heroIcon: blocks
 authors: [conduction]
 date: 2026-06-01
-summary: Stand up the documentation site for the PetStore app you've built across Parts 1–7. Hosted from your Codeberg or GitHub repo via the central documentation workflow, illustrated with token-built screen mocks, and walked through with Playwright-captured screenshots. Every push to development rebuilds and republishes.
-tags: [App development, Documentation, Docusaurus, Cloudflare, Codeberg, Playwright, Tutorial series]
+summary: Stand up the documentation site for the PetStore app you've built across Parts 1–7. Hosted from your GitHub repo via the central documentation workflow, illustrated with token-built screen mocks, and walked through with Playwright-captured screenshots. Every push to development rebuilds and republishes.
+tags: [App development, Documentation, Docusaurus, Cloudflare, GitHub, Playwright, Tutorial series]
 apps: [openregister]
 durationMinutes: 45
 series: build-an-app-tutorial
@@ -22,10 +22,8 @@ import {
   NextStep,
   ContactCta,
 } from '@conduction/docusaurus-preset/components';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 
-A 45-minute tutorial that gives your PetStore app a documentation site. Hosted from your own Codeberg or GitHub repo via the central documentation workflow, illustrated with abstract screen mocks that compose from design tokens, and brought to life with real screenshots that Playwright captures from your running app. By the end, every push to `development` rebuilds and republishes.
+A 45-minute tutorial that gives your PetStore app a documentation site. Hosted from your own GitHub repo via the central documentation workflow, illustrated with abstract screen mocks that compose from design tokens, and brought to life with real screenshots that Playwright captures from your running app. By the end, every push to `development` rebuilds and republishes.
 
 {/* truncate */}
 
@@ -39,15 +37,15 @@ Three of the steps below run Conduction skills (`/journeydoc-init`, `/journeydoc
 
 <Outcomes title="What you'll learn in this part">
   <Outcome>How to bootstrap a journeydoc-shaped Docusaurus site in your app repo with <code>/journeydoc-init</code>.</Outcome>
-  <Outcome>How to wire the central documentation workflow on Codeberg or GitHub so every push redeploys to Cloudflare.</Outcome>
+  <Outcome>How to wire the central documentation workflow on GitHub so every push redeploys to Cloudflare.</Outcome>
   <Outcome>How to compose token-built screen previews with <code>{`<AppMock>`}</code>, <code>{`<WidgetMock>`}</code>, and <code>{`<SidebarMock>`}</code> from <code>@conduction/docusaurus-preset</code>: no screenshots required.</Outcome>
   <Outcome>How to add a tutorial story with <code>/journeydoc-add-story</code> and capture the real walkthrough as Playwright screenshots.</Outcome>
 </Outcomes>
 
 <Prerequisites title="What you need">
   <PrerequisiteItem>Parts 1–7 completed: <a href="/academy/build-an-app-tutorial-1-scaffold">PetStore scaffolded</a>, schemas in OpenRegister, the manifest shipping, integrations wired, the nc-vue library mapped.</PrerequisiteItem>
-  <PrerequisiteItem>The app's repo on Codeberg (<code>Conduction/petstore</code>) or GitHub (<code>ConductionNL/petstore</code>). Both forges support the central workflow.</PrerequisiteItem>
-  <PrerequisiteItem>A Cloudflare account with two org-level secrets set: <code>CF_API_TOKEN</code> (Workers Scripts: Edit + Zone DNS: Edit scope) and <code>CF_ACCOUNT_ID</code>. Without these the deploy step skips silently.</PrerequisiteItem>
+  <PrerequisiteItem>The app's repo on GitHub (<code>ConductionNL/petstore</code>, or your own fork). The central workflow is a GitHub Actions reusable workflow.</PrerequisiteItem>
+  <PrerequisiteItem>A Cloudflare account with two org-level secrets set: <code>CF_API_TOKEN</code> (Workers Scripts: Edit + Zone DNS: Edit scope) and <code>CF_ACCOUNT_ID</code>. Without these the Worker publish is skipped and the run warns that the live site is unchanged.</PrerequisiteItem>
   <PrerequisiteItem>Node 20+ and the Claude Code CLI installed locally. The journeydoc skills install Playwright on first run.</PrerequisiteItem>
 </Prerequisites>
 
@@ -92,81 +90,50 @@ Merge the PR before continuing. Part 8 builds on the scaffold.
 
 ## Step 2: Wire the central documentation workflow
 
-The build and deploy are shared across the Conduction fleet via a reusable workflow in `Conduction/.github` (Codeberg) or `ConductionNL/.github` (GitHub). Your per-repo wrapper declares three things: the Cloudflare project name, the docs source folder, and the secrets to forward.
+The build and deploy are shared across the Conduction fleet via a reusable workflow in `ConductionNL/.github`. Your per-repo wrapper declares four things: the site's hostname (`cname`), the docs source folder, the Cloudflare Worker that serves the site (`worker-name`), and the two Cloudflare secrets to forward.
 
-<Tabs groupId="forge">
-  <TabItem value="codeberg" label="Codeberg (Forgejo Actions)">
-
-Create `.forgejo/workflows/documentation.yml`:
+The template already ships a `.github/workflows/documentation.yml`, but it listens on a `documentation` branch and points at `app-template.conduction.nl`. Replace it with:
 
 ```yaml
-name: Publish docs
+name: Documentation
 
 on:
   push:
-    branches: [documentation, main, development]
+    branches: [development]
   pull_request:
-    branches: [documentation, main]
+    branches: [development]
   workflow_dispatch:
   schedule:
     - cron: "0 4 * * *"
 
 jobs:
-  docs:
-    uses: https://codeberg.org/Conduction/.github/.forgejo/workflows/documentation.yml@main
-    with:
-      cf-project-name: petstore-docs
-      source-folder: docs
-    secrets:
-      CF_API_TOKEN:   ${{ secrets.CF_API_TOKEN }}
-      CF_ACCOUNT_ID:  ${{ secrets.CF_ACCOUNT_ID }}
-      CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
-```
-
-The central workflow runs on `codeberg-small` runners, builds Docusaurus, then deploys via `wrangler deploy` to Cloudflare Workers Static Assets.
-
-  </TabItem>
-  <TabItem value="github" label="GitHub Actions">
-
-Create `.github/workflows/documentation.yml`:
-
-```yaml
-name: Publish docs
-
-on:
-  push:
-    branches: [documentation, main, development]
-  pull_request:
-    branches: [documentation, main]
-  workflow_dispatch:
-  schedule:
-    - cron: "0 4 * * *"
-
-jobs:
-  docs:
+  deploy:
     uses: ConductionNL/.github/.github/workflows/documentation.yml@main
-    with:
-      cf-project-name: petstore-docs
-      source-folder: docs
     secrets:
       CF_API_TOKEN:  ${{ secrets.CF_API_TOKEN }}
       CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+    with:
+      cname: petstore.conduction.nl
+      source-folder: docs
+      worker-name: petstore-docs
 ```
 
-The GitHub variant uses the same Cloudflare Workers Static Assets deploy step on the `ubuntu-latest` runner.
+Two parts of that file are easy to leave out, and both fail quietly:
 
-  </TabItem>
-</Tabs>
+- **The `secrets:` block.** A reusable workflow receives no secrets by default. Without the mapping the publish step finds `CF_API_TOKEN` empty, skips itself, and the site is not updated.
+- **`worker-name`.** Left out, the name is derived from `cname` (first label plus `-docs`). If a Worker by that name does not exist, wrangler creates one and publishes there, while your hostname keeps routing to the old one. Pin it.
+
+The central workflow builds Docusaurus on `ubuntu-latest`, validates the build on every pull request, and on a push, schedule or manual run deploys it with `wrangler deploy` to Cloudflare Workers Static Assets.
 
 Commit and push the wrapper:
 
 ```bash
-git add .forgejo/workflows/documentation.yml
+git add .github/workflows/documentation.yml
 git commit -m "ci(docs): wire central docs workflow"
 git push origin development
 ```
 
-**Verify** by opening the Actions tab on your forge. The workflow appears in the list, queued or already running.
+**Verify** by opening the Actions tab of your repo on GitHub. The workflow appears in the list, queued or already running.
 
 ## Step 3: Set the Cloudflare secrets + trigger the first deploy
 
@@ -175,37 +142,7 @@ Two org-level secrets unlock the deploy:
 - `CF_API_TOKEN`: create at [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens). Grant **Account: Workers Scripts: Edit** and **Zone: DNS: Edit**. Set a 1-day TTL while you test, then rotate.
 - `CF_ACCOUNT_ID`: copy from the Cloudflare dashboard sidebar.
 
-<Tabs groupId="forge">
-  <TabItem value="codeberg" label="Codeberg">
-
-Set at the org-secrets screen:
-
-```
-https://codeberg.org/org/Conduction/-/secrets/actions
-```
-
-Add three secrets:
-
-```
-CF_API_TOKEN   = <your token>
-CF_ACCOUNT_ID  = <your account id>
-CODEBERG_TOKEN = <a forge PAT, used to authenticate npm prebuild requests to the Codeberg API>
-```
-
-Trigger the workflow manually so you don't have to wait for the next push:
-
-```bash
-curl -sS -X POST \
-  -H "Authorization: token $CODEBERG_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"ref":"development"}' \
-  "https://codeberg.org/api/v1/repos/Conduction/petstore/actions/workflows/documentation.yml/dispatches"
-```
-
-  </TabItem>
-  <TabItem value="github" label="GitHub">
-
-Set at the org-secrets screen:
+Set them at the org-secrets screen:
 
 ```
 https://github.com/organizations/ConductionNL/settings/secrets/actions
@@ -224,9 +161,6 @@ Trigger the workflow manually:
 gh workflow run documentation.yml -R ConductionNL/petstore --ref development
 ```
 
-  </TabItem>
-</Tabs>
-
 **Verify** by watching the run finish. The build step prints the upload count, the deploy step prints a URL:
 
 ```
@@ -235,7 +169,7 @@ Deployed petstore-docs triggers (1.9 sec)
   https://petstore-docs.conduction-a2d.workers.dev
 ```
 
-Open that URL. You see your Docusaurus site live. Binding the custom domain `petstore.conduction.nl` to the Worker is a one-time API call described in the central workflow's README.
+Open that URL. You see your Docusaurus site live. The same deploy attaches `petstore.conduction.nl` to the Worker as a custom domain: the central workflow declares every host in its `docs-hosts` input (by default just the `cname`) as a route.
 
 ## Step 4: Embed an `<AppMock>` for context
 

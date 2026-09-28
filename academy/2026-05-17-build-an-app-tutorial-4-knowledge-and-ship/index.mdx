@@ -46,7 +46,7 @@ External knowledge integration is the canonical case for Integriq. Pull data fro
 </Prerequisites>
 
 :::note Repo creation
-The reference repo `Conduction/petstore` on Codeberg is the canonical home for this tutorial's code. At time of writing it may not exist yet, push your local clone to a fresh repo on Codeberg under that name once you've got something worth sharing.
+The reference repo [`ConductionNL/petstore`](https://github.com/ConductionNL/petstore) on GitHub is the canonical home for this tutorial's code. Building your own copy? Push your local clone to a fresh GitHub repo in your own org once you've got something worth sharing.
 :::
 
 ## Step 0: Spin up xWiki
@@ -394,7 +394,7 @@ The release process is mechanical:
        -czf petstore-0.4.0.tar.gz petstore/
    ```
 4. **Sign the tarball** with the EC key Nextcloud's app store expects (see [the Nextcloud docs](https://nextcloudappstore.readthedocs.io/en/latest/developer.html#publishing-your-app)).
-5. **Push to Codeberg** with a tag matching the version (`git tag v0.4.0 && git push origin v0.4.0`). The template ships a `.woodpecker/release.yml` (or `.github/workflows/release.yml` on GitHub-origin apps) that picks up the tag, builds the tarball, signs it, and publishes the release.
+5. **Merge into `main` on GitHub.** You don't push a tag yourself. The template ships `.github/workflows/release-stable.yml` (and `release-beta.yml` for the `beta` branch), thin wrappers around the shared release workflows in `ConductionNL/.github`. On every push to `main` the stable one takes the bump level from the merged PR's `major`, `minor` or `patch` label (patch when there is none), builds and signs the tarball, creates the `vX.Y.Z` tag and GitHub release, and uploads the release to the Nextcloud app store. That covers steps 1 to 4 in CI: the version comes from the latest `vX.Y.Z` tag plus the bump; `appinfo/info.xml` is only the baseline while the repo has no tags yet. Set `app-name` in both wrappers to your app id (`petstore`; the template ships `app-template`), and make sure the repo can read the `NEXTCLOUD_SIGNING_KEY`, `NEXTCLOUD_SIGNING_CERT` and `NEXTCLOUD_APPSTORE_TOKEN` secrets, which the wrappers pass on with `secrets: inherit`.
 
 For the **Conduction app store** (`apps.conduction.nl`), the same release pipeline pushes to that endpoint when the secret is configured. See the release workflows in [the template's `.github/workflows/`](https://github.com/ConductionNL/nextcloud-app-template/tree/main/.github/workflows) for reference.
 
@@ -448,9 +448,9 @@ That ratio, JSON describing what you want, framework rendering it, is the entire
     description="Connect your shipped app to the rest of the workspace. Cross-register reads, Integriq sources, and a two-way webhook sync, three integration patterns layered from least to most invasive."
   />
   <NextStep
-    title="Reference repo (may not exist yet)"
+    title="Reference repo"
     href="https://github.com/ConductionNL/petstore"
-    description="Canonical PetStore reference. If the repo is still 404 at the time you read this, push your own fork to Codeberg under the same name."
+    description="Canonical PetStore reference on GitHub. Fork it into your own org to start from the finished code."
   />
   <NextStep
     title="The component reference"
