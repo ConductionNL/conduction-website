@@ -5,12 +5,13 @@ Walks BOTH source forges, identifies repositories that look like Nextcloud
 apps (presence of appinfo/info.xml), sums release-asset download counts, and
 merges the two per app id:
 
-  * GitHub  org ``ConductionNL`` — legacy/historical downloads. The apps were
-    migrated off GitHub in 2026; the old release tarballs still carry their
-    accumulated download counts, so we keep counting them.
-  * Codeberg org ``Conduction``  — the live source. Nextcloud app-store
-    installs now fetch the release tarball from here, so this is where new
-    downloads accrue.
+  * GitHub  org ``ConductionNL`` — the live source. Every Conduction app is
+    developed and released here, and Nextcloud app-store installs fetch the
+    release tarball from here, so this is where new downloads accrue.
+  * Codeberg org ``Conduction``  — legacy. The apps lived on Codeberg for a
+    few months in 2026 before moving back to GitHub; the release tarballs
+    published there still carry their download counts, so we keep counting
+    them.
 
 Each app's ``downloads_total`` is ``github + codeberg``; ``totals.downloads``
 is the grand total the website StatsStrip renders. Joined with the Nextcloud
@@ -78,7 +79,7 @@ def parse_app_id(info_xml):
 
 
 # --------------------------------------------------------------------------- #
-# GitHub (legacy source)
+# GitHub (live source)
 # --------------------------------------------------------------------------- #
 def gh_headers():
     h = {"Accept": "application/vnd.github+json"}
@@ -103,7 +104,7 @@ def gh_paginate(url):
 
 def collect_github():
     """Return {app_id: github_block}. Archived repos are kept on purpose —
-    they hold the historical download counts from before the migration."""
+    their release tarballs still carry historical download counts."""
     out = {}
     try:
         repos = gh_paginate(f"{GITHUB_API}/orgs/{GITHUB_ORG}/repos?per_page=100&type=public")
@@ -143,7 +144,7 @@ def collect_github():
 
 
 # --------------------------------------------------------------------------- #
-# Codeberg / Forgejo (live source)
+# Codeberg / Forgejo (legacy source)
 # --------------------------------------------------------------------------- #
 def cb_headers():
     h = {"Accept": "application/json"}
@@ -262,9 +263,9 @@ def main():
     # API (GitHub, Codeberg, the Nextcloud store) is unreachable or returns an
     # error, keep the committed data/app-downloads.json stub and exit cleanly.
     try:
-        print("Collecting GitHub (legacy) download stats...", file=sys.stderr)
+        print("Collecting GitHub (live) download stats...", file=sys.stderr)
         github = collect_github()
-        print("Collecting Codeberg (live) download stats...", file=sys.stderr)
+        print("Collecting Codeberg (legacy) download stats...", file=sys.stderr)
         codeberg = collect_codeberg()
 
         print("Fetching Nextcloud store catalog...", file=sys.stderr)
@@ -291,8 +292,8 @@ def main():
         cb_dl = cb["downloads"] if cb else 0
         apps.append({
             "id": app_id,
-            # Prefer the live Codeberg repo path; fall back to the GitHub one.
-            "repo": (cb or gh)["repo"],
+            # Prefer the live GitHub repo path; fall back to the Codeberg one.
+            "repo": (gh or cb)["repo"],
             "downloads_total": gh_dl + cb_dl,
             "github": gh,
             "codeberg": cb,
@@ -316,7 +317,7 @@ def main():
             "codeberg_org": CODEBERG_ORG,
             "store_platform_version": PLATFORM_VERSION,
             "notes": (
-                "totals.downloads = GitHub (legacy) + Codeberg (live) release-asset "
+                "totals.downloads = GitHub (live) + Codeberg (legacy) release-asset "
                 "fetches per app, merged by app id. Counts every tarball fetch (CI, "
                 "mirrors, re-installs) — an upper bound on real installs."
             ),
