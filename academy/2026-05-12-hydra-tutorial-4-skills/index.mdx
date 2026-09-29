@@ -5,7 +5,7 @@ contentType: tutorial
 heroIcon: pipeline
 authors: [conduction]
 date: 2026-05-12
-summary: Which skills run inside the automated Hydra factory, which exist for humans on the CLI, how they get invoked, and when you should add a new skill to the loop yourself. Fourth of six short modules.
+summary: Which skills run inside the automated Hydra factory, which exist for humans on the CLI, how they get invoked, and when you should add a new skill to the loop yourself. Fourth of seven short modules.
 tags: [Hydra, Skills, OPSX, Testing, Tutorial series]
 apps: []
 durationMinutes: 14
@@ -26,7 +26,7 @@ The previous parts were about *what* Hydra does. This part is about *how*: the *
 
 <Outcomes title="What you'll learn in this part">
   <Outcome>What a Claude Code skill is and how Hydra uses them to bundle behaviour onto personas.</Outcome>
-  <Outcome>Which skills <strong>the automated Hydra factory</strong> ships inside its Docker containers (per agent: Builder, Reviewer, Security) — and which skills are <strong>only for humans on the CLI</strong>.</Outcome>
+  <Outcome>What a stage in <strong>the automated Hydra factory</strong> is told to use, which skills the container images carry (Builder, Reviewer, Security) — and which skills are <strong>only for humans on the CLI</strong>.</Outcome>
   <Outcome>The five skill families inside Hydra: <code>{'opsx-*'}</code>, <code>{'hydra-gate-*'}</code>, <code>{'team-*'}</code>, <code>{'test-*'}</code>, and the utility/maintenance skills.</Outcome>
   <Outcome>The two ways a skill can be activated — manually via <code>/{'<name>'}</code> or automatically by Claude — and how you control that per skill.</Outcome>
   <Outcome>When to add a skill yourself and how to do that in a structured way.</Outcome>
@@ -56,40 +56,44 @@ Which mode is allowed is set in the skill's own frontmatter:
 - `user-invocable: false` — only Claude itself may load it. Use this for background knowledge (for example a `legacy-system-context` that doesn't make sense as an action).
 - Neither set — both are allowed.
 
-So that distinction — manual vs. automatic — is about **configuration of one skill**, not about two different kinds of files. A persona in a Docker container has no keyboard and leans heavily on auto-activation; a human on the CLI usually wants explicit control and types `/`.
+So that distinction — manual vs. automatic — is about **configuration of one skill**, not about two different kinds of files. A pipeline stage has no keyboard: it gets a prompt that says what to do and which brief to follow, and anything else it loads is Claude's own choice. A human on the CLI usually wants explicit control and types `/`.
 
 ## Two worlds: the Hydra factory vs. skills for humans
 
-Hydra's `hydra/.claude/skills/` contains ~70 skills, but **the automated pipeline only uses a handful**. The rest is tooling for you, behind a keyboard. Important to keep separate:
+Hydra's `hydra/.claude/skills/` holds around 130 skill folders, about 60 of them `hydra-gate-*` (run `ls .claude/skills` for today's count). **The automated pipeline leans on very few of them.** The rest is tooling for you, behind a keyboard. Important to keep separate:
 
 ### What the Hydra factory actually runs
 
-Every pipeline container has its own, limited set of skills baked into its Docker image:
+A real run is driven by the `hydra-sequencer` flow (part 7). The hermiq app runs each stage as `claude -p` in a checkout of the target repo, with hydra's own tool tree beside it. The stage's prompt says what to do:
+
+- **Build (Al Gorithm)** — the prompt asks for the OpenSpec change named in the issue to be implemented. It does not name a skill. The agent may read and edit files (Read, Edit, Write, Glob, Grep) and is told not to run git; the pipeline commits and pushes. Then the pipeline itself runs `scripts/run-hydra-gates.sh --scope-to-diff`, allows one fix pass on the gate output, and runs the gates again.
+- **Code review, security review, applier (Juan Claude, Clyde Barcode, Axel Pliér)** — each reads its own brief from `agents/<persona>/` plus the stage brief under `images/`, runs the gates the way that brief says, and writes a verdict file. A verdict whose `checks_run` does not name `hydra-gates` is refused.
+
+The **container images** are what you start yourself with `dev-run.sh`, `smoke-test.sh` or `manual-review.sh` (part 5). Each has its own, limited set of skills baked in:
 
 | Container | Persona | Skills in image | Main function |
 |---|---|---|---|
-| **Builder** | Al Gorithm | **All** `.claude/skills/*` + all vendor skills | Implements tasks; primarily `opsx-apply`. Has the other opsx skills on hand for context during verification, finding fits again, and fixing after a quality fail. |
-| **Reviewer** | Juan Claude | `hydra-gates` + the `hydra-gate-*` skills + vendor `code-review` | Mandatory hydra-gates check + deeper code review via the Anthropic community skill. |
-| **Security** | Clyde Barcode | `hydra-gates` + the `hydra-gate-*` skills + vendor `trailofbits` + vendor `owasp` | Mandatory hydra-gates + SAST (Semgrep) + OWASP top 10 checklists. |
-| **Applier** | Axel Plier | **No skills, no write tools** (Read + Bash only) | Reads the final diff and both review verdicts and returns one binary answer — `pass` or `not`. It applies **no** fixes; it's a go/no-go gate, not an editor. |
-| **Browser UI Tester** | (sonnet, headless) | One skill: `hydra-ui-test` | Logs in, navigates the live app via Playwright MCP, delivers verdict JSON. |
+| **Builder** | Al Gorithm | **All** of `.claude/skills/` (no vendor skills) | Implements the change; the image's entrypoint follows `opsx-apply`. The other opsx skills are on hand for context. |
+| **Reviewer** | Juan Claude | `hydra-gates` + a fixed selection of 16 `hydra-gate-*` skills + vendor `code-review` | Mandatory hydra-gates check + deeper code review via the Anthropic community skill. |
+| **Security** | Clyde Barcode | `hydra-gates` + the same 16 `hydra-gate-*` skills + vendor `trailofbits` (its Semgrep plugin) + vendor `owasp` | Mandatory hydra-gates + SAST (Semgrep) + OWASP top 10 checklists. |
+| **Applier** | Axel Pliér | **No skills**; its config allows Read and Bash only | Reads the final diff and both review verdicts and returns one binary answer — `pass` or `fail`. It applies **no** fixes; it's a go/no-go gate, not an editor. |
 
-On top of that, **`scripts/run-hydra-gates.sh`** runs all **22** hydra-gates mechanically in every container, independent of which skill files are in the image. The skill files serve Claude as documentation when fixing; the script does the detection.
+Whichever skill files an image carries, the detection is done by **`scripts/run-hydra-gates.sh`**. It is a thin delegator to the `conduction/hydra-gates` package, which declares about 96 gates today. That number grows with every incident, so don't trust a count written in a doc (this one included): every run prints a COVERAGE line with what it declared and what actually ran. The skill files serve Claude as documentation when fixing; the script does the detection.
 
 ### What the factory **doesn't** do — for humans on the CLI
 
-All the other skills (~50 out of 70) are for you, or for a fellow dev in a Claude Code session on their laptop. Examples:
+Nearly all the other skills are for you, or for a fellow dev in a Claude Code session on their laptop. Examples:
 
-- **Preparing a change** — `opsx-new`, `opsx-ff`, `opsx-explore`, `opsx-plan-to-issues` are things you do as a human before you throw the work into the pipeline. The Builder only runs `opsx-apply` on an existing change.
+- **Preparing a change** — `opsx-new`, `opsx-ff`, `opsx-explore`, `opsx-plan-to-issues` are things you do as a human before you throw the work into the pipeline. The pipeline only builds a change that already exists.
 - **Taking on a role** — `team-architect`, `team-backend`, `team-po` etc. are pure roleplay frames for one-human-one-role sessions. The pipeline doesn't use them.
-- **Running tests** — `/test-counsel` (all 8 personas) or `/test-app` (one browser sweep) you start by hand. The factory has its own browser tester (`hydra-ui-test`); the `test-*` family is separate from that.
+- **Running tests** — `/test-counsel` (all nine personas) or `/test-app` (one browser sweep) you start by hand. The pipeline runs no browser at all; the `test-*` family is yours.
 - **PRs and day-to-day work** — `/create-pr`, `/review-pr`, `/report-out` are the "three times a day" tools for you, not for the pipeline.
 
-Remember: **the factory grabs 5 skills, a human can call all 70**. That's the whole difference.
+Remember: **a pipeline stage follows its prompt, its brief and the gate suite; a human can call every skill in the folder**. That's the whole difference.
 
 ## The five skill families in full
 
-With that split in mind, here are all five families. The tag system in the table: **🤖 factory** = ships inside a pipeline container, **⌨️ human** = CLI only.
+With that split in mind, here are all five families. The tag system in the table: **🤖 factory** = used by the pipeline or by a pipeline image's entrypoint, **⌨️ human** = you call it yourself. (The builder image copies the whole `.claude/skills/` folder, so most ⌨️ skills are *present* in it; nothing in the pipeline calls them.)
 
 ### Family 1: OpenSpec workflow (`opsx-*`, 16 skills)
 
@@ -97,19 +101,19 @@ The OPSX skills implement the Conduction workflow for OpenSpec changes — from 
 
 | Skill | For whom | Does |
 |---|---|---|
-| `opsx-apply` | 🤖 Builder | Implements tasks from a change (the pipeline default). |
-| `opsx-verify` | 🤖 Builder | Verifies that the implementation covers the change artefacts. |
-| `opsx-archive` | 🤖 Builder + ⌨️ | Archives a completed change, syncing delta into the spec. |
+| `opsx-apply` | 🤖 Builder image + ⌨️ | Implements tasks from a change. The builder image's entrypoint follows it; the flow's build prompt does not name it. |
+| `opsx-verify` | ⌨️ | Verifies that the implementation covers the change artefacts. |
+| `opsx-archive` | ⌨️ | Archives a completed change, syncing delta into the spec. |
 | `opsx-new` | ⌨️ | Starts a new change (proposal scaffold, schema choice). |
 | `opsx-ff` | ⌨️ | "Fast-forward": creates a change + all artefacts in a single pass. |
 | `opsx-continue` | ⌨️ | Pick up an interrupted change. |
 | `opsx-explore` | ⌨️ | Explore pre-spec what a change should even be. |
-| `opsx-onboard` | ⌨️ | Onboarding flow on a new repo (sets up OpenSpec config + structure). |
-| `opsx-plan-to-issues` | ⌨️ | Converts `tasks.md` into GitHub issues + a tracking issue. |
+| `opsx-onboard` | ⌨️ | Guided walk through one complete OpenSpec workflow cycle, with narration. |
+| `opsx-plan-to-issues` | ⌨️ | Converts `tasks.md` into a `plan.json` and a tracking issue with task checkboxes. |
 | `opsx-sync` | ⌨️ | Sync delta specs back into the main spec. |
 | `opsx-bulk-archive` | ⌨️ | Archive multiple completed changes in one go. |
-| `opsx-apply-loop` | ⌨️ | Headless build → quality-fix loop for local dev runs. |
-| `opsx-pipeline` | ⌨️ | Run multiple changes in parallel (multi-agent). |
+| `opsx-apply-loop` | ⌨️ | Runs apply → verify in a loop until verify passes, then archives; per app, in Docker. |
+| `opsx-pipeline` | ⌨️ | Run multiple changes in parallel with subagents. |
 | `opsx-coverage-scan` | ⌨️ | Audit a legacy app for spec ↔ code coverage. |
 | `opsx-annotate` | ⌨️ | Applies `@spec` PHPDoc tags after a coverage scan. |
 | `opsx-reverse-spec` | ⌨️ | Reverse-engineers a spec from existing code. |
@@ -118,22 +122,23 @@ Sixteen skills is a lot. In practice you reach for one of a handful, and the cho
 
 - **Starting fresh and sure of the feature?** → `opsx-ff` (one pass to all artefacts), then `opsx-plan-to-issues`.
 - **Starting fresh but unsure of scope/approach?** → `opsx-explore` first, then `opsx-new` and `opsx-continue` step by step.
-- **New repo with no OpenSpec yet?** → `opsx-onboard`.
+- **New to the workflow?** → `opsx-onboard` walks you through one full cycle.
 - **Legacy code with no specs?** → `opsx-coverage-scan` → `opsx-reverse-spec` / `opsx-annotate`.
 - **Change is written, want it built locally without the full factory?** → `opsx-apply-loop` (one change) or `opsx-pipeline` (several in parallel).
-- **Inside the factory** the builder only ever runs `opsx-apply`, `opsx-verify` and `opsx-archive` — the rest are human-driven preparation.
+- **Inside the factory** none of these is called by name: the flow's build prompt implements the change directly. The opsx skills are human-driven preparation and local tooling.
 
 ### Family 2: Quality + security gates (`hydra-gate-*`)
 
-The parent skill **`hydra-gates`** is a dispatcher that calls every gate together. The script engine under the hood (`scripts/run-hydra-gates.sh`) is the single source of truth, and it currently runs **22 gates** (`gate-1` … `gate-22`) in every container; the per-gate skill files serve Claude as reference material when fixing a failure.
+The parent skill **`hydra-gates`** runs the whole suite through `scripts/run-hydra-gates.sh` and summarises the failures. The gate logic itself lives in the `conduction/hydra-gates` package, which that script delegates to; the per-gate skill files serve Claude as reference material when fixing a failure. There are more gates than gate skills, and the numbering (up to gate-116 today) has gaps.
 
-Rather than reproduce the full table here, it lives — accurate and numbered — in [part 3: Quality gates](/academy/hydra-tutorial-3-quality-gates#category-2-hydra-specific-gates). For the skill family it's enough to know the gates split into three rough groups:
+Rather than reproduce a table here, the gates are covered in [part 3: Quality gates](/academy/hydra-tutorial-3-quality-gates#category-2-hydra-specific-gates). For the skill family it's enough to know the gates split into rough groups:
 
-- **Hygiene** — `spdx-headers`, `forbidden-patterns`, `stub-scan`, `composer-audit`, `conflict-markers`.
-- **Security & auth** — `route-auth`, `orphan-auth`, `no-admin-idor`, `unsafe-auth-resolver`, `semantic-auth`, `route-reachability`.
-- **Conduction conventions & traceability** — `initial-state`, `admin-router`, `nc-input-labels`, `modal-isolation`, `dashboard-antipattern`, `redundant-controller`, `notification-dialect`, `or-objectservice-api`, `manifest-validation`, and the two traceability gates `spec-coverage` (gate-16) and `e2e-coverage` (gate-19).
+- **Hygiene** — `spdx`, `forbidden-patterns`, `stub-scan`, `composer-audit`, `gitignore-then-commit`.
+- **Security & auth** — `route-auth`, `orphan-auth`, `no-admin-idor`, `unsafe-auth-resolver`, `semantic-auth`, `route-reachability`, `csrf-cochange`.
+- **Accessibility (WCAG 2.2 AA)** — `img-alt`, `button-name`, `form-label-association`, `html-lang`, `skip-link` and more.
+- **Conduction conventions & traceability** — `initial-state`, `admin-router`, `nc-input-labels`, `modal-isolation`, `dashboard-antipattern`, `redundant-controller`, `notification-dialect`, `manifest-validation`, and the two traceability gates `spec-coverage` (gate-16) and `e2e-coverage` (gate-19).
 
-All 22 run **🤖 inside the Hydra factory** (Reviewer + Security containers; Builder also runs them as a post-flight check during fix-quality). When a new incident produces a new gate, it's added here and the count grows — so trust the script's `ALL N GATES GREEN` line, not a hard-coded number in any doc.
+In a flow run the pipeline runs the suite after the build and again after the single fix pass, and every review stage is told to run it. When a new incident produces a new gate, it's added here and the count grows — so trust the run's COVERAGE line, not a hard-coded number in any doc.
 
 ### Family 3: Team roles (`team-*`, 7 skills) — **⌨️ humans only**
 
@@ -147,53 +152,53 @@ Skills that model a specific kind of work via a persona frame. Intended for a hu
 - `team-reviewer` — a manual variant of the reviewer work.
 - `team-qa` — writes test cases and test plans.
 
-None of these ship in a pipeline container — they have no place in the automated loop.
+The builder image carries them only because it copies the whole folder; nothing in the automated loop calls them.
 
-### Family 4: Test suites (`test-*`, 19 skills) — almost all ⌨️ for humans
+### Family 4: Test suites (`test-*`) — all ⌨️ for humans
 
-The largest family by count: around twenty skills that drive agentic browser and API testing, in three clusters:
+After the gates, the largest family: skills that drive agentic browser and API testing, in three clusters:
 
 **Test types** (one per test kind):
 - `test-app` — automated browser test of a whole Nextcloud app (Playwright MCP).
 - `test-functional` — functional scenarios against implemented features.
-- `test-api` — API checks against the PHP built-in server.
+- `test-api` — API checks (REST, NLGov conventions).
 - `test-accessibility`, `test-performance`, `test-security`, `test-regression` — specialised variants.
 
-**Personas** (`test-persona-*`) — eight Dutch user profiles, each looking at an app from their own angle: `annemarie`, `fatima`, `henk`, `janwillem`, `mark`, `noor`, `priya`, `sem`. Henk reads with large type and looks for simple navigation; Noor hammers on RBAC and audit trails; Annemarie checks NLGov/GEMMA mapping. The persona cards themselves live in [`hydra/personas/`](https://github.com/ConductionNL/hydra/tree/main/personas).
+**Personas** (`test-persona-*`) — nine Dutch user profiles, each looking at an app from their own angle: `annemarie`, `fatima`, `henk`, `janwillem`, `jasper`, `mark`, `noor`, `priya`, `sem`. Jasper works with a screen reader as his primary way in; Henk reads with large type and looks for simple navigation; Noor hammers on RBAC and audit trails; Annemarie checks NLGov/GEMMA mapping. The persona cards themselves live in [`hydra/personas/`](https://github.com/ConductionNL/hydra/tree/main/personas).
 
 **Scenario management** — `test-scenario-create`, `test-scenario-edit`, `test-scenario-run` write, edit and run reusable `TS-NNN-*.md` scenarios per app.
 
-The dispatcher for this family is **`test-counsel`**: it coordinates all eight personas against one feature and delivers a combined report. Same pattern as `hydra-gates` for the quality-gates family.
+The dispatcher for this family is **`test-counsel`**: it coordinates all nine personas against one feature and delivers a combined report. Same pattern as `hydra-gates` for the quality-gates family.
 
-:::note Three things that all touch the browser — keep them apart
+:::note Three things that sound like browser testing — keep them apart
 There are three separate "testing" surfaces and they're easy to confuse:
 
-1. **`hydra-ui-test`** — the factory's own browser tester. Runs on the host (via `scripts/run-browser-tests.sh`, Playwright MCP), logs into the live app, walks the spec's acceptance criteria, and returns a verdict JSON. This is *runtime* proof that the feature works.
+1. **`scripts/run-browser-tests.sh`** — a script that logs into a running app via Playwright MCP, walks the spec's acceptance criteria and returns a verdict JSON. It is *runtime* proof that the feature works, but only when you run it: no flow calls it, so a pipeline run brings no browser evidence.
 2. **gate-19 (`e2e-coverage`)** — a *static* gate from [part 3](/academy/hydra-tutorial-3-quality-gates). It doesn't run a browser at all; it checks that every spec scenario is *linked* to a Playwright test via an `@e2e` annotation. Coverage bookkeeping, not execution.
 3. **The `test-*` family** — human-driven test suites you run by hand before or after the pipeline.
 
-So: gate-19 checks the *links* exist, `hydra-ui-test` actually *drives* the browser inside the factory, and `test-*` is what *you* run manually. Different jobs.
+So: gate-19 checks the *links* exist and runs in the pipeline; the browser script and the `test-*` skills actually *drive* a browser, and both are things *you* start. Different jobs.
 :::
 
-### Family 5: Utility & maintenance (~13 skills) — almost all ⌨️ for humans
+### Family 5: Utility & maintenance — all ⌨️ for humans
 
-The rest — those are the remaining ~13 skills. Mostly dev comfort and meta work:
+Everything else. Mostly dev comfort and meta work; a selection:
 
 | Skill | Does |
 |---|---|
 | `create-pr` | Creates a PR from a feature branch — local checks → branch pick → PR body. |
-| `review-pr` | Reviews a GitHub PR (note: manual variant; the factory has its own Juan Claude). |
+| `review-pr` | Reviews a PR (note: manual variant; the factory has its own Juan Claude). |
 | `report-out` | End-of-day report: today's commits + GitHub activity → Dutch Slack notification. |
-| `clean-env` | Fully resets the local Docker dev environment. |
-| `local-run` | Bring up the local Nextcloud dev environment. |
+| `clean-env` | Resets the local OpenRegister dev environment (stop, remove volumes, restart, install apps). |
+| `local-run` | Runs builder → reviewer → security locally on a throwaway repo; from Claude Code it does what `smoke-test.sh` does (part 5). |
 | `sync-docs` | Sync `{app}/docs/` or `.github/docs/claude/` with reality in the repo. |
 | `skill-creator` | Wizard for building a new skill (scaffold, frontmatter, evals). |
-| `feature-counsel` | Pre-build spec analysis from eight persona perspectives (sibling of `test-counsel`). |
-| `persistence-audit` | Audit how an app handles data persistence (object store, sessions, etc.). |
+| `feature-counsel` | Pre-build spec analysis from nine persona perspectives (sibling of `test-counsel`). |
+| `persistence-audit` | Audits a codebase or architecture for post-compromise persistence vectors: OAuth grants, service accounts, CI/CD secrets, IdP trust, audit trails. |
 | `journeydoc-init` / `journeydoc-add-story` / `journeydoc-instrument` | Manual instrumentation + extension of Journey docs. |
 | `verify-global-settings-version` | Check whether `global-settings/VERSION` was bumped after a change. |
 
-Nothing in this family runs in the pipeline. They are your daily `/` commands.
+Beside these sit writing skills (`writing`, `blog-write`, `tutorial-write`), the `parity-*` skills for capability matrices against competitors, and `atom-design` for design-system mocks. Nothing in this family runs in the pipeline. They are your daily `/` commands.
 
 ## Vendor skills (community)
 
@@ -203,7 +208,7 @@ Next to its own skills, Hydra has **vendor skills** under `hydra/vendor/skills/`
 - `trailofbits` — Semgrep-based static-analysis methodology from Trail of Bits. → 🤖 Security container.
 - `owasp` — OWASP top 10:2025 + ASVS 5.0 checklists. → 🤖 Security container.
 
-So those three **do** ship inside the factory (containers). They get loaded onto Juan and Clyde for extra coverage on top of our own `hydra-gate-*`. Maintenance sits with external parties — updates happen by tracking upstream, not by editing them yourself.
+So those three **do** ship inside the reviewer and security images; the builder image carries none of them. They give Juan and Clyde extra coverage on top of our own `hydra-gate-*`. Maintenance sits with external parties — updates happen by tracking upstream, not by editing them yourself.
 
 ## When do you write a new skill?
 
@@ -244,7 +249,7 @@ In the skill's frontmatter you set:
 - `user-invocable: false` — automatic only. Used for background knowledge that isn't useful as an action.
 - Both empty → both allowed. The default for most Hydra skills.
 
-In the Hydra pipeline the containers mostly use auto-activation (Claude picks the right skill itself); a human on the CLI typically types `/` explicitly.
+In the Hydra pipeline no one types a `/`: each stage gets a prompt that says what to do and which brief to follow, and any skill it loads beyond that is Claude's own choice. A human on the CLI typically types `/` explicitly.
 
 </Details>
 
@@ -252,34 +257,38 @@ In the Hydra pipeline the containers mostly use auto-activation (Claude picks th
 
 <div className="tutorial-quiz">
 
-**2. Which skills actually run inside the pipeline containers, and which ones sit in the repo only for humans?**
+**2. What does the automated pipeline actually use, which skills do the container images carry, and which ones sit in the repo only for humans?**
 
 <Details summary="Hint">
 
-Three containers (Builder, Reviewer, Security) each have a specific set in their image. What's inside — and which families sit entirely outside?
+Separate the flow-driven run (prompt, brief, gate suite) from the images you start yourself. What does each image carry — and which families sit entirely outside?
 
 </Details>
 
 <Details summary="Answer">
 
-**Inside the pipeline containers** (🤖 factory):
+**In a flow-driven run** (🤖 factory), a stage follows its prompt and brief:
 
-- **Builder** — all `.claude/skills/*` baked in, but the standard run is `opsx-apply`. The other opsx skills are there for context.
-- **Reviewer** — `hydra-gates` + 13 individual `hydra-gate-*` + vendor `code-review`.
-- **Security** — `hydra-gates` + 13 individual `hydra-gate-*` + vendor `trailofbits` + vendor `owasp`.
-- **Applier** — no skills (pure CLAUDE.md).
-- **Browser UI Tester** — only `hydra-ui-test`.
+- **Build** — the prompt asks for the change to be implemented directly; no skill is named. The pipeline then runs `scripts/run-hydra-gates.sh`, allows one fix pass, and runs the gates again.
+- **Review stages** — each persona reads its brief from `agents/<persona>/` and `images/`, runs the gates, and must list `hydra-gates` in `checks_run`.
 
-Plus: `scripts/run-hydra-gates.sh` runs all **14** gates mechanically in every container, regardless of which skill files are in the image.
+**In the container images** (what `dev-run.sh` and `smoke-test.sh` start):
 
-**Not in the factory**, only for humans on the CLI:
+- **Builder** — all of `.claude/skills/`, no vendor skills. Its entrypoint follows `opsx-apply`.
+- **Reviewer** — `hydra-gates` + 16 individual `hydra-gate-*` + vendor `code-review`.
+- **Security** — `hydra-gates` + the same 16 `hydra-gate-*` + vendor `trailofbits` (Semgrep) + vendor `owasp`.
+- **Applier** — no skills, Read and Bash only.
 
-- Almost the entire `team-*` family (7 skills).
-- Almost the entire `test-*` family (19 skills) — the factory has its own `hydra-ui-test`.
-- Most `opsx-*` skills except `opsx-apply`/`verify`/`archive` (humans start changes; the pipeline implements them).
-- The whole utility family (`create-pr`, `review-pr`, `report-out`, `clean-env`, `sync-docs`, `skill-creator`, `feature-counsel`, `persistence-audit`, `journeydoc-*`, `verify-global-settings-version`).
+Whatever the image carries, `scripts/run-hydra-gates.sh` does the detection. It declares far more gates than there are gate skills; the run's COVERAGE line says how many.
 
-In total: of ~70 skills in the repo, the automated pipeline uses a handful; the rest is your toolkit.
+**Not used by the factory** (some are present in the builder image, but no stage calls them), only for humans on the CLI:
+
+- The entire `team-*` family.
+- The entire `test-*` family — the pipeline runs no browser at all.
+- The `opsx-*` skills (humans prepare changes; the pipeline builds them).
+- The whole utility family (`create-pr`, `review-pr`, `report-out`, `clean-env`, `local-run`, `sync-docs`, `skill-creator`, `feature-counsel`, `persistence-audit`, `journeydoc-*`, `verify-global-settings-version`, and the writing and parity skills).
+
+In total: of the roughly 130 skills in the repo, the automated pipeline leans on the gate suite and a brief per persona; the rest is your toolkit.
 
 </Details>
 
@@ -318,7 +327,7 @@ Think about provenance (who wrote them?), which pipeline container they get load
 
 <Details summary="Answer">
 
-Vendor skills (`hydra/vendor/skills/`) are skills that were **not written by us**, and that **do** ship inside the factory:
+Vendor skills (`hydra/vendor/skills/`) are skills that were **not written by us**, and that **do** ship inside the reviewer and security images:
 
 - `code-review` (Anthropic community) → Reviewer container (Juan Claude).
 - `trailofbits` (Trail of Bits, Semgrep methodology) → Security container (Clyde).
@@ -333,11 +342,11 @@ We keep them separate because:
 
 </div>
 
-<NextSteps title="Next step" lede="In part 5 we get practical: starting a real Hydra run on a real app, including the label-prefix trick for parallel dev runs.">
+<NextSteps title="Next step" lede="In part 5 we get practical: running the stages on your own machine, and starting a real Hydra run on a real app with a label.">
   <NextStep
     title="Part 5 — Starting a Hydra run on a real app"
     href="/academy/hydra-tutorial-5-starting-a-run"
-    description="The full recipe: from opening an issue to getting the PR green. With the right config in <code>secrets/.env</code> and the <code>HYDRA_LABEL_PREFIX</code> trick for anyone working alongside fellow devs."
+    description="The full recipe: credentials from your environment, the right config in <code>secrets/.env</code>, a local run with <code>dev-run.sh</code> or <code>smoke-test.sh</code>, and the <code>build:queued</code> label that starts a real run."
   />
   <NextStep
     title="Previous step — Quality gates"

@@ -58,7 +58,7 @@ export CLAUDE_CODE_OAUTH_TOKEN=<token>  # from `claude setup-token`; or ANTHROPI
 There is no credentials file. `scripts/lib/env-credentials.sh` is the one resolver, and it fails closed: when a variable is missing, the script stops with a reason instead of starting a run that dies three seconds later with a 401. The scripts pass both values to the containers by variable name (`-e GH_TOKEN`), so the values never end up in the process list or in a file.
 
 <HexCard title="Your subscription is yours">
-  A Claude Max or Pro subscription is personal-scope: it may run your own work, not an organisation's. Locally that takes care of itself, because the script runs under your shell with your token. In the pipeline, the flows refuse to run a stage whose owner cannot be established. Part 7 explains how.
+  A Claude Max or Pro subscription is personal-scope: it may run your own work, not an organisation's. Locally that takes care of itself, because the script runs under your shell with your token. In the pipeline, the owner of each stage comes from the step that runs it, and <code>hydra-record-stage</code> refuses to record a stage without one. Part 7 explains more.
 </HexCard>
 
 :::note Older setups
@@ -81,9 +81,9 @@ HYDRA_IMAGE_TAG=test
 HYDRA_REVIEW_SCOPE=diff
 ```
 
-`HYDRA_FORGE=github` is right for every ConductionNL repo; `forgejo` is only for a customer who runs a self-hosted Forgejo. It has no default because guessing a forge means sending your token to a third party. If you start from `secrets/.env.example`, check that line: older copies set it to `codeberg`.
+`HYDRA_FORGE=github` is right for every ConductionNL repo; `forgejo` is only for a customer who runs a self-hosted Forgejo. It has no default because guessing a forge means sending your token to a third party. `secrets/.env.example` sets it to `github`; if you copied an older example, check that line, because older copies set it to `codeberg`.
 
-Tip: the image defaults are `ghcr.io/conductionnl/hydra` as prefix and `latest` as tag. Leave `HYDRA_IMAGE_*` out to use the published images.
+Tip: the scripts that read `HYDRA_IMAGE_*` (`manual-review.sh`, `cron-audit.sh`, `cron-spec-from-issue.sh`) fall back to `localhost/hydra` and `test` when the variables are unset, and `dev-run.sh` always starts `localhost/hydra-<stage>:test`, whatever you set. So locally you build the images yourself (step 4), or pull a published `ghcr.io/conductionnl/hydra-<stage>` image and tag it under the local name.
 
 :::tip secrets/.env is loaded automatically
 `scripts/dev-run.sh` refuses to start without this file and loads it itself, and so do `reconcile.sh` and the `cron-*.sh` sweeps. For a while `dev-run.sh` only checked that the file existed and never loaded it, so `HYDRA_FORGE=github` looked configured while every container still talked to Codeberg ([hydra#391](https://github.com/ConductionNL/hydra/issues/391)). Every entrypoint that reads configuration MUST source this file at startup; that's a repo-wide contract.
@@ -91,7 +91,7 @@ Tip: the image defaults are `ghcr.io/conductionnl/hydra` as prefix and `latest` 
 
 ## Step 4: build the container images
 
-In CI, GitHub Actions pushes all images to GHCR. Locally, with `HYDRA_IMAGE_PREFIX=localhost/hydra` set, you build them yourself:
+In CI, the `hydra-image.yml` workflow builds the base, builder, reviewer and security images and pushes them to GHCR as `ghcr.io/conductionnl/hydra-*`. Locally you build them yourself, under the names the scripts look for:
 
 ```bash
 # Base image: Nextcloud + PostgreSQL + OpenRegister (builder dependency)
@@ -107,7 +107,7 @@ docker build -t localhost/hydra-security:test -f images/security/Dockerfile .
 docker network create hydra-net
 ```
 
-Then check with `docker images | grep hydra` that the three tags are there. Reviewer and security are standalone (no NC dependency); the builder builds on the `hydra-nextcloud-test` base.
+Then check with `docker images | grep hydra` that the three tags are there. Reviewer and security are standalone (no NC dependency). The builder copies the Nextcloud tree and its database out of `ghcr.io/conductionnl/hydra-nextcloud-test:stable32` with `COPY --from`, so that image has to exist under exactly that name before you build the builder.
 
 ## Step 5: run one stage with `dev-run.sh`
 
@@ -144,21 +144,24 @@ The script renames an older `todo-app` to `todo-app-runN`, creates a fresh one w
 
 ## Step 7: a real run on a target app
 
-On a real app you don't start containers yourself. You put the trigger label on the tracking issue and the flows do the rest:
+On a real app you don't start containers yourself. You put the trigger label **`build:queued`** on the issue and the flows do the rest. Two things have to be true first:
 
-- The trigger label `ready-to-build`.
-- Optionally `yolo`, if the PR may auto-merge once everything is green.
-- Optionally `openspec` if you're working via OpenSpec.
+- The issue **body** names the change as a path, `openspec/changes/<name>`. The sequencer takes the first such path it finds. No path means `build:blocked`.
+- That change directory exists on the base branch: `development` if the repo has one, otherwise the default branch. If it doesn't, the result is `build:blocked` as well.
 
-Via the Hydra helper:
+Then set the label via the Hydra helper:
 
 ```bash
-./scripts/hydra-label.sh ConductionNL/<app> <N> add ready-to-build
+./scripts/hydra-label.sh ConductionNL/<app> <N> add build:queued
 ```
 
 `scripts/hydra-label.sh` is the **preferred path**: it uses the label helpers from `scripts/lib/labels.sh` and syncs the GitHub Project board in real time. A direct `gh issue edit --add-label` works too, but then the board stays in the old column until reconcile (every 10 minutes) picks it up.
 
-The `hydra-dispatch` flow finds the label on its next five-minute tick and hands the issue to `hydra-sequencer`. Its definition ships with `enabled: false`, so this only happens on an OpenRegister instance where the flow has been switched on. Part 7 covers that setup.
+The `hydra-sequencer` flow finds the label on one of its five-minute ticks. Each tick it searches the org for open issues with a queued label and does one unit of work; review labels go before `build:queued`, so a busy queue can take a few ticks to reach yours. Its definition ships with `enabled: false`, so this only happens on an OpenRegister instance where the flow has been switched on. Part 7 covers that setup.
+
+:::note ready-to-build and yolo
+Older versions of this part used `ready-to-build` as the trigger and `yolo` for an auto-merge. `create-labels.sh` still creates both labels, but no flow reads either of them. The trigger is `build:queued`, and nothing merges automatically.
+:::
 
 <HexCard title="What happened to HYDRA_LABEL_PREFIX?">
   Earlier versions of this part spent a whole step on <code>HYDRA_LABEL_PREFIX</code>. It gave each developer's local supervisor its own label namespace (<code>wilco-build:queued</code>), so two supervisors watching the same repo did not pick up each other's work. The supervisor is gone, and the flows are the only thing left that picks up work. They act on the bare labels only. The shell tooling (<code>create-labels.sh --prefix</code>, <code>hydra-label.sh</code>, <code>reconcile.sh</code>) still understands the variable, but no flow picks up a prefixed label. Leave it unset.
@@ -166,23 +169,32 @@ The `hydra-dispatch` flow finds the label on its next five-minute tick and hands
 
 ## Step 8: follow the pipeline
 
-Once the sequencer has the issue, this happens:
+Once the sequencer has the issue, the labels move like this:
 
 ```
-ready-to-build → build:queued → build:running → build:pass
-              ↳ code-review:queued → :running → :pass / :fail
-              ↳ security-review:queued → :running → :pass / :fail
-              ↳ applier:queued → :running → :pass / :fail → done / needs-input
+build:queued → build:pass | build:fail | build:no-change | build:blocked
+               (a PR is opened on pass and on fail; it is never merged)
+
+build:pass   → you add code-review:queued yourself
+
+code-review:queued     → code-review:pass (+ security-review:queued) | code-review:fail | needs-input
+security-review:queued → security-review:pass (+ applier:queued)     | security-review:fail | needs-input
+applier:queued         → applier:pass | applier:fail | needs-input
 ```
+
+A few things that are easy to expect and do not happen:
+
+- **Nothing queues code review after `build:pass`.** Add it yourself: `./scripts/hydra-label.sh ConductionNL/<app> <N> add code-review:queued`.
+- **There are no `:running` labels.** While a stage runs, its `:queued` label stays on the issue and a lock marks the issue as in flight.
+- **A `fail` stops the chain.** A failed code review does not go on to security review.
+- **`applier:pass` is the end.** There is no `done` label and no merge; a human merges the PR.
 
 You follow it in two places:
 
-1. **GitHub issue**: the labels change as the sequencer advances the stages.
-2. **GitHub PR**: the builder's commits and the reviewers' inline comments.
+1. **GitHub issue**: the labels change as the sequencer advances the stages. The sequencer writes those labels itself, so the project-board card does not follow straight away; `reconcile.sh` moves it on its next sweep.
+2. **GitHub PR**: the build commit on `feature/<issue>/hydra-build`, with the gate output in the PR body. Each review stage writes its verdict to a `hydra-verdict.json` file that the sequencer collects on the next tick; that verdict is what moves the labels.
 
-Behind both, every stage is recorded in `openspec/changes/<slug>/hydra.json` before its label moves. Part 6 shows how to read that file. The flow runs themselves live in OpenRegister; there is no log file on your machine to tail.
-
-Set `yolo` and is everything green? Then you'll see `done` appear on the issue, an approval on the PR, and an auto-merge. No `yolo`? Then the PR is ready for a human to merge.
+Behind both, after each stage's labels have moved, the sequencer records the stage in `openspec/changes/<slug>/hydra.json` through the `hydra-record-stage` flow, which refuses a stage that names no owner. Part 6 shows how to read that file. The flow runs themselves live in OpenRegister; there is no log file on your machine to tail.
 
 ## Troubleshooting
 
@@ -196,17 +208,20 @@ Set `yolo` and is everything green? Then you'll see `done` appear on the issue, 
   <TroubleshootingItem symptom="A container refuses to start because HYDRA_FORGE is unset">
     Add <code>HYDRA_FORGE=github</code> to <code>secrets/.env</code>. The refusal is deliberate: without it, Hydra would have to guess where to send your token.
   </TroubleshootingItem>
-  <TroubleshootingItem symptom="A stage uses the ghcr.io images even though I built locally">
-    Check that <code>secrets/.env</code> actually contains <code>HYDRA_IMAGE_PREFIX=localhost/hydra</code> and <code>HYDRA_IMAGE_TAG=test</code>, and that the tags from step 4 match.
+  <TroubleshootingItem symptom="A script starts a different image than the one I built">
+    <code>dev-run.sh</code> always uses <code>localhost/hydra-&lt;stage&gt;:test</code> and ignores <code>HYDRA_IMAGE_*</code>, so build with exactly those tags. For <code>manual-review.sh</code> and the cron scripts, check what <code>HYDRA_IMAGE_PREFIX</code> and <code>HYDRA_IMAGE_TAG</code> in <code>secrets/.env</code> resolve to; unset, they mean <code>localhost/hydra</code> and <code>test</code>.
   </TroubleshootingItem>
   <TroubleshootingItem symptom="Build starts, no image found error">
-    <code>docker images | grep hydra-builder</code>. No hit? Build the base image first (<code>hydra-nextcloud-test</code>) and then the builder. The builder Dockerfile has the base as <code>FROM</code>. A <code>network hydra-net not found</code> error means you skipped the last line of step 4.
+    <code>docker images | grep hydra-builder</code>. No hit? Build the base image first (<code>hydra-nextcloud-test</code>) and then the builder. The builder Dockerfile copies from the base with <code>COPY --from</code>, so the base has to exist under the name <code>ghcr.io/conductionnl/hydra-nextcloud-test:stable32</code>. A <code>network hydra-net not found</code> error means you skipped the last line of step 4.
   </TroubleshootingItem>
   <TroubleshootingItem symptom="The label is on the issue, but nothing happens">
-    Nothing on your machine watches labels. On a real app the <code>hydra-dispatch</code> flow has to be switched on in the OpenRegister instance (part 7). To try a stage locally, use <code>dev-run.sh</code> from step 5 instead.
+    Nothing on your machine watches labels. On a real app the <code>hydra-sequencer</code> flow has to be switched on in the OpenRegister instance (part 7). Check the label's exact name as well: with <code>HYDRA_LABEL_PREFIX</code> set, <code>hydra-label.sh</code> writes <code>&lt;prefix&gt;-build:queued</code>, which no flow reads. And the sequencer does one unit of work per tick, review stages first, so a full queue delays your build. To try a stage locally, use <code>dev-run.sh</code> from step 5 instead.
   </TroubleshootingItem>
-  <TroubleshootingItem symptom="Issue jumps straight to needs-input without me seeing anything">
-    Stale labels from a previous run are still hanging around. Strip the old stage labels with <code>./scripts/hydra-label.sh ConductionNL/&lt;app&gt; &lt;N&gt; transition ready-to-build</code>. That puts the issue back into a defined starting state.
+  <TroubleshootingItem symptom="The issue gets build:blocked right away">
+    The sequencer could not find the change. The issue body has to contain <code>openspec/changes/&lt;name&gt;</code>, and that directory has to exist on <code>development</code> (or on the default branch, if the repo has no <code>development</code>). Fix the body or push the change, then remove <code>build:blocked</code> and add <code>build:queued</code> again.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="A review runs, or needs-input appears, although I only queued a build">
+    Stale review labels from a previous run are still on the issue, and the sequencer takes those before <code>build:queued</code>. Reset the issue with <code>./scripts/hydra-label.sh ConductionNL/&lt;app&gt; &lt;N&gt; transition build:queued</code>: that strips every other queued label, <code>needs-input</code> and the old build verdict in one call, and leaves only <code>build:queued</code> as the starting state.
   </TroubleshootingItem>
 </Troubleshooting>
 
@@ -292,7 +307,7 @@ What does a run leave behind when no flow is involved?
   <NextStep
     title="Part 6 — Troubleshooting & escalation"
     href="/academy/hydra-tutorial-6-troubleshooting-escalation"
-    description="<code>needs-input</code>, <code>retry:queued</code>, <code>rebuild:queued</code>: which to choose when and what it costs."
+    description="<code>needs-input</code>, re-queueing a build or a review, and why <code>retry:queued</code> and <code>rebuild:queued</code> do nothing today."
   />
   <NextStep
     title="Previous step — Skills & commands"
