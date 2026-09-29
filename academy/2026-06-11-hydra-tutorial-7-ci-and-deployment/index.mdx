@@ -5,7 +5,7 @@ contentType: tutorial
 heroIcon: pipeline
 authors: [conduction]
 date: 2026-06-11
-summary: "Parts 5 and 6 ran Hydra on your own machine. This part zooms out to how Hydra runs unattended: flows that notice a labelled issue and start each stage, container images that GitHub Actions builds and pushes to GHCR, and brokered credentials with an owner for every run. It lays out the three deployment models and marks honestly what is documented and what is infrastructure-only."
+summary: "Parts 5 and 6 ran Hydra on your own machine. This part zooms out to how Hydra runs unattended: flows that notice a labelled issue and start each stage, container images that GitHub Actions builds and pushes to GHCR, and brokered credentials with an owner named on every recorded stage. It lays out the three deployment models and marks honestly what is documented and what is infrastructure-only."
 tags: [Hydra, CI/CD, GitHub, Deployment, Operations, Tutorial series]
 apps: []
 durationMinutes: 14
@@ -16,14 +16,14 @@ partNumber: 7
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, Troubleshooting, TroubleshootingItem, ContactCta} from '@conduction/docusaurus-preset/components';
 import Details from '@theme/Details';
 
-In [part 5](/academy/hydra-tutorial-5-starting-a-run) you ran Hydra by hand: build the images, run a stage with `dev-run.sh`, label an issue. That is the right way to learn Hydra, but it is not how it runs day to day. In production nobody starts containers from a terminal. Instead a scheduled flow notices the labelled issue, and each stage starts from a pre-built image pulled from a registry. This part explains that path, and the three deployment models behind it.
+In [part 5](/academy/hydra-tutorial-5-starting-a-run) you ran Hydra by hand: build the images, run a stage with `dev-run.sh`, label an issue. That is the right way to learn Hydra, but it is not how it runs day to day. In production nobody starts containers from a terminal. Instead a scheduled flow notices the labelled issue and has each stage run for it, with no one at the keyboard. This part explains that path, where the pre-built images fit in, and the three deployment models behind it.
 
 {/* truncate */}
 
 <Outcomes title="What you'll learn in this part">
-  <Outcome>How a labelled issue starts Hydra through the <strong><code>hydra-dispatch</code> and <code>hydra-sequencer</code> flows</strong>, with no human at a terminal, and why that is no longer a GitHub Actions job.</Outcome>
+  <Outcome>How a labelled issue starts Hydra through the <strong><code>hydra-sequencer</code> flow</strong>, with no human at a terminal, and why that is no longer a GitHub Actions job.</Outcome>
   <Outcome>Where the container images come from (the <strong>GitHub Container Registry</strong>, <code>ghcr.io/conductionnl/hydra-*</code>) and how the image tag is configured.</Outcome>
-  <Outcome>The credential model: a brokered forge credential that hydra only knows by id, and an owner for every run, so a personal subscription only serves its owner.</Outcome>
+  <Outcome>The credential model: a brokered forge credential that hydra only knows by id, and an owner named on every recorded stage.</Outcome>
   <Outcome>The three deployment models (local, GitHub Actions, Kubernetes) and which parts are documented vs infrastructure-only.</Outcome>
 </Outcomes>
 
@@ -35,27 +35,31 @@ In [part 5](/academy/hydra-tutorial-5-starting-a-run) you ran Hydra by hand: bui
 
 ## Same pipeline, different trigger
 
-Nothing about the pipeline changes between local and CI. The personas, the labels, the gates, the no-loop rule from part 2: all identical. What changes is who pulls the trigger and where the work runs:
+The personas, the gates and the no-loop rule from part 2 are the same locally and in production. What differs is who pulls the trigger, where the work runs, and what gets recorded:
 
 | | Local (part 5) | CI / production (this part) |
 |---|---|---|
-| Trigger | you run `dev-run.sh` or `smoke-test.sh` | the `hydra-dispatch` flow finds the label on its schedule |
-| Where stages run | containers on your machine | the hermiq ExApp, started by OpenRegister flows |
-| Images | you `docker build` them | pulled from GHCR (`ghcr.io/conductionnl/hydra-*`) |
-| Credentials | `GH_TOKEN` and `CLAUDE_CODE_OAUTH_TOKEN` in your shell | a brokered credential id; the secret stays in the broker |
+| Trigger | you run `dev-run.sh` or `smoke-test.sh` | the `hydra-sequencer` flow finds a queued label on its five-minute schedule |
+| Where stages run | containers on your machine | the hermiq ExApp, as workload steps started by OpenRegister flows |
+| Images | you `docker build` them | the workload steps name no image; the GHCR images (`ghcr.io/conductionnl/hydra-*`) serve the container paths: scripts on a host and the Kubernetes Jobs |
+| Credentials | `GH_TOKEN` and `CLAUDE_CODE_OAUTH_TOKEN` in your shell | brokered credential ids, separate ones for reading, pushing and the model; the secrets stay in the broker |
+| Record | none | labels move, a PR is opened, and each stage is written to `hydra.json` |
 
-So everything you learned about labels and the state machine still applies. You are just handing the steering wheel to the flows.
+So everything you learned about labels in parts 5 and 6 applies. You are just handing the steering wheel to the flows.
 
 ## Trigger: flows, not Actions
 
-Hydra's stage dispatch does not run in CI. It briefly did: [hydra#448](https://github.com/ConductionNL/hydra/pull/448) (2026-07-31) ran the stage as an Actions job, `hydra-stage.yml`, and [hydra#452](https://github.com/ConductionNL/hydra/pull/452) (2026-08-01) removed it again. (The older `hydra-build.yml` and `hydra-review.yml` had already been retired in May.) The people Hydra is built for have Nextcloud and LLM access on a Kubernetes environment someone else set up, and no forge account with Actions rights or cluster access of their own. So the stage now runs on what they already have: Nextcloud's job system, OpenRegister flows and the **hermiq ExApp**. Two flows in hydra's `flows/` folder, run by OpenRegister, decide what runs next:
+Hydra's stage dispatch does not run in CI. It briefly did: [hydra#448](https://github.com/ConductionNL/hydra/pull/448) (2026-07-31) ran the stage as an Actions job, `hydra-stage.yml`, and [hydra#452](https://github.com/ConductionNL/hydra/pull/452) (2026-08-01) removed it again. (The older `hydra-build.yml` and `hydra-review.yml` had already been retired in May.) The people Hydra is built for have Nextcloud and LLM access on a Kubernetes environment someone else set up, and no forge account with Actions rights or cluster access of their own. So the stage now runs on what they already have: Nextcloud, OpenRegister flows and the **hermiq ExApp**, which runs each stage as `claude -p` in a checkout of the target repo. The flows live in hydra's `flows/` folder:
 
-- **`hydra-dispatch`** runs on a schedule (every five minutes), polls the forge for queued work and starts at most a fixed number of pipelines at once.
-- **`hydra-sequencer`** moves an issue from stage to stage, and runs the dependency and sibling checks before it dispatches a spec. It searches the whole `ConductionNL` organisation in one call rather than walking the repos one by one.
+- **`hydra-sequencer`** is the pipeline. It runs every five minutes and does one unit of work per tick: it resumes a review stage that is in flight, or else takes the first open issue in the `ConductionNL` organisation labelled `applier:queued`, then `security-review:queued`, then `code-review:queued`, then `build:queued`. It searches the whole organisation in one call rather than walking the repos one by one, and claims a slot from a shared pool of three before it starts work.
+- **`hydra-dispatch`** claims a slot and runs one hermiq agent step for an issue it is handed. It does not search the forge and does not hand work to the sequencer.
+- **`hydra-lock-reaper`** runs every ten minutes and clears stale per-issue locks.
+
+Both `hydra-sequencer` and `hydra-dispatch` ship with `enabled: false`, so nothing runs until someone switches them on in the OpenRegister instance. And the flows check less than older docs claimed: no flow enforces a spec's `depends_on` list or keeps sibling specs from building at the same time.
 
 What GitHub Actions still does is build the images, in **`.github/workflows/hydra-image.yml`**, on every push to `main` or `development`. Nothing else can build a container image, so that is the one CI job left.
 
-The entry point is unchanged from part 1: a label on the tracking issue, not a person at a terminal. Same contract, different plumbing.
+The entry point is unchanged from part 1: a label on the issue (`build:queued`), not a person at a terminal. Same contract, different plumbing.
 
 <HexCard title="GitHub for Conduction, Forgejo for customer instances">
   Hydra is built forge-agnostic. The <code>HYDRA_FORGE</code> variable selects the REST adapter: <code>github</code> (<code>scripts/lib/github-rest.sh</code>) for every ConductionNL repo, or <code>forgejo</code> (<code>codeberg</code> is accepted as an alias, <code>scripts/lib/forgejo-rest.sh</code>) for a customer who runs a self-hosted Forgejo. There is <strong>no default</strong>: <code>scripts/lib/forge-api.sh</code> refuses to start when the variable is unset, because guessing a forge means sending the run's credentials to a third party. It used to default to <code>codeberg</code>, and that is how a GitHub token once ended up at codeberg.org. If older docs show <code>codeberg.org/Conduction/&lt;app&gt;</code> URLs, that is the 2026-05-29 move to Codeberg showing. It was reversed (directive 2026-07-17, executed 2026-07-23), and GitHub is the only host for ConductionNL work.
@@ -63,19 +67,21 @@ The entry point is unchanged from part 1: a label on the tracking issue, not a p
 
 ## Images: the GitHub Container Registry
 
-In a local run you build the images yourself (part 5). For unattended runs that would waste minutes on every stage, so `hydra-image.yml` builds them once and pushes them to the **GitHub Container Registry** (GHCR): the `hydra-nextcloud-test:stable32` base image first, `hydra-builder` on top of it, and `hydra-reviewer` and `hydra-security` alongside. The naming is driven by two variables in `secrets/.env`:
+In a local run you build the images yourself (part 5). Wherever a stage runs as a container outside your laptop, that would waste minutes on every stage, so `hydra-image.yml` builds them once and pushes them to the **GitHub Container Registry** (GHCR): the `hydra-nextcloud-test:stable32` base image first, then `hydra-builder` (which copies the Nextcloud tree out of that base), and `hydra-reviewer` and `hydra-security` alongside. The Kubernetes Jobs name these images directly. For the scripts on a host (`manual-review.sh`, the cron scripts), the naming is driven by two variables in `secrets/.env`:
 
 ```bash
-# production values; part 5 used localhost/hydra and test for local builds
+# pull the published images; unset, the scripts use localhost/hydra and test (part 5)
 HYDRA_IMAGE_PREFIX=ghcr.io/conductionnl/hydra
 HYDRA_IMAGE_TAG=latest
 ```
+
+`dev-run.sh` ignores both and always starts `localhost/hydra-<stage>:test`.
 
 So the reviewer image resolves to `ghcr.io/conductionnl/hydra-reviewer:latest`, and the same for builder and security. (The applier image is not built by this workflow.) `latest` only moves when a release is published. Every push to `main` or `development` also publishes an immutable `sha-<short>` tag, and pinning `HYDRA_IMAGE_TAG` to one of those is how you freeze a known-good pipeline version instead of always tracking `latest`.
 
 ## Credentials: a reference, not a token
 
-Production Hydra never uses a shared org-admin token, and it never holds a forge token at all. Every forge call the flows make, whether for an issue, a label, a comment or a pull request, goes through one OpenConnector source, `flows/hydra-forge.source.json`. That source carries only a `credentialRef`: the id of a credential that lives in the broker (Doriath). The broker fills in the secret and sends the call, locked to `api.github.com`. What hydra stores is a uuid:
+Production Hydra never uses a shared org-admin token, and it never holds a forge token at all. Every issue, label, comment and pull-request call the flows make goes through one OpenConnector source, `flows/hydra-forge.source.json`. That source carries only a `credentialRef`: the id of a credential that lives in the broker (Doriath). The broker fills in the secret and sends the call, locked to `api.github.com`. What hydra stores is a uuid:
 
 ```json
 "authentication": {
@@ -83,14 +89,14 @@ Production Hydra never uses a shared org-admin token, and it never holds a forge
 }
 ```
 
-When the reference cannot be resolved, the run is refused. Nothing falls back to another token.
+When the reference cannot be resolved, the run is refused. Nothing falls back to another token. The workload steps work the same way: they carry separate credential ids for reading the repo, for pushing, and for the model, and the push is done by the pipeline, so the agent that writes the code never holds a forge credential.
 
-The Claude side follows the personal-scope rule from part 5:
+The Claude side follows the personal-scope rule from part 5: a Claude Max or Pro subscription may serve its owner, not an organisation. Hydra's part in that is making every stage say whose credential ran it:
 
-1. **Every run has an owner.** It is resolved once per cycle: the issue's `owner:<uid>` marker, or else the person who applied the label. A bot is never the owner.
-2. **A subscription only serves its owner.** A Claude Max or Pro credential runs only its owner's stages. A run without a resolvable owner may only be served by an organisation API key. The workload step refuses a stage it cannot attribute, and `hydra-record-stage` writes no record without a `credential_owner`, so an unattributed stage can never advance its label.
+1. **The owner comes from the step that ran the stage.** The hermiq workload step reports the stage's `owner`, together with `credential_owner` and `credential_name`. How hermiq resolves the owner is configured in hermiq, not in the hydra repo.
+2. **No owner, no record.** `hydra-record-stage` refuses to record a stage without an owner, because "who ran this, on whose credential" cannot be recovered after the run.
 
-`hydra.json` records whose credential ran each stage (`cycles[].owner`, `stages[].credential_owner`). It never holds the token itself.
+`hydra.json` records those three fields on every stage entry. It never holds the token itself.
 
 :::note What changed
 Until 2026 this section described `secrets/credentials.json`: a list of Claude tokens with automatic rotation on rate-limit, plus one git token per persona. The file, the token pool and the rotation were retired with the move to flows.
@@ -105,11 +111,11 @@ Hydra's `docs/deployment-models.md` describes three ways to run it, in increasin
 </HexCard>
 
 <HexCard title="Model 2: GitHub Actions (images only since August 2026)">
-  Until hydra#452 (2026-08-01) the build and review stages ran as Actions jobs, triggered by issue labels and PR events, with credentials in org secrets. That dispatch was removed: the stage now runs in the hermiq ExApp, started by the OpenRegister flows above. What stays in GitHub Actions is the image build, <code>hydra-image.yml</code>, which every other model pulls from.
+  Until hydra#452 (2026-08-01) the build and review stages ran as Actions jobs, triggered by issue labels and PR events, with credentials in org secrets. That dispatch was removed: the stage now runs in the hermiq ExApp, started by the OpenRegister flows above. What stays in GitHub Actions is the image build, <code>hydra-image.yml</code>, which the container paths (scripts on a host, Model 3) pull from.
 </HexCard>
 
 <HexCard title="Model 3: Kubernetes and ArgoCD">
-  Each stage runs as a Kubernetes <code>Job</code> (<code>manifests/builder-job.yaml</code>, <code>reviewer-job.yaml</code>, <code>security-job.yaml</code>), with a <code>NetworkPolicy</code> and an ArgoCD <code>Application</code> that syncs <code>manifests/</code> from <code>main</code>. For scale and isolation.
+  Each stage runs as a Kubernetes <code>Job</code> (<code>manifests/builder-job.yaml</code>, <code>reviewer-job.yaml</code>, <code>security-job.yaml</code>), with a <code>NetworkPolicy</code> and an ArgoCD <code>Application</code> that syncs <code>manifests/</code> from <code>main</code>. For scale and isolation. There is also an <code>applier-job.yaml</code>, but <code>hydra-image.yml</code> does not build the applier image it names.
 </HexCard>
 
 <HexCard title="Honest status: Model 3 is infrastructure-as-code, not a runbook">
@@ -120,13 +126,13 @@ Hydra's `docs/deployment-models.md` describes three ways to run it, in increasin
 
 <Troubleshooting title="Common CI-specific snags">
   <TroubleshootingItem title="The label is set but no stage starts">
-    Unattended dispatch is the <code>hydra-dispatch</code> flow, not an Actions workflow, so there is no workflow run to look for. Its definition ships with <code>enabled: false</code>: check that the flow is activated on the OpenRegister instance, then give it one five-minute tick.
+    Unattended dispatch is the <code>hydra-sequencer</code> flow, not an Actions workflow, so there is no workflow run to look for. Its definition ships with <code>enabled: false</code>: check that the flow is activated on the OpenRegister instance, then give it a few five-minute ticks. It does one unit of work per tick, review stages before builds, so a busy queue takes longer. The label has to be the bare <code>build:queued</code>; a prefixed label is never picked up.
   </TroubleshootingItem>
-  <TroubleshootingItem title="A stage fails pulling its image">
-    The tag is wrong or the image was never built. Confirm <code>hydra-image.yml</code> ran on GitHub Actions and pushed <code>ghcr.io/conductionnl/hydra-&lt;role&gt;</code> with the expected tag, and that the host has pull access to GHCR. A <code>codeberg.org/conduction/hydra-*</code> reference is stale configuration: no Hydra image was ever published there.
+  <TroubleshootingItem title="A container stage fails pulling its image">
+    This applies to the container paths (the scripts on a host, the Kubernetes Jobs); the flows' workload steps name no image. The tag is wrong or the image was never built. Confirm <code>hydra-image.yml</code> ran on GitHub Actions and pushed <code>ghcr.io/conductionnl/hydra-&lt;role&gt;</code> with the expected tag, and that the host has pull access to GHCR. A <code>codeberg.org/conduction/hydra-*</code> reference is stale configuration: no Hydra image was ever published there.
   </TroubleshootingItem>
-  <TroubleshootingItem title="A stage is refused as unattributed">
-    The run has no owner that can be resolved. Put an <code>owner:&lt;uid&gt;</code> marker on the issue, or have a person (not a bot) apply the label. Only an organisation API key may run a stage without an owner.
+  <TroubleshootingItem title="A stage has no entry in hydra.json">
+    <code>hydra-record-stage</code> refused it as unattributed ("A stage result with no owner cannot be recorded"), or the record write failed. Neither stops the run: the labels and the PR are already there. For the first, check how the owner is resolved for that workload step in the hermiq configuration of your instance; the record flow only checks that one is present.
   </TroubleshootingItem>
   <TroubleshootingItem title="Every forge call fails with a credential error">
     The <code>credentialId</code> in <code>hydra-forge.source.json</code> is instance-specific. When you apply the source, substitute the id of the credential in your own OpenRegister instance.
@@ -147,9 +153,9 @@ Think about the trigger and the runtime versus the pipeline itself.
 
 <Details summary="Answer">
 
-What changes: the trigger (the scheduled `hydra-dispatch` flow finding the label instead of you starting a container), where stages run (the hermiq ExApp instead of containers on your machine), where images come from (a GHCR pull instead of a local `docker build`), and where credentials live (a brokered credential id instead of variables in your shell).
+What changes: the trigger (the scheduled `hydra-sequencer` flow finding the label instead of you starting a container), where stages run (hermiq workload steps instead of containers on your machine, so no image is pulled for them), where credentials live (brokered credential ids instead of variables in your shell), and what is recorded (labels, a PR and `hydra.json` entries, where a local run leaves no record).
 
-What stays the same: the entire pipeline. Personas, labels, the state machine, the 22 gates, the no-loop rule. The contract is still one tracking issue labelled `ready-to-build`.
+What stays the same: the personas, the gate suite (whose run prints its own COVERAGE line rather than a fixed count), and the no-loop rule. The contract is one issue labelled `build:queued`.
 
 </Details>
 
@@ -195,7 +201,7 @@ Model 2 (GitHub Actions) has not run stages since hydra#452 (2026-08-01); it onl
   <NextStep
     title="Part 6 — Troubleshooting & escalation"
     href="/academy/hydra-tutorial-6-troubleshooting-escalation"
-    description="When a CI run lands on needs-input, this is how you read hydra.json and recover."
+    description="When a run ends in build:fail or needs-input, this is how you read hydra.json and recover."
   />
   <NextStep
     title="OpenSpec series — the other half"
