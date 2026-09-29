@@ -1,13 +1,24 @@
 ---
-title: Conduction, Public Tech for Nextcloud
-description: Conduction builds open-source apps for the Nextcloud workspace. Tech to serve people. Apps you install yourself, support when you want it managed, advisory when you want a partner.
+title: Public Tech for Nextcloud
+description: ConNext is open-source apps on Nextcloud, bundled as one workspace stack. Catalogs, registers, document handling, integrations. EUPL-1.2, ISO 27001, Amsterdam.
 hide_table_of_contents: true
 ---
 
 import {Hero, StatsStrip, AppsPreview, CtaBanner, PairRow, PairCard, Section, SectionHead, Clients, DEFAULT_CLIENTS, PartnerDirectory, CommonGroundPlus, HexRain} from '@conduction/docusaurus-preset/components';
-import {totalDownloads, formatDownloads} from '@conduction/docusaurus-preset/data';
-import {PARTNERS, BECOME_PARTNER, totalPartners} from '@site/src/data/partners-catalog';
-import {APP_COUNT} from '@site/src/data/apps-catalog';
+import {formatDownloads} from '@conduction/docusaurus-preset/data';
+import {usePartners, useBecomePartner, totalPartners} from '@site/src/data/partners-catalog';
+
+export function HomePartnerDirectory() {
+  const partners = usePartners();
+  const becomePartner = useBecomePartner();
+  return (
+    <PartnerDirectory
+      partners={partners}
+      becomePartner={{...becomePartner, href: '/support#become-a-partner', ctaLabel: 'Apply on /support'}}
+    />
+  );
+}
+import {APP_COUNT, TOTAL_DOWNLOADS} from '@site/src/data/apps-catalog';
 
 {/* Conduction main landing. Public Tech framing: tech to serve people.
     Three doors out: install an app yourself, get it as managed SaaS, or
@@ -18,10 +29,10 @@ import {APP_COUNT} from '@site/src/data/apps-catalog';
 
 <Hero
   eyebrow={<>Public Tech · open-source apps for <span className="next-blue">Nextcloud</span></>}
-  title={<>Tech to serve people.<br/>One workspace.<br/>{APP_COUNT} apps.</>}
-  lede={<>We are Conduction. We build open-source apps that plug into <span className="next-blue">Nextcloud</span>. Catalogs, registers, document handling, integrations. Install yourself, host with us as SaaS, or bring in a partner. Same code, same licence, no procurement track required.</>}
-  primaryCta={{label: <>Install from <span className="next-blue">Nextcloud</span> app store</>, href: '/apps'}}
-  secondaryCta={{label: 'Run a local demo', href: '/demo'}}
+  title={<>Tech to serve people.</>}
+  lede={<>We are Conduction. We build open-source apps that plug into <span className="next-blue">Nextcloud</span> — catalogs, registers, document handling, integrations. <span className="next-blue">ConNext</span> bundles them into one workspace stack you can roll out in days. Same code, no licence, support when you need it.</>}
+  primaryCta={{label: 'Explore ConNext', href: '/connext'}}
+  secondaryCta={{label: 'Get support', href: '/support'}}
   tertiaryCta={{label: 'View on GitHub', href: 'https://github.com/ConductionNL'}}
 >
   <HexRain />
@@ -32,7 +43,7 @@ import {APP_COUNT} from '@site/src/data/apps-catalog';
   { value: '2 min', label: <>from app store install<br/>to working solution</> },
   { value: '€0', label: <>for the apps,<br/>support is optional</> },
   { value: totalPartners, label: <>certified and partner<br/>implementers</> },
-  { value: formatDownloads(totalDownloads), label: <>downloads,<br/>and counting</> },
+  { value: formatDownloads(TOTAL_DOWNLOADS), label: <>downloads,<br/>and counting</> },
 ]} />
 
 <AppsPreview
@@ -57,11 +68,11 @@ import {APP_COUNT} from '@site/src/data/apps-catalog';
       icon: <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg>,
     },
     {
-      name: 'OpenConnector',
+      name: 'Integriq',
       tagline: <>Connect <span className="next-blue">Nextcloud</span> to anything. REST, SOAP, GraphQL, file drops, message queues. No middleware.</>,
       status: 'BETA',
       version: 'v1.2 · NL · EN',
-      href: '/apps/openconnector',
+      href: '/apps/integriq',
       icon: <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>,
     },
   ]}
@@ -102,10 +113,7 @@ import {APP_COUNT} from '@site/src/data/apps-catalog';
     align="stack"
     lede="Implementation, hosting, and integration partners that ship Conduction apps to clients. Apply through /support to be listed."
   />
-  <PartnerDirectory
-    partners={PARTNERS}
-    becomePartner={{...BECOME_PARTNER, href: '/support#become-a-partner', ctaLabel: 'Apply on /support'}}
-  />
+  <HomePartnerDirectory />
 </Section>
 
 <Clients

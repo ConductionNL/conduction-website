@@ -1,0 +1,321 @@
+---
+slug: hydra-tutorial-5-starting-a-run
+title: "Hydra leerlijn — Deel 5: Een Hydra-run starten op een echte app"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-12
+summary: "Het hele recept van credentials tot een eerste run: credentials uit je omgeving, de HYDRA_FORGE-instelling, lokale images, één stage met dev-run.sh of de hele keten met smoke-test.sh, en een echte run op een doel-app die je met een label start. Vijfde van zeven korte modules."
+tags: [Hydra, Operations, Setup, Labels, Tutorial series]
+apps: []
+durationMinutes: 20
+series: hydra-tutorial
+partNumber: 5
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, Troubleshooting, TroubleshootingItem} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+In de eerste vier delen ging het om concept, pipelines, gates en skills. Tijd om te draaien. Op je eigen machine draai je de stages van Hydra als containers: één stage tegelijk, of de hele keten tegen een wegwerp-repo. Een echte run op een echte app begint met een label, en de flows uit deel 7 nemen het daarna over. Dit deel behandelt beide, met de praktische valkuilen: credentials, de forge-instelling en images.
+
+{/* truncate */}
+
+<Outcomes title="Wat je leert in dit deel">
+  <Outcome>Waar Hydra zijn credentials vandaan haalt: uit je omgeving, nooit uit een bestand.</Outcome>
+  <Outcome>Hoe je <code>secrets/.env</code> opzet, inclusief de <strong><code>HYDRA_FORGE</code></strong>-instelling die geen default heeft.</Outcome>
+  <Outcome>Hoe je de container images lokaal bouwt (of uit GHCR pullt).</Outcome>
+  <Outcome>Hoe je één stage draait met <code>dev-run.sh</code>, of de hele keten met <code>smoke-test.sh</code>, en wat zo'n lokale run níét bewijst.</Outcome>
+  <Outcome>Hoe je een echte run op een doel-app start met een label, en waar je die volgt.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Deel 1 t/m 4 doorgenomen.</PrerequisiteItem>
+  <PrerequisiteItem>De <code>gh</code> CLI ingelogd (<code>gh auth login</code>). De hydra-repo is privé, dus dat heb je nodig voordat je hem kunt clonen.</PrerequisiteItem>
+  <PrerequisiteItem>Een werkende Docker engine (rootless of root maakt niet uit). Lokaal draaien we de images zonder Kubernetes.</PrerequisiteItem>
+  <PrerequisiteItem>Een Claude Max-account. <code>claude setup-token</code> maakt van je login het token dat Hydra nodig heeft.</PrerequisiteItem>
+  <PrerequisiteItem>Push-rechten op de doel-repo, omdat de builder daar een branch pusht en een PR opent.</PrerequisiteItem>
+</Prerequisites>
+
+## Stap 1: clone en bekijk
+
+```bash
+git clone https://github.com/ConductionNL/hydra.git
+cd hydra
+cat CLAUDE.md
+```
+
+`CLAUDE.md` is de canonieke architectuur-doc. Goed om de eerste keer doorheen te scrollen. De map `secrets/` zit niet in git: `secrets/.env` maak je zelf aan in stap 3.
+
+## Stap 2: credentials komen uit je omgeving
+
+De lokale scripts van Hydra lezen precies twee credentials, en alleen uit omgevingsvariabelen:
+
+```bash
+export GH_TOKEN=$(gh auth token)        # forge-token; GIT_TOKEN werkt ook als alias
+export CLAUDE_CODE_OAUTH_TOKEN=<token>  # uit `claude setup-token`; of ANTHROPIC_API_KEY=<key>
+```
+
+Er is geen credentials-bestand. `scripts/lib/env-credentials.sh` is de enige resolver, en die faalt dicht: ontbreekt een variabele, dan stopt het script met een reden, in plaats van een run te starten die drie seconden later sneuvelt op een 401. De scripts geven beide waarden aan de containers door op variabelenaam (`-e GH_TOKEN`), zodat de waarden nooit in de proceslijst of in een bestand terechtkomen.
+
+<HexCard title="Je abonnement is van jou">
+  Een Claude Max- of Pro-abonnement is persoonlijk: het mag je eigen werk draaien, niet dat van een organisatie. Lokaal regelt dat zichzelf, omdat het script onder jouw shell met jouw token draait. In de pijplijn komt de eigenaar van elke stage uit de stap die hem draait, en <code>hydra-record-stage</code> weigert een stage zonder eigenaar vast te leggen. Deel 7 vertelt meer.
+</HexCard>
+
+:::note Oudere setups
+Voor de overstap naar flows (2026) las Hydra `secrets/credentials.json`: een lijst Claude-tokens plus één git-token per persona, met automatische rotatie bij een rate-limit. Dat bestand, `scripts/lib/credentials.sh` en de rotatie zijn weg. Een achtergebleven `credentials.json` op schijf verandert niets.
+:::
+
+## Stap 3: `secrets/.env`
+
+De **niet**-credential overrides. Anders voor productie dan voor je laptop.
+
+```bash title="secrets/.env (lokaal werkstation)"
+# Met welke forge de scripts en containers praten. Verplicht: er is geen default.
+HYDRA_FORGE=github
+
+# Welke images en tag te gebruiken. Lokaal bouw je vaak met -t localhost/hydra-*:test.
+HYDRA_IMAGE_PREFIX=localhost/hydra
+HYDRA_IMAGE_TAG=test
+
+# Default review-scope (ADR-020): alleen PR-diff. Zet op 'full' alleen bij onboarding van een repo.
+HYDRA_REVIEW_SCOPE=diff
+```
+
+`HYDRA_FORGE=github` is goed voor elke ConductionNL-repo; `forgejo` is alleen voor een klant die een eigen Forgejo draait. Er is geen default, omdat een forge raden betekent dat je je token naar een derde partij stuurt. `secrets/.env.example` zet hem op `github`; heb je een ouder voorbeeld gekopieerd, controleer dan die regel, want oudere versies zetten hem op `codeberg`.
+
+Tip: de scripts die `HYDRA_IMAGE_*` lezen (`manual-review.sh`, `cron-audit.sh`, `cron-spec-from-issue.sh`) vallen terug op `localhost/hydra` en `test` als de variabelen leeg zijn, en `dev-run.sh` start altijd `localhost/hydra-<stage>:test`, wat je ook instelt. Lokaal bouw je de images dus zelf (stap 4), of je pullt een gepubliceerde `ghcr.io/conductionnl/hydra-<stage>`-image en tagt die onder de lokale naam.
+
+:::tip secrets/.env wordt automatisch geladen
+`scripts/dev-run.sh` weigert te starten zonder dit bestand en laadt het zelf, net als `reconcile.sh` en de `cron-*.sh`-sweeps. Een tijd lang controleerde `dev-run.sh` alleen óf het bestand bestond en laadde het nooit, waardoor `HYDRA_FORGE=github` ingesteld leek terwijl elke container nog met Codeberg praatte ([hydra#391](https://github.com/ConductionNL/hydra/issues/391)). Elk entrypoint dat configuratie leest MOET dit bestand bij opstart sourcen; dat is een repo-breed contract.
+:::
+
+## Stap 4: build de container images
+
+In CI bouwt de workflow `hydra-image.yml` de base-, builder-, reviewer- en security-image en pusht ze naar GHCR als `ghcr.io/conductionnl/hydra-*`. Lokaal bouw je ze zelf, onder de namen waar de scripts naar zoeken:
+
+```bash
+# Base image: Nextcloud + PostgreSQL + OpenRegister (builder-dependency)
+docker build -t ghcr.io/conductionnl/hydra-nextcloud-test:stable32 \
+    -f images/nextcloud-test/Dockerfile .
+
+# De drie pijplijn-images
+docker build -t localhost/hydra-builder:test  -f images/builder/Dockerfile  .
+docker build -t localhost/hydra-reviewer:test -f images/reviewer/Dockerfile .
+docker build -t localhost/hydra-security:test -f images/security/Dockerfile .
+
+# Eenmalig: het bridge-netwerk waarop de containers draaien
+docker network create hydra-net
+```
+
+Controleer daarna met `docker images | grep hydra` dat de drie tags er staan. Reviewer en security zijn standalone (geen NC-dependency). De builder kopieert de Nextcloud-boom en de database uit `ghcr.io/conductionnl/hydra-nextcloud-test:stable32` met `COPY --from`, dus die image moet onder precies die naam bestaan voordat je de builder bouwt.
+
+## Stap 5: draai één stage met `dev-run.sh`
+
+`dev-run.sh` start één container direct, zonder board en zonder flow eromheen. Zo zie je het snelst wat een persona doet:
+
+```bash
+# Builder: implementeer een OpenSpec-change op een branch en open een PR
+./scripts/dev-run.sh openspec/changes/<change> builder \
+    --repo-url https://github.com/ConductionNL/<app>
+
+# Code review of security review op een bestaande PR
+./scripts/dev-run.sh - reviewer --repo-url https://github.com/ConductionNL/<app> \
+    --pr-url https://github.com/ConductionNL/<app>/pull/<N>
+./scripts/dev-run.sh - security --repo-url https://github.com/ConductionNL/<app> \
+    --pr-url https://github.com/ConductionNL/<app>/pull/<N>
+```
+
+De output van de persona verschijnt in je terminal, en zijn commits en comments komen op de PR.
+
+## Stap 6: de hele keten op een wegwerp-repo
+
+Wil je builder, reviewer en security na elkaar zien draaien, gebruik dan `smoke-test.sh`. Die werkt op een wegwerp-repo onder je eigen GitHub-account, dus aan een echte app wordt niets aangeraakt:
+
+```bash
+./scripts/smoke-test.sh --spec-dir /tmp/todo-mvp-spec \
+    --github-user <jouw-github-user> --repo-name todo-app
+```
+
+Het script hernoemt een oudere `todo-app` naar `todo-app-runN`, maakt een verse aan met de spec erin, bouwt de images, draait de builder, daarna reviewer en security parallel, en print een samenvatting. De spec-map heeft een `design.md`, een `tasks.md` en een map `specs/` nodig. Vanuit Claude Code doet `/local-run` hetzelfde in één commando.
+
+<HexCard title="Wat een lokale run níét bewijst">
+  <code>dev-run.sh</code> en <code>smoke-test.sh</code> starten de containers direct, buiten elke flow. Ze schrijven <strong>geen run-record</strong>: geen stage-entry in <code>hydra.json</code>, geen eigenaar-attributie, geen label-state-machine. Een groene lokale keten laat zien dat de stages werken op deze spec. Over sequencing of attributie zegt hij niets. Daarvoor moet de run door de flows, zoals in stap 7.
+</HexCard>
+
+## Stap 7: een echte run op een doel-app
+
+Op een echte app start je zelf geen containers. Je zet het trigger-label **`build:queued`** op het issue en de flows doen de rest. Eerst moeten twee dingen kloppen:
+
+- De **body** van het issue noemt de change als pad, `openspec/changes/<naam>`. De sequencer neemt het eerste zulke pad dat hij vindt. Geen pad betekent `build:blocked`.
+- Die change-map bestaat op de base-branch: `development` als de repo die heeft, anders de default branch. Zo niet, dan wordt het ook `build:blocked`.
+
+Zet daarna het label via de Hydra-helper:
+
+```bash
+./scripts/hydra-label.sh ConductionNL/<app> <N> add build:queued
+```
+
+`scripts/hydra-label.sh` is het **preferred path**: het gebruikt de label-helpers uit `scripts/lib/labels.sh` en synct het GitHub Project board realtime. Een directe `gh issue edit --add-label` werkt ook, maar dan blijft het board in de oude kolom staan tot reconcile (elke 10 minuten) het oppikt.
+
+De flow `hydra-sequencer` vindt het label bij een van zijn tikken van vijf minuten. Elke tik zoekt hij in de org naar open issues met een queued-label en doet hij één stuk werk; review-labels gaan vóór `build:queued`, dus bij een volle wachtrij kan het een paar tikken duren voor jouw issue aan de beurt is. De definitie wordt geleverd met `enabled: false`, dus dit gebeurt alleen op een OpenRegister-instantie waar de flow aangezet is. Deel 7 behandelt die opzet.
+
+:::note ready-to-build en yolo
+Oudere versies van dit deel gebruikten `ready-to-build` als trigger en `yolo` voor een auto-merge. `create-labels.sh` maakt beide labels nog aan, maar geen enkele flow leest ze. De trigger is `build:queued`, en er wordt niets automatisch gemerged.
+:::
+
+<HexCard title="Wat is er met HYDRA_LABEL_PREFIX gebeurd?">
+  Eerdere versies van dit deel besteedden een hele stap aan <code>HYDRA_LABEL_PREFIX</code>. Die gaf de lokale supervisor van elke developer een eigen label-namespace (<code>wilco-build:queued</code>), zodat twee supervisors op dezelfde repo elkaars werk niet oppakten. De supervisor is weg, en de flows zijn het enige dat nog werk oppakt. Die reageren alleen op de kale labels. De shell-tooling (<code>create-labels.sh --prefix</code>, <code>hydra-label.sh</code>, <code>reconcile.sh</code>) kent de variabele nog, maar geen enkele flow pakt een geprefixt label op. Laat hem leeg.
+</HexCard>
+
+## Stap 8: volg de pijplijn
+
+Zodra de sequencer het issue heeft, bewegen de labels zo:
+
+```
+build:queued → build:pass | build:fail | build:no-change | build:blocked
+               (bij pass en bij fail wordt een PR geopend; die wordt nooit gemerged)
+
+build:pass   → jij zet zelf code-review:queued
+
+code-review:queued     → code-review:pass (+ security-review:queued) | code-review:fail | needs-input
+security-review:queued → security-review:pass (+ applier:queued)     | security-review:fail | needs-input
+applier:queued         → applier:pass | applier:fail | needs-input
+```
+
+Een paar dingen die je makkelijk verwacht en die niet gebeuren:
+
+- **Niets zet code review in de wachtrij na `build:pass`.** Doe dat zelf: `./scripts/hydra-label.sh ConductionNL/<app> <N> add code-review:queued`.
+- **Er zijn geen `:running`-labels.** Terwijl een stage draait, blijft zijn `:queued`-label op het issue staan en markeert een lock het issue als onderhanden.
+- **Een `fail` stopt de keten.** Een afgekeurde code review gaat niet door naar security review.
+- **`applier:pass` is het eind.** Er is geen `done`-label en geen merge; een mens merget de PR.
+
+Je volgt het op twee plekken:
+
+1. **GitHub issue**: de labels veranderen terwijl de sequencer de stages doorloopt. De sequencer schrijft die labels zelf, dus de kaart op het project-board volgt niet meteen; `reconcile.sh` verplaatst hem bij zijn volgende sweep.
+2. **GitHub PR**: de build-commit op `feature/<issue>/hydra-build`, met de gate-output in de PR-body. Elke review-stage schrijft zijn verdict naar een bestand `hydra-verdict.json`, dat de sequencer bij de volgende tik ophaalt; dat verdict verschuift de labels.
+
+Achter beide legt de sequencer, nadat de labels van een stage verschoven zijn, de stage vast in `openspec/changes/<slug>/hydra.json` via de flow `hydra-record-stage`, die een stage zonder eigenaar weigert. Deel 6 laat zien hoe je dat bestand leest. De flow-runs zelf leven in OpenRegister; er is geen logbestand op je machine om te tailen.
+
+## Troubleshooting
+
+<Troubleshooting title="Eerste-run problemen">
+  <TroubleshootingItem symptom="Het script stopt meteen met een fout over een ontbrekende credential">
+    Exporteer <code>GH_TOKEN</code> en <code>CLAUDE_CODE_OAUTH_TOKEN</code> (of <code>ANTHROPIC_API_KEY</code>) in dezelfde shell waarin je het script start. De resolver leest nooit een bestand, dus een <code>secrets/credentials.json</code> helpt niet.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="dev-run.sh meldt dat secrets/.env niet gevonden is">
+    Maak het bestand uit stap 3 aan. Het moet in <code>secrets/</code> in de root van de hydra-repo staan, niet in je home-dir: de scripts lezen het via een vast pad relatief aan de repo-root.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Een container weigert te starten omdat HYDRA_FORGE niet gezet is">
+    Zet <code>HYDRA_FORGE=github</code> in <code>secrets/.env</code>. De weigering is bewust: zonder die regel zou Hydra moeten raden waar je token heen moet.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Een script start een andere image dan die ik gebouwd heb">
+    <code>dev-run.sh</code> gebruikt altijd <code>localhost/hydra-&lt;stage&gt;:test</code> en negeert <code>HYDRA_IMAGE_*</code>, dus bouw met precies die tags. Bij <code>manual-review.sh</code> en de cron-scripts: controleer waar <code>HYDRA_IMAGE_PREFIX</code> en <code>HYDRA_IMAGE_TAG</code> in <code>secrets/.env</code> op uitkomen; leeg betekenen ze <code>localhost/hydra</code> en <code>test</code>.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Build start, geen image found error">
+    <code>docker images | grep hydra-builder</code>. Geen treffer? Bouw eerst de base image (<code>hydra-nextcloud-test</code>) en daarna pas de builder. De builder-Dockerfile kopieert uit de base met <code>COPY --from</code>, dus de base moet bestaan onder de naam <code>ghcr.io/conductionnl/hydra-nextcloud-test:stable32</code>. Een fout <code>network hydra-net not found</code> betekent dat je de laatste regel van stap 4 hebt overgeslagen.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Het label staat op het issue, maar er gebeurt niets">
+    Niets op je machine let op labels. Op een echte app moet de flow <code>hydra-sequencer</code> aangezet zijn in de OpenRegister-instantie (deel 7). Controleer ook de exacte naam van het label: met <code>HYDRA_LABEL_PREFIX</code> gezet schrijft <code>hydra-label.sh</code> <code>&lt;prefix&gt;-build:queued</code>, en dat leest geen enkele flow. En de sequencer doet één stuk werk per tik, review-stages eerst, dus een volle wachtrij vertraagt je build. Wil je lokaal een stage proberen, gebruik dan <code>dev-run.sh</code> uit stap 5.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Het issue krijgt meteen build:blocked">
+    De sequencer kon de change niet vinden. De body van het issue moet <code>openspec/changes/&lt;naam&gt;</code> bevatten, en die map moet bestaan op <code>development</code> (of op de default branch, als de repo geen <code>development</code> heeft). Pas de body aan of push de change, haal dan <code>build:blocked</code> weg en zet <code>build:queued</code> opnieuw.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Er draait een review, of needs-input verschijnt, terwijl ik alleen een build in de wachtrij zette">
+    Er staan nog review-labels van een vorige run op het issue, en die pakt de sequencer vóór <code>build:queued</code>. Zet het issue terug met <code>./scripts/hydra-label.sh ConductionNL/&lt;app&gt; &lt;N&gt; transition build:queued</code>: dat haalt alle andere queued-labels, <code>needs-input</code> en het oude build-verdict in één keer weg, en laat alleen <code>build:queued</code> staan als starttoestand.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+## Test jezelf
+
+Vier korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Benieuwd naar het antwoord? Klik **Antwoord**.
+
+<div className="tutorial-quiz">
+
+**1. Waar halen de lokale scripts van Hydra hun credentials vandaan, en wat gebeurt er als er een ontbreekt?**
+
+<Details summary="Hint">
+
+Twee variabelen, één resolver. Valt die ergens op terug?
+
+</Details>
+
+<Details summary="Antwoord">
+
+**Alleen uit de omgeving**: `GH_TOKEN` (of de alias `GIT_TOKEN`) voor de forge, en `CLAUDE_CODE_OAUTH_TOKEN` of `ANTHROPIC_API_KEY` voor het model. `scripts/lib/env-credentials.sh` faalt dicht: een ontbrekende variabele stopt het script met een expliciete reden en een exit-code die niet nul is. De resolver leest nooit een bestand, dus er is niets om op terug te vallen, en een verouderde `credentials.json` op schijf verandert niets.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Waarom heeft `HYDRA_FORGE` geen default?**
+
+<Details summary="Hint">
+
+Wat doet een script met je token zodra het besloten heeft met welke forge het praat?
+
+</Details>
+
+<Details summary="Antwoord">
+
+Een forge raden betekent de credentials van de run naar een derde partij sturen. De default was vroeger `codeberg`, en zo is er ooit een GitHub-token bij codeberg.org terechtgekomen. Nu weigeren de scripts te starten tot je `github` (elke ConductionNL-repo) of `forgejo` (de eigen Forgejo van een klant) opgeeft.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Waarom roep je `./scripts/hydra-label.sh` aan in plaats van `gh issue edit --add-label` om een run te triggeren?**
+
+<Details summary="Hint">
+
+De labels zijn de bron van waarheid, maar er is nog iets dat ze moet volgen.
+
+</Details>
+
+<Details summary="Antwoord">
+
+`hydra-label.sh` gaat via de label-helpers in `scripts/lib/labels.sh`, en elk daarvan eindigt met een sync van het GitHub Project board. Eén aanroep verandert dus het label én verplaatst de kaart. `gh issue edit` verandert alleen het label; het board blijft in de oude kolom tot `reconcile.sh` (elke 10 minuten) het verschil oppikt.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Je `smoke-test.sh`-keten kwam groen terug. Wat heb je bewezen, en wat niet?**
+
+<Details summary="Hint">
+
+Wat laat een run achter als er geen flow bij betrokken is?
+
+</Details>
+
+<Details summary="Antwoord">
+
+**Bewezen:** de stages builder, reviewer en security werken op deze spec, met deze images en deze credentials.
+
+**Niet bewezen:** iets over sequencing of attributie. `smoke-test.sh` en `dev-run.sh` starten containers direct, dus er wordt geen stage-record in `hydra.json` geschreven, geen eigenaar vastgelegd en geen label-state-machine doorlopen. Voor een claim als "de stage-records bewijzen het" heb je een run door de flows nodig.
+
+</Details>
+
+</div>
+
+<NextSteps title="Volgende stap" lede="Pijplijn loopt? Mooi. Maar wat doe je als het mis gaat? Deel 6 behandelt herstel- en escalatie-patronen.">
+  <NextStep
+    title="Deel 6 — Troubleshooting & escalatie"
+    href="/nl/academy/hydra-tutorial-6-troubleshooting-escalation"
+    description="<code>needs-input</code>, een build of review opnieuw in de wachtrij zetten, en waarom <code>retry:queued</code> en <code>rebuild:queued</code> vandaag niets doen."
+  />
+  <NextStep
+    title="Vorige stap — Skills & commands"
+    href="/nl/academy/hydra-tutorial-4-skills"
+    description="Wat de personas tijdens hun werk gebruiken."
+  />
+  <NextStep
+    title="dev-run.md — operationele referentie"
+    href="https://github.com/ConductionNL/hydra/blob/main/docs/operations/dev-run.md"
+    description="De operationele doc met de flags van dev-run.sh en de container-opties."
+  />
+</NextSteps>

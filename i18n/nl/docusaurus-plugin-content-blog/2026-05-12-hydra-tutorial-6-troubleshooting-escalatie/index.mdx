@@ -1,0 +1,345 @@
+---
+slug: hydra-tutorial-6-troubleshooting-escalation
+title: "Hydra leerlijn — Deel 6: Troubleshooting & escalatie"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-12
+summary: "Wat te doen als de pijplijn vastloopt: een verouderde PR bijwerken, een review-stage of een build opnieuw in de wachtrij zetten, en een stage met needs-input weer vrijmaken — geordend van goedkoop naar duur. Zesde van zeven korte modules."
+tags: [Hydra, Troubleshooting, Recovery, Tutorial series]
+apps: []
+durationMinutes: 15
+series: hydra-tutorial
+partNumber: 6
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard, Troubleshooting, TroubleshootingItem, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+In deel 5 stond de pijplijn. Dit deel gaat over het andere geval: **wat doe je als hij niet groen wordt?** Het geeft je de keuzeboom — geordend van goedkoopste interventie naar duurste — en de patronen waarmee je een vastgelopen issue weer in beweging krijgt.
+
+{/* truncate */}
+
+<Outcomes title="Wat je leert in dit deel">
+  <Outcome>Wat elke uitkomst betekent: de vier build-resultaten, en <code>needs-input</code>, dat alleen een review-stage zet.</Outcome>
+  <Outcome>De interventie-ladder: verouderde PR bijwerken → review-stage (opnieuw) in de wachtrij → een <code>needs-input</code>-stage vrijmaken → de build opnieuw in de wachtrij → handmatige fix.</Outcome>
+  <Outcome>Waarom <code>retry:queued</code> en <code>rebuild:queued</code> vandaag niets doen.</Outcome>
+  <Outcome>Waar je kijkt als iets vastzit, en hoe je terugkerende patronen herkent.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Deel 1 t/m 5 doorgenomen.</PrerequisiteItem>
+  <PrerequisiteItem>Een beeld van de label-volgorde uit stap 8 van deel 5.</PrerequisiteItem>
+</Prerequisites>
+
+## Wat betekenen de uitkomsten?
+
+De twee banen van `hydra-sequencer` eindigen verschillend, en het helpt om ze uit elkaar te houden.
+
+**De build-baan** eindigt in een van vier labels. Geen daarvan is `needs-input`:
+
+| Label | Wat er gebeurde | Is er een PR? |
+|---|---|---|
+| `build:pass` | De gates waren groen, meteen of na de ene fix-ronde. | Ja |
+| `build:fail` | De gates waren na de ene fix-ronde nog rood. | Ja, met de gate-output in de body |
+| `build:no-change` | De agent veranderde niets, dus er viel niets te pushen. | Nee |
+| `build:blocked` | De body van het issue noemt geen `openspec/changes/<naam>`, die change bestaat niet op de base-branch, of de build kon niet draaien. | Nee |
+
+**De review-baan** (code review → security review → applier) sluit elke stage af met `:pass`, `:fail` of `needs-input`. `needs-input` is **geen oordeel over de code**. Het betekent dat de stage geen bruikbaar verdict opleverde:
+
+- het verdict-bestand `hydra-verdict.json` ontbreekt of is onleesbaar;
+- het verdict noemt geen `hydra-gates` in `checks_run`, dus er is geen bewijs dat de gates gedraaid hebben;
+- de stage kon helemaal niet draaien.
+
+Een `:fail` is wél een echt verdict: de reviewer heeft gekeken en zei nee. Na een `:fail` wordt niets meer in de wachtrij gezet, en na `build:pass` ook niet: `code-review:queued` zet je zelf.
+
+Jouw rol als mens: uitzoeken welke van deze je voor je hebt, en de goedkoopste hendel hieronder kiezen die past.
+
+## De interventie-ladder
+
+Elke hendel is een label. Zet het met `scripts/hydra-label.sh`, zodat het project-board meebeweegt.
+
+| # | Situatie | Interventie | Kosten | Wat blijft behouden |
+|---|---|---|---|---|
+| 1 | Development is verder gegaan en de PR is verouderd (nieuwe lint-regels, ADR's, fixtures op development) | <code>gh pr update-branch &lt;N&gt;</code>, of wacht op <code>cron-update-prs.sh</code> (elk uur) | Gratis | Alles. Alleen de base wordt bijgewerkt. |
+| 2 | <code>build:pass</code> en nog niemand heeft gereviewd | Zet <code>code-review:queued</code> | Tot drie review-stages | De build. |
+| 3 | Review-contracten zijn aangepast, of een review moet opnieuw | Haal de <code>:pass</code>/<code>:fail</code> van die stage weg (en <code>needs-input</code>), zet <code>&lt;stage&gt;:queued</code> | Eén tot drie review-stages | De build. Bij een pass zet de sequencer de volgende stage weer in de wachtrij. |
+| 4 | Een review-stage eindigde in <code>needs-input</code> | Haal **eerst** het <code>:queued</code>-label van die stage weg, los de oorzaak op, haal dan <code>needs-input</code> weg en zet <code>:queued</code> opnieuw (zie hieronder) | Eén stage | De build en de eerdere verdicts. |
+| 5 | De build ging mis: <code>build:fail</code>, <code>build:no-change</code>, <code>build:blocked</code>, of een <code>build:pass</code> die toch niet klopt | Haal het <code>build:*</code>-verdict weg, zet <code>build:queued</code> | Een volledige build | Niets van de oude build. De sequencer bouwt opnieuw vanaf de base-branch en pusht <code>feature/&lt;issue&gt;/hydra-build</code>. |
+| 6 | Je hebt de PR zelf gesloten en er staan nog oude labels op het issue | Wacht op <code>reconcile.sh</code> (elke 10 min) | Volgende reconcile-run | <code>check_stage_without_open_pr</code> ziet de inconsistentie en zet <code>build:queued</code>. Herstelt zichzelf. |
+| 7 | De pijplijn-infra is kapot (flow uitgezet, een workload-stap die niet kan starten, een credential die de broker niet kan resolven) | Eerst de infra repareren, en pas DAN een van 1–5 kiezen | Tijd | — |
+
+**Volgorde:** altijd de goedkoopste die past. Grijp alleen naar een nieuwe build als de build zelf fout was; anders gooi je goed werk weg.
+
+### Een review-stage opnieuw in de wachtrij zetten
+
+Stel: de code review is afgekeurd en je vindt dat hij opnieuw moet, omdat een ADR veranderd is of omdat je zelf een fix op de branch hebt gepusht:
+
+```bash
+./scripts/hydra-label.sh ConductionNL/<app> <N> remove code-review:fail
+./scripts/hydra-label.sh ConductionNL/<app> <N> add code-review:queued
+```
+
+De sequencer pakt hem op bij een van de volgende tikken. Keurt de review goed, dan zet hij zelf `security-review:queued`, en loopt de keten vanaf daar verder.
+
+### Een review-stage die in `needs-input` eindigde
+
+:::warning Haal eerst het `:queued`-label weg
+Een stage die in `needs-input` eindigt, **houdt zijn `:queued`-label**. De sequencer zoekt alleen op dat label, dus hij pakt de stage bij de volgende tik weer op — elke vijf minuten — tot iemand het weghaalt. Haal het label weg voordat je gaat uitzoeken wat er mis is.
+:::
+
+```bash
+# 1. Stop de herhalingen
+./scripts/hydra-label.sh ConductionNL/<app> <N> remove security-review:queued
+
+# 2. Los de oorzaak op: gates niet gedraaid, geen verdict-bestand, of een stage die niet kon starten
+
+# 3. Zet hem opnieuw in de wachtrij
+./scripts/hydra-label.sh ConductionNL/<app> <N> remove needs-input
+./scripts/hydra-label.sh ConductionNL/<app> <N> add security-review:queued
+```
+
+Geef altijd de **kale** labelnaam mee. Met `HYDRA_LABEL_PREFIX` gezet voegt `hydra-label.sh` de prefix zelf toe, dus `wilco-needs-input` zou `wilco-wilco-needs-input` worden. En omdat de flows alleen kale labels lezen, laat je de prefix sowieso leeg (deel 5).
+
+### De build opnieuw in de wachtrij zetten
+
+```bash
+./scripts/hydra-label.sh ConductionNL/<app> <N> remove build:fail
+./scripts/hydra-label.sh ConductionNL/<app> <N> add build:queued
+```
+
+Vervang `build:fail` door het build-verdict dat op het issue staat. Staan er ook nog oude review-labels op, dan doet `./scripts/hydra-label.sh ConductionNL/<app> <N> transition build:queued` het in één keer: het haalt alle andere queued-labels, `needs-input` en het oude build-verdict weg, en laat `build:queued` staan.
+
+Wat de push doet met een bestaande branch `feature/<issue>/hydra-build`, en of er een nieuwe PR naast een oude wordt geopend, wordt buiten de flow-definities bepaald. Wil je een schone PR, sluit de oude dan eerst.
+
+### En `retry:queued` en `rebuild:queued`?
+
+**Die doen vandaag niets.** Geen enkele flow leest die labels. Eerdere versies van dit deel beschreven wat ze deden onder de uitgefaseerde shell-orchestrator: `retry:queued` stelde uit `hydra.json` een `feedback.md` samen en draaide de builder nog één keer in `HYDRA_MODE=fix`, en `rebuild:queued` sloot de PR en zette de branch hard terug. Die orchestrator is weg, en dat gedrag ook; `scripts/lib/build-feedback-brief.py` heeft geen aanroeper meer.
+
+`create-labels.sh` maakt beide labels nog aan, en `cron-update-prs.sh` zet `rebuild:queued` nog steeds op het issue van een PR met merge-conflicten, samen met een comment. Niets pakt dat label op, dus zie de comment als het signaal: los het conflict op, of zet de build opnieuw in de wachtrij (trede 5).
+
+## Wanneer is het de gate, en wanneer is het de builder?
+
+Een terugkerende valkuil uit onze eigen retrospectives: hetzelfde issue faalt drie keer op dezelfde mechanische gate — typisch een ontbrekende SPDX-header of een vergelijkbare hygiëne-check. Elke opnieuw gestarte build reproduceert hetzelfde patroon.
+
+Een vierde build is dan **niet** de juiste zet. Wees gedisciplineerd:
+
+1. **Check de gate zelf.** Is dit een fout-positief? (Zie deel 3.) Een klassieker: een grep zonder woordgrens die meer matcht dan bedoeld. De gates zitten in het package `conduction/hydra-gates` (in `ConductionNL/.github`); repareer de gate daar, of zijn skill in `hydra/`.
+2. **Fix de mechanische overtreding met de hand.** Vaak is het sneller om de SPDX-headers zelf toe te voegen, te committen op `feature/<issue>/hydra-build`, en de code review in de wachtrij te zetten (trede 2 of 3). Tijd: minuten.
+3. **Overweeg een sterkere agent.** Toont dezelfde klasse fout dezelfde blinde vlek in meerdere repo's, dan is dat een signaal dat de build-prompt of de mechanische gate niet volstaat. Open een issue in `hydra/` om de gate of de brief aan te scherpen.
+
+## Watch-list patronen
+
+Patronen die we al gezien hebben en die het waard zijn om eerst met jouw situatie te vergelijken. De eerste drie komen uit de shell-pijplijn die de flows vervingen; de lessen gelden nog steeds.
+
+<HexCard title="spdx-headers + forbidden-patterns loop (2026-04-19)">
+  Op decidesk (nu <a href="https://github.com/ConductionNL/decidiq">Decidiq</a>) GitHub-issues #44/#71/#72 steeds hetzelfde patroon: de builder vergat de EUPL-1.2-header op nieuwe PHP-files, de reviewer claimde dat er 0 fixes nodig waren, de recheck werd rood. Forbidden-patterns bleek deels fout-positief (grep zonder woordgrens). Fix: SPDX met de hand toegevoegd + de grep aangescherpt.
+</HexCard>
+
+<HexCard title="decidesk #44/#45 — gate-7 stub-method exploit (2026-04-23)">
+  Vijf verschillende pijplijn-bugs in één retrospectief. De builder leverde op decidesk (nu Decidiq) GitHub-issues #44/#45 een methode met <code>return null;</code> + TODO; PHPCS slikte het; geen test; productiebug. Resulteerde in <code>hydra-gate-stub-scan</code> + ADR-021 (bounded-fix-scope op vorm, niet op aantal regels). Alle lessen in <a href="https://github.com/ConductionNL/hydra/blob/main/docs/retrospectives/decidesk-44-45-phase-g.md">decidesk-44-45-phase-g.md</a>.
+</HexCard>
+
+<HexCard title="134 dubbele needs-input-comments in één nacht (2026-04-23)">
+  Een completion-handler in een strakke lus plaatste elke tik een nieuwe escalatie-comment op een issue dat al terminaal was. Fix: een terminal-state guard vóór alle side-effects (zie CLAUDE.md, sectie "Terminal-state guards"). De sequencer heeft zo'n guard vandaag niet: een geblokkeerde review-stage krijgt geen nieuwe comment, maar wordt elke tik <strong>opnieuw gedraaid</strong>, tot zijn <code>:queued</code>-label weg is. Zie je dezelfde stage steeds weer draaien, haal dat label dan weg en open een infra-issue; zet niets opnieuw in de wachtrij.
+</HexCard>
+
+## Diagnostics: waar kijk je?
+
+Er is geen logbestand op je machine om te tailen. Snelle checklist als een issue vastzit:
+
+```bash
+# 1. Welke labels staan er nu?
+gh issue view <N> --repo ConductionNL/<app> --json labels --jq '[.labels[].name]'
+
+# 2. Is er een PR, en wat staat er in de body (gate-output)?
+gh pr list --repo ConductionNL/<app> --head feature/<N>/hydra-build --state all
+
+# 3. Wat zegt hydra.json op de feature-branch over de laatst vastgelegde stage?
+gh api "repos/ConductionNL/<app>/contents/openspec/changes/<slug>/hydra.json?ref=feature/<N>/hydra-build" \
+    --jq '.content' | base64 -d | jq '.cycles[-1]'
+```
+
+De vierde plek zijn de **flow-runs** van `hydra-sequencer` in de OpenRegister-instantie: elke tik is daar één run. Kijk daar als de labels en `hydra.json` niet verklaren wat er gebeurde — bijvoorbeeld als een stage niet kon starten, of zijn verdict niet gelezen kon worden.
+
+### hydra.json lezen (schema v2)
+
+Nadat de labels van een stage verschoven zijn, roept de sequencer de flow `hydra-record-stage` aan, die een entry toevoegt aan `openspec/changes/<slug>/hydra.json` op `feature/<issue>/hydra-build` en die via de API commit. Een stage zonder eigenaar weigert hij: het record moet zeggen wie hem draaide, op wiens credential. Elke vastgelegde stage wordt een nieuwe entry in `cycles[]`:
+
+```jsonc
+{
+  "schema_version": 2,
+  "app": "decidiq",
+  "repo": "ConductionNL/decidiq",
+  "issue": 15,
+  "spec_slug": "p2-meeting-management",
+  "cycles": [
+    {
+      "cycle": 3,
+      "outcome": "failed",                            // ← de kop: passed | failed
+      "outcome_reason": "build: 2 gate(s) failed",
+      "started_at": "<timestamp>",
+      "stages": [
+        {
+          "stage": "build",
+          "verdict": "fail",
+          "failures": 2,                               // aantal gefaalde gates
+          "exit_code": 2,
+          "output_tail": "…de gate-output…",           // wat de gates echt zeiden
+          "owner": "<nextcloud-uid>",
+          "credential_owner": "<nextcloud-uid>",
+          "credential_name": "<naam van de credential>"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Lees het van boven naar beneden: `outcome` en `outcome_reason` van de **laatste** entry in `cycles[]` vertellen je *wat* er gebeurde, en `output_tail` vertelt je *welke* gates dat zeiden. Twee kanttekeningen. De record-stap noemt op dit moment elke stage `build`, review-stages inbegrepen, dus lees het veld `stage` niet als bewijs van welke stage draaide. En een mislukte record-write stopt de run niet, dus een ontbrekende entry betekent niet dat de stage niet draaide; kijk naar de labels en de flow-runs.
+
+<HexCard title="Oudere records zien er rijker uit">
+  Records die de shell-pijplijn schreef vóór de overstap naar flows bevatten meer: <code>findings[]</code> met een status per finding, <code>pattern_tags</code> zoals <code>turn-budget-exhausted</code> of <code>reviewer-skipped-full-suite</code>, <code>depends_on</code>, aantallen turns. De flows schrijven die velden niet. Open je een ouder <code>hydra.json</code>, dan is dat waarom het er anders uitziet.
+</HexCard>
+
+## Wanneer is "menselijk overnemen" gewoon goed?
+
+Niet elk vastgelopen issue verdient een geautomatiseerd pad. Soms is de meest pragmatische actie: **een mens neemt over, fixt het in een commit op de feature-branch, pusht, en zet de review in de wachtrij**.
+
+Voorbeelden:
+
+- Een kleine semantische beslissing die de builder niet kan nemen zonder context buiten de change (bijv. "moet dit veld optioneel of verplicht zijn?").
+- Een interactie met een externe partij (openstaand ticket bij een leverancier).
+- Een gate die fout-positief is en een fix in het gate-package zelf vraagt (die los je niet op binnen één build).
+
+Hydra is een fabriek, geen ideologie. Neem de menselijke shortcut als dat de eerlijkere keuze is.
+
+## Test jezelf
+
+Vier korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Benieuwd naar het antwoord? Klik **Antwoord**.
+
+<div className="tutorial-quiz">
+
+**1. In welke volgorde probeer je de interventies in de ladder, en waarom?**
+
+<Details summary="Hint">
+
+Eén dimensie: kosten. De andere: hoeveel al gedaan werk je kwijtraakt.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Van **goedkoop naar duur**, met als doel zo veel mogelijk al gedaan werk te behouden:
+
+1. **`gh pr update-branch`** — gratis. Alles blijft; alleen de base wordt bijgewerkt.
+2. **Zet `code-review:queued`** na een `build:pass` — niets doet dat voor je.
+3. **Zet een review-stage opnieuw in de wachtrij** — haal zijn verdict weg, zet `<stage>:queued`. De build blijft.
+4. **Maak een `needs-input`-stage vrij** — haal eerst zijn `:queued` weg, los de oorzaak op, zet hem dan opnieuw in de wachtrij.
+5. **Zet de build opnieuw in de wachtrij** — haal het `build:*`-verdict weg, zet `build:queued`. Een volledig nieuwe build vanaf de base-branch.
+6. **Handmatige fix** — als dezelfde gate blijft falen, of een mens een semantische beslissing moet nemen.
+
+Grijp alleen naar een nieuwe build als de oorspronkelijke build fout was; anders verspil je goed werk. `retry:queued` en `rebuild:queued` staan niet in het lijstje: geen enkele flow leest ze.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Wat is het verschil tussen `needs-input` en een `:fail` op een review-stage?**
+
+<Details summary="Hint">
+
+De vraag is: **heeft de reviewer echt een verdict opgeleverd?**
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **`:fail`**: de reviewer draaide, leverde een leesbaar verdict met `hydra-gates` in `checks_run`, en zei nee. Dat is een oordeel over de code. Er wordt niets verder in de wachtrij gezet; je repareert de code (of bent het niet eens met het verdict) en zet de stage opnieuw in de wachtrij.
+- **`needs-input`**: de stage leverde **geen bruikbaar verdict** — het verdict-bestand ontbrak of was onleesbaar, `checks_run` noemde geen `hydra-gates`, of de stage kon niet draaien. Dat zegt niets over de code. De stage houdt bovendien zijn `:queued`-label, dus hij draait elke tik opnieuw tot jij dat weghaalt.
+
+De build-baan zet nooit `needs-input`; zijn uitkomsten zijn `build:pass`, `build:fail`, `build:no-change` en `build:blocked`.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Wanneer is het zinvoller om de fix met de hand te maken in plaats van nog een build?**
+
+<Details summary="Hint">
+
+Als hetzelfde patroon zich blijft herhalen op dezelfde mechanische gate, is er meer modeltijd tegenaan gooien niet het antwoord.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Als hetzelfde issue **3 keer of vaker** om dezelfde reden gefaald is — typisch een mechanische gate zoals de SPDX-header-check. Elke nieuwe build reproduceert hetzelfde patroon.
+
+In dat geval:
+
+- Check eerst of het een **fout-positieve gate** is (zie deel 3). Zo ja: repareer de gate.
+- Zo nee: **fix het met de hand** (bijv. zelf de SPDX-headers committen op `feature/<issue>/hydra-build`) en zet de code review in de wachtrij.
+
+Tijd: minuten. Goedkoper dan nog een modelrun op iets dat steeds misgaat.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Dezelfde review-stage draait elke vijf minuten opnieuw op één issue. Wat is er aan de hand, en wat doe je?**
+
+<Details summary="Hint">
+
+Waar zoekt de sequencer op, en wat blijft er op het issue staan als een stage geblokkeerd eindigt?
+
+</Details>
+
+<Details summary="Antwoord">
+
+De stage eindigde in `needs-input` en **hield zijn `:queued`-label**. De sequencer zoekt alleen op dat label, en hij heeft geen terminal-state guard die `needs-input`-issues overslaat, dus hij pakt de stage elke tik weer op.
+
+**Wat doe je:** haal eerst het `:queued`-label van de stage weg, zodat de herhalingen stoppen. Zoek dan de oorzaak (geen verdict-bestand, gates niet gedraaid, stage kon niet starten), los die op, haal `needs-input` weg en zet de stage opnieuw in de wachtrij. Opnieuw in de wachtrij zetten zonder eerst het label weg te halen verandert niets; de ontbrekende guard is een infra-probleem, een issue in `hydra/` waard.
+
+</Details>
+
+</div>
+
+<NextSteps title="Klaar — wat nu?" lede="Je hebt troubleshooting doorlopen. Er is nog één module, deel 7 over CI en deployment (alleen in het Engels), plus de bredere context:">
+  <NextStep
+    title="Vorige stap — Een Hydra-run starten"
+    href="/nl/academy/hydra-tutorial-5-starting-a-run"
+    description="Voor de praktische config, de trigger build:queued en de label-volgorde."
+  />
+  <NextStep
+    title="OpenSpec-leerlijn"
+    href="/nl/academy/openspec-tutorial-1-what-is-openspec"
+    description="De spec-first basis waar Hydra op draait. Nuttig als je nog niet helemaal vlot bent met proposal, change en spec-delta — termen die in elke retrospectief terugkomen."
+  />
+  <NextStep
+    title="Claude Skills-leerlijn"
+    href="/nl/academy/claude-skills-tutorial-1-what-are-claude-skills"
+    description="Wil je een eigen skill toevoegen aan de Hydra-loop (een nieuwe quality gate, een team-skill voor je eigen app)? Hier leer je hoe."
+  />
+  <NextStep
+    title="Retrospectives"
+    href="https://github.com/ConductionNL/hydra/tree/main/docs/retrospectives"
+    description="Pak een retrospectief — bijvoorbeeld decidesk-44-45-phase-g — en herken de patronen die we hier behandelden."
+  />
+  <NextStep
+    title="Doe een peer review"
+    href="mailto:wilco@conduction.nl?subject=Hydra%20leerlijn%20-%20peer%20review"
+    description="Laat iemand uit het Hydra-team door je eerste eigen run lopen. Verplichte stap volgens het oorspronkelijke issue."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Vragen over de Hydra-leerlijn?"
+  body="Vragen, feedback, of suggesties voor uitbreiding? Laat het weten — deze leerlijn evolueert met ons begrip van de pijplijn."
+  cta={{ label: "Stuur feedback", href: "mailto:wilco@conduction.nl?subject=Hydra%20leerlijn%20feedback" }}
+/>

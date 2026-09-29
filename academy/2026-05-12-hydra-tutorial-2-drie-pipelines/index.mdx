@@ -1,0 +1,284 @@
+---
+slug: hydra-tutorial-2-three-pipelines
+title: "Hydra tutorial series — Part 2: The three pipelines"
+contentType: tutorial
+heroIcon: pipeline
+authors: [conduction]
+date: 2026-05-12
+summary: Build, code review and security review. Who does what, in what order, and how labels on the issue stitch the whole ride together. The second of seven short modules.
+tags: [Hydra, Pipelines, Personas, Tutorial series]
+apps: []
+durationMinutes: 15
+series: hydra-tutorial
+partNumber: 2
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+In part 1 you saw that Hydra has four personas. In this part we look at the **pipeline**: how those personas work on one issue one after another, which labels mark the transitions, and where the pipeline stops. By the end you'll be able to read an issue's labels and know exactly what Hydra did, what it will do next, and what it is waiting for you to do.
+
+{/* truncate */}
+
+<Outcomes title="What you'll learn in this part">
+  <Outcome>The build lane and its four outcomes: <code>build:pass</code>, <code>build:fail</code>, <code>build:no-change</code>, <code>build:blocked</code>.</Outcome>
+  <Outcome>The review lane (code review → security review → applier) and how each verdict is routed.</Outcome>
+  <Outcome>How one scheduled flow, <code>hydra-sequencer</code>, picks one unit of work per tick.</Outcome>
+  <Outcome>Which labels no flow acts on, including <code>retry:queued</code>, <code>rebuild:queued</code> and <code>yolo</code>.</Outcome>
+</Outcomes>
+
+<Prerequisites title="What you need">
+  <PrerequisiteItem>
+    Part 1 read: <a href="/academy/hydra-tutorial-1-what-is-hydra">What is Hydra?</a>
+  </PrerequisiteItem>
+  <PrerequisiteItem>A notion of what labels on a GitHub issue are and how you add them.</PrerequisiteItem>
+</Prerequisites>
+
+## Three pipelines, two lanes
+
+Hydra has three pipelines: **build**, **code review** and **security review**, with the applier as a third review stage after security. They are all driven by labels on the tracking issue, and they fall into two lanes. The build lane starts when you label an issue `build:queued`. The review lane starts only when someone labels it `code-review:queued` — **nothing queues it for you**, not even a green build.
+
+```
+build:queued                       ← you apply it
+    ↓  build → gates → (one fix pass → gates)
+build:pass        PR opened, gates green
+build:fail        PR opened, gates still red
+build:no-change   the agent changed nothing, nothing pushed
+build:blocked     no change named, change not found, or the build could not finish
+
+code-review:queued                 ← you apply it
+    ↓
+code-review:pass      → security-review:queued
+code-review:fail      → stop
+security-review:pass  → applier:queued
+security-review:fail  → stop
+applier:pass          → end: a human reviews and merges the PR
+applier:fail          → stop
+
+needs-input  ← a review stage with no readable verdict, a verdict that
+               doesn't show the gates ran, or a stage that could not run
+```
+
+Every stop is final as far as Hydra is concerned: there is no automatic retry and no fix loop after review. A human reads the PR and the labels and decides what happens next. Part 6 goes into that.
+
+## Pipeline 1: Build (Al Gorithm)
+
+The `hydra-sequencer` flow picks up an issue labelled `build:queued` and works through it in these steps:
+
+1. **Find the change.** The change name is read from the issue **body**: the first `openspec/changes/<name>` it mentions. No change named → `build:blocked`.
+2. **Pick the base branch.** `development` if the repo has one, otherwise the repo's default branch. The change directory must exist on that branch, otherwise → `build:blocked`.
+3. **Claim capacity.** A slot from the shared pool and a per-issue lock (see [Labels](#labels-one-source-of-truth) below).
+4. **Build.** An agent implements the change in a checkout of the base branch, reading `proposal.md`, `tasks.md`, `design.md` and `specs/`. It can read and edit files but has no shell and is told not to run git. The **pipeline** commits and pushes its work to `feature/<issue>/hydra-build`, limited to `lib/`, `src/`, `tests/`, `openspec/`, `appinfo/`, `openapi.json`, `CHANGELOG.md` and `README.md`. If the agent changed nothing → `build:no-change`. If the build could not finish (for example because it touched a file outside that list and the push was refused) → `build:blocked`.
+5. **Gates.** The pipeline runs `scripts/run-hydra-gates.sh --scope-to-diff --base origin/<base>`. Exit code 0 means zero failures → `build:pass`.
+6. **One fix pass.** Otherwise the agent gets the gate output and fixes only what the gates named. If it changes nothing → `build:fail`. If it changes something, the gates run again: 0 → `build:pass`, anything else → `build:fail`.
+7. **PR.** On both `build:pass` and `build:fail` Hydra opens a PR from `feature/<issue>/hydra-build` to the base branch, titled `<change>: built by hydra for #<issue>`, with `Closes #<issue>` and the gate output in the body. It is not merged.
+8. **Clean up.** `build:queued` is removed, lock and slot are released, and the stage is recorded in `hydra.json`.
+
+The flow runs only the `hydra-gates` suite. PHPUnit, Psalm, PHPStan, Newman and browser tests are **not** part of the build lane; `scripts/run-quality.sh` and `scripts/run-browser-tests.sh` still exist, but no flow calls them. Part 3 covers what the gates do check.
+
+`build:fail` does **not** lead to `needs-input`. The PR is there, with the red gate output in its body, and it's up to a human to read it.
+
+<HexCard title="What does the builder not see?">
+  No reviews, no verdict history, no labels. The build prompt carries the change and the issue; the fix pass carries only the gate output. Reviewer findings never reach the builder: no flow feeds them back (see <a href="#retryqueued-and-rebuildqueued">retry and rebuild</a> below).
+</HexCard>
+
+## Pipeline 2: Code review (Juan Claude van Damme)
+
+Nothing moves an issue from `build:pass` to review. You decide that, by applying `code-review:queued` — for example with the operator script, which also moves the project-board card:
+
+```bash
+scripts/hydra-label.sh ConductionNL/<app> <issue> add code-review:queued
+```
+
+The flows only read bare label names, so run it without a `HYDRA_LABEL_PREFIX` set.
+
+When the sequencer picks the issue up, it starts Juan Claude as an asynchronous agent on `feature/<issue>/hydra-build`:
+
+1. He reads his own brief first: `agents/juan-claude-van-damme/` plus the reviewer brief under `images/reviewer/`. That brief is the authority on what he checks and what he may fix.
+2. His review is scoped to the PR diff (ADR-020), so every line he comments on is actually touched in this PR.
+3. He runs the mechanical gates and walks the ADRs and gate skills (see part 3).
+4. His brief allows **bounded, mechanical fixes** (ADR-021). Missing licence header? He may add it. A naming preference? Not his department. Unlike the build, the review stage has no push step of its own; committing a bounded fix is left to his brief.
+5. He writes his answer to `hydra-verdict.json` in the repository root. A later sequencer tick collects that file.
+
+## Pipeline 3: Security review (Clyde Barcode)
+
+`security-review:queued` is added only when code review **passed**. A failed code review stops there. Clyde then runs on the branch as code review left it:
+
+- Same shape as code review, with a security brief (`agents/clyde-barcode/` and `images/security/`): CWE classes such as SQL injection, XSS, path traversal and hardcoded secrets, with Semgrep scanning in his brief's toolset.
+- His brief also allows bounded fixes.
+- His verdict goes into `hydra-verdict.json` too.
+
+Why sequential and not parallel? Because Clyde reviews what Juan Claude left behind, and only work that passed code review is worth a security review. Parallel would mean Clyde looks at code that code review might still reject or change.
+
+## How verdicts are persisted
+
+Each review stage writes one file, **`hydra-verdict.json`**, in the root of its checkout:
+
+```json
+{"verdict": "pass", "checks_run": ["hydra-gates"], "checks_skipped": [], "findings": [], "fixes_applied": [], "unfixed": []}
+```
+
+The stage's filesystem is thrown away when it ends, so the flow collects that file by name. The sequencer then routes on it:
+
+- `verdict: pass` → `<stage>:pass`, and the next stage's `:queued` label is added.
+- `verdict: fail` → `<stage>:fail`, and nothing further is queued.
+- File missing or unreadable, `checks_run` without `hydra-gates`, or a stage that could not run → **`needs-input`**. This is the only place `needs-input` is set; the build lane never sets it.
+
+After a pass or fail the stage's `:queued` label is removed, the opposite verdict label is cleared, and lock and slot are released. After `needs-input` the stage's `:queued` label **stays**, so the sequencer picks the issue up again on every tick until someone removes that label.
+
+Separately, the `hydra-record-stage` flow writes a stage record into `openspec/changes/<slug>/hydra.json` after the label has moved, and refuses a stage result that carries no owner. Known gap: review stages are currently recorded under the stage name `build`. Part 6 shows how to read `hydra.json`.
+
+## The applier: Axel Pliér's binary gate
+
+`applier:queued` is added when security review passes. There is no rule that skips the applier; every issue that passes security review reaches Axel. He runs through the same generic stage step as the reviewers, reads his brief (`agents/axel-plier/` and `images/applier/`), and answers with one binary verdict in `hydra-verdict.json`: pass or fail.
+
+His brief gives him **no fix authority**: he judges, he doesn't intervene. (In the retired container pipeline his container had no Write or Edit tools at all; in the flow the stage step is shared, so "no fixes" is his brief's rule.)
+
+`applier:pass` is the end of the lane. Nothing merges the PR and no `done` label is set: a human reviews the PR and merges it.
+
+## Labels: one source of truth
+
+The pipeline's state lives in the **issue labels** on GitHub, plus a per-issue lock while a stage is in flight. There are no `:running` labels: "in progress" is the lock, not a label.
+
+<HexCard title="Dispatch vs sequencing — two different flows">
+  Both live in hydra's <code>flows/</code> folder and run in OpenRegister, with the stages executed by the hermiq ExApp. <strong><code>hydra-sequencer</code></strong> is the pipeline. It runs every five minutes, searches the whole organisation for queued issues, claims a slot and a per-issue lock, runs the stage, and writes the labels itself. <strong><code>hydra-dispatch</code></strong> does not search the forge and does not hand work to the sequencer: given an issue reference, it claims a slot (capacity 10) and runs one hermiq agent step. Both ship with <code>enabled: false</code>, so they run only on an instance where someone switched them on. The retired shell supervisor and <code>orchestrate.sh</code> did this work until 2026. Part 7 shows how the flows run unattended.
+</HexCard>
+
+**One tick, one unit of work.** Each sequencer run does at most one thing, in this priority order:
+
+1. Collect a review stage that is already in flight.
+2. Otherwise the first open issue labelled `applier:queued`,
+3. then `security-review:queued`,
+4. then `code-review:queued`,
+5. then `build:queued`.
+
+Each lookup is a GitHub search, `org:ConductionNL is:issue is:open label:"<label>"`, and the first hit is taken. Work that is nearly finished goes first.
+
+**Concurrency.** A slot pool with capacity 3, whose slots are held per repository with a 90-minute lease, plus a per-issue lock. If a run dies holding a lock, the `hydra-lock-reaper` flow (every ten minutes) deletes the stale lock; the issue still carries its `:queued` label, so a later tick can pick it up again.
+
+**Labels live on the issue, never on the PR.** The issue is the unit of work; the PR is an artefact of a build.
+
+**The board lags behind.** The sequencer's own label writes do not move the card on the project board. Only the shell label helpers (such as `scripts/hydra-label.sh`) sync the board; `reconcile.sh` catches up on its next sweep.
+
+Labels you may meet that **no flow acts on**:
+
+| Label | What happens |
+|---|---|
+| `ready-to-build` | Nothing. The trigger is `build:queued`. |
+| `yolo` | Nothing. No flow reads it, and nothing auto-merges. |
+| `done`, `*:running` | Never set by a flow. |
+| `retry:queued`, `rebuild:queued` | Nothing (see below). |
+| `needs-input` | Set by the review lane only; means a person has to look. |
+
+## `retry:queued` and `rebuild:queued`
+
+You will find these two labels in older docs and on some repos. **No flow handles them today.** The mechanics described for them — a `feedback.md` brief, a builder in `HYDRA_MODE=fix`, a branch reset — belonged to the retired shell orchestrator. Applying either label does nothing. (`cron-update-prs.sh` still puts `rebuild:queued` on conflicting PRs, and nothing picks it up.)
+
+What does work is the stage labels themselves: re-queue the stage you want to run again. Part 6 covers recovery in detail.
+
+## Test yourself
+
+Four short questions to check whether you've understood this part. Stuck? Click **Hint**. Curious about the answer? Click **Answer**.
+
+<div className="tutorial-quiz">
+
+**1. In what order do the three pipelines run, and what starts each one?**
+
+<Details summary="Hint">
+
+One lane starts on a label you apply. Does the second lane start by itself after a green build?
+
+</Details>
+
+<Details summary="Answer">
+
+The order is **build → code review → security review → applier**.
+
+- The **build** starts when you label the issue `build:queued`.
+- **Code review** starts only when someone applies `code-review:queued`. Nothing queues it after `build:pass`.
+- **Security review** is queued by the sequencer when code review passes; the **applier** when security review passes.
+
+Security review is sequential because Clyde reviews the branch as code review left it, and only work that passed code review goes on.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. What's the difference between `build:fail` and `code-review:fail` in terms of follow-up?**
+
+<Details summary="Hint">
+
+Is there a PR in each case? And does either of them set `needs-input`?
+
+</Details>
+
+<Details summary="Answer">
+
+- **`build:fail`** = the gates were still red after the one fix pass. The PR **is** opened anyway, with the gate output in its body. No `needs-input`, nothing further is queued; a human reads the PR.
+- **`code-review:fail`** = Juan Claude rejected the work. The lane **stops**: security review is not queued. No `needs-input` either.
+
+`needs-input` is only set when a review stage has no usable verdict: the file is missing or unreadable, it doesn't show the gates ran, or the stage could not run.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. When does Axel Pliér (the applier) run, and what happens after `applier:pass`?**
+
+<Details summary="Hint">
+
+Is there a rule that skips him? And does anything merge the PR?
+
+</Details>
+
+<Details summary="Answer">
+
+Axel runs whenever **security review passes**: the sequencer adds `applier:queued`. There is no skip rule.
+
+He gives one binary verdict. After `applier:pass` the lane ends: **nothing merges the PR** and no `done` label is set. A human reviews the PR and merges it.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. An issue sits on `code-review:fail`. A colleague applies `retry:queued`. What happens?**
+
+<Details summary="Hint">
+
+Which flow reads that label?
+
+</Details>
+
+<Details summary="Answer">
+
+**Nothing.** No flow handles `retry:queued` (or `rebuild:queued`) today; the `feedback.md` / `HYDRA_MODE=fix` mechanics belonged to the retired shell orchestrator.
+
+The working lever is the stage label itself: once the findings are addressed on the branch, re-queue the stage you want to run again, such as `code-review:queued`. Part 6 covers recovery in detail.
+
+</Details>
+
+</div>
+
+<NextSteps title="Next step" lede="Now that you can see the pipeline skeleton, in part 3 we dive into the quality gates — the mechanical referees that keep all personas in line.">
+  <NextStep
+    title="Part 3 — Quality gates"
+    href="/academy/hydra-tutorial-3-quality-gates"
+    description="What are the gates? Why mechanical and not AI-judged? What do you do when a gate fires a false positive?"
+  />
+  <NextStep
+    title="Previous step — What is Hydra?"
+    href="/academy/hydra-tutorial-1-what-is-hydra"
+    description="A short recap of the why and the four personas."
+  />
+  <NextStep
+    title="The pipeline architecture in detail"
+    href="https://github.com/ConductionNL/hydra/blob/main/docs/pipeline-overview.md"
+    description="The full pipeline overview doc in the hydra repo."
+  />
+</NextSteps>

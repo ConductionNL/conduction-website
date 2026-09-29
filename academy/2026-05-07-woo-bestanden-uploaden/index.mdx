@@ -1,348 +1,174 @@
 ---
-slug: woo-bestanden-uploaden
-title: Bestanden bij een Woo-publicatie uploaden
+slug: woo-upload-files
+title: Upload files to a Woo publication
 contentType: tutorial
+heroIcon: document
 authors: [conduction]
 date: 2026-05-07
-summary: Vier manieren om documenten aan een Woo-publicatie te koppelen, van één PDF tot een 6 MB rapport in chunks. Met geteste API-aanroepen.
-tags: [Woo, OpenRegister, Bestanden, Upload, Publicaties]
+summary: Attach documents to a Woo publication through the OpenRegister interface, then publish them. With an API appendix for automation and large files.
+tags: [Woo, OpenRegister, Files, Upload, Publications, Tutorial series]
 apps: [openregister, openwoo]
-durationMinutes: 18
+durationMinutes: 15
+series: woo-tutorial
+partNumber: 2
 ---
 
 import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
 
-Een Woo-publicatie zonder bestanden is metadata zonder bewijs. In deze tutorial koppel je documenten aan een Woo-publicatie via vier upload-modes: één bestand, meerdere bestanden tegelijk, en grote bestanden in chunks. Plus publiceren, depubliceren en opruimen.
+A Woo publication without files is metadata without evidence. In this tutorial you attach documents to a publication through the OpenRegister interface, choose which ones are public, and remove them again. An appendix covers the API, for scripts and for files too large for a browser upload.
 
 {/* truncate */}
 
-<Outcomes title="Wat je leert">
-  <Outcome>Vier upload-modes voor documenten bij een Woo-publicatie, van klein naar groot.</Outcome>
-  <Outcome>Wanneer je JSON+base64, multipart of WebDAV chunked upload gebruikt.</Outcome>
-  <Outcome>Hoe je bestanden publiceert, depubliceert en weer opruimt.</Outcome>
+<Outcomes title="What you'll learn">
+  <Outcome>How to upload one or more files to a publication through the interface.</Outcome>
+  <Outcome>How to publish a file, so it gets a public link, and unpublish it again.</Outcome>
+  <Outcome>How to list, download, and delete files on a publication.</Outcome>
+  <Outcome>How to upload via the API for automation and for large files.</Outcome>
 </Outcomes>
 
-<Prerequisites title="Wat je nodig hebt">
+<Prerequisites title="What you need">
   <PrerequisiteItem>
-    Een werkend Woo-register. Volg eerst <a href="/academy/woo-register-opzetten">Een Woo-register opzetten</a> als je dat nog niet hebt.
+    A working Woo register with at least one publication. Follow <a href="/academy/woo-set-up-register">Set up Woo and DCAT registers</a> first.
   </PrerequisiteItem>
-  <PrerequisiteItem>Een publicatie-object met bekende UUID.</PrerequisiteItem>
-  <PrerequisiteItem><code>curl</code>, basisauth, en een paar testbestanden.</PrerequisiteItem>
+  <PrerequisiteItem>A user with rights to edit objects in the register.</PrerequisiteItem>
+  <PrerequisiteItem>A few test documents to upload, for example a PDF.</PrerequisiteItem>
 </Prerequisites>
 
-In de voorbeelden gebruiken we:
+## Where files live
 
-- Host: `http://localhost:8080`
-- Auth: `admin:admin`
-- Register-slug: `woo`
-- Schema-slug: `onderzoeksrapporten`
-- Object-UUID: `3422e6cd-1ba5-478c-b842-8f206f9d7358`
+Every file is attached to a specific object. OpenRegister keeps the files of an object together in a folder under `Open Registers/{Register Title}/{Object UUID}/` in Nextcloud Files. You do not manage that folder yourself; the interface does it for you.
 
-Vervang het object-UUID door de jouwe.
+## Step 1: Open the publication
 
-![Het Woo-register met de geïmporteerde TOOI-schemas](./01-woo-register-context.png)
+In OpenRegister, go to **Data → Registers**, open your Woo register and the `onderzoeksrapporten` schema, and click the publication you created in Part 1 to open it. The object's **Files** panel lists the documents attached to this publication. It is empty for a new object.
 
-## Het basispatroon
+## Step 2: Upload a file
 
-Alle bestanden worden gekoppeld aan een specifiek object. De URL volgt altijd hetzelfde patroon:
+In the Files panel, drop a file onto the **Drop files here or click to browse** area, or click it to pick a document, for example `onderzoeksrapport-2026.pdf`. The file uploads and appears in the list with its name and size.
+
+![A document uploaded to a publication through the Files panel, with the share toggle](./01-object-files-upload.png)
+
+To attach more than one document, drop several files at once. Each one gets its own row.
+
+## Step 3: Choose what is public
+
+The **Share uploaded files** toggle decides whether files become public the moment you upload them. Turn it on for documents that may be released right away. Leave it off for attachments that need redaction first, then publish them later.
+
+Each file row has an **Actions** menu to **Open** the file or **Delete** it. To publish or unpublish a file after upload, use the files API in the appendix: publishing gives the file a public share link, unpublishing revokes it.
+
+## Step 4: List, download, and remove
+
+The **Files** tab is also where you manage what is there:
+
+- **Download** a file from its **Actions** menu, or open its public link once published.
+- **Delete** a file from the same menu. It is removed from the object folder.
+
+Everything you do here is reflected in Nextcloud Files under the object's folder, and the other way around.
+
+## Appendix: upload via the API
+
+For automation (scripts, synchronisations, CI) and for files too large for a browser upload, OpenRegister exposes a files API. Files always attach to one object:
 
 ```
 POST /index.php/apps/openregister/api/objects/{register}/{schema}/{id}/files
 ```
 
-OpenRegister maakt automatisch een map aan voor het object onder `Open Registers/{Register Title}/{Object UUID}/`. Daar landen alle bestanden. De map ontstaat zodra je het eerste bestand uploadt.
+In the examples: host `http://localhost:8080`, auth `admin:admin`, register `woo`, schema `onderzoeksrapporten`, and an object UUID you replace with your own.
 
-## Mode 1: één bestand via JSON en base64
+### One file via JSON and base64
 
-De eenvoudigste route, prima voor kleine documenten tot enkele megabytes:
+For small documents you generate in a script:
 
 ```bash
-OBJ=3422e6cd-1ba5-478c-b842-8f206f9d7358
-B64=$(echo "Inhoud van het rapport." | base64 -w0)
+OBJ=your-object-uuid
+B64=$(echo "Report content." | base64 -w0)
 
 curl -u admin:admin \
   -X POST "http://localhost:8080/index.php/apps/openregister/api/objects/woo/onderzoeksrapporten/$OBJ/files" \
-  -H "OCS-APIRequest: true" \
-  -H "Content-Type: application/json" \
-  -d "{
-    \"name\": \"rapport-2026.txt\",
-    \"content\": \"$B64\",
-    \"share\": true
-  }"
+  -H "OCS-APIRequest: true" -H "Content-Type: application/json" \
+  -d "{ \"name\": \"rapport-2026.txt\", \"content\": \"$B64\", \"share\": true }"
 ```
 
-De respons:
+`share: true` creates a public link right away. Base64 inflates the payload by a third, so keep this for small files.
 
-```json
-{
-  "id": 3306,
-  "path": "/admin/files/Open Registers/Woo Register/3422e6cd-.../rapport-2026.txt",
-  "title": "rapport-2026.txt",
-  "accessUrl": "http://localhost:8080/index.php/s/CH5JsTKtrczyQgw",
-  "downloadUrl": "http://localhost:8080/index.php/s/CH5JsTKtrczyQgw/download",
-  "type": "text/plain",
-  "size": 44,
-  "hash": "4bdf3a838bc59f367824ad59a14630c0",
-  "published": "1970-01-01T00:00:00+00:00",
-  "labels": [],
-  "object": "3422e6cd-..."
-}
-```
+### One or more binary files via multipart
 
-`share: true` maakt direct een publieke share-link aan. De `accessUrl` is dan meteen de publieke landings-URL. Wil je het bestand vooralsnog privé houden, laat `share` weg of zet hem op `false`.
-
-**Wanneer wel:** scripts en synchronisaties waar je tekstinhoud genereert, kleine PDF's, of CI-pipelines. **Wanneer niet:** bestanden boven enkele MB. Base64 maakt de payload 33% groter en je raakt al snel de PHP `post_max_size`-grens.
-
-## Mode 2: één bestand binair via multipart
-
-Voor binaire bestanden (PDF, DOCX, afbeeldingen) gebruik je het `filesMultipart`-endpoint. Dat scheelt de base64-overhead en is sneller voor middelgrote bestanden.
+For PDFs, DOCX, and images, `filesMultipart` avoids the base64 overhead and accepts several files in one request:
 
 ```bash
-OBJ=3422e6cd-1ba5-478c-b842-8f206f9d7358
-
 curl -u admin:admin \
   -X POST "http://localhost:8080/index.php/apps/openregister/api/objects/woo/onderzoeksrapporten/$OBJ/filesMultipart" \
   -H "OCS-APIRequest: true" \
-  -F "files[]=@/pad/naar/rapport.pdf" \
+  -F "files[]=@/path/to/attachment-1.pdf" \
+  -F "files[]=@/path/to/attachment-2.pdf" \
   -F "share=true"
 ```
 
-De respons is een array met één element:
+The total of all files in one request must stay under PHP's `post_max_size` (usually 100 MB).
 
-```json
-[
-  {
-    "id": 3307,
-    "path": "/admin/files/Open Registers/Woo Register/3422e6cd-.../rapport.pdf",
-    "title": "rapport.pdf",
-    "type": "application/pdf",
-    "size": 482310,
-    "hash": "a4abb3649eff2d9ba4f80675371a56b8",
-    "object": "3422e6cd-..."
-  }
-]
-```
+### Large files in chunks via WebDAV
 
-> **`files[]` werkt voor één en voor meerdere bestanden.** Het endpoint accepteert ook een enkelvoudig `file=`-veld, maar `files[]` is consistenter: precies dezelfde aanroep schaalt door naar Mode 3 hieronder zonder dat je je veldnaam hoeft aan te passen.
-
-## Mode 3: meerdere bestanden in één request
-
-Het `filesMultipart`-endpoint accepteert meerdere bestanden in één enkele request. Eén HTTP-call, één transactie, één respons-array. Handig voor publicaties met meerdere bijlagen.
-
-```bash
-OBJ=3422e6cd-1ba5-478c-b842-8f206f9d7358
-
-curl -u admin:admin \
-  -X POST "http://localhost:8080/index.php/apps/openregister/api/objects/woo/onderzoeksrapporten/$OBJ/filesMultipart" \
-  -H "OCS-APIRequest: true" \
-  -F "files[]=@/pad/naar/bijlage-1.pdf" \
-  -F "files[]=@/pad/naar/bijlage-2.pdf" \
-  -F "files[]=@/pad/naar/bijlage-3.pdf" \
-  -F "share=true"
-```
-
-Respons:
-
-```json
-[
-  { "id": 3308, "title": "bijlage-1.pdf", "size": 29, "hash": "b753b747...", ... },
-  { "id": 3309, "title": "bijlage-2.pdf", "size": 32, "hash": "f370ad27...", ... },
-  { "id": 3310, "title": "bijlage-3.pdf", "size": 28, "hash": "80a9a215...", ... }
-]
-```
-
-Elk bestand krijgt een eigen entry in de respons. De `share`-vlag geldt voor het hele batch: alle bestanden worden tegelijk publiek gemaakt of houden tegelijk privé.
-
-**Praktische limiet:** PHP's `post_max_size` is meestal 100 MB. Het totaal van alle bestanden in één request mag daar niet overheen. Voor grotere uploads spring je naar Mode 4.
-
-## Mode 4: grote bestanden in chunks via WebDAV
-
-Bestanden boven de PHP-uploadlimiet (typisch 100 MB) splits je in chunks en verstuur je via Nextcloud's WebDAV chunked upload-protocol. Daarna verplaats je het samengestelde bestand naar de objectmap.
-
-Dit is hetzelfde protocol dat de Nextcloud webclient en desktop-app gebruiken. Het werkt voor alle bestandsgroottes en past zich aan netwerkonderbrekingen aan.
-
-### Stap 4.1: maak een transfer-map
-
-Geef de transfer een unieke ID, bijvoorbeeld een tijdstempel:
+For files above the upload limit, use Nextcloud's chunked upload protocol, the same one the desktop app uses. Create a transfer folder, send the file in chunks, then assemble it into the object folder:
 
 ```bash
 TRANSFER_ID="woo-chunked-$(date +%s)"
-DAV_BASE="http://localhost:8080/remote.php/dav"
+DAV="http://localhost:8080/remote.php/dav"
 
-curl -u admin:admin \
-  -X MKCOL "$DAV_BASE/uploads/admin/$TRANSFER_ID"
-```
+curl -u admin:admin -X MKCOL "$DAV/uploads/admin/$TRANSFER_ID"
+split -b 10M /path/to/large-report.pdf /tmp/chunk-
+i=1; for c in /tmp/chunk-*; do
+  curl -u admin:admin -X PUT --data-binary "@$c" \
+    "$DAV/uploads/admin/$TRANSFER_ID/$(printf %05d $i)"; i=$((i+1)); done
 
-Een 201 betekent dat de transfer-map klaar staat.
-
-### Stap 4.2: split het bestand en upload de chunks
-
-We splitsen een testbestand van 6 MB in drie chunks van 2 MB:
-
-```bash
-split -b 2M /pad/naar/groot-rapport.pdf /tmp/chunk-
-
-i=1
-for chunk in /tmp/chunk-*; do
-  CHUNK_NUM=$(printf "%05d" $i)
-  curl -u admin:admin \
-    -X PUT --data-binary "@$chunk" \
-    "$DAV_BASE/uploads/admin/$TRANSFER_ID/$CHUNK_NUM"
-  i=$((i+1))
-done
-```
-
-De chunks krijgen vijfcijferige nummers (`00001`, `00002`, `00003`). Houd de volgorde in de bestandsnamen aan, want Nextcloud assembleert op basis daarvan.
-
-### Stap 4.3: assembleer en plaats in de objectmap
-
-Een MOVE-call combineert de chunks tot één bestand op de uiteindelijke locatie:
-
-```bash
-OBJ=3422e6cd-1ba5-478c-b842-8f206f9d7358
-DEST="$DAV_BASE/files/admin/Open%20Registers/Woo%20Register/$OBJ/groot-rapport.pdf"
-TOTAL_LENGTH=$(wc -c < /pad/naar/groot-rapport.pdf)
-
-curl -u admin:admin \
-  -X MOVE "$DAV_BASE/uploads/admin/$TRANSFER_ID/.file" \
+DEST="$DAV/files/admin/Open%20Registers/Woo/$OBJ/large-report.pdf"
+curl -u admin:admin -X MOVE "$DAV/uploads/admin/$TRANSFER_ID/.file" \
   -H "Destination: $DEST" \
-  -H "OC-Total-Length: $TOTAL_LENGTH"
+  -H "OC-Total-Length: $(wc -c < /path/to/large-report.pdf)"
 ```
 
-Een 201 betekent dat het bestand op de bestemming staat. OpenRegister pikt het automatisch op: zodra je de files-lijst van het object opvraagt, staat het bestand erbij.
+OpenRegister picks the file up automatically once it lands in the object folder. Chunks must go to the uploading user's folder; for a service account, upload as that account.
 
-### Stap 4.4: verifieer in OpenRegister
+### Publish and manage via the API
 
-```bash
-curl -u admin:admin \
-  "http://localhost:8080/index.php/apps/openregister/api/objects/woo/onderzoeksrapporten/$OBJ/files" \
-  -H "OCS-APIRequest: true"
-```
-
-Je ziet het nieuwe bestand met zijn echte grootte:
-
-```json
-{
-  "id": 3316,
-  "path": "/admin/files/Open Registers/Woo Register/3422e6cd-.../groot-rapport.pdf",
-  "title": "groot-rapport.pdf",
-  "size": 6291456,
-  "hash": "d7d7eec53f6d70d1bdceea08c10d0bb1",
-  "modified": "2026-05-07T05:14:34+00:00"
-}
-```
-
-**Belangrijk:** chunks moeten naar de map van de actuele gebruiker (`admin` in dit voorbeeld). Een service-account upload je dus eerst in dat account; de MOVE plaatst het daarna in de gedeelde register-map.
-
-## Publiceren en depubliceren
-
-Een geüpload bestand staat standaard niet publiek (`accessUrl: null`). Bij Woo-publicaties wil je expliciet kiezen welke bestanden publiek zijn en welke niet, bijvoorbeeld omdat een bijlage privacygevoelig is en eerst gelakt moet worden.
-
-Publiek maken:
-
-```bash
-FID=3306
-curl -u admin:admin \
-  -X POST "http://localhost:8080/index.php/apps/openregister/api/objects/woo/onderzoeksrapporten/$OBJ/files/$FID/publish" \
-  -H "OCS-APIRequest: true"
-```
-
-In de respons verschijnt een `accessUrl`:
-
-```json
-{
-  "id": 3306,
-  "title": "rapport-2026.txt",
-  "accessUrl": "http://localhost:8080/index.php/s/CH5JsTKtrczyQgw",
-  "downloadUrl": "http://localhost:8080/index.php/s/CH5JsTKtrczyQgw/download"
-}
-```
-
-Weer privé maken:
-
-```bash
-curl -u admin:admin \
-  -X POST "http://localhost:8080/index.php/apps/openregister/api/objects/woo/onderzoeksrapporten/$OBJ/files/$FID/depublish" \
-  -H "OCS-APIRequest: true"
-```
-
-Na depublicatie zijn `accessUrl` en `downloadUrl` weer `null` en is de share-link ingetrokken.
-
-## Lijst, downloaden, verwijderen
-
-| Actie | Methode | URL |
+| Action | Method | URL |
 | --- | --- | --- |
-| Lijst van bestanden bij een object | `GET` | `/api/objects/{register}/{schema}/{id}/files` |
-| Detail van één bestand | `GET` | `/api/objects/{register}/{schema}/{id}/files/{fileId}` |
-| Download (alle bestanden als zip) | `GET` | `/api/objects/{register}/{schema}/{id}/files/download` |
-| Download direct via id | `GET` | `/api/files/{fileId}/download` |
-| Verwijder één bestand | `DELETE` | `/api/objects/{register}/{schema}/{id}/files/{fileId}` |
+| Publish a file | `POST` | `/api/objects/{register}/{schema}/{id}/files/{fileId}/publish` |
+| Unpublish a file | `POST` | `/api/objects/{register}/{schema}/{id}/files/{fileId}/depublish` |
+| List files | `GET` | `/api/objects/{register}/{schema}/{id}/files` |
+| Download all as zip | `GET` | `/api/objects/{register}/{schema}/{id}/files/download` |
+| Delete a file | `DELETE` | `/api/objects/{register}/{schema}/{id}/files/{fileId}` |
 
-Voorbeeld voor een lijst:
-
-```bash
-curl -u admin:admin \
-  "http://localhost:8080/index.php/apps/openregister/api/objects/woo/onderzoeksrapporten/$OBJ/files" \
-  -H "OCS-APIRequest: true"
-```
-
-Verwijderen van één bestand:
-
-```bash
-curl -u admin:admin \
-  -X DELETE "http://localhost:8080/index.php/apps/openregister/api/objects/woo/onderzoeksrapporten/$OBJ/files/3306" \
-  -H "OCS-APIRequest: true"
-```
-
-## Welke mode kies je wanneer?
-
-| Mode | Beste voor | Limiet | Codecomplexiteit |
-| --- | --- | --- | --- |
-| 1. JSON + base64 | Server-naar-server scripts, kleine PDF's | ≈ 75 MB ruwe inhoud (33% overhead op `post_max_size`) | Laag |
-| 2. Multipart, één bestand | Browser-uploads, gewone PDF's en DOCX | `post_max_size`, meestal 100 MB | Laag |
-| 3. Multipart, meerdere bestanden | Publicaties met meerdere bijlagen | Som van bestanden onder `post_max_size` | Laag |
-| 4. WebDAV chunked + MOVE | Video, scans, datasets > 100 MB | Geen praktische bovengrens | Hoog |
-
-Voor de meeste Woo-publicaties pak je Mode 2 of 3. Pas op het moment dat een bestand groter dan 100 MB binnenkomt, schakel je over naar Mode 4.
-
-<Troubleshooting title="Probleemoplossing">
-  <TroubleshootingItem symptom="The uploaded file exceeds upload_max_filesize">
-    Verhoog <code>upload_max_filesize</code> en <code>post_max_size</code> in <code>php.ini</code>, of stap over op Mode 4.
+<Troubleshooting title="Troubleshooting">
+  <TroubleshootingItem symptom="The upload fails with 'file exceeds upload_max_filesize'">
+    The file is larger than PHP allows for a direct upload. Raise <code>upload_max_filesize</code> and <code>post_max_size</code> in <code>php.ini</code>, or use the chunked upload in the appendix.
   </TroubleshootingItem>
-  <TroubleshootingItem symptom="Bestand verschijnt niet in /files-lijst na MOVE">
-    Controleer dat de <code>Destination</code>-header naar <code>{'Open Registers/{Register Title}/{Object UUID}/'}</code> wijst en dat de UUID overeenkomt met een bestaand object. OpenRegister scant alleen die map.
+  <TroubleshootingItem symptom="A file uploaded via the API does not appear after a MOVE">
+    Check that the <code>Destination</code> points to <code>{'Open Registers/{Register Title}/{Object UUID}/'}</code> and that the UUID matches an existing object. OpenRegister scans only that folder.
   </TroubleshootingItem>
-  <TroubleshootingItem symptom="accessUrl blijft null na publish">
-    Controleer of share-links aanstaan in de Nextcloud admin (Settings → Sharing → "Allow apps to use the share API"). Zonder deze instelling kunnen publicaties geen publieke link krijgen.
+  <TroubleshootingItem symptom="A published file gets no public link">
+    Check that share links are enabled under Settings → Sharing → "Allow apps to use the share API". Without it, publications cannot get a public link.
   </TroubleshootingItem>
 </Troubleshooting>
 
-<NextSteps title="Volgende stap" lede="Met deze vier modes kun je elk type Woo-document koppelen aan een publicatie. Een paar logische vervolgstappen:">
+<NextSteps title="Next step" lede="Your publication now has documents. A few logical next steps:">
   <NextStep
-    href="https://github.com/ConductionNL/opencatalogi"
-    title="Toon op een portaal"
-    cta="Bekijk OpenCatalogi"
+    href="/academy/woo-publish-and-harvest-catalog"
+    title="Part 3: Publish and harvest a Woo catalog"
+    cta="Continue the series"
   >
-    De publicatie samen met andere apps tonen op een portaal.
+    Make your publications public and expose them as a DCAT-AP-NL feed.
   </NextStep>
   <NextStep
-    href="https://github.com/ConductionNL/docudesk"
-    title="Documenten lakken"
-    cta="Bekijk DocuDesk"
+    href="https://github.com/ConductionNL/filinq"
+    title="Redact documents"
+    cta="View Filinq"
   >
-    Documenten automatisch laten lakken op privacygevoelige passages.
-  </NextStep>
-  <NextStep
-    href="https://github.com/ConductionNL/openconnector"
-    title="Synchroniseer naar PLOOI"
-    cta="Bekijk OpenConnector"
-  >
-    Publicaties periodiek synchroniseren naar <a href="https://open.overheid.nl">open.overheid.nl</a>.
+    Automatically redact documents on privacy-sensitive passages before you publish.
   </NextStep>
 </NextSteps>
 
 <ContactCta
-  title="Wil je meer weten?"
-  body="Mail ons. We helpen je in een halve dag op weg met je eigen Woo-publicatieflow, van eerste import tot publieke share-links."
-  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=Woo-publicaties" }}
+  title="Want to know more?"
+  body="Send us an email. We help you set up your own Woo publication flow in half a day, from first import to public share links."
+  cta={{ label: "Email us", href: "mailto:info@conduction.nl?subject=Woo-publicaties" }}
 />

@@ -1,0 +1,513 @@
+---
+slug: openspec-tutorial-2-first-change
+title: "OpenSpec leerlijn — Deel 2: Je eerste OpenSpec change"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-12
+summary: Van leeg mapje naar gevalideerde OpenSpec change. We starten met /opsx-new, schrijven een spec-delta met een requirement plus scenario, laten /opsx-ff de rest genereren, en valideren het geheel. Tweede van drie korte modules.
+tags: [OpenSpec, Spec-first, Tutorial series, Workflow, Claude Code]
+apps: []
+durationMinutes: 22
+series: openspec-tutorial
+partNumber: 2
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+Tijd om OpenSpec aan het werk te zien. In dit deel maak je in een Conduction-project je **eerste echte change** — van leeg mapje, via een spec-delta met requirement en scenario, naar een gevalideerd voorstel klaar voor implementatie. We doen dat met de Claude Code-skills [`/opsx-new`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md) en [`/opsx-ff`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md).
+
+{/* truncate */}
+
+<Outcomes title="Wat je gaat opleveren">
+  <Outcome>Begrip van waar <code>/opsx-explore</code> in de pipeline zit en wanneer je hem inzet (optionele voorverkenning).</Outcome>
+  <Outcome>Een werkende change in <code>openspec/changes/&lt;naam&gt;/</code>, op een eigen feature-branch.</Outcome>
+  <Outcome>Alle vier de artefacten — proposal, spec-delta, design, tasks — in de juiste afhankelijkheidsvolgorde, handmatig én via <code>/opsx-ff</code>.</Outcome>
+  <Outcome>Een gevalideerde spec-delta die door <code>openspec validate --strict</code> heen komt en klaar is om als PR open te zetten.</Outcome>
+  <Outcome>Een overzicht van wat er na de spec gebeurt: <code>/opsx-plan-to-issues</code>, <code>/opsx-apply</code> (implementeren), <code>/opsx-verify</code> (review) en <code>/opsx-archive</code>.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Deel 1 doorgelezen — <a href="/nl/academy/openspec-tutorial-1-what-is-openspec">Wat is OpenSpec?</a> — zodat je weet wat een spec, requirement, scenario en change zijn.</PrerequisiteItem>
+  <PrerequisiteItem>Claude Code geïnstalleerd en werkend in je projectmap. Heb je dat nog niet, volg dan eerst de <a href="/nl/academy/workstation-tutorial-1-what-to-install">Workstation Setup-leerlijn</a> — deel 3 zet Claude Code op met de verplichte safety hooks.</PrerequisiteItem>
+  <PrerequisiteItem>Een ge-checkoute Conduction-repo waarin je rondkijken kan — bijvoorbeeld <a href="https://github.com/ConductionNL/openregister">openregister</a>. We werken in een nieuwe branch, dus je raakt niets bestaands kwijt.</PrerequisiteItem>
+  <PrerequisiteItem>Basiskennis Git: branch aanmaken, committen, pushen.</PrerequisiteItem>
+</Prerequisites>
+
+## Het voorbeeld waar we mee werken
+
+Om het concreet te houden voegen we één feature toe aan een denkbeeldig publicatie-register: **een full-text zoekfunctie over publicatie-titels en -inhoud**. Klein genoeg om in één tutorial te doen, groot genoeg om alle artefacten te raken.
+
+Werk je in een eigen repo? Vervang dan in elke stap "publication-search" door je eigen change-naam. De stappen veranderen niet.
+
+## Stap 0: verkennen met `/opsx-explore` (optioneel)
+
+Weet je al precies wat je wil bouwen? Sla deze stap over en ga direct naar Stap 1. Twijfel je over scope, aanpak of of de feature überhaupt thuishoort in deze app? Dan begin je met:
+
+```
+/opsx-explore
+```
+
+`/opsx-explore` is de **Pre-spec-fase** uit de [commando-referentie](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-explore): het maakt **geen artefacten aan**, het denkt met je mee. Claude verkent de codebase, stelt vragen over je intentie, weegt alternatieve aanpakken tegen elkaar af, en geeft aan welke onbekenden er nog liggen. Het is een gesprek — geen bestand op schijf.
+
+Goede momenten om `/opsx-explore` te gebruiken:
+
+- *"Past dit in deze app, of is het een aparte capability?"*
+- *"Welke bestaande spec raakt dit?"*
+- *"Wat is de eenvoudigste manier om dit te bouwen?"*
+
+Niet voor `/opsx-explore`: een feature die je al twee keer eerder hebt gebouwd in een andere app. Dan kun je direct door naar `/opsx-new`.
+
+> **Voor de tutorial.** Het voorbeeld `add-publication-search` is bewust simpel — we slaan `/opsx-explore` over. Onthoud hem voor je eigen, complexere changes.
+
+## Stap 1: een eigen branch
+
+Een change zit altijd op zijn eigen feature-branch. Niet werken op `development` direct:
+
+```bash
+cd /pad/naar/openregister
+git checkout development
+git pull
+git checkout -b feature/add-publication-search
+```
+
+De branch-naam volgt het patroon `feature/<change-name>` — handig voor reviewers om te zien waar de spec bij hoort. In de volledig geautomatiseerde [Hydra-flow](https://github.com/ConductionNL/.github/blob/main/docs/hydra/README.md) wordt dat `feature/<issue-number>/<change-name>` zodra `/opsx-plan-to-issues` (Stap 10) een tracking-issue heeft aangemaakt. Voor deze tutorial pakken we het korte patroon.
+
+## Stap 2: een lege change met `/opsx-new`
+
+Open Claude Code in de repo-map en draai:
+
+```
+/opsx-new add-publication-search
+```
+
+Dat maakt het skelet aan:
+
+```
+openspec/changes/add-publication-search/
+└── .openspec.yaml
+```
+
+`.openspec.yaml` bevat de metadata (schema-versie, aanmaakdatum). Verder is het mapje leeg — dat vullen we hierna.
+
+> **Naamgevingsregel.** Gebruik kebab-case (`add-publication-search`, niet `AddPublicationSearch` of `add_publication_search`). De change-naam wordt een GitHub-issue label, dus houd hem leesbaar en kort.
+
+## Stap 3: de twee routes — `/opsx-ff` versus handmatig
+
+Vanaf hier zijn er twee manieren om de change te vullen:
+
+| Route | Wanneer | Wat doet het |
+| --- | --- | --- |
+| **Geautomatiseerd** — `/opsx-ff` | Je weet wat je wil bouwen en wil snel een complete eerste versie. | Genereert in één run proposal, specs, design en tasks — in deze afhankelijkheidsvolgorde. Daarna lees je terug en stuur je bij. |
+| **Stapsgewijs** — handmatig of `/opsx-continue` | Je wil per artefact even nadenken voor je verder gaat. | Je schrijft (of laat genereren) eerst de proposal, dan de spec-delta, dan design, en pas dan de tasks. |
+
+In productie pak je vaak `/opsx-ff` voor een ruwe schets en stuur je daarna bij — dat is **het canonical pad** uit de Conduction-docs (`/opsx-ff` → `/opsx-apply` → `/opsx-verify`). In deze tutorial doen we het stap-voor-stap handmatig — dat geeft het meeste begrip van wat elk artefact eigenlijk is. Bij stap 7 laten we zien wat `/opsx-ff` in één keer voor je zou doen.
+
+> **Afhankelijkheidsvolgorde uit de [commando-referentie](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-continue):** `proposal` (root) → `specs` + `design` (beide hangen af van proposal) → `tasks` (hangt af van specs én design). We volgen die volgorde hieronder.
+
+## Stap 4: `proposal.md` — het waarom en wat
+
+Het eerste artefact is het **proposal**: waarom doe je deze change, en wat verandert er op hoog niveau? In mensentaal, voor reviewers die de feature nog niet kennen.
+
+Maak `openspec/changes/add-publication-search/proposal.md`:
+
+```markdown
+# Proposal: add-publication-search
+
+## Why
+Gebruikers van het publicatie-register kunnen vandaag alleen op exacte
+publicatie-ID zoeken. Een zoekfunctie over titels en inhoud is de
+meest gevraagde feature in support-tickets van de afgelopen maand.
+
+## What
+- Full-text zoekfunctie via PostgreSQL `tsvector`
+- Eén nieuw API-endpoint: `GET /api/publications/search?q=...`
+- Resultaten gesorteerd op relevantiescore
+
+## Out of scope
+- Filters (per organisatie, periode, status)
+- Suggesties / autocomplete
+- Geavanceerde queries (AND/OR, wildcards)
+```
+
+Het proposal staat aan de top van de afhankelijkheidsketen — alle andere artefacten verwijzen er impliciet naar terug. Houd hem daarom kort en helder; details horen in `design.md` (stap 6), niet hier.
+
+## Stap 5: de spec-delta — het hart van de change
+
+De **spec-delta** is het centrale artefact. Het is geen volledige spec; het is alleen wat er verandert ten opzichte van de hoofd-spec. Drie soorten wijzigingen:
+
+- **ADDED** — nieuwe requirements
+- **MODIFIED** — bestaande requirements die anders worden
+- **REMOVED** — requirements die vervallen
+
+We voegen een requirement toe aan de hypothetische `publications`-capability. Maak het bestand aan:
+
+```
+openspec/changes/add-publication-search/specs/publications/spec.md
+```
+
+En vul met:
+
+```markdown
+# publications — Delta
+
+## ADDED Requirements
+
+### REQ-001: Volledige tekstzoekfunctie
+Het systeem MOET full-text zoeken ondersteunen over publicatie-titels en
+publicatie-inhoud met behulp van PostgreSQL's `tsvector`.
+
+#### Scenario: Zoekopdracht levert overeenkomende publicaties op
+- GIVEN publicaties met titels "Klimaatrapport 2026" en "Begrotingsoverzicht 2026"
+- WHEN een gebruiker zoekt op "klimaat"
+- THEN MOETEN de resultaten "Klimaatrapport 2026" bevatten
+- AND MOGEN de resultaten "Begrotingsoverzicht 2026" NIET bevatten
+- AND MOETEN de resultaten op relevantiescore gesorteerd zijn
+
+#### Scenario: Lege zoekopdracht geeft een nette fout
+- GIVEN een gebruiker op de zoekpagina
+- WHEN de zoekopdracht leeg is
+- THEN MOET het systeem HTTP 400 retourneren
+- AND MOET het antwoord de fout `query parameter required` bevatten
+```
+
+Drie dingen die hier mis kunnen gaan:
+
+- **Vier hashtags voor een scenario.** `#### Scenario:` (vier), niet `###` (drie). De parser herkent `###` niet als scenario — geen foutmelding, gewoon stilzwijgend overgeslagen.
+- **MOET / MAG / KAN.** Gebruik [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119)-woorden bewust. Een reviewer leest "MAG" en weet dat het optioneel is.
+- **Geen implementatie noemen.** Geen klassen, controllers of tabel-namen. Die horen in `design.md` (stap 6). De spec beschrijft *gedrag*.
+
+## Stap 6: `design.md` en `tasks.md`
+
+Met proposal en spec-delta op orde zijn de laatste twee artefacten kort werk.
+
+**`design.md`** — het *hoe*, technisch. Hier wél klassen, tabellen en controllers — alles wat in de spec niet thuishoort:
+
+````markdown
+# Design: add-publication-search
+
+## Approach
+We gebruiken PostgreSQL's native `tsvector` en `tsquery`, geen
+externe zoekmachine. Volstaat voor de huidige hoeveelheid publicaties
+(< 100k rijen) en houdt de stack simpel.
+
+## Schema-wijziging
+Een gegenereerde kolom `search_vector` op tabel `publications`:
+
+```sql
+ALTER TABLE publications
+  ADD COLUMN search_vector tsvector
+  GENERATED ALWAYS AS (
+    setweight(to_tsvector('dutch', coalesce(title, '')), 'A') ||
+    setweight(to_tsvector('dutch', coalesce(content, '')), 'B')
+  ) STORED;
+
+CREATE INDEX idx_publications_search ON publications USING GIN (search_vector);
+```
+
+## Endpoint
+Nieuw: `GET /api/publications/search`
+- Query parameter: `q` (verplicht, niet leeg)
+- Antwoord: gepagineerde lijst, gesorteerd op `ts_rank`
+````
+
+**`tasks.md`** — de implementatie-checklist. Komt als laatste want hangt af van zowel de spec als het design:
+
+```markdown
+# Tasks: add-publication-search
+
+- [ ] Task 1 — Migratie: `search_vector` kolom + GIN-index op `publications`
+- [ ] Task 2 — Backend: nieuwe `SearchController::search()` met `tsquery`-vertaling
+- [ ] Task 3 — Backend: 400 bij lege of ontbrekende `q`
+- [ ] Task 4 — Tests: PHPUnit voor beide scenario's uit REQ-001
+- [ ] Task 5 — API-documentatie: endpoint opgenomen in OpenAPI-spec
+- [ ] Task 6 — README-update: vermelden in feature-lijst
+```
+
+Tasks zijn klein en concreet — 15-30 minuten werk per task. Te grote tasks zijn een teken dat je ze nog moet opsplitsen. Goede taskbreakdown bepaalt direct hoe soepel `/opsx-apply` (stap 10) straks door je change loopt.
+
+> **Optionele extra artefacten.** Naast de vier vaste artefacten heeft OpenSpec een paar optionele: `discovery.md` (open vragen die je tijdens onderzoek aantrof), `contract.md` (cross-project API-contracten), `migration.md` (data-migratie tussen schema-versies), en `test-plan.md` (test-classificatie voor `/opsx-apply-loop`). Voor een eerste change heb je ze meestal niet nodig — zie de [commando-referentie](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-continue) voor de volledige dependency-chain.
+
+## Stap 7: of in één klap met `/opsx-ff`
+
+Voor wie liever met één commando begint: nadat je `/opsx-new add-publication-search` hebt gedraaid, kun je ook gewoon zeggen:
+
+```
+/opsx-ff
+```
+
+Claude Code stelt eerst een paar vragen ("wat moet de change doen?", "welk model wil je gebruiken?") en genereert dan in één run de proposal, de specs/, de design en de tasks — in **diezelfde afhankelijkheidsvolgorde** die we hierboven handmatig hebben afgelopen. Snel, en in onze ervaring goed genoeg om vanaf daar bij te sturen.
+
+Wanneer wel `/opsx-ff`: voor changes waarvan je het beeld al helder hebt en je vooral typewerk wil uitsparen. Per [`spec-driven-development.md`](https://github.com/ConductionNL/.github/blob/main/docs/WayOfWork/spec-driven-development.md) is **`/opsx-ff` → `/opsx-apply` → `/opsx-verify`** het canonical pad voor de meeste changes.
+
+Wanneer juist niet: bij architecturale keuzes waar je per stap wil mee-denken — dan loont [`/opsx-continue`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-continue) zich (genereert telkens het volgende artefact na review en eventuele aanpassing). Of, voor de brainstorm vooraf, [`/opsx-explore`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-explore) (zie Stap 0) — die maakt nog niets aan, maar denkt mee.
+
+## Stap 8: valideren
+
+Op spec-niveau draai je de OpenSpec-CLI:
+
+```bash
+openspec validate --strict
+```
+
+Dat is een **terminal-commando**, geen slash-command (zie de [commando-referentie](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#openspec-cli-commands)). Met `--strict` worden waarschuwingen als fouten gezien. De validator checkt onder andere:
+
+- Scenario's gebruiken **vier** hashtags (`####`), niet drie — de meest voorkomende OpenSpec-fout, en wordt anders stilzwijgend door de parser overgeslagen.
+- Requirements gebruiken RFC 2119-keywords (MOET / MAG / KAN).
+- ADDED / MODIFIED / REMOVED-secties zijn correct gevormd.
+- Geen lege of incomplete artefacten.
+
+Komt validate groen door, dan is je spec-delta klaar voor commit + PR. Komt-ie rood, dan staan de bevindingen klip en klaar — bijna altijd een vergeten hashtag of een typo in een keyword.
+
+## Stap 9: commit en PR
+
+```bash
+git add openspec/changes/add-publication-search/
+git commit -m "spec: add-publication-search proposal + delta"
+git push -u origin feature/add-publication-search
+
+gh pr create --base development \
+  --title "spec: add-publication-search" \
+  --body "Eerste OpenSpec change — alleen specs, geen implementatie."
+```
+
+In een spec-eerste workflow merge je deze spec-PR apart vóór implementatie; de review focust dan op of de spec klopt — niet of de code werkt, want er is nog geen code. Daarna komen de volgende fases — zie Stap 10 (implementeren) en Stap 11 (verifiëren en archiveren).
+
+> **Spec + implementatie in één PR?** Ook prima — vooral voor kleine, duidelijke changes. Het spec-only-eerst patroon hierboven loont vooral wanneer reviewers de spec willen tekenen voordat er code is.
+
+## Stap 10: implementeren
+
+Met de spec gemerged is de spec klaar — nu de code. Twee skills nemen je daarbij bij de hand, in volgorde:
+
+### `/opsx-plan-to-issues` — tasks worden GitHub-issues
+
+```
+/opsx-plan-to-issues
+```
+
+Dit leest `tasks.md` en maakt:
+
+- Een **tracking-issue** (de "epic") met een complete checkboxlijst.
+- **Eén GitHub-issue per task**, met acceptance-criteria, een `spec_ref` naar de relevante spec-sectie, en bestanden-die-waarschijnlijk-aangeraakt-worden.
+- Een `plan.json` in de change-map met alle issue-nummers gekoppeld.
+
+Vanaf nu staat de change op het projectbord — zichtbaar voor het team. Optioneel `--trigger-label <label>` (bv. `--trigger-label wilco-ready-to-build`) zet meteen het Hydra-bouwlabel op elk issue.
+
+### `/opsx-apply` — bouwen tegen de spec
+
+```
+/opsx-apply
+```
+
+`/opsx-apply` draait de **Build-fase**: pakt de volgende open task uit `plan.json`, leest **alleen** de bijbehorende spec-sectie (via `spec_ref` — minimale context, geen "AI-amnesie"), implementeert backend + UI + tests, draait die tests, vinkt de task af in `tasks.md` én op het GitHub-issue, en herhaalt tot alles staat.
+
+De skill laadt automatisch alle bedrijfsbrede ADR's uit [`hydra/openspec/architecture/`](https://github.com/ConductionNL/hydra/tree/main/openspec/architecture) mee — harde constraints op de implementatie (data-laag, API-patronen, frontend-conventies, security, i18n).
+
+Per [`spec-driven-development.md`](https://github.com/ConductionNL/.github/blob/main/docs/WayOfWork/spec-driven-development.md) is dit het canonical pad: **de meeste changes hebben alleen `/opsx-ff` → `/opsx-apply` → `/opsx-verify` nodig**.
+
+**Hands-off alternatief.** [`/opsx-apply-loop`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-apply-loop) draait `apply` → `verify` in een isolated Docker-container (max 5 iteraties), optioneel met tests, en archiveert daarna. Of gebruik Hydra zelf: label het tracking-issue met `ready-to-build`, dan pikt [Hydra](https://github.com/ConductionNL/.github/blob/main/docs/hydra/README.md) hem op via de container-pipeline en levert een draft-PR.
+
+## Stap 11: verifiëren en archiveren
+
+Nadat de implementatie staat — alle taken in `tasks.md` afgevinkt en de code in `development` — draai je `/opsx-verify`:
+
+```
+/opsx-verify
+```
+
+Dit is de **Review-fase**. Waar `openspec validate` (Stap 8) checkte of de **spec** syntactisch klopt, checkt `/opsx-verify` of de **code** ook levert wat de spec belooft. Vijf controles:
+
+- **Completeness** — alle tasks afgevinkt en elke requirement geïmplementeerd.
+- **Correctness** — de implementatie matcht de spec-intentie.
+- **Coherence** — design-beslissingen zijn terug te zien in de code.
+- **Test-dekking** — nieuwe PHP-services/controllers hebben een testbestand; nieuwe Vue-components idem.
+- **Documentatie** — nieuwe features en endpoints staan in README of `docs/`.
+
+Bevindingen komen in drie smaken: **CRITICAL** (moet vóór archive opgelost), **WARNING** (zou opgelost moeten worden) en **SUGGESTION** (mooi-om-te-doen). Verify biedt ook aan om gevonden issues meteen te fixen en daarna opnieuw te draaien.
+
+Pas als verify groen is, draai je:
+
+```
+/opsx-archive
+```
+
+`/opsx-archive` doet vijf dingen:
+
+1. Controleert opnieuw artefact- en task-completeness.
+2. Syncht de delta naar de hoofd-spec via [`/opsx-sync`](https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md#opsx-sync) (als dat nog niet is gebeurd).
+3. Verhuist het mapje naar `openspec/changes/archive/YYYY-MM-DD-<naam>/`.
+4. Werkt `CHANGELOG.md` bij (completed tasks worden versie-entries).
+5. Maakt of update `docs/features/<change-name>.md` en het feature-overzicht in `docs/features/README.md`.
+
+Daarna is je change geschiedenis.
+
+> **`/opsx-sync` apart draaien? Meestal niet nodig.** `/opsx-archive` regelt de sync zelf — dat is stap 2 hierboven. De toegevoegde waarde van `/opsx-sync` standalone zit in **timing**: je wilt de hoofd-spec al bijwerken vóórdat je archiveert. Bijvoorbeeld om de gewijzigde regels alvast met een ander team te delen, een tussentijdse spec-review te doen, of de spec bij te werken terwijl de implementatie nog loopt. De skill mergt de ADDED / MODIFIED / REMOVED / RENAMED-secties slim in de hoofd-spec (alleen wat in de delta staat verandert — bestaande scenarios blijven staan). Daarna kun je later alsnog `/opsx-archive` draaien; die slaat stap 2 dan over.
+
+<Troubleshooting title="Probleemoplossing">
+  <TroubleshootingItem symptom="openspec validate meldt 'geen scenarios gevonden' voor een requirement">
+    Tellen tot vier: <code>#### Scenario:</code> — geen <code>###</code>, geen vetdruk. De parser slaat scenarios met drie hashtags stilzwijgend over, dus <code>openspec validate</code> ziet alleen het symptoom (een requirement zonder scenarios). Meest voorkomende OpenSpec-fout.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Mijn change-mapje heeft geen .openspec.yaml">
+    Je hebt vermoedelijk handmatig een map gemaakt in plaats van <code>/opsx-new</code> te gebruiken. Verwijder de map en draai <code>/opsx-new &lt;naam&gt;</code> opnieuw — de tooling maakt het skelet aan inclusief de metadata.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Reviewer zegt: deze requirement is te implementatie-specifiek">
+    Lees terug: noem je controllers, klassen of tabelnamen in <code>specs/</code>? Verplaats die naar <code>design.md</code>. De spec beschrijft alleen <em>extern waarneembaar gedrag</em>.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Ik wil iets wijzigen aan een bestaande spec, maar weet niet hoe">
+    Gebruik een <strong>MODIFIED Requirements</strong>-sectie in je spec-delta. Vermeld erbij wat het vorige gedrag was — bijvoorbeeld <em>(Voorheen: sessies verliepen na 30 minuten.)</em>. Zo kunnen reviewers de wijziging volgen.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+## Test jezelf
+
+Vijf korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
+
+<div className="tutorial-quiz">
+
+**1. Welk commando gebruik je om een nieuwe lege change te starten, en wat staat er direct in het mapje na die stap?**
+
+<Details summary="Hint">
+
+Eén commando, één naam in kebab-case. Direct daarna is het mapje vrijwel leeg op één metadata-bestandje na.
+
+</Details>
+
+<Details summary="Antwoord">
+
+**`/opsx-new <naam>`** met de change-naam in kebab-case (bijv. `add-publication-search` — niet `AddPublicationSearch` of `add_publication_search`). De change-naam wordt ook een GitHub-issue-label, dus kort en leesbaar.
+
+Direct na de stap staat in het mapje:
+
+```
+openspec/changes/<naam>/
+└── .openspec.yaml
+```
+
+Eén bestand — `.openspec.yaml` met metadata (schema-versie, aanmaakdatum). Verder leeg; proposal, delta, design en tasks komen pas daarna.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Wat is het verschil tussen `/opsx-ff` en handmatig artefacten schrijven, en wanneer kies je welke?**
+
+<Details summary="Hint">
+
+Snelheid vs. controle. De ene levert in één run alles op, de andere laat je per artefact terugkijken en bijsturen.
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **`/opsx-ff`** ("fast-forward") — genereert proposal, specs, design en tasks in één run na een paar setup-vragen. Kies hem als je het beeld al helder hebt en typewerk wil besparen.
+- **Handmatig of `/opsx-continue`** — je schrijft (of genereert) per artefact, leest terug, scherpt aan, en gaat dan pas verder. Kies dit bij architecturale keuzes waar je per stap wil meedenken. `/opsx-explore` zit nog een stap eerder: die maakt nog niets aan, maar denkt mee bij de brainstorm.
+
+In de praktijk: vaak `/opsx-ff` voor een ruwe schets en daarna handmatig bijsturen.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Welke drie soorten delta-secties kun je in een spec-delta schrijven, en wat doe je in elke?**
+
+<Details summary="Hint">
+
+Drie hoofdletter-woorden, alledrie een werkwoord voor wat ze met requirements doen.
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **ADDED Requirements** — nieuwe requirements die nog niet in de hoofd-spec staan.
+- **MODIFIED Requirements** — bestaande requirements die anders worden. Vermeld erbij wat het vorige gedrag was — bijvoorbeeld *(Voorheen: sessies verliepen na 30 minuten.)* — zodat reviewers de wijziging kunnen volgen.
+- **REMOVED Requirements** — requirements die vervallen.
+
+Bij archivering gaan ADDED-regels naar de hoofd-spec, MODIFIED overschrijven hun voorganger, en REMOVED-regels verdwijnen.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Met welk commando check je je spec voordat je commit, en met welk commando check je later of de implementatie de spec ook echt levert?**
+
+<Details summary="Hint">
+
+Twee verschillende rollen — één is een OpenSpec-CLI die naar **spec-syntax** kijkt, één is een Claude Code-skill die naar **code-vs-spec** kijkt.
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **Vóór commit**: `openspec validate --strict`. De OpenSpec-CLI (terminal-commando, geen slash). Checkt of de delta syntactisch klopt — vier hashtags voor scenarios, RFC 2119-keywords, ADDED/MODIFIED/REMOVED-vorm, geen lege artefacten. Met `--strict` worden waarschuwingen ook als fouten gezien.
+- **Na implementatie**: `/opsx-verify`. Een Claude Code-skill die de **Review**-fase draait — alle taken afgevinkt, code in `development` — en checkt of de code ook levert wat de spec belooft. Vijf controles: **completeness**, **correctness**, **coherence**, **test-dekking** en **documentatie**. Bevindingen komen in **CRITICAL** / **WARNING** / **SUGGESTION**.
+
+Het ene checkt of de spec **correct opgeschreven** is, het andere of de code de spec **echt levert**. De meest voorkomende spec-syntaxfout — drie i.p.v. vier hashtags bij een scenario — wordt door de parser stilzwijgend overgeslagen, dus `openspec validate` ziet alleen het symptoom (requirement zonder scenarios). "Tellen tot vier" blijft de eerste reflex.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. Wanneer is een change klaar om gearchiveerd te worden, en welk commando draai je dan?**
+
+<Details summary="Hint">
+
+Vier voorwaarden: tasks, code in development, delta in hoofd-spec, en mapje verhuisd. Het laatste hoef je niet zelf te doen.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Een change is klaar om gearchiveerd te worden als:
+
+1. Alle taken in `tasks.md` afgevinkt zijn.
+2. De implementatie in `development` zit (PR gemerged).
+3. De spec-delta is gesynct naar de hoofd-spec in `openspec/specs/`.
+4. Het mapje is verplaatst naar `openspec/changes/archive/YYYY-MM-DD-<naam>/`.
+
+Stap 3 en 4 doe je niet handmatig — draai **`/opsx-archive`**. Die controleert of alle taken klaar zijn, syncht de delta via `/opsx-sync`, en verhuist het mapje met datum vooraan. Daarna is je change geschiedenis.
+
+</Details>
+
+</div>
+
+<NextSteps title="Volgende stap" lede="Je eerste change staat. Een paar logische vervolgstappen:">
+  <NextStep
+    title="Deel 3 (optioneel) — Retrofit een bestaande codebase"
+    href="/nl/academy/openspec-tutorial-5-retrofit"
+    description="Alleen als je gevraagd bent een oudere app onder de huidige OpenSpec-conventie te brengen. Naslagwerk voor /opsx-coverage-scan, /opsx-annotate en /opsx-reverse-spec — overleg eerst met je team lead."
+  />
+  <NextStep
+    title="Deel 1 — Wat is OpenSpec?"
+    href="/nl/academy/openspec-tutorial-1-what-is-openspec"
+    description="Even teruglezen wat een spec versus een change is — handig als je een collega meeneemt in deze workflow."
+  />
+  <NextStep
+    title="Hydra-leerlijn — van spec naar code"
+    href="/nl/academy/hydra-tutorial-1-what-is-hydra"
+    description="Hoe gaat een OpenSpec change vanzelf door naar een PR met code? Onze AI-pipeline doet dat werk."
+  />
+  <NextStep
+    title="De officiële OpenSpec-conventie"
+    href="https://openspec.dev"
+    description="De bron-conventie waar wij op voortbouwen, met de volledige naamgeving en regels."
+  />
+  <NextStep
+    title="OpenSpec-commando's compleet"
+    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/commands-openspec.md"
+    description="Alle /opsx-*-commando's op één rij: new, ff, continue, explore, apply, verify, sync, archive."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Vragen of feedback?"
+  body="Spreek je teamlead of buddy aan, of stel je vraag in #openspec op Slack. Issues op deze tutorial graag op het bijbehorende GitHub-issue."
+  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=OpenSpec%20leerlijn%20deel%202" }}
+/>

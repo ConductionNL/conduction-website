@@ -1,16 +1,47 @@
 ---
-title: Support, Conduction
+title: Support
 description: Support runs through partners. The apps stay free. Government clients can opt for a managed Common Ground tenant.
 hide_table_of_contents: true
 ---
 
 import {Section, SectionHead, HowSteps, HowStep, Card, Pill, HexBullet, HexNetwork, FeatureList, FeatureItem, PairRow, PairCard, Button, PartnerGrid, PartnerCard, BecomePartner, PartnerDirectory, ManagedCommonGround, FAQ, FAQItem} from '@conduction/docusaurus-preset/components';
-import {PARTNERS, BECOME_PARTNER} from '@site/src/data/partners-catalog';
+import {usePartners, useBecomePartner} from '@site/src/data/partners-catalog';
+import EnquiryForm from '@site/src/components/EnquiryForm';
+
+export const supportLeadTitle = (f) =>
+  `Support enquiry: ${[f.firstName, f.lastName].filter(Boolean).join(' ') || 'Website visitor'}${f.organisation ? ` (${f.organisation})` : ''}`;
+export const partnerLeadTitle = (f) =>
+  `Partner application: ${f.company || 'Unknown company'}`;
+
+export function PartnerLogoNetwork() {
+  const partners = usePartners();
+  return (
+    <HexNetwork
+      layout="3-3-3-3"
+      scroll="down"
+      scrollSpeed={70}
+      visibleRows={4}
+      fade={false}
+      cells={partners.map(p => ({name: p.name, logo: p.logo, href: p.href}))}
+    />
+  );
+}
+
+export function PartnerDirectoryBlock() {
+  const partners = usePartners();
+  const becomePartner = useBecomePartner();
+  return (
+    <PartnerDirectory
+      partners={partners}
+      becomePartner={{...becomePartner, href: '#become-a-partner', ctaLabel: 'Apply below'}}
+    />
+  );
+}
 
 export const TIER_PILL = {
-  host:      {background: 'var(--c-cobalt-50)', color: 'var(--c-cobalt-700)'},
+  host:      {background: 'var(--conduction-color-surface-subtle)', color: 'var(--conduction-color-text-body)'},
   service:   {background: 'var(--c-gold-500)',  color: 'var(--c-cobalt-900)'},
-  certified: {background: 'white',              color: 'var(--c-blue-cobalt)'},
+  certified: {background: 'var(--conduction-color-surface-card)',              color: 'var(--conduction-color-text-default)'},
 };
 export const TIER_CARD_CERTIFIED = {
   background: 'var(--c-blue-cobalt)',
@@ -29,23 +60,16 @@ export const TIER_PILL_BASE = {
 };
 
 <Section spacing="default" background="tinted">
-  <div style={{display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: 'var(--space-10)', alignItems: 'center'}} className="support-hero">
+  <div style={{display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: 'var(--space-10)', alignItems: 'center'}} className="cn-stack-mobile support-hero">
     <div>
-      <div style={{display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--c-orange-knvb)', marginBottom: 'var(--space-3)'}}>
+      <div style={{display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 'var(--space-3)'}}>
         <span style={{width: 10, height: 12, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-orange-knvb)'}}></span>
         Support
       </div>
-      <h1 style={{fontSize: 56, fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1.05, color: 'var(--c-cobalt-900)', margin: '0 0 var(--space-5)'}}>Support runs through partners.<br/>The apps stay free.</h1>
-      <p style={{fontSize: 18, lineHeight: 1.5, color: 'var(--c-cobalt-700)', margin: 0, maxWidth: '52ch'}}>Conduction builds and maintains the apps. Every one of them is open-source on GitHub and free from the <span className="next-blue">Nextcloud</span> app store. Day-to-day support, implementation hours, and SLA contracts sit with our partners. Pick the partner that matches your sector and your scale.</p>
+      <h1 style={{fontSize: 56, fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1.05, color: 'var(--conduction-color-text-strong)', margin: '0 0 var(--space-5)'}}>Support runs through partners.<br/>The apps stay free.</h1>
+      <p style={{fontSize: 18, lineHeight: 1.5, color: 'var(--conduction-color-text-body)', margin: 0, maxWidth: '52ch'}}>Conduction builds and maintains the apps. Every one of them is open-source on GitHub and free from the <span className="next-blue">Nextcloud</span> app store. Day-to-day support, implementation hours, and SLA contracts sit with our partners. Pick the partner that matches your sector and your scale.</p>
     </div>
-    <HexNetwork
-      layout="3-3-3-3"
-      scroll="down"
-      scrollSpeed={70}
-      visibleRows={4}
-      fade={false}
-      cells={PARTNERS.map(p => ({name: p.name, logo: p.logo, href: p.href}))}
-    />
+    <PartnerLogoNetwork />
   </div>
 </Section>
 
@@ -76,12 +100,12 @@ export const TIER_PILL_BASE = {
     align="stack"
     lede="Three tiers reflect how deep the partnership runs. Every tier installs the same apps. The differences are in process, response time, and the joint roadmap."
   />
-  <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24}}>
+  <div className="cn-stack-mobile" style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24}}>
     <Card padding="lg">
       <span style={{...TIER_PILL_BASE, ...TIER_PILL.host}}>Host</span>
-      <h3 style={{fontSize: 22, fontWeight: 700, margin: '18px 0 12px', color: 'var(--c-cobalt-900)'}}>Ships our apps to their customers.</h3>
-      <div style={{fontSize: 14, color: 'var(--c-cobalt-700)', lineHeight: 1.6, margin: '0 0 20px'}}>Hosts and resells the open-source apps through their own channels. May offer Nextcloud-supported variants. No SLA with Conduction.</div>
-      <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: 'var(--c-cobalt-800)'}}>
+      <h3 style={{fontSize: 22, fontWeight: 700, margin: '18px 0 12px', color: 'var(--conduction-color-text-strong)'}}>Ships our apps to their customers.</h3>
+      <div style={{fontSize: 14, color: 'var(--conduction-color-text-body)', lineHeight: 1.6, margin: '0 0 20px'}}>Hosts and resells the open-source apps through their own channels. May offer Nextcloud-supported variants. No SLA with Conduction.</div>
+      <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: 'var(--conduction-color-text-strong)'}}>
         <li><HexBullet size="sm" color="var(--c-mint-500)" /> Public listing in the directory</li>
         <li><HexBullet size="sm" color="var(--c-mint-500)" /> Community Slack access</li>
         <li><HexBullet size="sm" color="var(--c-mint-500)" /> Quarterly partner office hours</li>
@@ -89,9 +113,9 @@ export const TIER_PILL_BASE = {
     </Card>
     <Card padding="lg">
       <span style={{...TIER_PILL_BASE, ...TIER_PILL.service}}>Service</span>
-      <h3 style={{fontSize: 22, fontWeight: 700, margin: '18px 0 12px', color: 'var(--c-cobalt-900)'}}>SLA, third-line, named contacts.</h3>
-      <div style={{fontSize: 14, color: 'var(--c-cobalt-700)', lineHeight: 1.6, margin: '0 0 20px'}}>Hosts and ships our apps with an SLA from Conduction. Third-line support from our engineers, named contacts, input on bug priority and feature requests.</div>
-      <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: 'var(--c-cobalt-800)'}}>
+      <h3 style={{fontSize: 22, fontWeight: 700, margin: '18px 0 12px', color: 'var(--conduction-color-text-strong)'}}>SLA, third-line, named contacts.</h3>
+      <div style={{fontSize: 14, color: 'var(--conduction-color-text-body)', lineHeight: 1.6, margin: '0 0 20px'}}>Hosts and ships our apps with an SLA from Conduction. Third-line support from our engineers, named contacts, input on bug priority and feature requests.</div>
+      <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: 'var(--conduction-color-text-strong)'}}>
         <li><HexBullet size="sm" color="var(--c-mint-500)" /> Everything in Host</li>
         <li><HexBullet size="sm" color="var(--c-mint-500)" /> Official Nextcloud partner</li>
         <li><HexBullet size="sm" color="var(--c-mint-500)" /> SLA contract with Conduction</li>
@@ -120,10 +144,7 @@ export const TIER_PILL_BASE = {
     align="stack"
     lede="Implementation, hosting, and integration partners. Filter by tier and by the apps you want to deploy. Apply through the form below to be added."
   />
-  <PartnerDirectory
-    partners={PARTNERS}
-    becomePartner={{...BECOME_PARTNER, href: '#become-a-partner', ctaLabel: 'Apply below'}}
-  />
+  <PartnerDirectoryBlock />
 </Section>
 
 <ManagedCommonGround
@@ -131,13 +152,13 @@ export const TIER_PILL_BASE = {
   title={<>A government-only Nextcloud framework.<br/>€250 per component per month.</>}
   lede={<>For public-sector clients we run a managed <span className="next-blue">Nextcloud</span> tenant as a framework for Common Ground apps. No Files, no Talk, no Mail, no Calendar, just the components your case workers actually use. We provision the tenant, install the components, monitor, patch, and back up.</>}
   primaryCta={{label: 'Talk to us', href: 'mailto:info@conduction.nl?subject=Managed%20Common%20Ground%20enquiry'}}
-  secondaryCta={{label: 'Compliance signals', href: '/iso'}}
+  secondaryCta={{label: 'Compliance signals', href: '/quality'}}
   components={[
     {href: '/apps/openregister', name: 'OpenRegister', why: 'Typed register store. €250 per month, one register set per component.', icon: <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg>},
     {href: '/apps/opencatalogi', name: 'OpenCatalogi', why: 'Federated data catalogue. €250 per month, one catalogue per component.', icon: <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>},
-    {href: '/apps/openconnector', name: 'OpenConnector', why: 'API gateway and integrations runtime. €250 per month, integrations included.', icon: <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>},
-    {href: '/apps/docudesk', name: 'DocuDesk', why: 'Document generation, anonymisation, signing. €250 per month.', icon: <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>},
-    {href: '/apps/mydash', name: 'MyDash', why: 'Dashboard builder. €250 per month, role-based access included.', icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>},
+    {href: '/apps/integriq', name: 'Integriq', why: 'API gateway and integrations runtime. €250 per month, integrations included.', icon: <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 12h9M9 12l9-6M9 12l9 6"/></svg>},
+    {href: '/apps/filinq', name: 'Filinq', why: 'Document generation, anonymisation, signing. €250 per month.', icon: <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>},
+    {href: '/apps/launchpad', name: 'LaunchPad', why: 'Dashboard builder. €250 per month, role-based access included.', icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>},
     {href: '/apps/openai-bridge', name: 'OpenAI Bridge', why: 'LLM gateway with PII redaction. €250 per month, model usage billed separately.', icon: <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>},
   ]}
   footnote="Available to public-sector clients only. We verify eligibility (KvK record, public-body status) when you reach out. Hosted on Cyso under ISAE 3402 Type II, ISO 27001:2022, Dutch jurisdiction, EU data, no US sub-processor."
@@ -149,41 +170,41 @@ export const TIER_PILL_BASE = {
     title="Two doors. Pick the one that fits."
     align="stack"
   />
-  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24}} className="support-forms">
+  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24}} className="cn-stack-mobile support-forms">
 
-    <form style={{background: 'white', border: '1px solid var(--c-cobalt-100)', borderRadius: 'var(--radius-lg)', padding: 36}}>
-      <div style={{display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)', marginBottom: 12}}>
+    <EnquiryForm source="website-support" buildTitle={supportLeadTitle} successText="We'll route your request to one to three matching partners and be in touch shortly." style={{background: 'var(--conduction-color-surface-card)', border: '1px solid var(--c-cobalt-100)', borderRadius: 'var(--radius-lg)', padding: 36}}>
+      <div style={{display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 12}}>
         <span style={{width: 10, height: 12, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-orange-knvb)'}}></span>
         I need help
       </div>
-      <h3 style={{fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', margin: '0 0 12px', lineHeight: 1.2, color: 'var(--c-cobalt-900)'}}>Match me with a partner.</h3>
-      <p style={{fontSize: 14, color: 'var(--c-cobalt-700)', lineHeight: 1.55, margin: '0 0 24px', maxWidth: '44ch'}}>Tell us what you're trying to do. We'll route the request to one to three partners that fit your sector, scale, and the apps you have in mind. No commission, no exclusivity.</p>
+      <h3 style={{fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', margin: '0 0 12px', lineHeight: 1.2, color: 'var(--conduction-color-text-strong)'}}>Match me with a partner.</h3>
+      <p style={{fontSize: 14, color: 'var(--conduction-color-text-body)', lineHeight: 1.55, margin: '0 0 24px', maxWidth: '44ch'}}>Tell us what you're trying to do. We'll route the request to one to three partners that fit your sector, scale, and the apps you have in mind. No commission, no exclusivity.</p>
 
-      <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14}}>
+      <div className="cn-stack-mobile" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14}}>
         <label style={{display: 'block'}}>
-          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)', marginBottom: 6}}>First name</span>
-          <input type="text" name="firstName" placeholder="Sanne" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'white', color: 'var(--c-cobalt-900)'}} />
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>First name</span>
+          <input type="text" name="firstName" placeholder="Sanne" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-strong)'}} />
         </label>
         <label style={{display: 'block'}}>
-          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)', marginBottom: 6}}>Last name</span>
-          <input type="text" name="lastName" placeholder="de Vries" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'white', color: 'var(--c-cobalt-900)'}} />
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Last name</span>
+          <input type="text" name="lastName" placeholder="de Vries" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-strong)'}} />
         </label>
       </div>
 
       <label style={{display: 'block', marginBottom: 14}}>
-        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)', marginBottom: 6}}>Work email</span>
-        <input type="email" name="email" placeholder="je@bedrijf.nl" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'white', color: 'var(--c-cobalt-900)'}} />
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Work email</span>
+        <input type="email" name="email" placeholder="je@bedrijf.nl" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-strong)'}} />
       </label>
 
       <label style={{display: 'block', marginBottom: 14}}>
-        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)', marginBottom: 6}}>Organisation</span>
-        <input type="text" name="organisation" placeholder="Gemeente, MKB, ziekenhuis…" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'white', color: 'var(--c-cobalt-900)'}} />
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Organisation</span>
+        <input type="text" name="organisation" placeholder="Gemeente, MKB, ziekenhuis…" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-strong)'}} />
       </label>
 
-      <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14}}>
+      <div className="cn-stack-mobile" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14}}>
         <label style={{display: 'block'}}>
-          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)', marginBottom: 6}}>Sector</span>
-          <select name="sector" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'white', color: 'var(--c-cobalt-900)'}}>
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Sector</span>
+          <select name="sector" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-strong)'}}>
             <option>Publieke sector</option>
             <option>MKB</option>
             <option>Zorg</option>
@@ -192,30 +213,30 @@ export const TIER_PILL_BASE = {
           </select>
         </label>
         <label style={{display: 'block'}}>
-          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)', marginBottom: 6}}>Apps in mind</span>
-          <select name="apps" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'white', color: 'var(--c-cobalt-900)'}}>
+          <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>Apps in mind</span>
+          <select name="apps" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-strong)'}}>
             <option>Niet zeker, adviseer me</option>
             <option>OpenCatalogi</option>
             <option>OpenRegister</option>
-            <option>OpenConnector</option>
-            <option>DocuDesk</option>
+            <option>Integriq</option>
+            <option>Filinq</option>
             <option>Combinatie</option>
           </select>
         </label>
       </div>
 
       <label style={{display: 'block', marginBottom: 14}}>
-        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-cobalt-400)', marginBottom: 6}}>What are you trying to do?</span>
-        <textarea name="message" placeholder="Bijv: WOO-publicatie inrichten op onze huidige Nextcloud, met koppeling naar ons DMS." style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'white', color: 'var(--c-cobalt-900)', resize: 'vertical', minHeight: 80}}></textarea>
+        <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--conduction-color-text-muted)', marginBottom: 6}}>What are you trying to do?</span>
+        <textarea name="message" placeholder="Bijv: WOO-publicatie inrichten op onze huidige Nextcloud, met koppeling naar ons DMS." style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid var(--c-cobalt-200)', borderRadius: 'var(--radius-md)', background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-strong)', resize: 'vertical', minHeight: 80}}></textarea>
       </label>
 
-      <p style={{fontSize: 12, color: 'var(--c-cobalt-400)', lineHeight: 1.5, margin: '16px 0 18px'}}>By submitting you agree to be contacted by Conduction once and by up to three matching partners. We share only what you typed above. <a href="/privacy">Privacy statement</a>.</p>
+      <p style={{fontSize: 12, color: 'var(--conduction-color-text-muted)', lineHeight: 1.5, margin: '16px 0 18px'}}>By submitting you agree to be contacted by Conduction once and by up to three matching partners. We share only what you typed above. <a href="/privacy">Privacy statement</a>.</p>
       <button type="submit" style={{background: 'var(--c-blue-cobalt)', color: 'white', border: 'none', padding: '13px 28px', borderRadius: 'var(--radius-md)', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', cursor: 'pointer'}}>
         Find me a partner →
       </button>
-    </form>
+    </EnquiryForm>
 
-    <form id="become-a-partner" style={{background: 'var(--c-cobalt-900)', color: 'white', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-lg)', padding: 36}}>
+    <EnquiryForm source="website-partner" buildTitle={partnerLeadTitle} successText="We review partner applications within five business days and will follow up by email." id="become-a-partner" style={{background: 'var(--c-cobalt-900)', color: 'white', border: '1px solid var(--c-cobalt-900)', borderRadius: 'var(--radius-lg)', padding: 36}}>
       <div style={{display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: 12}}>
         <span style={{width: 10, height: 12, clipPath: 'var(--hex-pointy-top)', background: 'var(--c-orange-knvb)'}}></span>
         I want to be a partner
@@ -223,7 +244,7 @@ export const TIER_PILL_BASE = {
       <h3 style={{fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', margin: '0 0 12px', lineHeight: 1.2, color: 'white'}}>Apply to the partner programme.</h3>
       <p style={{fontSize: 14, color: 'rgba(255,255,255,0.72)', lineHeight: 1.55, margin: '0 0 24px', maxWidth: '44ch'}}>If your team installs and operates Conduction apps for clients, the Partner tier is open. No fee, no exclusivity. The bar is one production deployment and a public reference.</p>
 
-      <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14}}>
+      <div className="cn-stack-mobile" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14}}>
         <label style={{display: 'block'}}>
           <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginBottom: 6}}>Company name</span>
           <input type="text" name="company" placeholder="Acme Hosting" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.08)', color: 'white'}} />
@@ -239,7 +260,7 @@ export const TIER_PILL_BASE = {
         <input type="email" name="email" placeholder="partners@yourcompany.nl" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.08)', color: 'white'}} />
       </label>
 
-      <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14}}>
+      <div className="cn-stack-mobile" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14}}>
         <label style={{display: 'block'}}>
           <span style={{display: 'block', fontFamily: 'var(--conduction-typography-font-family-code)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginBottom: 6}}>Production deployments</span>
           <select name="deployments" style={{width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14, padding: '11px 14px', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 'var(--radius-md)', background: 'rgba(255,255,255,0.08)', color: 'white'}}>
@@ -270,10 +291,10 @@ export const TIER_PILL_BASE = {
       </label>
 
       <p style={{fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5, margin: '16px 0 18px'}}>We review applications within five business days. Approved partners get a directory listing, a Slack invite, and a slot in the next quarterly office hours.</p>
-      <button type="submit" style={{background: 'white', color: 'var(--c-blue-cobalt)', border: 'none', padding: '13px 28px', borderRadius: 'var(--radius-md)', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', cursor: 'pointer'}}>
+      <button type="submit" style={{background: 'var(--conduction-color-surface-card)', color: 'var(--conduction-color-text-default)', border: 'none', padding: '13px 28px', borderRadius: 'var(--radius-md)', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', cursor: 'pointer'}}>
         Submit application →
       </button>
-    </form>
+    </EnquiryForm>
 
   </div>
 </Section>
@@ -295,6 +316,6 @@ export const TIER_PILL_BASE = {
     Submit the form anyway. If we genuinely can't match you to a partner, Conduction's engineers can do a paid scoping engagement to work out the best path. We'll typically introduce a partner partway through the project.
   </FAQItem>
   <FAQItem question="What's the certification process for partners?">
-    One certified engineer has to complete the per-app practicals (deploy, configure, debug). Certifications are app-specific. Certified on DocuDesk doesn't make you Certified on OpenRegister. We retest every twelve months as the apps evolve.
+    One certified engineer has to complete the per-app practicals (deploy, configure, debug). Certifications are app-specific. Certified on Filinq doesn't make you Certified on OpenRegister. We retest every twelve months as the apps evolve.
   </FAQItem>
 </FAQ>
