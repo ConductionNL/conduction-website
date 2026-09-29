@@ -76,7 +76,7 @@ Important: Al Gorithm runs on **Sonnet** by default, with **Haiku** as a cheaper
 
 ## Pipeline 2: Code review (Juan Claude van Damme, Sonnet)
 
-Once `build:pass` is set, the supervisor automatically queues `code-review:queued`. Juan Claude picks it up:
+Once `build:pass` is set, the `hydra-sequencer` flow automatically queues `code-review:queued`. Juan Claude picks it up:
 
 1. Reads **only the PR diff** (`HYDRA_REVIEW_SCOPE=diff`, ADR-020). That keeps the scope manageable and ensures every line he comments on is actually touched in this PR.
 2. Walks the ADR library and gate skills (see part 3).
@@ -84,11 +84,11 @@ Once `build:pass` is set, the supervisor automatically queues `code-review:queue
 4. For each finding he writes an inline comment on the PR with prefix `[fixed:...]` or `[unfixed:...]`.
 5. He commits and pushes his fixes to the feature branch and sets `code-review:pass` or `code-review:fail` on the issue.
 
-Juan doesn't write out his `fixes_applied[]` and `unfixed[]` as JSON himself — the orchestrator only bundles them into one round file after the next step (Clyde). See ["How verdicts are persisted"](#how-verdicts-are-persisted) below.
+Juan doesn't write out his `fixes_applied[]` and `unfixed[]` as JSON himself — Hydra only bundles them into one round file after the next step (Clyde). See ["How verdicts are persisted"](#how-verdicts-are-persisted) below.
 
 ## Pipeline 3: Security review (Clyde Barcode, Sonnet)
 
-Right after code review (whether `:pass` or `:fail`), the supervisor queues `security-review:queued`. Clyde Barcode runs on the PR state *after* Juan Claude's fixes:
+Right after code review (whether `:pass` or `:fail`), the `hydra-sequencer` flow queues `security-review:queued`. Clyde Barcode runs on the PR state *after* Juan Claude's fixes:
 
 - Same shape as code review, plus **Semgrep** and pattern matching on CWE classes (SQL injection, XSS, path traversal, hardcoded secrets, …).
 - May also push bounded fixes in PR mode.
@@ -98,7 +98,7 @@ Why sequential and not parallel? Because Clyde reviews what Juan Claude left beh
 
 ## How verdicts are persisted
 
-After a complete review round (Juan + Clyde back to back), the orchestrator bundles both verdicts into **one** file on the feature branch: `openspec/changes/<slug>/reviews/<round>.json` in the target repo. Rounds number sequentially — `1.json` after the first pass, `2.json` after a `retry:queued` cycle, and so on (just `ls reviews/*.json | wc -l` plus one). That file holds the `fixes_applied[]` and `unfixed[]` from **both** reviewers combined — which is what Axel Pliér will read later. An aggregated status snapshot runs alongside in `openspec/changes/<slug>/hydra.json` (see part 6 for the structure and how to read it).
+After a complete review round (Juan + Clyde back to back), Hydra bundles both verdicts into **one** file on the feature branch: `openspec/changes/<slug>/reviews/<round>.json` in the target repo. Rounds number sequentially — `1.json` after the first pass, `2.json` after a `retry:queued` cycle, and so on (just `ls reviews/*.json | wc -l` plus one). That file holds the `fixes_applied[]` and `unfixed[]` from **both** reviewers combined — which is what Axel Pliér will read later. An aggregated status snapshot runs alongside in `openspec/changes/<slug>/hydra.json` (see part 6 for the structure and how to read it).
 
 ## The applier: Axel Pliér's binary gate
 
@@ -108,7 +108,7 @@ With both reviews in, Hydra has three options:
    Nothing changed after the original build, so no new risks. **Axel is skipped.** Issue gets `done`. Saves tokens.
 
 2. **Both reviews `:pass` and ≥ 1 fix was pushed.**  
-   The code has changed since the original build. Before we trust the final state, the orchestrator reruns the mechanical gates (PHPCS, Psalm, PHPStan, ...). If those pass, Axel Pliér is up. He reads:
+   The code has changed since the original build. Before we trust the final state, Hydra reruns the mechanical gates (PHPCS, Psalm, PHPStan, ...). If those pass, Axel Pliér is up. He reads:
    - the final diff,
    - the `fixes_applied[]` + `unfixed[]` from both reviews,
    - all inline comments on the PR.
@@ -120,10 +120,10 @@ With both reviews in, Hydra has three options:
 
 ## Labels: one source of truth
 
-Hydra is **stateless**. The whole state machine lives on the issue labels on GitHub. The supervisor (the daemon) reads the labels every few seconds and decides what to do. If a container crashes, the supervisor looks at the labels again and picks up where it left off.
+Hydra is **stateless**. The whole state machine lives on the issue labels on GitHub. The `hydra-dispatch` flow polls the forge every five minutes, and the `hydra-sequencer` flow reads an issue's labels to decide what to do next. If a stage crashes, the `hydra-lock-reaper` flow frees its lock, and the next pass reads the labels again and picks up where it left off.
 
-<HexCard title="Supervisor vs orchestrator — two different things">
-  These names get used interchangeably, but they're distinct. The <strong>supervisor</strong> (<code>scripts/hydra-supervisor.sh</code>) is the long-running daemon: it maintains a pool of slots (5 by default, <code>POOL_SIZE</code>), polls the forge for labelled issues every <code>IDLE_POLL_INTERVAL</code> seconds (60 by default), and fills a free slot the moment a worker finishes. The <strong>orchestrator</strong> (<code>scripts/orchestrate.sh</code>) is what the supervisor <em>launches into each slot</em>: it picks up one issue, reads its current label to decide the stage, runs that one stage in the right container, persists the result, advances the label, and exits. Supervisor = the pool manager that never stops; orchestrator = the one-shot per-stage runner. Slots are tracked as lock files under <code>/tmp/hydra-slots/</code>, and each gets its own isolated Nextcloud port and workspace so several builds run in parallel without colliding.
+<HexCard title="Dispatch vs sequencing — two different flows">
+  Two flows in hydra's <code>flows/</code> folder share the work, run by OpenRegister. <strong><code>hydra-dispatch</code></strong> runs on a schedule: it polls the forge for queued work and starts at most a fixed number of pipelines at once (<code>POOL_SIZE</code>). <strong><code>hydra-sequencer</code></strong> carries one issue: it takes that issue's lock, runs the dependency and sibling checks, reads the current label to decide the stage, has the hermiq ExApp run that stage, and advances the label through <code>hydra-label-transition</code>. Every stage's result is written to <code>hydra.json</code> by <code>hydra-record-stage</code> before the label moves. Until 2026 this was two shell scripts, <code>hydra-supervisor.sh</code> (the pool manager) and <code>orchestrate.sh</code> (the per-stage runner). Both are retired. Part 7 shows how the flows run unattended.
 </HexCard>
 
 Per stage there are four possible states: `:queued`, `:running`, `:pass`, `:fail`. They always live **on the issue, never on the PR.** That's a deliberate choice: the issue is the unit of work, the PR is an artefact of a build cycle.
@@ -144,7 +144,7 @@ Two human-triggered recovery labels that reach back into the pipeline. Both **si
 - **`retry:queued`** — the existing PR stays. Hydra builds an ephemeral `feedback.md` (in a `/tmp/hydra-retry-XXXXXX/` working directory, not committed) containing the `unfixed[]` findings + applier blockers, mounts it as `/workspace/feedback.md` in the builder container, and dispatches Al Gorithm in `HYDRA_MODE=fix` scoped to exactly the flagged files. Cheap. Suitable for: "the reviewers were right, builder just needs to touch up a few things".
 - **`rebuild:queued`** — existing PR closes, branch resets to `development`, all cycle labels removed, back to `build:queued`. Expensive. Suitable for: "Al Gorithm's approach was wrong, we're starting over with the same change".
 
-Rule of thumb: always go for the cheapest recovery first. First `gh pr update-branch <N>` (merge development → PR), then `retry:queued`, only then `rebuild:queued`. Part 6 goes into this in more depth — including the **label cleanup steps required before applying either trigger** (removing `needs-input` and fail labels first, otherwise the supervisor won't pick up the queue entry).
+Rule of thumb: always go for the cheapest recovery first. First `gh pr update-branch <N>` (merge development → PR), then `retry:queued`, only then `rebuild:queued`. Part 6 goes into this in more depth — including the **label cleanup steps required before applying either trigger** (removing `needs-input` and fail labels first, otherwise the `hydra-sequencer` flow skips the issue).
 
 ## Test yourself
 

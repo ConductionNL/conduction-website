@@ -204,7 +204,7 @@ export const APP_COUNT = Object.keys(PRESENTATION).length;
 export const INTEGRATED_COUNT = 14;
 export const ECOSYSTEM_COUNT = APP_COUNT + INTEGRATED_COUNT;
 
-/* Combined GitHub (legacy) + Codeberg (live) download total across every
+/* Combined GitHub (live) + Codeberg (legacy) download total across every
    app, straight from the generated totals block. This is the number the
    homepage StatsStrip renders. Sourced from the website's own local JSON
    because the preset's `totalDownloads` export can't read the data file
