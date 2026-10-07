@@ -1,0 +1,365 @@
+---
+slug: hydra-tutorial-4-skills
+title: "Hydra leerlijn — Deel 4: Skills"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-12
+summary: Welke skills draaien in de automatische Hydra-fabriek, welke zijn er voor mensen op de CLI, hoe ze worden aangeroepen, en wanneer je zelf een skill aan de loop toevoegt. Vierde van zeven korte modules.
+tags: [Hydra, Skills, OPSX, Testing, Tutorial series]
+apps: []
+durationMinutes: 14
+series: hydra-tutorial
+partNumber: 4
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, NextSteps, NextStep, HexCard} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+:::tip Niet bekend met Claude Skills in het algemeen?
+Dit deel duikt direct in de **Hydra-specifieke** skill-families. Wil je eerst weten wat een Claude Skill überhaupt is, hoe de frontmatter werkt, en wanneer je er zelf eentje schrijft? Doe dan de publieke [Claude Skills-leerlijn](/nl/academy/claude-skills-tutorial-1-what-are-claude-skills) (drie korte modules, ~40 minuten). Vanaf hier gaan we ervan uit dat je de basics kent.
+:::
+
+In de vorige delen ging het over *wat* Hydra doet. Dit deel gaat over *hoe*: de **skills** die de personas hun werk laten doen. Aan het eind weet je welke skills de automatische pipeline (de "Hydra-fabriek") draait en welke je als mens zelf aanroept, ken je de vijf families, en kun je inschatten wanneer een nieuwe skill de moeite waard is.
+
+{/* truncate */}
+
+<Outcomes title="Wat je leert in dit deel">
+  <Outcome>Wat een Claude-Code-skill is en hoe Hydra ze gebruikt om gedrag bij personas te bundelen.</Outcome>
+  <Outcome>Wat een stage in <strong>de automatische Hydra-fabriek</strong> te gebruiken krijgt, welke skills de container-images meedragen (Builder, Reviewer, Security) — en welke skills <strong>alleen voor mensen op de CLI</strong> zijn.</Outcome>
+  <Outcome>De vijf skill-families binnen Hydra: <code>{'opsx-*'}</code>, <code>{'hydra-gate-*'}</code>, <code>{'team-*'}</code>, <code>{'test-*'}</code>, en de utility/maintenance-skills.</Outcome>
+  <Outcome>De twee manieren waarop een skill geactiveerd kan worden — handmatig via <code>/{'<naam>'}</code> of automatisch door Claude — en hoe je dat per skill stuurt.</Outcome>
+  <Outcome>Wanneer je zelf een skill toevoegt en hoe je dat structureel doet.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem>Deel 1, 2 en 3 doorgenomen.</PrerequisiteItem>
+  <PrerequisiteItem>Een idee van wat <code>~/.claude/skills/</code> is op je eigen laptop, of in elk geval dat skills bestanden onder die naam zijn.</PrerequisiteItem>
+</Prerequisites>
+
+## Skills, in één alinea
+
+Een **skill** in Claude Code is een mapje met een `SKILL.md` (en optioneel scripts, `examples/`, helpers). Het mapje hangt onder `.claude/skills/<naam>/`. De `description` in de frontmatter vertelt Claude wanneer de skill relevant is; de inhoud is de instructie die Claude volgt zodra de skill geladen wordt.
+
+Voor Hydra zijn skills de **bundel-eenheid van gedrag**: in plaats van duizend regels prompt-tekst direct in een persona's `CLAUDE.md` te plakken, zit het in een skill, hergebruikbaar en testbaar.
+
+## Hoe een skill wordt aangeroepen
+
+Eén skill kan op twee manieren in actie komen:
+
+1. **Handmatig** — je typt `/opsx-apply` in een Claude-sessie. Direct, voorspelbaar, en de skill draait precies wanneer jij dat wilt.
+2. **Automatisch** — Claude leest de `description` van alle beschikbare skills mee en kiest er zelf eentje wanneer de huidige situatie matcht. Vraag "wat is er veranderd?" en Claude triggert vanzelf een skill als `summarize-changes` als die voorhanden is.
+
+Welke mode is toegestaan, regel je in de frontmatter van de skill zelf:
+
+- `disable-model-invocation: true` — alleen jij kunt 'm aanroepen via `/<naam>`. Gebruik dit voor skills met side-effects (`/opsx-apply` past code aan, `/create-pr` opent een PR). Claude mag dit niet zomaar uit zichzelf doen.
+- `user-invocable: false` — alleen Claude zelf mag 'm laden. Gebruik dit voor achtergrondkennis (bijvoorbeeld een `legacy-system-context` die niet als actie zinvol is).
+- Geen van beide gezet — beide mogen.
+
+Dat onderscheid — handmatig vs. automatisch — gaat dus over **configuratie van één skill**, niet over twee verschillende soorten bestanden. Een pipeline-stage heeft geen toetsenbord: hij krijgt een prompt die zegt wat hij moet doen en welke brief hij volgt, en wat hij daarnaast laadt is Claude's eigen keuze. Een mens op de CLI wil meestal expliciete controle en typt `/`.
+
+## Twee werelden: de Hydra-fabriek vs. skills voor mensen
+
+Hydra's `hydra/.claude/skills/` bevat zo'n 130 skill-mapjes, waarvan ongeveer 60 `hydra-gate-*` (`ls .claude/skills` geeft het aantal van vandaag). **De automatische pipeline leunt op heel weinig daarvan.** De rest is gereedschap voor jou, achter een toetsenbord. Belangrijk om uit elkaar te houden:
+
+### Wat de Hydra-fabriek echt draait
+
+Een echte run wordt gedreven door de flow `hydra-sequencer` (deel 7). De hermiq-app draait elke stage als `claude -p` in een checkout van de doel-repo, met Hydra's eigen tool-tree ernaast. De prompt van de stage zegt wat er moet gebeuren:
+
+- **Build (Al Gorithm)** — de prompt vraagt om de OpenSpec-change uit het issue te implementeren. Hij noemt geen skill. De agent mag bestanden lezen en bewerken (Read, Edit, Write, Glob, Grep) en krijgt de opdracht geen git te draaien; de pipeline commit en pusht. Daarna draait de pipeline zelf `scripts/run-hydra-gates.sh --scope-to-diff`, staat één fix-ronde op de gate-output toe, en draait de gates opnieuw.
+- **Code review, security review, applier (Juan Claude, Clyde Barcode, Axel Pliér)** — elk leest zijn eigen brief uit `agents/<persona>/` plus de stage-brief onder `images/`, draait de gates zoals die brief voorschrijft, en schrijft een verdict-bestand. Een verdict waarvan `checks_run` geen `hydra-gates` noemt, wordt geweigerd.
+
+De **container-images** start je zelf, met `dev-run.sh`, `smoke-test.sh` of `manual-review.sh` (deel 5). Elk heeft een eigen, beperkte set skills ingebakken:
+
+| Container | Persona | Skills in image | Hoofdfunctie |
+|---|---|---|---|
+| **Builder** | Al Gorithm | **Alle** skills uit `.claude/skills/` (geen vendor skills) | Implementeert de change; de entrypoint van de image volgt `opsx-apply`. De overige opsx-skills zijn er voor context. |
+| **Reviewer** | Juan Claude | `hydra-gates` + een vaste selectie van 16 `hydra-gate-*` skills + vendor `code-review` | Verplichte hydra-gates-check + diepere code-review via de Anthropic community-skill. |
+| **Security** | Clyde Barcode | `hydra-gates` + dezelfde 16 `hydra-gate-*` skills + vendor `trailofbits` (de Semgrep-plugin) + vendor `owasp` | Verplichte hydra-gates + SAST (Semgrep) + OWASP-top-10-checklists. |
+| **Applier** | Axel Pliér | **Geen skills**; zijn config staat alleen Read en Bash toe | Leest de uiteindelijke diff en beide review-verdicts en geeft één binair antwoord — `pass` of `fail`. Hij past **geen** fixes toe; hij is een go/no-go-poort, geen editor. |
+
+Welke skill-files een image ook meedraagt, de detectie doet **`scripts/run-hydra-gates.sh`**. Dat is een dun doorgeefluik naar het package `conduction/hydra-gates`, dat vandaag zo'n 96 gates declareert. Dat getal groeit met elk incident, dus vertrouw geen aantal dat in een doc staat (deze inbegrepen): elke run print een COVERAGE-regel met wat hij declareerde en wat er echt draaide. De skill-files dienen Claude als documentatie bij een fix; het script doet de detectie.
+
+### Wat de fabriek **niet** doet — voor mensen op de CLI
+
+Vrijwel alle andere skills zijn voor jou, of voor een collega-dev in een Claude Code-sessie op zijn laptop. Voorbeelden:
+
+- **Een change voorbereiden** — `opsx-new`, `opsx-ff`, `opsx-explore`, `opsx-plan-to-issues` doe je als mens vóór je het werk in de pipeline gooit. De pipeline bouwt alleen een change die al bestaat.
+- **Een rol aannemen** — `team-architect`, `team-backend`, `team-po` enz. zijn pure roleplay-frames voor één-mens-één-rol-sessies. De pipeline gebruikt ze niet.
+- **Testen draaien** — `/test-counsel` (alle negen personas) of `/test-app` (één browser-sweep) start je met de hand. De pipeline draait helemaal geen browser; de `test-*`-familie is van jou.
+- **PR's en dagelijks werk** — `/create-pr`, `/review-pr`, `/report-out` zijn de "drie keer per dag"-tools voor jou, niet voor de pipeline.
+
+Onthoud: **een pipeline-stage volgt zijn prompt, zijn brief en de gate-suite; een mens kan elke skill in de map aanroepen**. Dat is het hele verschil.
+
+## De vijf skill-families compleet
+
+Met die scheiding in het achterhoofd, hier zijn alle vijf families. Het tag-systeem in de tabel: **🤖 fabriek** = gebruikt door de pipeline of door de entrypoint van een pipeline-image, **⌨️ mens** = roep je zelf aan. (De builder-image kopieert de hele map `.claude/skills/`, dus de meeste ⌨️-skills *staan* erin; niets in de pipeline roept ze aan.)
+
+### Familie 1: OpenSpec workflow (`opsx-*`, 16 skills)
+
+De OPSX-skills implementeren de Conduction-workflow voor OpenSpec-changes — van proposal tot archief.
+
+| Skill | Voor wie | Doet |
+|---|---|---|
+| `opsx-apply` | 🤖 Builder-image + ⌨️ | Implementeert taken uit een change. De entrypoint van de builder-image volgt hem; de build-prompt van de flow noemt hem niet. |
+| `opsx-verify` | ⌨️ | Controleert dat de implementatie de change-artefacten dekt. |
+| `opsx-archive` | ⌨️ | Archiveert een afgeronde change en synct de delta naar de spec. |
+| `opsx-new` | ⌨️ | Start een nieuwe change (proposal-scaffold, schema-keuze). |
+| `opsx-ff` | ⌨️ | "Fast-forward": maakt change + alle artefacten in één pass. |
+| `opsx-continue` | ⌨️ | Pak een onderbroken change op. |
+| `opsx-explore` | ⌨️ | Verken pre-spec wat een change überhaupt zou moeten zijn. |
+| `opsx-onboard` | ⌨️ | Begeleide rondgang door één complete OpenSpec-workflowcyclus, met uitleg onderweg. |
+| `opsx-plan-to-issues` | ⌨️ | Zet `tasks.md` om naar een `plan.json` en een tracking-issue met taak-checkboxes. |
+| `opsx-sync` | ⌨️ | Sync delta-specs terug naar de hoofdspec. |
+| `opsx-bulk-archive` | ⌨️ | Archiveer meerdere afgeronde changes in één keer. |
+| `opsx-apply-loop` | ⌨️ | Draait apply → verify in een lus tot verify slaagt, en archiveert dan; per app, in Docker. |
+| `opsx-pipeline` | ⌨️ | Meerdere changes parallel laten lopen met subagents. |
+| `opsx-coverage-scan` | ⌨️ | Audit een legacy app op spec ↔ code coverage. |
+| `opsx-annotate` | ⌨️ | Past `@spec` PHPDoc-tags toe na een coverage-scan. |
+| `opsx-reverse-spec` | ⌨️ | Reverse-engineert een spec uit bestaande code. |
+
+Zestien skills is veel. In de praktijk pak je er een handvol, en de keuze volgt een simpele beslishulp:
+
+- **Nieuw begonnen en zeker van de feature?** → `opsx-ff` (in één pass naar alle artefacten), daarna `opsx-plan-to-issues`.
+- **Nieuw begonnen maar onzeker over scope of aanpak?** → eerst `opsx-explore`, dan stap voor stap `opsx-new` en `opsx-continue`.
+- **Nieuw met de workflow?** → `opsx-onboard` neemt je mee door één volledige cyclus.
+- **Legacy code zonder specs?** → `opsx-coverage-scan` → `opsx-reverse-spec` / `opsx-annotate`.
+- **Change is geschreven, wil je hem lokaal laten bouwen zonder de hele fabriek?** → `opsx-apply-loop` (één change) of `opsx-pipeline` (meerdere parallel).
+- **Binnen de fabriek** wordt geen van deze bij naam aangeroepen: de build-prompt van de flow implementeert de change direct. De opsx-skills zijn voorbereiding door mensen en lokaal gereedschap.
+
+### Familie 2: Quality + security gates (`hydra-gate-*`)
+
+De parent-skill **`hydra-gates`** draait de hele suite via `scripts/run-hydra-gates.sh` en vat de failures samen. De gate-logica zelf zit in het package `conduction/hydra-gates`, waar dat script naar doorverwijst; de skill-files per gate dienen Claude als naslag bij het fixen van een failure. Er zijn meer gates dan gate-skills, en de nummering (vandaag tot gate-116) heeft gaten.
+
+In plaats van hier een tabel over te nemen: de gates worden behandeld in [deel 3: Quality gates](/nl/academy/hydra-tutorial-3-quality-gates#categorie-2-hydra-specifieke-gates). Voor de skill-familie is het genoeg te weten dat de gates grofweg in groepen uiteenvallen:
+
+- **Hygiëne** — `spdx`, `forbidden-patterns`, `stub-scan`, `composer-audit`, `gitignore-then-commit`.
+- **Security & auth** — `route-auth`, `orphan-auth`, `no-admin-idor`, `unsafe-auth-resolver`, `semantic-auth`, `route-reachability`, `csrf-cochange`.
+- **Toegankelijkheid (WCAG 2.2 AA)** — `img-alt`, `button-name`, `form-label-association`, `html-lang`, `skip-link` en meer.
+- **Conduction-conventies & traceerbaarheid** — `initial-state`, `admin-router`, `nc-input-labels`, `modal-isolation`, `dashboard-antipattern`, `redundant-controller`, `notification-dialect`, `manifest-validation`, en de twee traceability-gates `spec-coverage` (gate-16) en `e2e-coverage` (gate-19).
+
+In een flow-run draait de pipeline de suite na de build en opnieuw na de ene fix-ronde, en elke review-stage krijgt de opdracht hem te draaien. Levert een nieuw incident een nieuwe gate op, dan komt die erbij en groeit het aantal — vertrouw dus de COVERAGE-regel van de run, niet een hard getal in een doc.
+
+### Familie 3: Team-rollen (`team-*`, 7 skills) — **alleen ⌨️ voor mensen**
+
+Skills die een specifiek soort werk modelleren via een persona-frame. Bedoeld voor een mens die naast Hydra in een terminal werkt en even één rol wil invullen.
+
+- `team-po` (Product Owner) — schrijft user stories en acceptatiecriteria.
+- `team-sm` (Scrum Master) — beheert backlog en sprint-planning-artefacten.
+- `team-architect` — neemt architectuurbeslissingen, schrijft ADR-drafts.
+- `team-backend` — implementeert backend-werk (PHP, services, mappers).
+- `team-frontend` — implementeert frontend-werk (Vue 2, Pinia, NL Design System).
+- `team-reviewer` — een handmatige variant van het reviewer-werk.
+- `team-qa` — schrijft testcases en testplannen.
+
+De builder-image draagt ze alleen mee omdat hij de hele map kopieert; niets in de automatische loop roept ze aan.
+
+### Familie 4: Test-suites (`test-*`) — allemaal ⌨️ voor mensen
+
+Na de gates de grootste familie: skills die agentic browser- en API-testen aansturen, in drie clusters:
+
+**Test-types** (één per test-soort):
+- `test-app` — automatische browsertest van een hele Nextcloud-app (Playwright MCP).
+- `test-functional` — functionele scenario's tegen geïmplementeerde features.
+- `test-api` — API-checks (REST, NLGov-conventies).
+- `test-accessibility`, `test-performance`, `test-security`, `test-regression` — gespecialiseerde varianten.
+
+**Personas** (`test-persona-*`) — negen Nederlandse gebruikersprofielen die elk een eigen blik op een app werpen: `annemarie`, `fatima`, `henk`, `janwillem`, `jasper`, `mark`, `noor`, `priya`, `sem`. Jasper gebruikt een schermlezer als zijn primaire ingang; Henk leest met grote letters en zoekt eenvoudige navigatie; Noor hamert op RBAC en audit-trails; Annemarie controleert NLGov/GEMMA-mapping. De persona-cards zelf liggen in [`hydra/personas/`](https://github.com/ConductionNL/hydra/tree/main/personas).
+
+**Scenario-management** — `test-scenario-create`, `test-scenario-edit`, `test-scenario-run` schrijven, bewerken en draaien herbruikbare `TS-NNN-*.md`-scenario's per app.
+
+De dispatcher van deze familie is **`test-counsel`**: hij coördineert alle negen personas tegen één feature en levert een gecombineerd rapport. Zelfde patroon als `hydra-gates` voor de quality-gates-familie.
+
+:::note Drie dingen die naar browsertesten klinken — houd ze uit elkaar
+Er zijn drie losse "test"-oppervlakken en ze zijn makkelijk te verwarren:
+
+1. **`scripts/run-browser-tests.sh`** — een script dat via Playwright MCP inlogt op een draaiende app, de acceptatiecriteria van de spec afloopt en een verdict-JSON teruggeeft. Het is *runtime*-bewijs dat de feature werkt, maar alleen als jij het draait: geen enkele flow roept het aan, dus een pipeline-run levert geen browserbewijs op.
+2. **gate-19 (`e2e-coverage`)** — een *statische* gate uit [deel 3](/nl/academy/hydra-tutorial-3-quality-gates). Hij draait helemaal geen browser; hij controleert dat elk spec-scenario via een `@e2e`-annotatie aan een Playwright-test *gekoppeld* is. Coverage-boekhouding, geen uitvoering.
+3. **De `test-*`-familie** — testsuites die jij met de hand draait, vóór of na de pipeline.
+
+Dus: gate-19 controleert dat de *koppelingen* bestaan en draait in de pipeline; het browser-script en de `test-*`-skills *besturen* echt een browser, en die start jij allebei zelf. Verschillende taken.
+:::
+
+### Familie 5: Utility & maintenance — allemaal ⌨️ voor mensen
+
+Al het overige. Vooral dev-comfort en meta-werk; een selectie:
+
+| Skill | Doet |
+|---|---|
+| `create-pr` | Maakt een PR vanuit een feature-branch — local checks → branch pick → PR-tekst. |
+| `review-pr` | Reviewt een PR (NB: handmatige variant; de fabriek heeft zijn eigen Juan Claude). |
+| `report-out` | End-of-day-rapport: de commits van vandaag + GitHub-activiteit → Nederlandse Slack-melding. |
+| `clean-env` | Reset de lokale OpenRegister-dev-omgeving (stoppen, volumes weg, herstarten, apps installeren). |
+| `local-run` | Draait builder → reviewer → security lokaal op een wegwerp-repo; vanuit Claude Code doet hij wat `smoke-test.sh` doet (deel 5). |
+| `sync-docs` | Sync `{app}/docs/` of `.github/docs/claude/` met de werkelijkheid in de repo. |
+| `skill-creator` | Wizard voor het maken van een nieuwe skill (scaffold, frontmatter, evals). |
+| `feature-counsel` | Pre-build spec-analyse vanuit negen persona-perspectieven (zusje van `test-counsel`). |
+| `persistence-audit` | Audit een codebase of architectuur op persistence-vectoren na een compromittering: OAuth-grants, service accounts, CI/CD-secrets, IdP-trust, audit-trails. |
+| `journeydoc-init` / `journeydoc-add-story` / `journeydoc-instrument` | Handmatige instrumentatie + uitbreiding van Journey-docs. |
+| `verify-global-settings-version` | Check of `global-settings/VERSION` is opgehoogd na een wijziging. |
+
+Daarnaast staan er schrijf-skills (`writing`, `blog-write`, `tutorial-write`), de `parity-*`-skills voor capability-matrices tegenover concurrenten, en `atom-design` voor design-system-mocks. Niets uit deze familie draait in de pipeline. Het zijn jouw dagelijkse `/`-commando's.
+
+## Vendor skills (community)
+
+Naast de eigen skills heeft Hydra **vendor skills** onder `hydra/vendor/skills/`:
+
+- `code-review` — communautaire review-skill van Anthropic. → 🤖 Reviewer-container.
+- `trailofbits` — Semgrep-gebaseerde static-analysis-methodologie van Trail of Bits. → 🤖 Security-container.
+- `owasp` — OWASP-top-10:2025 + ASVS 5.0-checklists. → 🤖 Security-container.
+
+Die drie zitten dus **wél** in de reviewer- en security-image; de builder-image heeft er geen van. Ze geven Juan en Clyde extra dekking boven op de eigen `hydra-gate-*`. Onderhoud ligt bij externe partijen — updaten gaat door de bron te volgen, niet door zelf te editen.
+
+## Wanneer schrijf je een nieuwe skill?
+
+De pragmatische test: schrijf een skill als…
+
+1. **De check / het gedrag is herhaalbaar** — meer dan eens nodig, op meer dan één plek.
+2. **Het is mechanisch beschrijfbaar** — je kunt het in 1-3 alinea's instrueren, zonder dat het ontaardt in "het hangt van de context af".
+3. **Een persona of een mens zou er baat bij hebben.** Geen skill schrijven omdat het kan.
+
+Voor een fout-positieve gate (deel 3): je past de bestaande skill aan, je schrijft geen nieuwe. Voor een nieuwe klasse fout die je 3x ziet langskomen: ja, die verdient een eigen `hydra-gate-*`-skill.
+
+<HexCard title="Tip: gebruik /skill-creator">
+  Hydra heeft een ingebouwde <code>/skill-creator</code>-skill die je door het maken van een nieuwe skill leidt: scaffold, frontmatter, eval-harness, performance-meting. Roep hem aan vanuit een Claude-sessie in de hydra-repo om met de juiste structuur te starten in plaats van zelf een mapje op te bouwen. Een uitgewerkte walkthrough vind je in <a href="/nl/academy/claude-skills-tutorial-2-your-first-skill">deel 2 van de Claude Skills-leerlijn</a>; meten en evalueren wordt behandeld in <a href="/nl/academy/claude-skills-tutorial-3-skill-evals">deel 3</a>.
+</HexCard>
+
+## Test jezelf
+
+Vier korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Benieuwd naar het antwoord? Klik **Antwoord**.
+
+<div className="tutorial-quiz">
+
+**1. Wat zijn de twee manieren waarop een skill kan worden geactiveerd, en hoe stuur je dat per skill?**
+
+<Details summary="Hint">
+
+Eén manier vergt dat een mens iets typt. De andere laat Claude zelf beslissen op basis van de skill-omschrijving. Welke frontmatter-velden bepalen welke mode mag?
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **Handmatig**: jij typt `/<naam>` in een Claude-sessie. Direct, voorspelbaar.
+- **Automatisch**: Claude leest de `description` van alle skills mee en kiest er zelf eentje wanneer de huidige conversatie matcht.
+
+In de frontmatter van een skill zet je:
+
+- `disable-model-invocation: true` — alleen handmatig. Gebruikt voor skills met side-effects (`/opsx-apply`, `/create-pr`).
+- `user-invocable: false` — alleen automatisch. Gebruikt voor achtergrondkennis die niet als actie zinvol is.
+- Beide leeg → beide mogen. De default voor de meeste Hydra-skills.
+
+In de Hydra-pipeline typt niemand een `/`: elke stage krijgt een prompt die zegt wat hij moet doen en welke brief hij volgt, en elke skill die hij daarnaast laadt is Claude's eigen keuze. Een mens op de CLI typt meestal expliciet `/`.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Wat gebruikt de automatische pipeline echt, welke skills dragen de container-images mee, en welke staan alleen in de repo voor mensen?**
+
+<Details summary="Hint">
+
+Houd de flow-gedreven run (prompt, brief, gate-suite) apart van de images die je zelf start. Wat draagt elke image mee — en welke families staan er volledig buiten?
+
+</Details>
+
+<Details summary="Antwoord">
+
+**In een flow-gedreven run** (🤖 fabriek) volgt een stage zijn prompt en brief:
+
+- **Build** — de prompt vraagt de change direct te implementeren; er wordt geen skill genoemd. Daarna draait de pipeline `scripts/run-hydra-gates.sh`, staat één fix-ronde toe, en draait de gates opnieuw.
+- **Review-stages** — elke persona leest zijn brief uit `agents/<persona>/` en `images/`, draait de gates, en moet `hydra-gates` in `checks_run` zetten.
+
+**In de container-images** (wat `dev-run.sh` en `smoke-test.sh` starten):
+
+- **Builder** — alle skills uit `.claude/skills/`, geen vendor skills. Zijn entrypoint volgt `opsx-apply`.
+- **Reviewer** — `hydra-gates` + 16 losse `hydra-gate-*` + vendor `code-review`.
+- **Security** — `hydra-gates` + dezelfde 16 `hydra-gate-*` + vendor `trailofbits` (Semgrep) + vendor `owasp`.
+- **Applier** — geen skills, alleen Read en Bash.
+
+Wat de image ook meedraagt, `scripts/run-hydra-gates.sh` doet de detectie. Het declareert veel meer gates dan er gate-skills zijn; de COVERAGE-regel van de run zegt hoeveel.
+
+**Niet gebruikt door de fabriek** (sommige staan wel in de builder-image, maar geen stage roept ze aan), alleen voor mensen op de CLI:
+
+- De hele `team-*`-familie.
+- De hele `test-*`-familie — de pipeline draait helemaal geen browser.
+- De `opsx-*`-skills (mensen bereiden changes voor; de pipeline bouwt ze).
+- De hele utility-familie (`create-pr`, `review-pr`, `report-out`, `clean-env`, `local-run`, `sync-docs`, `skill-creator`, `feature-counsel`, `persistence-audit`, `journeydoc-*`, `verify-global-settings-version`, en de schrijf- en parity-skills).
+
+In totaal: van de zo'n 130 skills in de repo leunt de automatische pipeline op de gate-suite en één brief per persona; de rest is jouw gereedschap.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Wanneer pas je een bestaande gate-skill aan en wanneer schrijf je een nieuwe?**
+
+<Details summary="Hint">
+
+Eén beslissing gaat over "de gate doet niet wat we al wilden". De andere over "we hebben een nieuwe categorie fout ontdekt".
+
+</Details>
+
+<Details summary="Antwoord">
+
+- **Bestaande aanpassen** bij een **fout-positief**: de gate triggert te breed of te smal op iets dat hij al hoorde te checken. Voorbeeld: `hydra-gate-forbidden-patterns` matchte `$builder->add(` ten onrechte — je past de regex aan, je voegt geen tweede gate toe.
+- **Nieuwe schrijven** voor een **nieuwe klasse fout** die je 3× ziet langskomen en die door alle bestaande mazen glipt. Voorbeeld: `hydra-gate-stub-scan` ontstond toen een builder een `return null;`-methode opleverde die PHPCS slikte en geen test had — dat was een nieuwe categorie, geen fix op een bestaande check.
+
+Rule of three: één keer is toeval, twee keer is toeval, drie keer is een patroon dat een eigen gate verdient.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. Wat doen de "vendor skills" en waarom houden we die apart van onze eigen `hydra-gate-*`?**
+
+<Details summary="Hint">
+
+Denk aan herkomst (wie heeft ze geschreven?), in welke pipeline-image ze worden ingeladen, en wat er gebeurt als een externe partij hun werk moet updaten.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Vendor-skills (`hydra/vendor/skills/`) zijn skills die **niet door ons** zijn geschreven, en die **wél** in de reviewer- en security-image zitten:
+
+- `code-review` (Anthropic-community) → Reviewer-container (Juan Claude).
+- `trailofbits` (Trail of Bits, Semgrep-methodologie) → Security-container (Clyde).
+- `owasp` (OWASP-top-10:2025 + ASVS 5.0) → Security-container.
+
+Apart houden omdat:
+
+- **Onderhoud** ligt bij externe partijen — we updaten ze door de bron te volgen (zie `vendor/skills/VERSIONS.md`), niet door zelf te editen. Onze eigen gates muteren we vrij; vendor-skills laten we met rust.
+- **Audit-spoor** blijft duidelijk: wat is van ons vs. wat is community/extern? Bij een failure weet je meteen welk kamp verantwoordelijk is voor de fix.
+
+</Details>
+
+</div>
+
+<NextSteps title="Volgende stap" lede="In deel 5 worden we praktisch: de stages op je eigen machine draaien, en een echte Hydra-run op een echte app starten met een label.">
+  <NextStep
+    title="Deel 5 — Een Hydra-run starten op een echte app"
+    href="/nl/academy/hydra-tutorial-5-starting-a-run"
+    description="Het hele recept: credentials uit je omgeving, de juiste config in <code>secrets/.env</code>, een lokale run met <code>dev-run.sh</code> of <code>smoke-test.sh</code>, en het label <code>build:queued</code> dat een echte run start."
+  />
+  <NextStep
+    title="Vorige stap — Quality gates"
+    href="/nl/academy/hydra-tutorial-3-quality-gates"
+    description="De mechanische scheidsrechters die deze skills aanvullen."
+  />
+  <NextStep
+    title="Skills directory"
+    href="https://github.com/ConductionNL/hydra/tree/main/.claude/skills"
+    description="Browse de volledige lijst skills in de hydra-repo."
+  />
+  <NextStep
+    title="Claude Skills-leerlijn (publiek)"
+    href="/nl/academy/claude-skills-tutorial-1-what-are-claude-skills"
+    description="Een aparte, publieke leerlijn die wat dieper ingaat op Claude Skills in het algemeen: wat ze zijn, hoe je er een schrijft, en hoe je hem meet met evals. Goed voor de bredere achtergrond."
+  />
+</NextSteps>

@@ -1,0 +1,411 @@
+---
+slug: workstation-tutorial-2-base-setup
+title: "Workstation Setup leerlijn — Deel 2: De basis inrichten"
+contentType: tutorial
+authors: [conduction]
+date: 2026-05-29
+summary: WSL2, Docker Desktop, VS Code met de juiste extensies, Node, PHP, GitHub-auth (de gh CLI via HTTPS), de OpenSpec CLI en de Playwright-browser. Het langste deel van de leerlijn — de meeste tijd gaat in downloads waar je naast iets anders kunt doen. Na dit deel heb je een werkend dev-workstation, alleen Claude Code is nog niet aangesloten.
+tags: [Workstation, Setup, WSL2, Docker, VS Code, Node, PHP, GitHub, Tutorial series]
+apps: []
+durationMinutes: 60
+series: workstation-tutorial
+partNumber: 2
+---
+
+import {Outcomes, Outcome, Prerequisites, PrerequisiteItem, Troubleshooting, TroubleshootingItem, NextSteps, NextStep, ContactCta} from '@conduction/docusaurus-preset/components';
+import Details from '@theme/Details';
+
+Dit is het deel met de meeste installatie-commando's. WSL2, Docker Desktop, VS Code met de juiste extensies, de language-runtimes (Node, PHP, Composer), de CLI's (`gh`, OpenSpec) en de Playwright Chromium-binary. Aan het einde van Deel 2 heb je een werkend dev-workstation — alleen Claude Code is nog niet aangesloten. Dat is Deel 3.
+
+{/* truncate */}
+
+<Outcomes title="Wat je oplevert">
+  <Outcome>WSL2 + Ubuntu 24.04 draaiend op je machine (alleen Windows).</Outcome>
+  <Outcome>Docker Desktop geïnstalleerd, geïntegreerd met WSL, en een werkend <code>docker</code>-commando binnen WSL.</Outcome>
+  <Outcome>VS Code geïnstalleerd met de vereiste Conduction-extensies, verbonden met WSL.</Outcome>
+  <Outcome>Node 20+, PHP 8.1+, Composer, de <code>gh</code>-CLI, de OpenSpec-CLI en de Playwright Chromium-binary, allemaal binnen WSL geïnstalleerd.</Outcome>
+  <Outcome>Een geverifieerde werkende setup — elke <code>--version</code>-check aan het einde van het deel geeft een echte versie terug.</Outcome>
+</Outcomes>
+
+<Prerequisites title="Wat je nodig hebt">
+  <PrerequisiteItem><a href="/nl/academy/workstation-tutorial-1-what-to-install">Deel 1</a> doorgelezen — je weet welke combinatie van tools we installeren en waarom.</PrerequisiteItem>
+  <PrerequisiteItem>Een laptop met admin-rechten en zo'n 30 GB vrije schijfruimte.</PrerequisiteItem>
+  <PrerequisiteItem>Ongeveer een uur. Plan rond de WSL2-reboot (vroeg in het proces) en de Playwright Chromium-download (groot, tegen het einde).</PrerequisiteItem>
+</Prerequisites>
+
+## Een opmerking over macOS en Linux
+
+Dit deel gaat uit van **Windows 11**. Werk je op macOS of Linux:
+
+- **macOS** — sla stap 1 (WSL2) volledig over. Vervang `apt install` door `brew install` in de rest. Installeer Docker Desktop native. De volgorde en de verificatie-commando's blijven hetzelfde.
+- **Linux native** — sla stap 1 (WSL2) over. Installeer Docker Engine native (geen Docker Desktop). De volgorde blijft hetzelfde.
+
+Onze canonical [workstation-setup.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md) beschrijft het Windows + WSL2-pad; de macOS- en Linux-varianten hierboven zijn de vertaling die de meeste teams gebruiken. Loop je tegen iets aan dat niet één-op-één vertaalt, stuur dan onderaan even een berichtje via [Mail ons](mailto:info@conduction.nl).
+
+## Stap 1: installeer WSL2 (alleen Windows)
+
+Open **PowerShell als Administrator** — rechtsklik op de Start-knop, kies "Terminal (Admin)" of "PowerShell (Admin)" — en draai dan:
+
+```powershell
+wsl --install -d Ubuntu-24.04
+```
+
+Herstart je machine als daarom wordt gevraagd. Na de reboot rondt Ubuntu zijn eerste setup af en vraagt om een Linux-username en -wachtwoord. Kies een username die je onthoudt; het wachtwoord is het `sudo`-wachtwoord voor je Ubuntu-installatie.
+
+Verifieer in PowerShell:
+
+```powershell
+wsl --version
+wsl -l -v
+```
+
+Je hoort `Ubuntu-24.04` draaiend op WSL versie 2 te zien.
+
+> **Geen reboot? Herstart Ubuntu via `wsl --shutdown` in PowerShell en open de Ubuntu-app opnieuw.** Dat lost negen van de tien "hij wil gewoon niet starten"-problemen op.
+
+## Stap 2: installeer Docker Desktop
+
+Download **Docker Desktop voor Windows** van [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/) en installeer het. Na de installatie:
+
+1. Open Docker Desktop > **Settings** > **Resources** > **WSL Integration**.
+2. Schakel de integratie met je **Ubuntu-24.04**-distro in.
+3. Klik op **Apply & Restart**.
+
+Open je Ubuntu-terminal (Start-menu → **Ubuntu**) en verifieer:
+
+```bash
+docker --version
+docker compose version
+```
+
+Beide moeten een versie-string teruggeven. Meldt `docker --version` "command not found" binnen WSL, dan is de WSL-integratie niet toegepast — sluit Docker Desktop volledig af (rechtsklik op het tray-icoon → Quit) en start het opnieuw.
+
+## Stap 3: installeer VS Code
+
+Download **Visual Studio Code** van [code.visualstudio.com](https://code.visualstudio.com/) en installeer het op Windows (niet binnen WSL).
+
+Verbind het daarna met WSL:
+
+1. Open VS Code.
+2. `Ctrl+Shift+X` om Extensions te openen, installeer **WSL** (`ms-vscode-remote.remote-wsl`) aan de **Windows-kant**. Deze moet echt op Windows staan, niet in WSL.
+3. `Ctrl+Shift+P` > **"WSL: Connect to WSL"**.
+4. Kies **Ubuntu-24.04**.
+
+VS Code installeert zijn server-component automatisch binnen WSL. Vanaf nu draait elke VS Code-terminal binnen WSL.
+
+## Stap 4: installeer VS Code-extensies
+
+Installeer in het WSL-gekoppelde VS Code-venster deze extensies. Het makkelijkst gaat dat vanaf de WSL-terminal:
+
+```bash
+code --install-extension anthropic.claude-code
+code --install-extension ms-azuretools.vscode-docker
+code --install-extension bmewburn.vscode-intelephense
+code --install-extension vue.volar
+code --install-extension dbaeumer.vscode-eslint
+code --install-extension ms-python.python
+code --install-extension eamodio.gitlens
+code --install-extension redhat.vscode-yaml
+code --install-extension github.vscode-github-actions
+```
+
+Daarmee dek je de verplichte + aanbevolen set voor een Conduction-project. Zie [workstation-setup.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md#4-install-vs-code-extensions) voor de optionele.
+
+## Stap 5: installeer Node (via nvm)
+
+Al het Node-werk gebeurt **binnen WSL**, nooit aan de Windows-kant. Gebruik `nvm` zodat je per project van versie kunt wisselen zonder sudo:
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+source ~/.bashrc
+nvm install 20
+nvm alias default 20
+```
+
+Verifieer:
+
+```bash
+node --version    # v20.x
+npm --version     # 10.x
+```
+
+> **Waarom Node 20, niet de nieuwste?** Docusaurus 3.x en de OpenSpec-CLI willen allebei Node 20+, en onze canonical [workstation-setup.md](https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md) installeert specifiek Node 20. Blijf bij 20 LTS tot je een reden hebt om dat niet te doen.
+
+## Stap 6: installeer PHP 8.1+ en Composer
+
+```bash
+sudo apt update
+sudo apt install -y php8.1-cli php8.1-xml php8.1-mbstring php8.1-curl php8.1-zip unzip
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+```
+
+Verifieer:
+
+```bash
+php --version       # 8.1+
+composer --version  # 2.x
+```
+
+> **Gebruik phpcs v3, niet v4, als een project erom vraagt.** De CI is op v3 gepind en v4 breekt de gedeelde `phpcs.xml`-config. Probeert een latere `composer install` te upgraden, override dan met `composer require --dev "squizlabs/php_codesniffer:^3.9"`.
+
+## Stap 7: GitHub-auth (gh CLI via HTTPS)
+
+Het platform van Conduction is **GitHub**, onder de org [`ConductionNL`](https://github.com/ConductionNL). De verhuizing naar Codeberg van 2026-05-29 is teruggedraaid — besluit 2026-07-17, uitgevoerd 2026-07-23 — dus de GitHub CLI (`gh`) is degene die je echt nodig hebt. Hij doet twee dingen: PR's, issues en labels via de GitHub-API, en de credentials voor elke `git clone/push/pull` over HTTPS. Geen SSH-sleutel, geen passphrase, geen `keychain`.
+
+### 7a. Installeer `gh` en log in
+
+```bash
+sudo apt install -y gh
+gh auth login
+```
+
+Beantwoord de vragen zo:
+
+- **Account** → `GitHub.com`
+- **Preferred protocol for Git operations** → `HTTPS`
+- **Authenticate Git with your GitHub credentials?** → `Yes`
+- **How would you like to authenticate** → `Login with a web browser`
+
+`gh` toont een eenmalige code en opent de browser. Opent er vanuit WSL geen browser, ga dan zelf naar [github.com/login/device](https://github.com/login/device) en plak de code daar. Gebruikt je werk-GitHub SSO, zorg er dan voor dat je standaardbrowser Edge of Chrome is — Firefox-SSO-callbacks komen soms niet schoon terug.
+
+Antwoordde je **No** op de git-vraag, of had je `gh` al eerder geïnstalleerd? Koppel hem dan achteraf aan git:
+
+```bash
+gh auth setup-git
+```
+
+Daarmee wordt `gh` de credential helper van git voor github.com, zodat `git push` dezelfde token gebruikt als `gh` — niets intikken, niets ontgrendelen na een reboot.
+
+### 7b. Verifieer
+
+```bash
+gh auth status
+# github.com
+#   ✓ Logged in to github.com account <JouwGitHubUsername> (keyring)
+#   - Git operations protocol: https
+```
+
+Beide regels tellen: de eerste zegt dat `gh` ingelogd is, de tweede dat git via hem over HTTPS gaat. Clone ConductionNL-repo's met de URL `https://github.com/ConductionNL/<repo>.git` — de rest van deze leerlijn doet dat ook.
+
+> **Een SSH-sleutel is optioneel.** Zet er alleen een op als je bewust `git@github.com:`-remotes wilt — `gh auth login` biedt aan er een te genereren en te uploaden als je SSH als protocol kiest. Een sleutel met passphrase heeft een agent als `keychain` nodig, en dat kost je één passphrase-prompt per WSL-boot. HTTPS via `gh` heeft daar geen last van, en dat is wat deze leerlijn aanneemt.
+
+:::note Codeberg en `tea` horen niet bij ConductionNL-werk
+
+Een SSH-sleutel voor Codeberg plus de `tea` CLI heb je alleen nodig voor een **niet-Conduction**-repo die echt op een Forgejo-host leeft (Codeberg, of een self-hosted Forgejo/Gitea van een klant). Voor dat geval staat de volledige walkthrough in de [Codeberg Authentication Setup](https://github.com/ConductionNL/.github/blob/main/docs/claude/codeberg-auth-setup.md)-guide in de `.github` repo.
+
+**Heb je een eerdere versie van deze stap gevolgd?** Dan vraagt elke nieuwe terminal om de passphrase van `~/.ssh/id_ed25519_codeberg`. Open `~/.bashrc` en zet deze regel in commentaar:
+
+```bash
+# eval $(keychain --eval --quiet --agents ssh ~/.ssh/id_ed25519_codeberg)
+```
+
+Heb je de sleutel later toch weer nodig? Laad hem eenmalig voor de WSL-sessie, of zet de regel terug:
+
+```bash
+keychain ~/.ssh/id_ed25519_codeberg
+```
+
+:::
+
+## Stap 8: installeer de OpenSpec CLI
+
+Gebruikt door alle `/opsx-*`-skills voor spec-driven development:
+
+```bash
+npm install -g @fission-ai/openspec
+openspec --version
+```
+
+> **Draai GEEN `openspec init`** binnen een Conduction-project — die projecten hebben al een aangepaste `openspec/`-map. `init` draaien overschrijft die.
+
+## Stap 9: installeer de Playwright Chromium-binary
+
+De Playwright MCP-browsers (gebruikt door onze testing-skills) hebben Chromium nodig, eenmalig op deze machine te installeren:
+
+```bash
+npx playwright install chromium
+```
+
+De download is ~300 MB. Draai hem op een stabiele verbinding — niet in de trein.
+
+## Stap 10: alles verifiëren
+
+Een schoon dev-workstation komt zonder fouten door deze checklist heen:
+
+```bash
+node --version            # v20.x
+npm --version             # 10.x
+php --version             # 8.1+
+composer --version        # 2.x
+docker --version          # 24+
+docker compose version    # 2.x
+gh --version              # 2.x
+gh auth status            # "Logged in to github.com account <jij>" + "Git operations protocol: https"
+openspec --version        # 1.x
+npx playwright --version  # 1.x
+```
+
+Geeft elk commando een echte versie terug en toont `gh auth status` dat je ingelogd bent met `https` als git-protocol, dan ben je klaar met Deel 2. Zo niet, spring dan naar Troubleshooting hieronder.
+
+<Troubleshooting title="Troubleshooting">
+  <TroubleshootingItem symptom="WSL2 wil niet installeren: 'WSL is not supported on this version of Windows'">
+    Je zit waarschijnlijk op Windows 10 zonder de laatste cumulatieve update, of op Home-editie zonder virtualisatie aan. Werk Windows bij, zet daarna <strong>Virtual Machine Platform</strong> en <strong>Windows Subsystem for Linux</strong> aan via <em>Windows-onderdelen in- of uitschakelen</em>. Reboot en probeer opnieuw.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="docker-commando niet gevonden binnen WSL na het installeren van Docker Desktop">
+    De WSL-integratie is niet toegepast. Open Docker Desktop > Settings > Resources > WSL Integration, schakel Ubuntu-24.04 uit en weer aan, klik op Apply & Restart. Open daarna de Ubuntu-terminal opnieuw.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="composer install faalt met 'vendor/ is owned by root'">
+    Gebeurt na de eerste Docker-run in een project — Docker heeft <code>vendor/</code> als root aangemaakt. Twee fixes: (1) <code>sudo chown -R $USER:$USER vendor/</code> en opnieuw draaien, of (2) installeer phpcs globaal met <code>composer global require "squizlabs/php_codesniffer:^3.9"</code> en sla <code>composer install</code> voor nu over.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="gh auth login opent de verkeerde browser en SSO komt niet rond">
+    Gebruikt je werk-GitHub SSO en is Firefox de standaardbrowser, dan komt de callback soms niet schoon terug. Zet Edge of Chrome als standaardbrowser en draai <code>gh auth login --web</code> opnieuw.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="git push vraagt om een gebruikersnaam en wachtwoord">
+    Git gebruikt <code>gh</code> niet als credential helper — je antwoordde <strong>No</strong> op <em>Authenticate Git with your GitHub credentials?</em>, of je bent uitgelogd. Draai <code>gh auth setup-git</code> (en eerst <code>gh auth login</code> als <code>gh auth status</code> zegt dat je niet ingelogd bent). Probeer dan opnieuw.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="git clone git@github.com:... geeft 'Permission denied (publickey)'">
+    Dat is een SSH-URL, en met de HTTPS-setup uit Stap 7 heb je geen SSH-sleutel op GitHub. Gebruik de HTTPS-URL (<code>https://github.com/ConductionNL/&lt;repo&gt;.git</code>). Een bestaande clone zet je om met <code>git remote set-url origin https://github.com/ConductionNL/&lt;repo&gt;.git</code>.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="Elke nieuwe terminal vraagt om de passphrase van id_ed25519_codeberg">
+    Een overblijfsel van een eerdere versie van Stap 7, die Codeberg opzette. Zet de regel <code>eval $(keychain ... id_ed25519_codeberg)</code> in <code>&#126;/.bashrc</code> in commentaar en open een verse terminal. Zie de notitie aan het eind van Stap 7.
+  </TroubleshootingItem>
+  <TroubleshootingItem symptom="npx playwright install chromium hangt of geeft een timeout">
+    De download is ~300 MB. Op een trage verbinding lijkt het soms vast te zitten. Wacht hem uit, of draai hem op een snellere verbinding. Wil hij écht niet, zet dan <code>HTTPS_PROXY</code> en probeer opnieuw vanaf een netwerk waar de proxy resolvet.
+  </TroubleshootingItem>
+</Troubleshooting>
+
+## Test jezelf
+
+Vijf korte vragen om te checken of je dit deel begrepen hebt. Vastgelopen? Klik **Hint**. Curieus naar het antwoord? Klik **Antwoord**.
+
+<div className="tutorial-quiz">
+
+**1. Waarom installeren we Node, PHP en de rest *binnen WSL* in plaats van aan de Windows-kant?**
+
+<Details summary="Hint">
+
+Denk na over welk filesystem de tooling leest en schrijft, en welke shell-scripts de latere stappen draaien.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Omdat elke latere stap — Composer, de OpenSpec-CLI, de `gh`-CLI, de globale Claude safety hooks (Deel 3) — uitgaat van een POSIX-shell en Linux-bestandspaden.
+
+Node of PHP op Windows installeren leidt tot dubbele path-translaties (`\\wsl$\...` ↔ `C:\Users\...`), inconsistente line endings en bash hooks die simpelweg niet draaien. De vuistregel: **alles wat je vanuit een shell draait gaat binnen WSL; editor en Docker Desktop draaien op Windows**.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**2. Het Docker-commando werkt in Windows PowerShell maar niet binnen WSL. Wat is de meest waarschijnlijke oorzaak?**
+
+<Details summary="Hint">
+
+Docker Desktop draait op Windows. Er is een expliciete stap nodig om hem vanuit WSL bereikbaar te maken.
+
+</Details>
+
+<Details summary="Antwoord">
+
+De **WSL Integration** stond niet aan (of is niet toegepast) voor je Ubuntu-distro. Open Docker Desktop > Settings > Resources > WSL Integration, schakel je Ubuntu-distro uit en weer aan, klik op Apply & Restart. Open daarna de Ubuntu-terminal opnieuw.
+
+Helpt dat nog niet, sluit Docker Desktop dan volledig af (rechtsklik op het tray-icoon → Quit) en start het opnieuw. Dat dekt de laatste 10% van de gevallen.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**3. Waarom installeren we de WSL-extensie voor VS Code aan de *Windows-kant*, en de rest aan de *WSL-kant*?**
+
+<Details summary="Hint">
+
+De WSL-extensie doet één specifiek ding dat de andere extensies niet doen.
+
+</Details>
+
+<Details summary="Antwoord">
+
+De **WSL-extensie** is wat VS Code op Windows *koppelt* aan een remote VS Code Server binnen WSL — die stap moet aan de Windows-kant gebeuren. Zodra die verbinding staat, hebben de andere extensies (Claude Code, Volar, ESLint, Intelephense, Docker) toegang nodig tot je code, je `node_modules` en je shell — dus installeer je ze aan de **WSL-kant**, tegen hetzelfde filesystem als je project.
+
+Taal-extensies op Windows installeren terwijl de code in WSL staat geeft je kapotte IntelliSense, trage file watchers en verwarrende path-fouten. Houd de regel simpel: **WSL-extensie op Windows, al het andere binnen WSL.**
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**4. `git push` naar een ConductionNL-repo faalt. In de ene clone krijg je "Permission denied (publickey)"; in een andere vraagt git om een gebruikersnaam en wachtwoord. Wat veroorzaakt elk van beide, en welk enkel commando bevestigt dat auth werkt?**
+
+<Details summary="Hint">
+
+De één gaat over de *remote-URL* van de clone. De ander gaat erover of git *weet dat hij `gh` om credentials moet vragen*. Twee aparte failure modes; twee aparte checks.
+
+</Details>
+
+<Details summary="Antwoord">
+
+De twee failure modes zijn:
+
+1. **"Permission denied (publickey)" — de remote is een SSH-URL.** Diagnose: `git remote -v` toont `git@github.com:ConductionNL/...`. Met de HTTPS-setup uit Stap 7 staat er geen SSH-sleutel op je GitHub-account, dus SSH heeft niets aan te bieden. Fix: `git remote set-url origin https://github.com/ConductionNL/<repo>.git`.
+2. **Een prompt om gebruikersnaam/wachtwoord — git gebruikt `gh` niet als credential helper.** Je antwoordde *No* op *Authenticate Git with your GitHub credentials?*, of je bent uitgelogd. Fix: `gh auth setup-git` (na `gh auth login` als dat nodig is).
+
+In beide gevallen hoort `gh auth status` na de fix *"Logged in to github.com account &lt;jouw username&gt;"* te melden met *"Git operations protocol: https"* — de meest waterdichte enkele bevestiging dat auth werkt.
+
+</Details>
+
+</div>
+
+<div className="tutorial-quiz">
+
+**5. Na de eerste `docker compose up -d` van een Conduction-project faalt `composer install` op de host opeens met `Permission denied` op `vendor/`. Wat is er gebeurd, waarom juist bij de *eerste* Docker-run, en wat is de snelste fix?**
+
+<Details summary="Hint">
+
+Docker-containers draaien standaard als root. Wanneer een container in een bind-mounted directory schrijft, erven de bestanden die ownership op de host.
+
+</Details>
+
+<Details summary="Antwoord">
+
+Wanneer Docker een Conduction-project voor het eerst opstart, schrijft de PHP-container in de bind-mounted `vendor/`-directory — maar de container draait als **root**, dus de resulterende bestanden zijn op het host file system eigendom van `root:root`. Je host-user (`$USER`) kan er niet in schrijven, en `composer install` vanaf de host faalt.
+
+**Waarom juist bij de eerste run:** daarvóór bestond `vendor/` nog niet of was hij schoon. Volgende runs hergebruiken de al-root-owned bestanden, dus de fout blijft staan tot je de ownership fixt.
+
+**Snelste fix:**
+
+```bash
+sudo chown -R $USER:$USER vendor/
+composer install
+```
+
+Alternatief als je geen `sudo` wilt gebruiken: installeer phpcs globaal (`composer global require "squizlabs/php_codesniffer:^3.9"`) en sla de lokale `composer install` voorlopig over. CI gebruikt nog steeds de `composer.json` van het project, dus dit raakt alleen je lokale tooling.
+
+</Details>
+
+</div>
+
+<NextSteps title="Volgende stap" lede="Met de runtimes geïnstalleerd is het tijd om Claude Code zelf op te zetten — en, minstens zo belangrijk, de globale safety hooks.">
+  <NextStep
+    title="Deel 3 — Claude Code installeren en configureren"
+    href="/nl/academy/workstation-tutorial-3-claude-code"
+    description="Installeer Claude Code, log in, installeer de verplichte globale settings en safety hooks. Kort en belangrijk."
+  />
+  <NextStep
+    title="De canonical workstation-setup.md"
+    href="https://github.com/ConductionNL/.github/blob/main/docs/claude/workstation-setup.md"
+    description="Het interne referentiedocument met de uitgebreide versie van elke stap hierboven."
+  />
+</NextSteps>
+
+<ContactCta
+  title="Halverwege vastgelopen?"
+  body="Verlies geen avond aan één kapotte installer. Stuur ons een mail of trek je teamlead aan zijn mouw — vaak is het een fix van vijf minuten zodra iemand met de context meekijkt."
+  cta={{ label: "Mail ons", href: "mailto:info@conduction.nl?subject=Workstation%20setup%20tutorial%20deel%202" }}
+/>
