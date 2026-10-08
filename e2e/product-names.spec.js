@@ -102,7 +102,7 @@ test.describe('renamed products', () => {
        nothing at all. What the rename sweep actually cares about is that
        the page says the new names somewhere. */
     const body = page.locator('body');
-    for (const name of ['Integriq', 'Filinq', 'Keepiq', 'Versioniq', 'Thematiq']) {
+    for (const name of ['Integriq', 'Filinq', 'Keepiq', 'Versioniq', 'Thematiq', 'Learniq', 'Planninq', 'Humaniq']) {
       await expect(body, `/connext should name ${name}`).toContainText(name);
     }
   });
