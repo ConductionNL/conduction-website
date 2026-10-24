@@ -48,6 +48,16 @@ function isEndpointUsable(endpoint) {
  * nothing the visitor typed is lost.
  *
  * @param {string}   source       Intake source tag. Must be on Pipelinq's allowlist.
+ *                                Doubles as the form's id for traffic measurement:
+ *                                the Portaliq client reports a form by its
+ *                                `data-portaliq-form`, else its id, name or action,
+ *                                and bails when it has none of them. This form had
+ *                                none, so every form_start, form_field, form_submit
+ *                                and form_abandon on conduction.nl was silently
+ *                                dropped: 162 traffic events stored on 2026-09-22
+ *                                and not one of them about a form, while /contact
+ *                                sat in the top pages. Placed BEFORE the spread so
+ *                                a caller can still override it.
  * @param {Function} buildTitle   (fields) => string, the enquiry title.
  * @param {string}   successText  Message shown after a successful submit.
  */
@@ -135,7 +145,7 @@ export default function EnquiryForm({source, buildTitle, successText, children, 
   // route that works, rather than accepting the form and failing on submit.
   if (!usable) {
     return (
-      <form {...formProps} onSubmit={(e) => e.preventDefault()}>
+      <form data-portaliq-form={source} {...formProps} onSubmit={(e) => e.preventDefault()}>
         {children}
         <p style={{fontSize: 13, lineHeight: 1.55, margin: '12px 0 0', opacity: 0.8}}>
           Online submission isn't available right now. Please email{' '}
@@ -147,7 +157,7 @@ export default function EnquiryForm({source, buildTitle, successText, children, 
   }
 
   return (
-    <form {...formProps} onSubmit={onSubmit}>
+    <form data-portaliq-form={source} {...formProps} onSubmit={onSubmit}>
       {children}
       {/* Honeypot. Hidden from people, left empty by them, filled by bots that
           complete every input they find. Not `display:none`: some bots skip
